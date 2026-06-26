@@ -197,17 +197,21 @@ describe('scan-project.mjs — language detection', () => {
     expect(byPath(r.output, 'g.md').language).toBe('markdown');
   });
 
-  it('maps shell + batch + Dockerfile (no extension) to their language ids', () => {
+  it('maps shell + Dockerfile (no extension) to their language ids and excludes unsupported Windows scripts', () => {
     projectRoot = setupTree({
       'a.sh': 'echo 1\n',
       'b.bat': '@echo off\n',
+      'c.cmd': '@echo off\n',
+      'deploy.ps1': 'Write-Output 1\n',
       Dockerfile: 'FROM node:22\n',
       'Dockerfile.dev': 'FROM node:22\n',
     });
     const r = runScript(projectRoot);
     expect(r.status).toBe(0);
     expect(byPath(r.output, 'a.sh').language).toBe('shell');
-    expect(byPath(r.output, 'b.bat').language).toBe('batch');
+    expect(r.output.files.some((f) => f.path === 'b.bat')).toBe(false);
+    expect(r.output.files.some((f) => f.path === 'c.cmd')).toBe(false);
+    expect(r.output.files.some((f) => f.path === 'deploy.ps1')).toBe(false);
     expect(byPath(r.output, 'Dockerfile').language).toBe('dockerfile');
     expect(byPath(r.output, 'Dockerfile.dev').language).toBe('dockerfile');
   });
@@ -341,19 +345,21 @@ describe('scan-project.mjs — category assignment (project-scanner.md Step 4)',
     expect(byPath(r.output, 'data/seed.csv').fileCategory).toBe('data');
   });
 
-  it('assigns script to shell + batch files (.sh, .bash, .ps1, .bat)', () => {
+  it('assigns script to shell files and excludes unsupported Windows scripts', () => {
     projectRoot = setupTree({
       'scripts/build.sh': '#!/bin/bash\necho 1\n',
       'scripts/run.bash': '#!/bin/bash\necho run\n',
       'scripts/build.ps1': 'Write-Output 1\n',
       'scripts/setup.bat': '@echo off\n',
+      'scripts/setup.cmd': '@echo off\n',
     });
     const r = runScript(projectRoot);
     expect(r.status).toBe(0);
     expect(byPath(r.output, 'scripts/build.sh').fileCategory).toBe('script');
     expect(byPath(r.output, 'scripts/run.bash').fileCategory).toBe('script');
-    expect(byPath(r.output, 'scripts/build.ps1').fileCategory).toBe('script');
-    expect(byPath(r.output, 'scripts/setup.bat').fileCategory).toBe('script');
+    expect(r.output.files.some((f) => f.path === 'scripts/build.ps1')).toBe(false);
+    expect(r.output.files.some((f) => f.path === 'scripts/setup.bat')).toBe(false);
+    expect(r.output.files.some((f) => f.path === 'scripts/setup.cmd')).toBe(false);
   });
 
   it('assigns markup to HTML + CSS variants', () => {

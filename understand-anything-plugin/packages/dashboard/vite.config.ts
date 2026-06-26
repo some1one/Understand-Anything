@@ -287,7 +287,7 @@ export default defineConfig({
                 }
               }
             }
-            sendJson(res, 200, { autoUpdate: false, outputLanguage: "en" });
+            sendJson(res, 200, { autoUpdate: false });
             return;
           }
 

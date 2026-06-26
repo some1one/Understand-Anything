@@ -412,8 +412,6 @@ git commit -m "feat(core): make resolveImports optional on AnalyzerPlugin"
 - Create: `understand-anything-plugin/packages/core/src/languages/configs/json-schema.ts`
 - Create: `understand-anything-plugin/packages/core/src/languages/configs/csv.ts`
 - Create: `understand-anything-plugin/packages/core/src/languages/configs/restructuredtext.ts`
-- Create: `understand-anything-plugin/packages/core/src/languages/configs/powershell.ts`
-- Create: `understand-anything-plugin/packages/core/src/languages/configs/batch.ts`
 - Create: `understand-anything-plugin/packages/core/src/languages/configs/jenkinsfile.ts`
 - Create: `understand-anything-plugin/packages/core/src/languages/configs/plaintext.ts`
 - Modify: `understand-anything-plugin/packages/core/src/languages/configs/index.ts`
@@ -444,7 +442,6 @@ describe("Non-code language configs", () => {
       ["index.html", "html"],
       ["styles.css", "css"],
       ["data.csv", "csv"],
-      ["deploy.ps1", "powershell"],
     ];
     for (const [file, expectedId] of expectations) {
       const config = registry.getForFile(file);
@@ -498,8 +495,6 @@ Create similar configs for all 26 types. Key extension mappings:
 - html: `.html`, `.htm`
 - css: `.css`, `.scss`, `.less`
 - csv: `.csv`, `.tsv`
-- powershell: `.ps1`, `.psm1`
-- batch: `.bat`, `.cmd`
 - plaintext: `.txt`
 - restructuredtext: `.rst`
 - jenkinsfile: (filename-based — `Jenkinsfile`)
@@ -901,7 +896,7 @@ Key changes to the prompt:
    - `.yaml`, `.yml`, `.json`, `.toml`, `.env`, `.xml` → `"config"`
    - `Dockerfile`, `docker-compose.*`, `.tf`, `.github/workflows/*`, `Makefile`, `Jenkinsfile` → `"infra"`
    - `.sql`, `.graphql`, `.proto`, `.schema.json`, `.csv` → `"data"`
-   - `.sh`, `.bash`, `.ps1`, `.bat` → `"script"`
+   - `.sh`, `.bash` → `"script"`
    - `.html`, `.css`, `.scss` → `"markup"`
    - Everything else → `"code"`
 5. Update output schema to include `fileCategory` per file

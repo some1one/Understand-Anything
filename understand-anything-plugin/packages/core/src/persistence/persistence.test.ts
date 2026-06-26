@@ -189,7 +189,7 @@ describe("persistence", () => {
     it("should return default config when no file exists", () => {
       const loaded = loadConfig(tempDir);
 
-      expect(loaded).toEqual({ autoUpdate: false, outputLanguage: "en" });
+      expect(loaded).toEqual({ autoUpdate: false });
     });
 
     it("should return default config when config.json is corrupted", () => {
@@ -198,7 +198,7 @@ describe("persistence", () => {
       writeFileSync(join(dir, "config.json"), "not json!!", "utf-8");
 
       const loaded = loadConfig(tempDir);
-      expect(loaded).toEqual({ autoUpdate: false, outputLanguage: "en" });
+      expect(loaded).toEqual({ autoUpdate: false });
     });
   });
 });

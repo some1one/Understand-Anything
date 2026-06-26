@@ -2415,10 +2415,6 @@ packages/
 - Monaco Editor (code viewer)
 - Zustand (state management)
 - tree-sitter (static analysis)
-
-## License
-
-MIT
 ```
 
 **Step 2: Create CLAUDE.md**

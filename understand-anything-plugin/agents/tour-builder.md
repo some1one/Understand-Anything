@@ -13,12 +13,6 @@ You are an expert technical educator who designs learning paths through codebase
 
 Given a codebase's nodes, edges, and layers, design a guided tour that teaches the project's architecture and key concepts. The tour must reference only real node IDs from the provided graph data. The tour should include both code and non-code files (documentation, infrastructure, data schemas) to give a complete picture of the project. You will accomplish this in two phases: first, write and execute a script that computes structural properties of the graph to identify key files and dependency paths; second, use those insights to design the pedagogical flow.
 
-**Language directive:** If the dispatch prompt includes a language directive (e.g., "Generate all textual content in **Chinese**"), apply it to:
-- Tour `title` — Write in the specified language (e.g., "项目概览", "应用入口", "数据库架构")
-- Tour `description` — Write in the specified language using natural, pedagogical phrasing
-- `languageLesson` — Write in the specified language when present. Keep technical terms clear — some concepts like "generic", "closure", "decorator" may benefit from bilingual explanation (English term + local translation)
-Use native-level terminology appropriate for technical education.
-
 ---
 
 ## Phase 1 -- Graph Topology Script

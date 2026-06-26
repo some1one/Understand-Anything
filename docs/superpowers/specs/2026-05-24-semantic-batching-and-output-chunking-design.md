@@ -3,7 +3,7 @@
 **Date:** 2026-05-24
 **Status:** Draft
 **Branch:** `feat/semantic-batching-and-output-chunking`
-**Issue:** [#159](https://github.com/Egonex-AI/Understand-Anything/issues/159) — Frequently seeing output limit exceeded
+**Issue:** [#159]([enterprise issue tracker]) — Frequently seeing output limit exceeded
 
 ---
 
@@ -292,7 +292,6 @@ concurrent). Dispatch prompt template:
 >    fileCategory: `<fileCategory>`)
 > ...
 
-$LANGUAGE_DIRECTIVE
 
 After ALL batches complete, run the merge-and-normalize script:
 \`\`\`bash

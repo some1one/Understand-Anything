@@ -53,13 +53,11 @@
 | JSON Schema | `*.schema.json` | JSON + `$ref`/`$defs` extraction | `schema` |
 | CSV/TSV | `.csv`, `.tsv` | Header row extraction | `table` |
 
-### Shell & Scripts (3)
+### Shell & Scripts (1)
 
 | Type | Extensions | Parser | Node Types |
 |------|-----------|--------|------------|
 | Shell | `.sh`, `.bash`, `.zsh` | Regex function parser | `file`, `function` |
-| PowerShell | `.ps1`, `.psm1` | LLM | `file`, `function` |
-| Batch | `.bat`, `.cmd` | LLM | `file` |
 
 ### Markup (2)
 

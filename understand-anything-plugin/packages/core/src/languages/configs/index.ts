@@ -37,8 +37,6 @@ import { dockerComposeConfig } from "./docker-compose.js";
 import { jsonSchemaConfig } from "./json-schema.js";
 import { csvConfig } from "./csv.js";
 import { restructuredtextConfig } from "./restructuredtext.js";
-import { powershellConfig } from "./powershell.js";
-import { batchConfig } from "./batch.js";
 import { jenkinsfileConfig } from "./jenkinsfile.js";
 import { plaintextConfig } from "./plaintext.js";
 
@@ -82,8 +80,6 @@ export const builtinLanguageConfigs: LanguageConfig[] = [
   jsonSchemaConfig,
   csvConfig,
   restructuredtextConfig,
-  powershellConfig,
-  batchConfig,
   jenkinsfileConfig,
   plaintextConfig,
 ];
@@ -128,8 +124,6 @@ export {
   jsonSchemaConfig,
   csvConfig,
   restructuredtextConfig,
-  powershellConfig,
-  batchConfig,
   jenkinsfileConfig,
   plaintextConfig,
 };

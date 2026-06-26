@@ -8,17 +8,13 @@
 #   ./install.sh --uninstall <plat>    Remove links for <plat>
 #   ./install.sh --help
 #
-# Curl-pipe usage:
-#   curl -fsSL https://raw.githubusercontent.com/Egonex-AI/Understand-Anything/main/install.sh | bash
-#   curl -fsSL https://raw.githubusercontent.com/Egonex-AI/Understand-Anything/main/install.sh | bash -s codex
-#
 # Environment:
-#   UA_REPO_URL  Override clone URL (default: official GitHub repo)
+#   UA_REPO_URL  Repository clone URL (required for first install)
 #   UA_DIR       Override clone destination (default: $HOME/.understand-anything/repo)
 
 set -euo pipefail
 
-REPO_URL="${UA_REPO_URL:-https://github.com/Egonex-AI/Understand-Anything.git}"
+REPO_URL="${UA_REPO_URL:-}"
 REPO_DIR="${UA_DIR:-$HOME/.understand-anything/repo}"
 PLUGIN_LINK="$HOME/.understand-anything-plugin"
 
@@ -95,6 +91,11 @@ clone_or_update() {
     printf -- '→ Updating existing checkout at %s\n' "$REPO_DIR"
     git -C "$REPO_DIR" pull --ff-only
   else
+    if [[ -z "$REPO_URL" ]]; then
+      printf 'UA_REPO_URL is required for first install.\n' >&2
+      printf 'Example: UA_REPO_URL=<enterprise-repo-url> ./install.sh codex\n' >&2
+      exit 1
+    fi
     printf -- '→ Cloning %s → %s\n' "$REPO_URL" "$REPO_DIR"
     mkdir -p "$(dirname "$REPO_DIR")"
     git clone "$REPO_URL" "$REPO_DIR"
@@ -277,7 +278,7 @@ Supported platforms:
 $(platform_ids | sed 's/^/  - /')
 
 Environment:
-  UA_REPO_URL  Override clone URL (default: official repo)
+  UA_REPO_URL  Repository clone URL (required for first install)
   UA_DIR       Override clone destination (default: \$HOME/.understand-anything/repo)
 USAGE
 }

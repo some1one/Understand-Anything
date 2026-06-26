@@ -113,7 +113,6 @@ describe("LanguageRegistry", () => {
         ["index.html", "html"],
         ["styles.css", "css"],
         ["data.csv", "csv"],
-        ["deploy.ps1", "powershell"],
       ];
       for (const [file, expectedId] of expectations) {
         const config = registry.getForFile(file);

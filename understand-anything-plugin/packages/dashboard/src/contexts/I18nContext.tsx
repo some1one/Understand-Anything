@@ -1,9 +1,8 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
-import { getLocale, resolveLocaleKey, type Locale, type LocaleKey } from "../locales";
+import { getLocale, type Locale } from "../locales";
 
 interface I18nContextValue {
   locale: Locale;
-  localeKey: LocaleKey;
   t: Locale;
 }
 
@@ -18,22 +17,18 @@ export function useI18n(): I18nContextValue {
 }
 
 export function I18nProvider({
-  language,
   children,
 }: {
-  language?: string;
   children: ReactNode;
 }) {
-  const localeKey = useMemo(() => resolveLocaleKey(language), [language]);
-  const locale = useMemo(() => getLocale(localeKey), [localeKey]);
+  const locale = useMemo(() => getLocale(), []);
 
   const value = useMemo(
     () => ({
       locale,
-      localeKey,
       t: locale,
     }),
-    [locale, localeKey]
+    [locale]
   );
 
   return (

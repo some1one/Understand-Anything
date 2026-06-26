@@ -35,13 +35,12 @@ head -c 30 tree-sitter-dart.wasm | xxd | head -1
 
 ## Provenance
 
-- Grammar source: `tree-sitter-dart@1.0.0` (publisher: amaanq) — `grammar.js`
-  unchanged, only the wasm artifact is regenerated.
+- Grammar source: `tree-sitter-dart@1.0.0` — `grammar.js` unchanged, only the
+  wasm artifact is regenerated.
 - Built with: `tree-sitter-cli@0.26.x`, `wasi-sdk-29-arm64-macos`.
-- License: MIT, inherited from tree-sitter-dart@1.0.0 (publisher: amaanq).
 
 ## When to remove this package
 
-If amaanq publishes a refreshed `tree-sitter-dart` with a `dylink.0` wasm,
+If a refreshed `tree-sitter-dart` package is published with a `dylink.0` wasm,
 this workspace package can be deleted and the dependency in
 `@understand-anything/core` flipped to the upstream package.

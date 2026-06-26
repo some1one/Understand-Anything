@@ -1758,7 +1758,6 @@ For each batch, dispatch a subagent using the `file-analyzer` agent definition (
 > Project: `<projectName>` — `<projectDescription>`
 > Languages: `<languages from Phase 1>`
 >
-> $LANGUAGE_DIRECTIVE
 
 Before dispatching each batch, construct `batchImportData` from `$IMPORT_MAP`:
 ```json
@@ -1825,7 +1824,6 @@ For each batch, dispatch a subagent using the `file-analyzer` agent definition (
 > Project: `<projectName>` — `<projectDescription>`
 > Languages: `<languages from Phase 1>`
 >
-> $LANGUAGE_DIRECTIVE
 
 Dispatch prompt template (fill in batch-specific values from `batches.json[i]`):
 

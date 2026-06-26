@@ -130,7 +130,7 @@ export function loadFingerprints(projectRoot: string): FingerprintStore | null {
   }
 }
 
-const DEFAULT_CONFIG: ProjectConfig = { autoUpdate: false, outputLanguage: "en" };
+const DEFAULT_CONFIG: ProjectConfig = { autoUpdate: false };
 
 export function saveConfig(projectRoot: string, config: ProjectConfig): void {
   const dir = ensureDir(projectRoot);

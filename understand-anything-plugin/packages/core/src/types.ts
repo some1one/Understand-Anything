@@ -113,10 +113,9 @@ export interface AnalysisMeta {
   theme?: ThemeConfig;
 }
 
-// Project config (for auto-update opt-in and language preference)
+// Project config (for auto-update opt-in)
 export interface ProjectConfig {
   autoUpdate: boolean;
-  outputLanguage?: string;
 }
 
 // Non-code structural sub-interfaces

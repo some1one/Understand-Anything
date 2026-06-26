@@ -138,15 +138,10 @@ const LANGUAGE_BY_EXT = Object.freeze({
   // lists them as code languages — downstream import map will return [])
   '.vue': 'vue',
   '.svelte': 'svelte',
-  // Shell / Batch / PowerShell
+  // Shell
   '.sh': 'shell',
   '.bash': 'shell',
   '.zsh': 'shell',
-  '.ps1': 'powershell',
-  '.psm1': 'powershell',
-  '.psd1': 'powershell',
-  '.bat': 'batch',
-  '.cmd': 'batch',
   // Markup / docs
   '.html': 'html',
   '.htm': 'html',
@@ -211,6 +206,14 @@ const LANGUAGE_BY_FILENAME = Object.freeze({
   Vagrantfile: 'vagrantfile',
 });
 
+const UNSUPPORTED_EXTENSIONS = new Set([
+  '.ps1',
+  '.psm1',
+  '.psd1',
+  '.bat',
+  '.cmd',
+]);
+
 /**
  * Detect the language of a file by its path. Lowercase extension lookup,
  * then no-extension filename lookup. Never returns null — falls back to
@@ -245,6 +248,10 @@ export function detectLanguage(filePath) {
   if (byFilename) return byFilename;
 
   return 'unknown';
+}
+
+function isUnsupportedFile(filePath) {
+  return UNSUPPORTED_EXTENSIONS.has(extname(filePath).toLowerCase());
 }
 
 /**
@@ -323,11 +330,6 @@ const CATEGORY_BY_EXT = Object.freeze({
   '.sh': 'script',
   '.bash': 'script',
   '.zsh': 'script',
-  '.ps1': 'script',
-  '.psm1': 'script',
-  '.psd1': 'script',
-  '.bat': 'script',
-  '.cmd': 'script',
   // markup
   '.html': 'markup',
   '.htm': 'markup',
@@ -695,6 +697,8 @@ async function main() {
   //    Drop files that fail line counting (per-file resilience).
   const fileEntries = [];
   for (const rel of kept) {
+    if (isUnsupportedFile(rel)) continue;
+
     const absPath = join(projectRoot, rel);
     // Stat first — git ls-files could include paths that vanished between
     // listing and processing; the walker shouldn't but defensive anyway.

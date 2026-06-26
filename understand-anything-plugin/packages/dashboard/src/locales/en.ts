@@ -267,40 +267,6 @@ export const en = {
   pathFinder: {
     title: "Find path between nodes (P)",
   },
-  onboarding: {
-    header: "UNDERSTAND-ANYTHING · GET STARTED",
-    skipForever: "Don't show again",
-    prev: "Previous",
-    next: "Next",
-    finish: "Start exploring",
-    steps: [
-      {
-        title: "Welcome to the knowledge graph",
-        body: "The dots and lines you see are entities and relations Understand-Anything extracted from this project. A node can be a file, class, or function from the code — or a concept, entity, or claim from a knowledge wiki.",
-        hint: "Five steps to cover the core operations",
-      },
-      {
-        title: "Three views at the top",
-        body: "Overview shows the big picture (force-directed). Learn follows a preset learning path. Deep Dive shows type and complexity stats. Each view answers a different question.",
-        hint: "Decide what you're asking before you switch",
-      },
-      {
-        title: "Search + click a node",
-        body: "The top search box fuzzy-matches node name / summary / tags. Click any node and the right panel opens with summary, neighbors, and Open Article.",
-        hint: "Search centers and highlights; clicking a node highlights its edges",
-      },
-      {
-        title: "Layer switch + Project Tour",
-        body: "The layer tabs next to All filter the graph to one category, sourced from index.md. Project Tour on the right walks you through the editor's preset sequence.",
-        hint: "Use Layer when nodes are too dense; start Tour when you have no entry point",
-      },
-      {
-        title: "More hidden features",
-        body: "The top bar also has Filter (by type / complexity), Export (export the graph), Path (find a path between two nodes), and Theme. Press Shift + ? for the full keyboard shortcuts.",
-        hint: "Expand them when you need them — no need to memorize all at once",
-      },
-    ],
-  },
 };
 
 export default en;
