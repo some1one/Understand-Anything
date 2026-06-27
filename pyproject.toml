@@ -1,0 +1,26 @@
+[project]
+name = "understand-anything-arch-analysis"
+version = "0.1.0"
+description = "Deterministic structural analysis scripts for the architecture-analyzer agent (Phase 1 graph/path analytics)."
+authors = [
+    { name = "Justin Phillips", email = "justin.phillips@trucesoftware.com" },
+]
+requires-python = ">=3.14"
+readme = "arch_analysis/README.md"
+license = { text = "MIT" }
+dependencies = ["orjson>=3.11.9", "pydantic>=2.13.4", "networkx>=3.6", "numpy>=2.5.0", "pandas>=3.0.3", "scipy>=1.18.0", "jsonschema>=4.26.0"]
+
+[tool.pdm]
+distribution = false
+
+[tool.pdm.scripts]
+analyze = { cmd = "python -m arch_analysis.analyze", help = "Run structural analysis: analyze <input.json> <results.json>" }
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["arch_analysis/tests"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
