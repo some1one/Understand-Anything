@@ -48,18 +48,6 @@ function KnowledgeNodeDetails({ node, graph }: { node: GraphNode; graph: Knowled
   const { t } = useI18n();
   const meta = node.knowledgeMeta;
 
-  // Wikilinks (outgoing related edges)
-  const wikilinks = graph.edges
-    .filter((e) => e.type === "related" && e.source === node.id)
-    .map((e) => graph.nodes.find((n) => n.id === e.target))
-    .filter((n): n is GraphNode => n !== undefined);
-
-  // Backlinks (incoming related edges)
-  const backlinks = graph.edges
-    .filter((e) => e.type === "related" && e.target === node.id)
-    .map((e) => graph.nodes.find((n) => n.id === e.source))
-    .filter((n): n is GraphNode => n !== undefined);
-
   // Category
   const categoryEdge = graph.edges.find(
     (e) => e.type === "categorized_under" && e.source === node.id
@@ -80,44 +68,6 @@ function KnowledgeNodeDetails({ node, graph }: { node: GraphNode; graph: Knowled
           >
             {categoryNode.name}
           </button>
-        </div>
-      )}
-      {meta?.wikilinks && meta.wikilinks.length > 0 && (
-        <div>
-          <h4 className="text-[10px] uppercase tracking-wider text-text-muted mb-1">
-            {t.nodeInfo.wikilinks} ({wikilinks.length})
-          </h4>
-          <div className="space-y-1 max-h-[200px] overflow-auto">
-            {wikilinks.map((n) => (
-              <button
-                key={n.id}
-                type="button"
-                onClick={() => navigateToNode(n.id)}
-                className="block w-full text-left px-2 py-1.5 rounded bg-elevated hover:bg-accent/10 text-[11px] text-text-secondary hover:text-accent transition-colors truncate"
-              >
-                {n.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-      {backlinks.length > 0 && (
-        <div>
-          <h4 className="text-[10px] uppercase tracking-wider text-text-muted mb-1">
-            {t.nodeInfo.backlinks} ({backlinks.length})
-          </h4>
-          <div className="space-y-1 max-h-[200px] overflow-auto">
-            {backlinks.map((n) => (
-              <button
-                key={n.id}
-                type="button"
-                onClick={() => navigateToNode(n.id)}
-                className="block w-full text-left px-2 py-1.5 rounded bg-elevated hover:bg-accent/10 text-[11px] text-text-secondary hover:text-accent transition-colors truncate"
-              >
-                {n.name}
-              </button>
-            ))}
-          </div>
         </div>
       )}
       {meta?.content && (

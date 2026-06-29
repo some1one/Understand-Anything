@@ -11,13 +11,18 @@ import re
 from .constants import (
     CI_DIR_SEGMENTS,
     CI_FILENAMES,
+    CONFIG_DOTFILE_PREFIXES,
     CONFIG_FILENAMES,
     DIRECTORY_PATTERN_MAP,
     DOC_EXTENSIONS,
     ENTRY_FILENAMES,
     GO_ENTRY_BASENAME,
+    INFRA_DIR_SEGMENTS,
     INFRA_EXTENSIONS,
     MAKEFILE_NAME,
+    NODE_TYPE_CONFIG_EXTENSIONS,
+    NODE_TYPE_CONFIG_FILENAMES,
+    SCHEMA_EXTENSIONS,
     TEST_FILE_REGEXES,
     TYPE_DEF_EXTENSIONS,
 )
@@ -89,3 +94,51 @@ def classify_all_files(nodes: list[FileNode]) -> dict[str, str]:
         if label:
             out[n.id] = label
     return out
+
+
+def infer_node_type(path: str) -> str:
+    """Infer a knowledge-graph node type from a file path.
+
+    Returns one of the recognised node types (``file``, ``config``,
+    ``document``, ``service``, ``pipeline``, ``schema``). Used by the input
+    generator to classify files discovered on disk.
+    """
+    p = path.replace("\\", "/")
+    low = p.lower()
+    base = p.rsplit("/", 1)[-1]
+    blow = base.lower()
+    segs = set(low.split("/"))
+    framed = "/" + low
+
+    # CI / pipeline
+    if (
+        "/.github/workflows/" in framed
+        or blow in CI_FILENAMES
+        or blow == "jenkinsfile"
+        or any(f"/{seg}/" in framed for seg in CI_DIR_SEGMENTS)
+    ):
+        return "pipeline"
+    # Infrastructure / service
+    if (
+        base == "Dockerfile"
+        or blow.startswith("dockerfile.")
+        or blow.startswith("docker-compose")
+        or low.endswith(INFRA_EXTENSIONS)
+        or blow == MAKEFILE_NAME.lower()
+        or segs & INFRA_DIR_SEGMENTS
+    ):
+        return "service"
+    # Schema / data definitions
+    if low.endswith(SCHEMA_EXTENSIONS):
+        return "schema"
+    # Documentation
+    if low.endswith(DOC_EXTENSIONS):
+        return "document"
+    # Configuration
+    if (
+        blow in NODE_TYPE_CONFIG_FILENAMES
+        or low.endswith(NODE_TYPE_CONFIG_EXTENSIONS)
+        or blow.startswith(CONFIG_DOTFILE_PREFIXES)
+    ):
+        return "config"
+    return "file"

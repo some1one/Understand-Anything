@@ -20,8 +20,6 @@ export type EdgeType =
 
 // Optional knowledge metadata for article/entity/topic/claim/source nodes
 export interface KnowledgeMeta {
-  wikilinks?: string[];
-  backlinks?: string[];
   category?: string;
   content?: string;
 }

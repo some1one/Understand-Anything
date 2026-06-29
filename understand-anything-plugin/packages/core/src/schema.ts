@@ -359,8 +359,6 @@ const DomainMetaSchema = z.object({
 }).passthrough();
 
 const KnowledgeMetaSchema = z.object({
-  wikilinks: z.array(z.string()).optional(),
-  backlinks: z.array(z.string()).optional(),
   category: z.string().optional(),
   content: z.string().optional(),
 }).passthrough();

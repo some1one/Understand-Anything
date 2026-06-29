@@ -223,3 +223,81 @@ ROOT_GROUP = "root"
 
 # Minimum file count for spearman correlation to be meaningful.
 MIN_FILES_FOR_CORRELATION = 3
+
+# Documentation/config file-count thresholds that warrant a dedicated non-code
+# layer (Phase 2, Step 3).
+MIN_DOCS_FOR_LAYER = 3
+MIN_CONFIGS_FOR_LAYER = 3
+
+# --------------------------------------------------------------------------- #
+# Node-type inference (used by generate_input to classify files on disk)
+# --------------------------------------------------------------------------- #
+
+# Filenames that are project/build configuration.
+NODE_TYPE_CONFIG_FILENAMES: frozenset[str] = frozenset(
+    {
+        "package.json",
+        "tsconfig.json",
+        "jsconfig.json",
+        "cargo.toml",
+        "go.mod",
+        "go.sum",
+        "gemfile",
+        "gemfile.lock",
+        "pom.xml",
+        "build.gradle",
+        "composer.json",
+        "pyproject.toml",
+        "setup.cfg",
+        "pipfile",
+        "pipfile.lock",
+        "requirements.txt",
+        "package-lock.json",
+        "pnpm-lock.yaml",
+        "yarn.lock",
+    }
+)
+NODE_TYPE_CONFIG_EXTENSIONS: tuple[str, ...] = (
+    ".toml",
+    ".ini",
+    ".cfg",
+    ".conf",
+    ".yaml",
+    ".yml",
+)
+# Dotfile basenames that are configuration (e.g. .eslintrc, .prettierrc).
+CONFIG_DOTFILE_PREFIXES: tuple[str, ...] = (
+    ".eslintrc",
+    ".prettierrc",
+    ".babelrc",
+    ".npmrc",
+    ".editorconfig",
+    ".env",
+)
+
+# --------------------------------------------------------------------------- #
+# Layer mappings (Phase 2 automation)
+# --------------------------------------------------------------------------- #
+
+# Non-code node type -> the layer it defaults into.
+NODE_TYPE_LAYER: dict[str, str] = {
+    "config": "layer:config",
+    "document": "layer:documentation",
+    "service": "layer:infrastructure",
+    "resource": "layer:infrastructure",
+    "pipeline": "layer:ci-cd",
+    "table": "layer:data",
+    "schema": "layer:data",
+    "endpoint": "layer:data",
+}
+
+# File-level pattern label -> layer override (takes precedence over a code
+# file's directory group when assigning a default layer).
+FILE_PATTERN_LAYER_OVERRIDE: dict[str, str] = {
+    "test": "layer:test",
+    "types": "layer:types",
+    "documentation": "layer:documentation",
+    "infrastructure": "layer:infrastructure",
+    "ci-cd": "layer:ci-cd",
+    "data": "layer:data",
+}

@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:96718cc0c52c9fe29e9e07c8fa02f6bba2cfb2b667099c2ded3213d7f4bf00b1"
+content_hash = "sha256:304c3fbc0b0395893605faa58dbc151b8f99d9ecd8f9860d904ef604cd6cd27d"
 
 [[metadata.targets]]
 requires_python = ">=3.14"
@@ -198,6 +198,17 @@ files = [
     {file = "pandas-3.0.3-cp314-cp314t-win_amd64.whl", hash = "sha256:4db8c527972a821cf5286b40ccc57642a39bc62e62022b42f99f8a67fca8c3a1"},
     {file = "pandas-3.0.3-cp314-cp314t-win_arm64.whl", hash = "sha256:b2c95f8bfc1ee412bf482605d7bfd30c12d1d26bd59fdd91efeef1d4718decb1"},
     {file = "pandas-3.0.3.tar.gz", hash = "sha256:696a4a00a2a2a35d4e5deb3fc946641b96c944f02230e4f76137fe35d806c4fc"},
+]
+
+[[package]]
+name = "pathspec"
+version = "1.1.1"
+requires_python = ">=3.9"
+summary = "Utility library for gitignore style pattern matching of file paths."
+groups = ["default"]
+files = [
+    {file = "pathspec-1.1.1-py3-none-any.whl", hash = "sha256:a00ce642f577bf7f473932318056212bc4f8bfdf53128c78bbd5af0b9b20b189"},
+    {file = "pathspec-1.1.1.tar.gz", hash = "sha256:17db5ecd524104a120e173814c90367a96a98d07c45b2e10c2f3919fff91bf5a"},
 ]
 
 [[package]]

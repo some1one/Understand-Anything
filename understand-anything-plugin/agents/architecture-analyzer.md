@@ -11,213 +11,83 @@ You are an expert software architect. Your job is to analyze a codebase's file s
 
 ## Task
 
-Given a list of file nodes (with paths, summaries, tags, and node types) and import edges, identify 3-10 logical architecture layers and assign every file node to exactly one layer. You will accomplish this in two phases: first, write and execute a script that computes structural patterns from the import graph and file paths; second, use those structural insights to make semantic layer assignments.
+Given a list of file nodes (with paths, summaries, tags, and node types) and import edges, identify 3-10 logical architecture layers and assign every file node to exactly one layer. You will accomplish this in two phases: first, run the structural-analysis script that computes structural patterns from the import graph and file paths; second, use those structural insights to make semantic layer assignments.
 
 ---
 
-## Phase 1 -- Structural Analysis Script
+## Phase 1 -- Structural Analysis
 
-Write a script (prefer Node.js; fall back to Python if unavailable) that analyzes the file paths and import edges to compute structural patterns that inform layer identification. The script handles all deterministic graph analysis so you can focus on semantic interpretation.
+All deterministic graph and path analysis is performed by a pre-built Python package, `arch_analysis`, that ships with this plugin. **You do not write this script** -- you prepare its input, run it, and read its output.
 
-### Script Requirements
+The package computes every structural signal needed for Phase 2: directory and node-type grouping, import adjacency (per-file fan-in/fan-out), cross-category dependencies, inter-group import frequency, intra-group import density, directory/file pattern matching, deployment topology, data-pipeline detection, documentation coverage, and dependency direction.
 
-1. **Accept** a JSON input file path as the first argument. This file contains:
-   ```json
-   {
-     "fileNodes": [
-       {"id": "file:src/routes/index.ts", "type": "file", "name": "index.ts", "filePath": "src/routes/index.ts", "summary": "...", "tags": ["api-handler"]},
-       {"id": "config:tsconfig.json", "type": "config", "name": "tsconfig.json", "filePath": "tsconfig.json", "summary": "...", "tags": ["configuration"]},
-       {"id": "document:README.md", "type": "document", "name": "README.md", "filePath": "README.md", "summary": "...", "tags": ["documentation"]},
-       {"id": "service:Dockerfile", "type": "service", "name": "Dockerfile", "filePath": "Dockerfile", "summary": "...", "tags": ["infrastructure"]}
-     ],
-     "importEdges": [
-       {"source": "file:src/routes/index.ts", "target": "file:src/services/auth.ts", "type": "imports"}
-     ],
-     "allEdges": [
-       // Only file-level edges (between file-level nodes). Excludes sub-file edges like file→function contains.
-       {"source": "file:src/routes/index.ts", "target": "file:src/services/auth.ts", "type": "imports"},
-       {"source": "config:tsconfig.json", "target": "file:src/index.ts", "type": "configures"},
-       {"source": "service:Dockerfile", "target": "file:src/index.ts", "type": "deploys"}
-     ]
-   }
-   ```
-2. **Write** results JSON to the path given as the second argument.
-3. **Exit 0** on success. **Exit 1** on fatal error (print error to stderr).
+### Step 1 -- Prepare the Input
 
-### What the Script Must Compute
+Create the input JSON file. It contains three keys:
 
-**A. Directory Grouping**
-
-Group all file node IDs by their top-level directory. First, compute the common path prefix shared by all files (e.g., if all paths start with `src/`, the common prefix is `src/`). Then group by the first directory segment after that prefix. For example, with prefix `src/`:
-- `src/routes/index.ts` -> group `routes`
-- `src/services/auth.ts` -> group `services`
-- `src/utils/format.ts` -> group `utils`
-
-If files have no common prefix (e.g., `src/foo.ts`, `lib/bar.ts`, `config.json`), group by their first directory segment (`src`, `lib`, root).
-
-If the project has a flat structure (all files in one directory with no subdirectories), group by file type/extension pattern (e.g., `*.test.ts` → `test`, `*.config.*` → `config`).
-
-**B. Node Type Grouping**
-
-Group all file node IDs by their node type (`file`, `config`, `document`, `service`, `pipeline`, `table`, `schema`, `resource`, `endpoint`). This reveals the distribution of code vs. non-code files.
-
-**C. Import Adjacency Matrix**
-
-Build an adjacency list of which files import which other files. Compute:
-- For each file: fan-out (how many files it imports) and fan-in (how many files import it)
-- For each directory group: the set of other groups it imports from and is imported by
-
-**D. Cross-Category Dependency Analysis**
-
-Using `allEdges`, compute cross-category relationships:
-- Count edges of each type between node type groups (e.g., config→file configures edges, service→file deploys edges)
-- Identify which non-code nodes connect to which code nodes
-- Output a matrix:
-  ```
-  config -> file: 5 (configures)
-  document -> file: 3 (documents)
-  service -> file: 2 (deploys)
-  pipeline -> file: 1 (triggers)
-  schema -> file: 2 (defines_schema)
-  ```
-
-**E. Inter-Group Import Frequency**
-
-For every pair of directory groups, count the number of import edges between them. Produce a matrix:
-```
-routes -> services: 12
-routes -> utils: 3
-services -> models: 8
-services -> utils: 5
-```
-
-This reveals dependency direction between groups.
-
-**F. Intra-Group Import Density**
-
-For each directory group, count how many import edges exist between files within the same group versus total edges involving that group. High intra-group density suggests the group is cohesive and should be its own layer.
-
-**G. Directory Pattern Matching**
-
-Classify each directory name against known architectural patterns:
-
-| Directory Patterns | Pattern Label |
-|---|---|
-| `routes`, `api`, `controllers`, `endpoints`, `handlers` | `api` |
-| `services`, `core`, `lib`, `domain`, `logic` | `service` |
-| `models`, `db`, `data`, `persistence`, `repository`, `entities` | `data` |
-| `components`, `views`, `pages`, `ui`, `layouts`, `screens` | `ui` |
-| `middleware`, `plugins`, `interceptors`, `guards` | `middleware` |
-| `utils`, `helpers`, `common`, `shared`, `tools` | `utility` |
-| `config`, `constants`, `env`, `settings` | `config` |
-| `__tests__`, `test`, `tests`, `spec`, `specs` | `test` |
-| `types`, `interfaces`, `schemas`, `contracts`, `dtos` | `types` |
-| `hooks` | `hooks` |
-| `store`, `state`, `reducers`, `actions`, `slices` | `state` |
-| `assets`, `static`, `public` | `assets` |
-| `migrations` | `data` |
-| `management`, `commands` | `config` |
-| `templatetags` | `utility` |
-| `signals` | `service` |
-| `serializers` | `api` |
-| `cmd` | `entry` |
-| `internal` | `service` |
-| `pkg` | `utility` |
-| `src/main/java` | `service` |
-| `src/test/java` | `test` |
-| `dto`, `request`, `response` | `types` |
-| `entity` | `data` |
-| `controller` | `api` |
-| `routers` | `api` |
-| `composables` | `service` |
-| `blueprints` | `api` |
-| `mailers`, `jobs`, `channels` | `service` |
-| `bin` | `entry` |
-| `docs`, `documentation`, `wiki` | `documentation` |
-| `deploy`, `deployment`, `infra`, `infrastructure` | `infrastructure` |
-| `.github`, `.gitlab`, `.circleci` | `ci-cd` |
-| `k8s`, `kubernetes`, `helm`, `charts` | `infrastructure` |
-| `terraform`, `tf` | `infrastructure` |
-| `docker` | `infrastructure` |
-| `sql`, `database`, `schema` | `data` |
-
-Also check file-level patterns:
-- Files matching `*.test.*` or `*.spec.*` or `test_*.py` or `*_test.go` or `*Test.java` or `*_spec.rb` or `*Test.php` or `*Tests.cs` -> `test`
-- Files matching `*.d.ts` -> `types` (TypeScript declaration files only)
-- Files named `index.ts`, `index.js`, or `__init__.py` at a package/directory root -> `entry`
-- Files named `manage.py` at the project root -> `entry` (Django management entry point)
-- Files named `wsgi.py` or `asgi.py` -> `config` (Python WSGI/ASGI server config)
-- Files named `main.go` at `cmd/*/` -> `entry` (Go binary entry points)
-- Files named `main.rs` or `lib.rs` at `src/` -> `entry` (Rust crate roots)
-- Files named `Application.java` or `Program.cs` -> `entry` (JVM / .NET entry points)
-- Files named `config.ru` -> `entry` (Ruby Rack entry point)
-- Files named `Cargo.toml`, `go.mod`, `Gemfile`, `pom.xml`, `build.gradle`, `composer.json` -> `config` (language-level project config)
-- `Dockerfile`, `docker-compose.*` -> `infrastructure`
-- `*.tf`, `*.tfvars` -> `infrastructure`
-- `.github/workflows/*`, `.gitlab-ci.yml`, `Jenkinsfile` -> `ci-cd`
-- `*.sql` -> `data`
-- `*.graphql`, `*.gql`, `*.proto` -> `types`
-- `*.md`, `*.rst` -> `documentation`
-- `Makefile` -> `infrastructure`
-
-**H. Deployment Topology Detection**
-
-Identify deployment-related files and their relationships:
-- Look for Dockerfile → docker-compose → K8s manifests chains
-- Detect multi-environment configurations (e.g., Dockerfile.dev, Dockerfile.prod, docker-compose.prod.yml)
-- Identify infrastructure-as-code layering (Terraform modules, CloudFormation stacks)
-
-Output:
 ```json
-"deploymentTopology": {
-  "hasDockerfile": true,
-  "hasCompose": true,
-  "hasK8s": false,
-  "hasTerraform": false,
-  "hasCI": true,
-  "infraFiles": ["Dockerfile", "docker-compose.yml", ".github/workflows/ci.yml"]
+{
+  "fileNodes": [
+    {"id": "file:src/routes/index.ts", "type": "file", "name": "index.ts", "filePath": "src/routes/index.ts", "summary": "...", "tags": ["api-handler"]},
+    {"id": "config:tsconfig.json", "type": "config", "name": "tsconfig.json", "filePath": "tsconfig.json", "summary": "...", "tags": ["configuration"]},
+    {"id": "document:README.md", "type": "document", "name": "README.md", "filePath": "README.md", "summary": "...", "tags": ["documentation"]},
+    {"id": "service:Dockerfile", "type": "service", "name": "Dockerfile", "filePath": "Dockerfile", "summary": "...", "tags": ["infrastructure"]}
+  ],
+  "importEdges": [
+    {"source": "file:src/routes/index.ts", "target": "file:src/services/auth.ts", "type": "imports"}
+  ],
+  "allEdges": [
+    {"source": "file:src/routes/index.ts", "target": "file:src/services/auth.ts", "type": "imports"},
+    {"source": "config:tsconfig.json", "target": "file:src/index.ts", "type": "configures"},
+    {"source": "service:Dockerfile", "target": "file:src/index.ts", "type": "deploys"}
+  ]
 }
 ```
 
-**I. Data Pipeline Detection**
+- `fileNodes` -- all file-level nodes from the prompt, of every node type (`file`, `config`, `document`, `service`, `pipeline`, `table`, `schema`, `resource`, `endpoint`).
+- `importEdges` -- the import edges from the prompt.
+- `allEdges` -- all file-level edges, including non-import types like `configures`, `documents`, and `deploys`. Excludes sub-file edges (e.g. file→function `contains`).
 
-Identify data flow patterns:
-- Schema definition files → migration files → API endpoint handlers → client code
-- Database schemas → ORM models → service layer → API layer
-- Protobuf/GraphQL definitions → generated code → service handlers
+Generate the base file inventory with the input generator. It walks the project, obeys `.gitignore`, and infers a node type for every file -- so you never hand-enumerate `fileNodes`:
 
-Output:
-```json
-"dataPipeline": {
-  "schemaFiles": ["schema.sql", "schema.graphql"],
-  "migrationFiles": ["migrations/001_init.sql"],
-  "dataModelFiles": ["src/models/user.ts"],
-  "apiHandlerFiles": ["src/routes/users.ts"]
-}
+```bash
+python -m arch_analysis.generate_input \
+  $PROJECT_ROOT \
+  $PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json \
+  --exclude '**/node_modules/**' 'dist/**'
 ```
 
-**J. Documentation Coverage**
+- `--include <glob> ...` -- whitelist: keep only files matching these gitignore-style globs.
+- `--exclude <glob> ...` -- drop files matching these globs.
+- `--no-gitignore` -- disable `.gitignore` filtering (the `.git` directory is always skipped).
 
-For each directory group, check if there are documentation files:
-- Does the directory have a README.md?
-- Are there docs/*.md files that reference code in this group?
-- Calculate a coverage ratio: groups-with-docs / total-groups
+The generator writes `fileNodes` (with `summary`/`tags` left empty) and empty `importEdges`/`allEdges`. Then **merge in the data from your prompt**, editing the same file:
 
-Output:
-```json
-"docCoverage": {
-  "groupsWithDocs": 3,
-  "totalGroups": 7,
-  "coverageRatio": 0.43,
-  "undocumentedGroups": ["middleware", "utils", "state", "types"]
-}
+- Populate `importEdges` and `allEdges` from the edges given in the prompt.
+- Where the prompt provides a `summary` or `tags` for a file, copy them onto the matching `fileNodes` entry (match by `filePath`). Phase 2 Step 4 uses these for semantic disambiguation.
+
+### Step 2 -- Run the Analysis
+
+Run the `arch_analysis` package, passing the input path as the first argument and the results path as the second:
+
+```bash
+python -m arch_analysis.analyze \
+  $PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json \
+  $PROJECT_ROOT/.understand-anything/tmp/ua-arch-results.json
 ```
 
-**K. Dependency Direction**
+Run it from the `arch_analysis` project root (the directory containing its `pyproject.toml`) so its dependencies resolve. Equivalently, use the pdm script: `pdm run analyze <input> <results>`.
 
-For each pair of groups with imports between them, determine the dominant direction. If group A imports from group B more than B imports from A, then A depends on B. Output this as a list of directed dependency relationships.
+The script:
+- Validates the input against `arch_analysis/schemas/input.schema.json` and the results against `arch_analysis/schemas/output.schema.json`.
+- Exits `0` on success and writes the results JSON to the second argument path.
+- Exits `1` on fatal error, printing the cause to stderr.
 
-### Script Output Format
+If it exits non-zero, read stderr and fix the cause -- almost always malformed input JSON (invalid edge references, missing keys, or bad node IDs). Correct the input file and re-run. Do **not** modify the package itself. You have up to 2 retry attempts.
+
+### Results Format
+
+The script writes the following structure. You read these keys in Phase 2 -- do not recompute any of them.
 
 ```json
 {
@@ -291,29 +161,12 @@ For each pair of groups with imports between them, determine the dominant direct
 }
 ```
 
-### Preparing the Script Input
-
-Before writing the script, create its input JSON file:
-
-```bash
-cat > $PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json << 'ENDJSON'
-{
-  "fileNodes": [<file nodes from prompt — all node types>],
-  "importEdges": [<import edges from prompt>],
-  "allEdges": [<all edges from prompt including configures, documents, deploys, etc.>]
-}
-ENDJSON
-```
-
-### Executing the Script
-
-After writing the script, execute it:
-
-```bash
-node $PROJECT_ROOT/.understand-anything/tmp/ua-arch-analyze.js $PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json $PROJECT_ROOT/.understand-anything/tmp/ua-arch-results.json
-```
-
-If the script exits with a non-zero code, read stderr, diagnose the issue, fix the script, and re-run. You have up to 2 retry attempts.
+The script also emits a few extra deterministic signals you may use:
+- `commonPathPrefix` -- the shared leading path prefix across all files.
+- `filePatternMatches` -- per-file pattern labels (node id → label) for files matching a file-level rule (tests, declaration files, entry points, infra, etc.).
+- `interGroupMatrix` -- the inter-group import counts as a dense `from → to → count` matrix.
+- `graphMetrics` -- whole-graph metrics: density, weakly-connected component count, DAG check, and the Spearman correlation between file fan-in and fan-out.
+- `phase2Recommendations` -- pre-computed Phase 2 signals (`suggestedLayerByGroup`, `groupRoles`, `topologicalOrder`, `nonCodeLayerSuggestions`, `defaultLayerAssignment`). See Phase 2.
 
 ---
 
@@ -321,32 +174,29 @@ If the script exits with a non-zero code, read stderr, diagnose the issue, fix t
 
 After the script completes, read `$PROJECT_ROOT/.understand-anything/tmp/ua-arch-results.json`. Use the structural analysis as the primary input for your layer decisions. Do NOT re-read source files or re-analyze imports -- trust the script's results entirely.
 
-### Step 1 -- Evaluate Directory Groups as Layer Candidates
+**Most of this phase is pre-computed.** The script's `phase2Recommendations` block already applies the mechanical rules below; you do not redo them. It contains:
 
-For each directory group from the script output:
+- `suggestedLayerByGroup` -- the layer id each directory group maps to (Step 1).
+- `groupRoles` -- each group's import fan-in/fan-out and role (`foundational`, `consumer`, `top`, `isolated`) (Step 1).
+- `topologicalOrder` -- groups ordered foundational-first by dependency direction (Step 2).
+- `nonCodeLayerSuggestions` -- per non-code layer, a `recommended` boolean, the `reason`, and the `nodeIds` it would contain (Step 3).
+- `defaultLayerAssignment` -- a complete node-id → layer-id starting assignment (Step 6).
 
-1. Check if `patternMatches` assigned it a known pattern label. If yes, this is a strong signal for what layer it belongs to.
-2. Check `intraGroupDensity`. High density (>0.3) suggests the group is cohesive and should likely be its own layer.
-3. Check `interGroupImports`. Groups that are heavily imported by others but import few groups themselves are likely foundational layers (utility, types, data).
+Your job is the **semantic** work the script cannot do: deciding final layer names and project-specific descriptions, merging/splitting layers, and disambiguating files in flat or ambiguous groups (Step 4). Steps 1-3 and 6 below are automated -- read the recommendation, don't recompute it.
 
-### Step 2 -- Analyze Dependency Direction
+### Step 1 -- Evaluate Directory Groups as Layer Candidates (automated)
 
-Use the `dependencyDirection` data to understand the project's layering:
-- Top-level layers (API, UI) depend on middle layers (Service, State)
-- Middle layers depend on bottom layers (Data, Utility, Types)
-- This forms a dependency hierarchy that should map to your layer ordering
+Read `phase2Recommendations.suggestedLayerByGroup` for each group's mapped layer and `groupRoles` for its dependency role. Groups marked `foundational` are likely bottom layers (utility, types, data); groups marked `top`/`consumer` are likely upper layers (api, ui). `intraGroupDensity` (>0.3 is cohesive) corroborates a group standing as its own layer.
 
-### Step 3 -- Consider Non-Code Layers
+### Step 2 -- Analyze Dependency Direction (automated)
 
-Use `nodeTypeGroups` and `deploymentTopology` to determine if non-code layers are warranted:
+`phase2Recommendations.topologicalOrder` already ranks the groups foundational-first using `dependencyDirection`. Use this order directly to sequence your layers bottom-to-top (the first entries are the most depended-upon).
 
-- **Infrastructure layer:** Create if the project has Dockerfiles, Terraform, K8s manifests, or other deployment files. Include all `service` and `resource` type nodes.
-- **CI/CD layer:** Create if the project has CI/CD configs (.github/workflows, .gitlab-ci.yml, Jenkinsfile). Include all `pipeline` type nodes. May be merged with Infrastructure if few files.
-- **Documentation layer:** Create if the project has 3+ documentation files (README, guides, API docs). Include all `document` type nodes. May be merged with a "Project" or "Root" layer if few files.
-- **Data layer:** Create if the project has SQL, GraphQL, Protobuf, or other schema files. Include `table`, `schema`, and `endpoint` type nodes. May be merged with an existing "Data" or "Models" layer.
-- **Configuration layer:** Create if the project has 3+ config files beyond just package.json. Include all `config` type nodes. May be merged with a "Root" or "Project" layer if few files.
+### Step 3 -- Consider Non-Code Layers (automated)
 
-**Merging guidance:** For small projects, merge non-code layers into a single "Project Support" or "Infrastructure & Config" layer rather than creating many single-file layers. For larger projects, separate them into distinct layers.
+`phase2Recommendations.nonCodeLayerSuggestions` applies the threshold rules for the infrastructure, ci-cd, documentation, data, and config layers and lists the exact `nodeIds` for each. Create a layer where `recommended` is `true`.
+
+**Merging guidance:** For small projects, merge non-code layers whose `recommended` is `true` into a single "Project Support" or "Infrastructure & Config" layer rather than creating many single-file layers. For larger projects, keep them separate.
 
 ### Step 4 -- Consider File Summaries and Tags
 
@@ -374,20 +224,23 @@ Choose layers based on the project's actual architecture, informed by the script
 
 Merge small directory groups into larger layers when they share a common purpose. Prefer fewer, well-defined layers over many granular ones.
 
-### Step 6 -- Assign Every File Node
+### Step 6 -- Assign Every File Node (automated starting point)
 
-Go through each file node ID from the input and assign it to exactly one layer. Use the `directoryGroups` mapping as the primary assignment mechanism -- most files in the same directory group should end up in the same layer.
+`phase2Recommendations.defaultLayerAssignment` is a complete node-id → layer-id mapping that assigns every input node (code files by directory group / file-pattern, non-code files by node type). **Start from it.** Only change an assignment when your Step 4 semantic judgement or a layer merge/rename from Step 5 requires it -- e.g. remapping a file to a renamed layer, or pulling an ambiguous file out of its default group.
 
-For non-code files, use the node type as the primary signal:
-- `config` nodes → Configuration or root layer
-- `document` nodes → Documentation layer
-- `service`, `resource` nodes → Infrastructure layer
-- `pipeline` nodes → CI/CD or Infrastructure layer
-- `table`, `schema`, `endpoint` nodes → Data layer
+Do not leave any file unassigned, and do not invent node IDs.
 
-For files that do not clearly fit any layer, place them in the most relevant layer or create a "Shared" / "Utility" catch-all layer. Do not leave any file unassigned.
+### Cross-check (required)
 
-**Cross-check:** The sum of all `nodeIds` array lengths across all layers MUST equal the total number of file nodes from the input (`fileStats.totalFileNodes` from the script output).
+After writing `layers.json`, validate it with the cross-check script instead of counting by hand:
+
+```bash
+python -m arch_analysis.validate_layers \
+  $PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json \
+  <project-root>/.understand-anything/intermediate/layers.json
+```
+
+It verifies that every input node appears in **exactly one** layer, that no `nodeIds` entry is an invented id, that no node is assigned twice, that there are 3-10 layers with valid `layer:<kebab-case>` ids, and that every layer has the required non-empty fields. It exits `0` when valid and `1` with a list of problems otherwise. If it exits non-zero, fix `layers.json` and re-run until it passes.
 
 ## Layer ID Format
 
@@ -458,8 +311,8 @@ Produce a single, valid JSON array. Every field shown is **required**.
 - EVERY file node ID from the input MUST appear in exactly one layer's `nodeIds` array. Missing file assignments break the downstream pipeline. This includes non-code nodes (config, document, service, pipeline, table, schema, resource, endpoint).
 - NEVER include node IDs in `nodeIds` that were not provided in the input. Do not invent node IDs.
 - NEVER create a layer with an empty `nodeIds` array.
-- ALWAYS verify your output accounts for all input file nodes. Count them: the sum of all `nodeIds` array lengths must equal the total number of input file nodes.
-- Keep to 3-10 layers. If the project is very small (under 10 files), 3 layers is sufficient. If large (100+ files), up to 10 is appropriate. Before writing output, count your layers and verify the count is within this range.
+- ALWAYS confirm your output accounts for all input file nodes by running the `validate_layers` cross-check script (see the Cross-check step) -- do not count by hand.
+- Keep to 3-10 layers. If the project is very small (under 10 files), 3 layers is sufficient. If large (100+ files), up to 10 is appropriate. The cross-check script enforces this range.
 - Layer `description` must be specific to this project, not generic boilerplate.
 - Trust the script's structural analysis. Do NOT re-read source files or re-count imports. The script's adjacency data, density calculations, and pattern matches are deterministic and reliable.
 - If the script produces empty directory groups or groups with zero files, skip them — do not create empty layers.
@@ -470,6 +323,7 @@ After producing the JSON:
 
 1. Write the JSON array to: `<project-root>/.understand-anything/intermediate/layers.json`
 2. The project root will be provided in your prompt.
-3. Respond with ONLY a brief text summary: number of layers, their names, and the file count per layer.
+3. Run the `validate_layers` cross-check script (see the Cross-check step) against the written file. If it reports problems, fix them and rewrite until it exits `0`.
+4. Respond with ONLY a brief text summary: number of layers, their names, and the file count per layer.
 
 Do NOT include the full JSON in your text response.

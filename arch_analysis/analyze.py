@@ -31,6 +31,7 @@ from .graph import (
 from .grouping import group_by_directory, group_by_node_type, node_to_group
 from .models import AnalysisInput, AnalysisResult
 from .patterns import classify_all_files, match_directory_patterns
+from .recommendations import phase2_recommendations
 from .schema import validate_input, validate_output
 from .topology import (
     cross_category_edges,
@@ -98,6 +99,20 @@ def analyze(data: AnalysisInput) -> dict:
         "filePatternMatches": file_patterns,
         "interGroupMatrix": inter_group_matrix(inter_group),
         "graphMetrics": graph_metrics(graph, fan_in, fan_out),
+        "phase2Recommendations": phase2_recommendations(
+            nodes=nodes,
+            nodes_by_id=nodes_by_id,
+            node_group=node_group,
+            node_type=node_type,
+            node_type_groups=node_type_groups,
+            group_names=group_names,
+            pattern_matches=pattern_matches,
+            file_patterns=file_patterns,
+            inter_group=inter_group,
+            direction=direction,
+            topology=topology,
+            data_pipeline_info=pipeline,
+        ),
     }
 
     # Validate against the output contract (pydantic) and the published JSON

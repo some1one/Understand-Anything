@@ -1,0 +1,47 @@
+{
+  "$defs": {
+    "Layer": {
+      "additionalProperties": false,
+      "description": "A single architecture layer in the Phase 2 output.",
+      "properties": {
+        "id": {
+          "pattern": "^layer:[a-z0-9]+(-[a-z0-9]+)*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "nodeIds": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Nodeids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "nodeIds"
+      ],
+      "title": "Layer",
+      "type": "object"
+    }
+  },
+  "description": "The Phase 2 output contract: a JSON array of layers.",
+  "items": {
+    "$ref": "#/$defs/Layer"
+  },
+  "title": "LayersOutput",
+  "type": "array"
+}

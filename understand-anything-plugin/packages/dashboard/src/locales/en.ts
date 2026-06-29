@@ -49,8 +49,6 @@ export const en = {
     definedInThisFile: "Defined in this file",
     languageConcepts: "Language Concepts",
     category: "Category",
-    wikilinks: "Wikilinks",
-    backlinks: "Backlinks",
     entities: "Entities",
     businessRules: "Business Rules",
     crossDomain: "Cross-Domain",

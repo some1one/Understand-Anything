@@ -18,16 +18,18 @@ from typing import Any
 from jsonschema import Draft202012Validator
 from pydantic import BaseModel
 
-from .models import AnalysisInput, AnalysisResult
+from .models import AnalysisInput, AnalysisResult, LayersOutput
 
 SCHEMA_DIR = Path(__file__).parent / "schemas"
 INPUT_SCHEMA_PATH = SCHEMA_DIR / "input.schema.json"
 OUTPUT_SCHEMA_PATH = SCHEMA_DIR / "output.schema.json"
+LAYERS_SCHEMA_PATH = SCHEMA_DIR / "layers.schema.json"
 
 # Maps each on-disk schema to the pydantic model that defines it.
 _SCHEMA_MODELS: dict[Path, type[BaseModel]] = {
     INPUT_SCHEMA_PATH: AnalysisInput,
     OUTPUT_SCHEMA_PATH: AnalysisResult,
+    LAYERS_SCHEMA_PATH: LayersOutput,
 }
 
 
@@ -73,6 +75,11 @@ def validate_input(data: Any) -> None:
 def validate_output(data: Any) -> None:
     """Validate a result payload against ``output.schema.json``."""
     _validate(data, OUTPUT_SCHEMA_PATH)
+
+
+def validate_layers(data: Any) -> None:
+    """Validate a Phase 2 layers array against ``layers.schema.json``."""
+    _validate(data, LAYERS_SCHEMA_PATH)
 
 
 if __name__ == "__main__":
