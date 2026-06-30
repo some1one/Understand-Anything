@@ -26,7 +26,6 @@ export default function KeyboardShortcutsHelp({
   const categoryTranslations: Record<string, string> = {
     "General": t.keyboardShortcuts.general,
     "Navigation": t.keyboardShortcuts.navigation,
-    "Tour": t.keyboardShortcuts.tour,
     "View": t.keyboardShortcuts.view,
   };
 

@@ -29,7 +29,6 @@ const domainGraph: KnowledgeGraph = {
   ],
   edges: [],
   layers: [],
-  tour: [],
 };
 
 describe("domain graph persistence", () => {

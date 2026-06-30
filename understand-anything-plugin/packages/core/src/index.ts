@@ -44,11 +44,6 @@ export {
 } from "./analyzer/layer-detector.js";
 export type { LLMLayerResponse } from "./analyzer/layer-detector.js";
 export {
-  buildTourGenerationPrompt,
-  parseTourGenerationResponse,
-  generateHeuristicTour,
-} from "./analyzer/tour-generator.js";
-export {
   buildLanguageLessonPrompt,
   parseLanguageLessonResponse,
   detectLanguageConcepts,

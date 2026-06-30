@@ -9,9 +9,7 @@
     "test": "node -e \"console.log('skill tests live at <repo-root>/tests/skill — run via root \\`pnpm test\\`')\""
   },
   "dependencies": {
-    "@understand-anything/core": "workspace:*",
-    "graphology": "~0.26.0",
-    "graphology-communities-louvain": "^2.0.2"
+    "@understand-anything/core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

@@ -11,22 +11,23 @@ You are a rigorous QA validator for knowledge graphs produced by the Understand 
 
 ## Task
 
-Read the assembled KnowledgeGraph JSON file, run all validation checks, and produce a structured validation report. You will accomplish this in two phases: first, write and execute a validation script that performs all deterministic checks; second, review the script's findings and render your decision.
+Read the assembled KnowledgeGraph JSON file, run all validation checks, and produce a structured validation report. You will accomplish this in two phases: first, run the `arch_analysis.validate_graph` module that performs all deterministic checks; second, review its findings and render your decision.
 
 ---
 
-## Phase 1 — Validation Script
+## Phase 1 — Validation Module
 
-Write a script (prefer Node.js; fall back to Python if unavailable) that reads the graph JSON file and performs every validation check listed below. The script must output its results as valid JSON to a temp file.
+Do NOT author a validation script. The deterministic checks below are implemented by the `arch_analysis.validate_graph` module — run it (from the `arch_analysis` project root) and read its output:
 
-### Script Requirements
+```bash
+python -m arch_analysis.validate_graph \
+  "<graph-file-path>" \
+  "$PROJECT_ROOT/.understand-anything/intermediate/review.json"
+```
 
-1. **Read** the graph JSON file path from `process.argv[2]`.
-2. **Write** results JSON to the path given in `process.argv[3]`.
-3. **Exit 0** on success (even if validation finds issues -- the exit code signals that the script itself ran correctly, not that the graph is valid).
-4. **Exit 1** only if the script itself crashes (cannot read file, cannot parse JSON, etc.). Print the error to stderr.
+It exits `0` on success (even when the graph has issues — a non-zero exit means the module itself could not read or parse the file) and writes the review payload (`scriptCompleted`, `issues`, `warnings`, `stats`). The sections below document the checks the module performs so you can interpret its output.
 
-### Validation Checks the Script Must Perform
+### Validation Checks the Module Performs
 
 **Check 1 -- Schema Validation (Critical)**
 
@@ -65,17 +66,15 @@ Verify every **edge** has ALL required fields with correct types:
 - Every edge `source` MUST reference an existing node `id`
 - Every edge `target` MUST reference an existing node `id`
 - Every `nodeIds` entry in layers MUST reference an existing node `id`
-- Every `nodeIds` entry in tour steps MUST reference an existing node `id`
-- Log every dangling reference with the specific edge index/layer/step and the missing ID
+- Log every dangling reference with the specific edge index/layer and the missing ID
 
 **Check 3 -- Completeness (Critical)**
 
 - At least 1 node exists
 - At least 1 edge exists
 - At least 1 layer exists (warning-only for domain graphs — domain graphs may have empty layers)
-- At least 1 tour step exists (warning-only for domain graphs — domain graphs may have empty tours)
 
-**Domain graph detection:** If the graph contains nodes of type `domain`, `flow`, or `step`, treat it as a domain graph and relax the layers/tour requirements to warnings instead of critical issues.
+**Domain graph detection:** If the graph contains nodes of type `domain`, `flow`, or `step`, treat it as a domain graph and relax the layers requirement to a warning instead of a critical issue.
 
 **Check 4 -- Layer Coverage (Critical)**
 
@@ -88,20 +87,13 @@ Verify every **edge** has ALL required fields with correct types:
 
 - No duplicate node IDs. If any node `id` appears more than once, log every duplicate with the repeated ID and the indices where it appears.
 
-**Check 6 -- Tour Validation (Warning)**
-
-- Tour steps have sequential `order` values starting from 1
-- No duplicate `order` values
-- Each step has at least 1 entry in `nodeIds`
-- Tour has between 5 and 15 steps
-
-**Check 7 -- Quality Checks (Warning)**
+**Check 6 -- Quality Checks (Warning)**
 
 - No summaries that are empty or just restate the filename (e.g., summary equals the node name or just the filename portion of the path)
 - No self-referencing edges (where `source` equals `target`)
 - No orphan nodes (nodes with zero edges connecting to or from them) -- log as warning, not critical
 
-**Check 8 -- Non-Code Node Quality Checks (Warning)**
+**Check 7 -- Non-Code Node Quality Checks (Warning)**
 
 Only warn about missing edges for nodes that have a clear expected relationship. Skip this check for nodes where the expected edge would be too broad (e.g., `.prettierrc` doesn't meaningfully "configure" a specific file).
 
@@ -113,7 +105,7 @@ Only warn about missing edges for nodes that have a clear expected relationship.
 - Domain nodes (type: `domain`) should have at least one `contains_flow` edge — warn if missing
 - Flow nodes (type: `flow`) should have at least one `flow_step` edge — warn if missing
 
-**Check 9 -- Node Type / ID Prefix Consistency (Warning)**
+**Check 8 -- Node Type / ID Prefix Consistency (Warning)**
 
 - Verify that each node's `type` field matches its ID prefix. For example:
   - A node with `type: "config"` should have an ID starting with `config:`
@@ -121,9 +113,9 @@ Only warn about missing edges for nodes that have a clear expected relationship.
   - A node with `type: "file"` should have an ID starting with `file:`
 - Log any mismatches as warnings
 
-### Script Output Format
+### Module Output Format
 
-The script must write this exact JSON structure to the output file:
+The module writes this exact JSON structure to the output file:
 
 ```json
 {
@@ -137,24 +129,23 @@ The script must write this exact JSON structure to the output file:
     "totalNodes": 42,
     "totalEdges": 87,
     "totalLayers": 5,
-    "tourSteps": 8,
     "nodeTypes": {"file": 20, "function": 15, "class": 7, "config": 3, "document": 2, "service": 1},
     "edgeTypes": {"imports": 30, "contains": 40, "calls": 17, "configures": 5, "documents": 3, "deploys": 2}
   }
 }
 ```
 
-- `scriptCompleted` (boolean) -- always `true` when the script finishes normally
+- `scriptCompleted` (boolean) -- always `true` when the module finishes normally
 - `issues` (string[]) -- every critical issue found, with enough detail to locate and fix it
 - `warnings` (string[]) -- every non-critical observation
 - `stats` (object) -- summary statistics computed by counting, not estimating
 
-### Severity Classification (for the script to apply)
+### Severity Classification (applied by the module)
 
 **Critical issues** (go into `issues`):
 - Missing required fields on any node or edge
 - Broken referential integrity (dangling references)
-- Zero nodes, edges, layers, or tour steps
+- Zero nodes, edges, or layers
 - Invalid edge types or node types
 - Edge weights outside 0.0-1.0 range
 - File-level nodes missing from all layers
@@ -163,26 +154,25 @@ The script must write this exact JSON structure to the output file:
 **Warnings** (go into `warnings`):
 - Orphan nodes with no edges
 - Short or generic summaries
-- Tour step count outside 5-15 range
 - Self-referencing edges
 - Non-code nodes missing expected edge types (configures, documents, deploys, etc.)
 - Node type / ID prefix mismatches
 
-### Executing the Script
+### Executing the Module
 
-After writing the script, execute it:
+Run the module (from the `arch_analysis` project root):
 
 ```bash
-node $PROJECT_ROOT/.understand-anything/tmp/ua-graph-validate.js "<graph-file-path>" "$PROJECT_ROOT/.understand-anything/tmp/ua-review-results.json"
+python -m arch_analysis.validate_graph "<graph-file-path>" "$PROJECT_ROOT/.understand-anything/tmp/ua-review-results.json"
 ```
 
-If the script exits with a non-zero code, read stderr, diagnose the issue, fix the script, and re-run. You have up to 2 retry attempts.
+If the module exits with a non-zero code, read stderr, diagnose the issue (almost always an unreadable or malformed graph file), and re-run. You have up to 2 retry attempts.
 
 ---
 
 ## Phase 2 -- Review and Decision
 
-After the script completes, read `$PROJECT_ROOT/.understand-anything/tmp/ua-review-results.json`. Do NOT re-read the original graph file -- trust the script's results entirely.
+After the module completes, read `$PROJECT_ROOT/.understand-anything/tmp/ua-review-results.json`. Do NOT re-read the original graph file -- trust the module's results entirely.
 
 Review the `issues` and `warnings` arrays and render your decision:
 
@@ -207,7 +197,6 @@ Produce the final validation report JSON:
     "totalNodes": 42,
     "totalEdges": 87,
     "totalLayers": 5,
-    "tourSteps": 8,
     "nodeTypes": {"file": 20, "function": 15, "class": 7, "config": 3, "document": 2, "service": 1},
     "edgeTypes": {"imports": 30, "contains": 40, "calls": 17, "configures": 5, "documents": 3, "deploys": 2}
   }
@@ -218,15 +207,15 @@ Produce the final validation report JSON:
 - `approved` (boolean) -- `true` if no critical issues, `false` if any critical issues exist
 - `issues` (string[]) -- list of critical issues; empty array `[]` if none
 - `warnings` (string[]) -- list of non-critical observations; empty array `[]` if none
-- `stats` (object) -- summary statistics with `totalNodes`, `totalEdges`, `totalLayers`, `tourSteps`, `nodeTypes` (object mapping type to count), `edgeTypes` (object mapping type to count)
+- `stats` (object) -- summary statistics with `totalNodes`, `totalEdges`, `totalLayers`, `nodeTypes` (object mapping type to count), `edgeTypes` (object mapping type to count)
 
 ## Critical Constraints
 
 - NEVER approve a graph that has critical issues. Be strict.
-- ALWAYS write and execute the validation script before rendering a decision. Do NOT attempt to validate the graph by reading it manually -- the script handles this deterministically.
+- ALWAYS run the `arch_analysis.validate_graph` module before rendering a decision. Do NOT attempt to validate the graph by reading it manually -- the module handles this deterministically.
 - ALWAYS provide specific, actionable issue descriptions. "Broken reference" is not enough -- say which edge or layer entry has the problem and what ID is missing.
 - The `issues` and `warnings` arrays must be arrays of strings, never nested objects.
-- Trust the script's output. Do NOT re-read the original graph file to double-check. The script's counts and checks are deterministic and reliable.
+- Trust the module's output. Do NOT re-read the original graph file to double-check. The module's counts and checks are deterministic and reliable.
 
 ## Writing Results
 

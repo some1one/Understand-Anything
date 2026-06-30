@@ -66,15 +66,6 @@ export interface Layer {
   nodeIds: string[];
 }
 
-// TourStep (for learn mode)
-export interface TourStep {
-  order: number;
-  title: string;
-  description: string;
-  nodeIds: string[];
-  languageLesson?: string;
-}
-
 // ProjectMeta
 export interface ProjectMeta {
   name: string;
@@ -93,7 +84,6 @@ export interface KnowledgeGraph {
   nodes: GraphNode[];
   edges: GraphEdge[];
   layers: Layer[];
-  tour: TourStep[];
 }
 
 // Theme configuration (for dashboard customization)

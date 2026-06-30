@@ -10,11 +10,11 @@ An open-source tool combining LLM intelligence + static analysis to produce inte
 ## Architecture
 - **Monorepo** with pnpm workspaces
 - **understand-anything-plugin/** — Claude Code plugin containing all source code:
-  - **packages/core** — Shared analysis engine (types, persistence, tree-sitter, search, schema, tours, plugins)
+  - **packages/core** — Shared analysis engine (types, persistence, tree-sitter, search, schema, plugins)
   - **packages/dashboard** — React + TypeScript web dashboard (React Flow, Zustand, TailwindCSS v4)
   - **src/** — Skill TypeScript source for `/understand-chat`, `/understand-diff`, `/understand-explain`, `/understand-onboard`
   - **skills/** — Skill definitions (`/understand`, `/understand-dashboard`, etc.)
-  - **agents/** — Agent definitions (project-scanner, file-analyzer, architecture-analyzer, tour-builder, graph-reviewer)
+  - **agents/** — Agent definitions (project-scanner, file-analyzer, architecture-analyzer, graph-reviewer)
 
 ## Dashboard
 - Dark luxury theme: deep blacks (#0a0a0a), gold/amber accents (#d4a574), DM Serif Display typography

@@ -25,7 +25,6 @@ describe("classifyUpdate", () => {
     expect(decision.action).toBe("SKIP");
     expect(decision.filesToReanalyze).toHaveLength(0);
     expect(decision.rerunArchitecture).toBe(false);
-    expect(decision.rerunTour).toBe(false);
   });
 
   it("returns SKIP when all changes are cosmetic", () => {
@@ -53,7 +52,6 @@ describe("classifyUpdate", () => {
     expect(decision.action).toBe("PARTIAL_UPDATE");
     expect(decision.filesToReanalyze).toEqual(["src/a.ts", "src/b.ts", "src/c.ts"]);
     expect(decision.rerunArchitecture).toBe(false);
-    expect(decision.rerunTour).toBe(false);
   });
 
   it("returns ARCHITECTURE_UPDATE when >10 structural files", () => {
@@ -66,7 +64,6 @@ describe("classifyUpdate", () => {
 
     expect(decision.action).toBe("ARCHITECTURE_UPDATE");
     expect(decision.rerunArchitecture).toBe(true);
-    expect(decision.rerunTour).toBe(true);
   });
 
   it("returns ARCHITECTURE_UPDATE when new directories appear", () => {
@@ -131,7 +128,6 @@ describe("classifyUpdate", () => {
 
     expect(decision.action).toBe("FULL_UPDATE");
     expect(decision.rerunArchitecture).toBe(true);
-    expect(decision.rerunTour).toBe(true);
   });
 
   it("returns FULL_UPDATE when >50% of project is structurally changed", () => {

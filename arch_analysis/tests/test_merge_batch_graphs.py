@@ -8,39 +8,14 @@ Run from the repo root:
 
 from __future__ import annotations
 
-import importlib.util
 import sys
 import unittest
 from pathlib import Path
 from typing import Any
 
+from arch_analysis import merge_batch_graphs as mbg
 
-# ── Module loader ─────────────────────────────────────────────────────────
-# `merge-batch-graphs.py` has a hyphen in its name, so we cannot `import` it
-# directly. Load it via importlib so we can call its module-level helpers.
-
-_HERE = Path(__file__).resolve().parent
-_REPO_ROOT = _HERE.parent.parent.parent
-_MODULE_PATH = (
-    _REPO_ROOT
-    / "understand-anything-plugin"
-    / "skills"
-    / "understand"
-    / "merge-batch-graphs.py"
-)
-
-
-def _load_module() -> Any:
-    spec = importlib.util.spec_from_file_location("merge_batch_graphs", _MODULE_PATH)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"Could not load module from {_MODULE_PATH}")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules["merge_batch_graphs"] = module
-    spec.loader.exec_module(module)
-    return module
-
-
-mbg = _load_module()
+_ = sys  # used by some tests for stderr capture
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────
@@ -979,7 +954,8 @@ class TestMultiPart(unittest.TestCase):
         import subprocess
         import json as _j
         result = subprocess.run(
-            ["python3", str(_MODULE_PATH), str(self.tmp)],
+            [sys.executable, "-m", "arch_analysis.merge_batch_graphs", str(self.tmp)],
+            cwd=str(Path(__file__).resolve().parents[2]),
             capture_output=True, text=True,
         )
         out_path = self.intermediate / "assembled-graph.json"
@@ -1098,7 +1074,8 @@ class TestUnrecognizedBatchFilename(unittest.TestCase):
         import subprocess
         import json as _j
         result = subprocess.run(
-            ["python3", str(_MODULE_PATH), str(self.tmp)],
+            [sys.executable, "-m", "arch_analysis.merge_batch_graphs", str(self.tmp)],
+            cwd=str(Path(__file__).resolve().parents[2]),
             capture_output=True, text=True,
         )
         out_path = self.intermediate / "assembled-graph.json"

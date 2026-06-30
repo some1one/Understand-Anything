@@ -16,7 +16,6 @@ describe("KnowledgeGraph types", () => {
       nodes: [],
       edges: [],
       layers: [],
-      tour: [],
     };
 
     expect(graph.version).toBe("1.0.0");
@@ -24,7 +23,6 @@ describe("KnowledgeGraph types", () => {
     expect(graph.nodes).toHaveLength(0);
     expect(graph.edges).toHaveLength(0);
     expect(graph.layers).toHaveLength(0);
-    expect(graph.tour).toHaveLength(0);
   });
 
   it("should create valid GraphNodes with all fields", () => {

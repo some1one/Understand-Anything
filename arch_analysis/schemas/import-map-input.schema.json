@@ -1,0 +1,47 @@
+{
+  "$defs": {
+    "ImportMapFile": {
+      "description": "A single file entry in the import-map input.",
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "language": {
+          "title": "Language",
+          "type": "string"
+        },
+        "fileCategory": {
+          "title": "Filecategory",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "language",
+        "fileCategory"
+      ],
+      "title": "ImportMapFile",
+      "type": "object"
+    }
+  },
+  "description": "Input contract for :mod:`arch_analysis.extract_import_map`.",
+  "properties": {
+    "projectRoot": {
+      "title": "Projectroot",
+      "type": "string"
+    },
+    "files": {
+      "items": {
+        "$ref": "#/$defs/ImportMapFile"
+      },
+      "title": "Files",
+      "type": "array"
+    }
+  },
+  "required": [
+    "projectRoot"
+  ],
+  "title": "ImportMapInput",
+  "type": "object"
+}

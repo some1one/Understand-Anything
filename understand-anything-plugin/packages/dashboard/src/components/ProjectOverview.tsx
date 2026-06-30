@@ -3,7 +3,6 @@ import { useI18n } from "../contexts/I18nContext";
 
 export default function ProjectOverview() {
   const graph = useDashboardStore((s) => s.graph);
-  const startTour = useDashboardStore((s) => s.startTour);
   const { t } = useI18n();
 
   if (!graph) {
@@ -15,7 +14,6 @@ export default function ProjectOverview() {
   }
 
   const { project, nodes, edges, layers } = graph;
-  const hasTour = graph.tour.length > 0;
 
   const typeCounts: Record<string, number> = {};
   for (const node of nodes) {
@@ -207,16 +205,6 @@ export default function ProjectOverview() {
       <div className="text-[11px] text-text-muted mb-6">
         {t.common.analyzed}: {new Date(project.analyzedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
       </div>
-
-      {/* Start Tour button */}
-      {hasTour && (
-        <button
-          onClick={startTour}
-          className="w-full bg-accent/10 border border-accent/30 text-accent text-sm font-medium py-2.5 px-4 rounded-lg hover:bg-accent/20 transition-all duration-200"
-        >
-          {t.common.startGuidedTour}
-        </button>
-      )}
     </div>
   );
 }

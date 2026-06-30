@@ -44,7 +44,6 @@ function makeGraph(overrides?: Partial<KnowledgeGraph>): KnowledgeGraph {
     nodes: [],
     edges: [],
     layers: [],
-    tour: [],
     ...overrides,
   };
 }

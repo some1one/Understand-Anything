@@ -5,7 +5,6 @@ export interface UpdateDecision {
   action: "SKIP" | "PARTIAL_UPDATE" | "ARCHITECTURE_UPDATE" | "FULL_UPDATE";
   filesToReanalyze: string[];
   rerunArchitecture: boolean;
-  rerunTour: boolean;
   reason: string;
 }
 
@@ -37,7 +36,6 @@ export function classifyUpdate(
       action: "SKIP",
       filesToReanalyze: [],
       rerunArchitecture: false,
-      rerunTour: false,
       reason,
     };
   }
@@ -56,7 +54,6 @@ export function classifyUpdate(
       action: "FULL_UPDATE",
       filesToReanalyze: [...structurallyChangedFiles, ...newFiles],
       rerunArchitecture: true,
-      rerunTour: true,
       reason: `${structuralCount} files have structural changes (${thresholdReason}) — full rebuild recommended`,
     };
   }
@@ -69,7 +66,6 @@ export function classifyUpdate(
       action: "ARCHITECTURE_UPDATE",
       filesToReanalyze: [...structurallyChangedFiles, ...newFiles],
       rerunArchitecture: true,
-      rerunTour: true,
       reason: hasDirectoryChanges
         ? `Directory structure changed (${newFiles.length} new, ${deletedFiles.length} deleted files)`
         : `${structuralCount} files have structural changes — architecture re-analysis needed`,
@@ -81,7 +77,6 @@ export function classifyUpdate(
     action: "PARTIAL_UPDATE",
     filesToReanalyze: [...structurallyChangedFiles, ...newFiles],
     rerunArchitecture: false,
-    rerunTour: false,
     reason: `${structuralCount} file(s) have structural changes: ${summarizeChanges(analysis)}`,
   };
 }

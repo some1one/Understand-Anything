@@ -331,7 +331,6 @@ export class GraphBuilder {
       nodes: [...this.nodes],
       edges: [...this.edges],
       layers: [],
-      tour: [],
     };
   }
 }

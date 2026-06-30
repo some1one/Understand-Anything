@@ -30,7 +30,6 @@ const sampleGraph: KnowledgeGraph = {
     { id: "layer:service", name: "Service Layer", description: "Business logic", nodeIds: ["file:src/service.ts", "function:src/service.ts:process"] },
     { id: "layer:data", name: "Data Layer", description: "Database", nodeIds: ["file:src/db.ts"] },
   ],
-  tour: [],
 };
 
 describe("diff-analyzer", () => {

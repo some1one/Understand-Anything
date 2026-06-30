@@ -5,7 +5,7 @@ import type { KnowledgeGraph } from "@understand-anything/core";
  * Output is standalone markdown suitable for a README, wiki, or docs.
  */
 export function buildOnboardingGuide(graph: KnowledgeGraph): string {
-  const { project, nodes, edges, layers, tour } = graph;
+  const { project, nodes, edges, layers } = graph;
   const lines: string[] = [];
 
   // --- Project Overview ---
@@ -58,33 +58,50 @@ export function buildOnboardingGuide(graph: KnowledgeGraph): string {
     }
   }
 
-  // --- Getting Started (Tour) ---
-  if (tour.length > 0) {
+  // --- Getting Started ---
+  // Derive a deterministic reading order from the dependency graph: the most
+  // depended-on files (highest fan-in via imports/depends_on) are foundational
+  // and worth reading first.
+  const dependencyEdgeTypes = new Set(["imports", "depends_on"]);
+  const fanIn = new Map<string, number>();
+  for (const edge of edges) {
+    if (!dependencyEdgeTypes.has(edge.type)) continue;
+    // For backward edges the dependency points the other way.
+    const depended = edge.direction === "backward" ? edge.source : edge.target;
+    fanIn.set(depended, (fanIn.get(depended) ?? 0) + 1);
+  }
+
+  const foundationalFiles = nodes
+    .filter((n) => n.type === "file" && n.filePath && (fanIn.get(n.id) ?? 0) > 0)
+    .sort((a, b) => {
+      const diff = (fanIn.get(b.id) ?? 0) - (fanIn.get(a.id) ?? 0);
+      return diff !== 0 ? diff : a.filePath!.localeCompare(b.filePath!);
+    })
+    .slice(0, 8);
+
+  if (foundationalFiles.length > 0 || layers.length > 0) {
     lines.push("## Getting Started");
     lines.push("");
-    lines.push("Follow this guided tour to understand the codebase:");
-    lines.push("");
-    for (const step of tour) {
-      const stepNodes = step.nodeIds
-        .map((id) => nodes.find((n) => n.id === id))
-        .filter(Boolean);
-      lines.push(`### ${step.order}. ${step.title}`);
+
+    if (foundationalFiles.length > 0) {
+      lines.push(
+        "Start with the most depended-on files — these are the foundations the rest of the code builds on:",
+      );
       lines.push("");
-      lines.push(step.description);
+      for (const node of foundationalFiles) {
+        const count = fanIn.get(node.id) ?? 0;
+        lines.push(
+          `- \`${node.filePath}\` — ${node.summary} _(referenced by ${count} component${count === 1 ? "" : "s"})_`,
+        );
+      }
       lines.push("");
-      if (stepNodes.length > 0) {
-        lines.push("**Files to look at:**");
-        for (const node of stepNodes) {
-          if (node!.filePath) {
-            lines.push(`- \`${node!.filePath}\` — ${node!.summary}`);
-          }
-        }
-        lines.push("");
-      }
-      if (step.languageLesson) {
-        lines.push(`> **Language Tip:** ${step.languageLesson}`);
-        lines.push("");
-      }
+    }
+
+    if (layers.length > 0) {
+      lines.push(
+        "Then explore the codebase layer by layer, in the order listed under **Architecture** above.",
+      );
+      lines.push("");
     }
   }
 

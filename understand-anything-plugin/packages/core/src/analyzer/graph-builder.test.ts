@@ -199,7 +199,6 @@ describe("GraphBuilder", () => {
     expect(graph.project.languages).toEqual(["python", "typescript"]);
     expect(graph.project.analyzedAt).toBeTruthy();
     expect(graph.layers).toEqual([]);
-    expect(graph.tour).toEqual([]);
   });
 
   it("should detect languages from file extensions", () => {

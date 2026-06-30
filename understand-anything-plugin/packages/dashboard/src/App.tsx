@@ -214,7 +214,6 @@ function DashboardContent({
 }) {
   const graph = useDashboardStore((s) => s.graph);
   const selectedNodeId = useDashboardStore((s) => s.selectedNodeId);
-  const tourActive = useDashboardStore((s) => s.tourActive);
   const persona = useDashboardStore((s) => s.persona);
   const codeViewerOpen = useDashboardStore((s) => s.codeViewerOpen);
   const codeViewerExpanded = useDashboardStore((s) => s.codeViewerExpanded);
@@ -278,8 +277,6 @@ function DashboardContent({
             state.selectNode(null);
           } else if (state.navigationLevel === "layer-detail") {
             state.navigateToOverview();
-          } else if (state.tourActive) {
-            state.stopTour();
           } else {
             setShowKeyboardHelp(false);
           }
@@ -296,29 +293,6 @@ function DashboardContent({
           searchInput?.focus();
         },
         category: "Navigation",
-      },
-      // Tour controls
-      {
-        key: "ArrowRight",
-        description: t.keyboardShortcuts.nextStep,
-        action: () => {
-          const state = useDashboardStore.getState();
-          if (state.tourActive) {
-            state.nextTourStep();
-          }
-        },
-        category: "Tour",
-      },
-      {
-        key: "ArrowLeft",
-        description: t.keyboardShortcuts.prevStep,
-        action: () => {
-          const state = useDashboardStore.getState();
-          if (state.tourActive) {
-            state.prevTourStep();
-          }
-        },
-        category: "Tour",
       },
       // View toggles
       {
@@ -367,7 +341,7 @@ function DashboardContent({
   // Determine sidebar content
   // NodeInfo always takes priority when a node is selected.
   // Learn mode adds LearnPanel below it; otherwise ProjectOverview shows when idle.
-  const isLearnMode = tourActive || persona === "junior";
+  const isLearnMode = persona === "junior";
   const infoSidebarContent = (
     <>
       {selectedNodeId && <NodeInfo />}

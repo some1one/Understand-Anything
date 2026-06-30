@@ -57,14 +57,6 @@ describe("persistence", () => {
         nodeIds: ["node-1"],
       },
     ],
-    tour: [
-      {
-        order: 1,
-        title: "Start here",
-        description: "Begin with the entry point",
-        nodeIds: ["node-1"],
-      },
-    ],
   };
 
   const sampleMeta: AnalysisMeta = {

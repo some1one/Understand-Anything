@@ -1002,7 +1002,7 @@ def recover_imports_from_scan(
 
 def main() -> None:
     if len(sys.argv) < 2:
-        print("Usage: python merge-batch-graphs.py <project-root>", file=sys.stderr)
+        print("Usage: python -m arch_analysis.merge_batch_graphs <project-root>", file=sys.stderr)
         sys.exit(1)
 
     project_root = Path(sys.argv[1]).resolve()

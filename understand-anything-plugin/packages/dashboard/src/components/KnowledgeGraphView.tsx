@@ -99,7 +99,6 @@ function KnowledgeGraphViewInner() {
   const focusNodeId = useDashboardStore((s) => s.focusNodeId);
   const selectNode = useDashboardStore((s) => s.selectNode);
   const searchResultsRaw = useDashboardStore((s) => s.searchResults);
-  const tourHighlightedNodeIds = useDashboardStore((s) => s.tourHighlightedNodeIds);
   const nodeTypeFilters = useDashboardStore((s) => s.nodeTypeFilters);
 
   const onNodeClick = useCallback(
@@ -110,11 +109,6 @@ function KnowledgeGraphViewInner() {
   const searchResults = useMemo(
     () => new Map(searchResultsRaw.map((r) => [r.nodeId, r.score])),
     [searchResultsRaw],
-  );
-
-  const tourSet = useMemo(
-    () => new Set(tourHighlightedNodeIds),
-    [tourHighlightedNodeIds],
   );
 
   // Filter graph — only recompute when graph data or filters change
@@ -142,7 +136,7 @@ function KnowledgeGraphViewInner() {
     return computeLayout(filteredGraph);
   }, [filteredGraph]);
 
-  // Build visual nodes/edges — recomputes on selection/search/tour WITHOUT re-layout
+  // Build visual nodes/edges — recomputes on selection/search WITHOUT re-layout
   const { nodes, edges } = useMemo(() => {
     if (!filteredGraph) return { nodes: [], edges: [] };
 
@@ -166,7 +160,6 @@ function KnowledgeGraphViewInner() {
         !isNeighbor;
       const searchScore = searchResults.get(node.id);
       const isHighlighted = searchScore !== undefined;
-      const isTourHighlighted = tourSet.has(node.id);
 
       const data: CustomNodeData = {
         label: node.name,
@@ -176,7 +169,6 @@ function KnowledgeGraphViewInner() {
         isHighlighted,
         searchScore,
         isSelected,
-        isTourHighlighted,
         isDiffChanged: false,
         isDiffAffected: false,
         isDiffFaded: false,
@@ -233,7 +225,7 @@ function KnowledgeGraphViewInner() {
     });
 
     return { nodes: rfNodes, edges: rfEdges };
-  }, [filteredGraph, selectedNodeId, focusNodeId, searchResults, tourSet, onNodeClick, positionMap, edgeCounts]);
+  }, [filteredGraph, selectedNodeId, focusNodeId, searchResults, onNodeClick, positionMap, edgeCounts]);
 
   if (!graph) {
     return (

@@ -38,7 +38,6 @@ export default function MobileLayout({
 }: Props) {
   const graph = useDashboardStore((s) => s.graph);
   const selectedNodeId = useDashboardStore((s) => s.selectedNodeId);
-  const tourActive = useDashboardStore((s) => s.tourActive);
   const persona = useDashboardStore((s) => s.persona);
   const viewMode = useDashboardStore((s) => s.viewMode);
   const domainGraph = useDashboardStore((s) => s.domainGraph);
@@ -63,7 +62,7 @@ export default function MobileLayout({
     if (codeViewerOpen) setSearchOpen(false);
   }, [codeViewerOpen]);
 
-  const isLearnMode = tourActive || persona === "junior";
+  const isLearnMode = persona === "junior";
   const infoContent = (
     <>
       {selectedNodeId && <NodeInfo />}

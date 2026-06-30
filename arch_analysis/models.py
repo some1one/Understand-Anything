@@ -76,6 +76,132 @@ class AnalysisResult(BaseModel):
     fileFanOut: dict[str, int]
 
 
+class ScanFile(BaseModel):
+    """A single file entry in the scan result."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    path: str
+    language: str
+    sizeLines: int
+    fileCategory: str
+
+
+class ScanStats(BaseModel):
+    """Aggregate counts for a scan result."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    filesScanned: int
+    byCategory: dict[str, int]
+    byLanguage: dict[str, int]
+
+
+class ScanResult(BaseModel):
+    """Output contract for :mod:`arch_analysis.scan_project`."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    scriptCompleted: bool
+    files: list[ScanFile]
+    totalFiles: int
+    filteredByIgnore: int
+    estimatedComplexity: str
+    stats: ScanStats
+
+
+class ImportMapFile(BaseModel):
+    """A single file entry in the import-map input."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    path: str
+    language: str
+    fileCategory: str
+
+
+class ImportMapInput(BaseModel):
+    """Input contract for :mod:`arch_analysis.extract_import_map`."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    projectRoot: str
+    files: list[ImportMapFile] = Field(default_factory=list)
+
+
+class ImportMapStats(BaseModel):
+    """Aggregate counts for an import-map result."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    filesScanned: int
+    filesWithImports: int
+    totalEdges: int
+
+
+class ImportMapResult(BaseModel):
+    """Output contract for :mod:`arch_analysis.extract_import_map`."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    scriptCompleted: bool
+    stats: ImportMapStats
+    importMap: dict[str, list[str]]
+
+
+class StructureBatchFile(BaseModel):
+    """One file entry in the extract-structure input batch."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    path: str
+    language: str | None = None
+    sizeLines: int | None = None
+    fileCategory: str | None = None
+
+
+class StructureInput(BaseModel):
+    """Input contract for :mod:`arch_analysis.extract_structure`.
+
+    ``batchImportData`` maps a file path to its pre-resolved relative import
+    targets (used for ``metrics.importCount``).
+    """
+
+    model_config = ConfigDict(extra="ignore")
+
+    projectRoot: str
+    batchFiles: list[StructureBatchFile]
+    batchImportData: dict[str, list[str]] = Field(default_factory=dict)
+
+
+class StructureResult(BaseModel):
+    """One per-file result in the extract-structure output.
+
+    ``extra="allow"`` keeps the schema open: fields that do not apply to a file
+    are simply omitted (the null-tolerant ``buildResult`` shape).
+    """
+
+    model_config = ConfigDict(extra="allow")
+
+    path: str
+    language: str | None = None
+    fileCategory: str | None = None
+    totalLines: int
+    nonEmptyLines: int
+    metrics: dict = Field(default_factory=dict)
+
+
+class StructureOutput(BaseModel):
+    """Output contract for :mod:`arch_analysis.extract_structure`."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    scriptCompleted: bool
+    filesAnalyzed: int
+    filesSkipped: list[str] = Field(default_factory=list)
+    results: list[StructureResult] = Field(default_factory=list)
+
+
 class Layer(BaseModel):
     """A single architecture layer in the Phase 2 output."""
 

@@ -30,7 +30,6 @@ const makeGraph = (nodes: GraphNode[]): KnowledgeGraph => ({
   nodes,
   edges: [],
   layers: [],
-  tour: [],
 });
 
 describe("detectLayers", () => {

@@ -149,7 +149,6 @@ export function sanitizeGraph(data: Record<string, unknown>): Record<string, unk
   const result = { ...data };
 
   // Null → empty array for top-level collections
-  if (data.tour === null || data.tour === undefined) result.tour = [];
   if (data.layers === null || data.layers === undefined) result.layers = [];
 
   // Sanitize nodes
@@ -180,15 +179,8 @@ export function sanitizeGraph(data: Record<string, unknown>): Record<string, unk
     });
   }
 
-  // Sanitize tour steps
-  if (Array.isArray(result.tour)) {
-    result.tour = (result.tour as Record<string, unknown>[]).map((step) => {
-      if (typeof step !== "object" || step === null) return step;
-      const s = { ...step };
-      if (s.languageLesson === null) delete s.languageLesson;
-      return s;
-    });
-  }
+  // Legacy tolerance: a stray `tour` key on existing graphs is dropped (not
+  // surfaced) by the schema below — no sanitization needed.
 
   return result;
 }
@@ -399,14 +391,6 @@ export const LayerSchema = z.object({
   nodeIds: z.array(z.string()),
 });
 
-export const TourStepSchema = z.object({
-  order: z.number(),
-  title: z.string(),
-  description: z.string(),
-  nodeIds: z.array(z.string()),
-  languageLesson: z.string().optional(),
-});
-
 export const ProjectMetaSchema = z.object({
   name: z.string(),
   languages: z.array(z.string()),
@@ -423,7 +407,6 @@ export const KnowledgeGraphSchema = z.object({
   nodes: z.array(GraphNodeSchema),
   edges: z.array(GraphEdgeSchema),
   layers: z.array(LayerSchema),
-  tour: z.array(TourStepSchema),
 });
 
 export interface GraphIssue {
@@ -513,7 +496,7 @@ export function validateGraph(data: unknown): ValidationResult {
   const { data: fixed, issues } = autoFixGraph(normalized);
 
   // Tier 4: Fatal — malformed top-level collections
-  const requiredCollections = ["nodes", "edges", "layers", "tour"] as const;
+  const requiredCollections = ["nodes", "edges", "layers"] as const;
   for (const collection of requiredCollections) {
     if (collection in fixed && fixed[collection] !== undefined && !Array.isArray(fixed[collection])) {
       const issue = buildInvalidCollectionIssue(collection);
@@ -627,34 +610,12 @@ export function validateGraph(data: unknown): ValidationResult {
     }
   }
 
-  // Validate tour steps (drop broken, filter dangling nodeIds)
-  const validTour: z.infer<typeof TourStepSchema>[] = [];
-  if (Array.isArray(fixed.tour)) {
-    for (let i = 0; i < (fixed.tour as unknown[]).length; i++) {
-      const result = TourStepSchema.safeParse((fixed.tour as unknown[])[i]);
-      if (result.success) {
-        validTour.push({
-          ...result.data,
-          nodeIds: result.data.nodeIds.filter((id) => nodeIds.has(id)),
-        });
-      } else {
-        issues.push({
-          level: "dropped",
-          category: "invalid-tour-step",
-          message: `tour[${i}]: ${result.error.issues[0]?.message ?? "validation failed"} — removed`,
-          path: `tour[${i}]`,
-        });
-      }
-    }
-  }
-
   const graph = {
     version: typeof fixed.version === "string" ? fixed.version : "1.0.0",
     project: projectResult.data,
     nodes: validNodes,
     edges: validEdges,
     layers: validLayers,
-    tour: validTour,
   };
 
   return { success: true, data: graph, issues, errors: buildErrors(issues) };

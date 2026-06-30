@@ -96,9 +96,9 @@ Use `$PLUGIN_ROOT` for every reference to agent definitions in subsequent phases
 
 The preprocessing script does NOT produce a domain graph — it produces **raw material** (file tree, entry points, exports/imports) so the domain-analyzer agent can focus on the actual domain analysis instead of spending dozens of tool calls exploring the codebase. Think of it as a cheat sheet: cheap Python preprocessing → expensive LLM gets a clean, small input → better results for less cost.
 
-1. Run the preprocessing script bundled with this skill, passing `$PROJECT_ROOT` from Phase 0:
+1. Run the preprocessing module from the `arch_analysis` package (from its project root), passing `$PROJECT_ROOT` from Phase 0:
    ```
-   python ./extract-domain-context.py "$PROJECT_ROOT"
+   python -m arch_analysis.extract_domain_context "$PROJECT_ROOT"
    ```
    This outputs `$PROJECT_ROOT/.understand-anything/intermediate/domain-context.json` containing:
    - File tree (respecting `.gitignore`)
@@ -116,7 +116,6 @@ The preprocessing script does NOT produce a domain graph — it produces **raw m
    - All nodes with their types, names, summaries, and tags
    - All edges with their types (especially `calls`, `imports`, `contains`)
    - All layers with their descriptions
-   - Tour steps if available
 3. This is the context for the domain analyzer — no file reading needed
 4. Proceed to Phase 4
 

@@ -1,0 +1,89 @@
+{
+  "$defs": {
+    "StructureResult": {
+      "additionalProperties": true,
+      "description": "One per-file result in the extract-structure output.\n\n``extra=\"allow\"`` keeps the schema open: fields that do not apply to a file\nare simply omitted (the null-tolerant ``buildResult`` shape).",
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "language": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Language"
+        },
+        "fileCategory": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Filecategory"
+        },
+        "totalLines": {
+          "title": "Totallines",
+          "type": "integer"
+        },
+        "nonEmptyLines": {
+          "title": "Nonemptylines",
+          "type": "integer"
+        },
+        "metrics": {
+          "additionalProperties": true,
+          "title": "Metrics",
+          "type": "object"
+        }
+      },
+      "required": [
+        "path",
+        "totalLines",
+        "nonEmptyLines"
+      ],
+      "title": "StructureResult",
+      "type": "object"
+    }
+  },
+  "description": "Output contract for :mod:`arch_analysis.extract_structure`.",
+  "properties": {
+    "scriptCompleted": {
+      "title": "Scriptcompleted",
+      "type": "boolean"
+    },
+    "filesAnalyzed": {
+      "title": "Filesanalyzed",
+      "type": "integer"
+    },
+    "filesSkipped": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Filesskipped",
+      "type": "array"
+    },
+    "results": {
+      "items": {
+        "$ref": "#/$defs/StructureResult"
+      },
+      "title": "Results",
+      "type": "array"
+    }
+  },
+  "required": [
+    "scriptCompleted",
+    "filesAnalyzed"
+  ],
+  "title": "StructureOutput",
+  "type": "object"
+}

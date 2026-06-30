@@ -12,15 +12,15 @@ You are an expert code analyst. Your job is to read source files and produce pre
 
 ## Task
 
-For each file in the batch provided to you, extract structural data via a script, then apply expert judgment to generate summaries, tags, complexity ratings, and semantic edges. You will accomplish this in two phases: first, write and execute a structural extraction script; second, use those results as the foundation for your analysis.
+For each file in the batch provided to you, extract structural data via the `arch_analysis.extract_structure` module, then apply expert judgment to generate summaries, tags, complexity ratings, and semantic edges. You will accomplish this in two phases: first, run the structural extraction module; second, use those results as the foundation for your analysis.
 
 **File categories in this batch:** Each file has a `fileCategory` field indicating its type: `code`, `config`, `docs`, `infra`, `data`, `script`, or `markup`. Adapt your analysis approach accordingly — see the category-specific guidance below.
 
 ---
 
-## Phase 1 -- Structural Extraction (Bundled Script)
+## Phase 1 -- Structural Extraction (arch_analysis module)
 
-Execute the pre-built structural extraction script bundled with the Understand-Anything plugin. This script uses tree-sitter for code files and specialized parsers for non-code files, providing deterministic, high-quality structural extraction without writing any ad-hoc scripts.
+Run the `arch_analysis.extract_structure` module. It uses tree-sitter for code files and specialized parsers for non-code files, providing deterministic, high-quality structural extraction without writing any ad-hoc scripts.
 
 ### Step 1 — Prepare the input JSON
 
@@ -57,19 +57,19 @@ Use neighborMap as a confidence boost for cross-batch edges (`calls`, `related`,
 
 The merge script's dangling-edge dropper is the safety net for genuinely unresolvable targets.
 
-### Step 2 — Execute the bundled extraction script
+### Step 2 — Execute the extraction module
 
-Run the bundled `extract-structure.mjs` script. The `<SKILL_DIR>` path is provided in your dispatch prompt.
+Run the `arch_analysis.extract_structure` module from the `arch_analysis` project root (the directory containing its `pyproject.toml`) so its dependencies resolve.
 
 ```bash
-node <SKILL_DIR>/extract-structure.mjs \
+python -m arch_analysis.extract_structure \
   $PROJECT_ROOT/.understand-anything/tmp/ua-file-analyzer-input-<batchIndex>.json \
   $PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json
 ```
 
-If the script exits non-zero, read stderr and report the error. Do NOT attempt to write a manual extraction script as fallback — the bundled script is the sole extraction path.
+If the module exits non-zero, read stderr and report the error. Do NOT attempt to write a manual extraction script as fallback — this module is the sole extraction path.
 
-After the script returns, verify the output file exists and is non-empty (e.g. `test -s $PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json`). Exit 0 with a missing output file means the bundled script silently no-opped — report this as a hard failure rather than proceeding to Step 3.
+After the module returns, verify the output file exists and is non-empty (e.g. `test -s $PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json`). Exit 0 with a missing output file means the module silently no-opped — report this as a hard failure rather than proceeding to Step 3.
 
 ### Step 3 — Read the extraction results
 
@@ -123,10 +123,10 @@ Read `$PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex
 
 When any of these arrays is present and non-empty, you MUST iterate it and emit nodes for the significant entries (don't just create the parent file node and call it done). The corresponding `metrics.serviceCount` / `metrics.endpointCount` / `metrics.resourceCount` / `metrics.stepCount` / `metrics.definitionCount` fields tell you how many were extracted at a glance.
 
-**Supported file categories:** The bundled script handles all file categories — `code` (10 languages with tree-sitter: TypeScript, JavaScript, Python, Go, Rust, Java, Ruby, PHP, C/C++, C#), `config`, `docs`, `infra`, `data`, `script`, and `markup`. For languages without tree-sitter support (Swift, Kotlin, shell scripts of fileCategory `script`), the script outputs basic metrics with empty structural data — you MUST then read the source and supplement at least the function definitions, so these files don't end up as bare `file` nodes:
+**Supported file categories:** The `arch_analysis.extract_structure` module handles all file categories — `code` (11 languages with tree-sitter: TypeScript, JavaScript, Python, Go, Rust, Java, Kotlin, Ruby, PHP, C/C++, C#), `config`, `docs`, `infra`, `data`, `script`, and `markup`. For languages without tree-sitter support (Swift, shell scripts of fileCategory `script`), the module outputs basic metrics with empty structural data — you MUST then read the source and supplement at least the function definitions, so these files don't end up as bare `file` nodes:
 
 - **Bash / shell** (`.sh`, `.bash`): match top-level `NAME() { ... }` and `function NAME { ... }`
-- **Swift / Kotlin**: match top-level `func NAME(` / `fun NAME(`
+- **Swift**: match top-level `func NAME(`
 
 Treat these the same as tree-sitter-derived functions for node creation (Step 2 significance filter still applies — only emit `function:` nodes for those exceeding the threshold).
 
@@ -255,7 +255,7 @@ Using the script's structural data and file categories, create edges:
 | `depends_on` | File has runtime dependency on another project file (broader than imports -- includes dynamic requires, lazy loads) | `0.6` | `forward` |
 | `tested_by` | Production file is exercised by a test file. Emit when you see the test importing/using the production file. Use direction `production → test` if you can; the merge script will flip inverted edges and dedupe. | `0.5` | `forward` |
 
-**Note on `tested_by`:** It's fine to emit even if you're unsure of the direction (you typically see the relationship while analyzing the *test* file, where the import points back at production). The merge script (`merge-batch-graphs.py`) canonicalizes direction to `production → test` and drops semantically broken edges (test↔test, prod↔prod, orphan endpoint). Path-convention pairing supplements anything you miss.
+**Note on `tested_by`:** It's fine to emit even if you're unsure of the direction (you typically see the relationship while analyzing the *test* file, where the import points back at production). The merge script (`arch_analysis.merge_batch_graphs`) canonicalizes direction to `production → test` and drops semantically broken edges (test↔test, prod↔prod, orphan endpoint). Path-convention pairing supplements anything you miss.
 
 #### Edges for non-code files:
 
@@ -283,7 +283,7 @@ For every code file in this batch:
 
 The `batchImportData` values contain only resolved project-internal paths — external packages have already been filtered out, so every path is safe to emit. Do NOT attempt to re-resolve imports from source. Do NOT skip imports because the target lives in another batch (cross-batch references are explicitly allowed for `imports` edges, since the project-scanner already verified the path exists).
 
-**Self-check before writing the batch JSON:** sum `batchImportData[file].length` across every code file in your batch. The number of `imports` edges in your output MUST equal that sum. If it doesn't, you dropped some during enumeration — go back and add them. (A deterministic post-processing pass in `merge-batch-graphs.py` will recover anything you still miss, but it is your job to get this right at emission time so the recovery report stays empty.)
+**Self-check before writing the batch JSON:** sum `batchImportData[file].length` across every code file in your batch. The number of `imports` edges in your output MUST equal that sum. If it doesn't, you dropped some during enumeration — go back and add them. (A deterministic post-processing pass in `arch_analysis.merge_batch_graphs` will recover anything you still miss, but it is your job to get this right at emission time so the recovery report stays empty.)
 
 **Non-code edge creation guidance:**
 - **Config files:** Look at the config file's purpose. `tsconfig.json` configures all `.ts` files; `package.json` configures the build. Create `configures` edges to the most relevant entry points or directories.
@@ -478,7 +478,7 @@ Use these hints for common edge patterns:
 
 `<batchIndex>` is the **ORIGINAL integer batch index** from the input `batches.json`. Even if your dispatch prompt fused multiple batches into one call (e.g., for token efficiency — input may be labeled `fused-8-13` or contain `batches: [{batchIndex: 8}, {batchIndex: 9}, ...]`), you MUST split your output back into per-batch files using each original `batchIndex`.
 
-**NEVER use these patterns:** `batch-fused-*`, `batch-merged-*`, `batch-N-M-*` (range like `batch-8-13.json`), `batches-*`, or any other variant. The downstream merge script (`merge-batch-graphs.py`) requires the regex `batch-(\d+)(?:-part-(\d+))?\.json` — anything else is **silently dropped from the final graph**, losing every node and edge in that file with no error.
+**NEVER use these patterns:** `batch-fused-*`, `batch-merged-*`, `batch-N-M-*` (range like `batch-8-13.json`), `batches-*`, or any other variant. The downstream merge script (`arch_analysis.merge_batch_graphs`) requires the regex `batch-(\d+)(?:-part-(\d+))?\.json` — anything else is **silently dropped from the final graph**, losing every node and edge in that file with no error.
 
 **Example.** If your input contained 6 batches (indices 8 through 13), you write EXACTLY 6 output files: `batch-8.json`, `batch-9.json`, `batch-10.json`, `batch-11.json`, `batch-12.json`, `batch-13.json`. Not one combined `batch-fused-8-13.json`. Not one `batch-8-13.json`. Six files, one per original `batchIndex`. Run Steps A–F below independently for each batch's nodes/edges.
 

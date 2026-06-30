@@ -1,13 +1,13 @@
 ---
 name: assemble-reviewer
 description: |
-  Reviews the output of merge-batch-graphs.py for semantic issues the script
+  Reviews the output of arch_analysis.merge_batch_graphs for semantic issues the script
   cannot catch. Recovers dropped nodes/edges and fills cross-batch gaps.
 ---
 
 # Assemble Reviewer
 
-You are a quality reviewer for the assembled knowledge graph produced by `merge-batch-graphs.py`. The script has already applied all mechanical fixes — your job is to handle what it **could not fix** and verify the fixes look sane.
+You are a quality reviewer for the assembled knowledge graph produced by `arch_analysis.merge_batch_graphs`. The script has already applied all mechanical fixes — your job is to handle what it **could not fix** and verify the fixes look sane.
 
 ## Context
 

@@ -5,7 +5,6 @@ import type { GraphIssue } from "@understand-anything/core/schema";
 import type {
   GraphNode,
   KnowledgeGraph,
-  TourStep,
 } from "@understand-anything/core/types";
 import type { ReactFlowInstance } from "@xyflow/react";
 
@@ -61,8 +60,8 @@ export type NodeCategory = "code" | "config" | "docs" | "infra" | "data" | "doma
  * - `nodeIdToLayerId` preserves the prior `findNodeLayer` "first matching
  *   layer wins" semantics — if a node id appears in multiple layers
  *   (rare but legal in the schema), the first occurrence in `graph.layers`
- *   order is the one we map to. Drives navigation (drillIntoLayer, tour
- *   step → layer, sidebar history) where a single canonical layer is the
+ *   order is the one we map to. Drives navigation (drillIntoLayer,
+ *   sidebar history) where a single canonical layer is the
  *   right answer.
  *
  * - `nodeIdToLayerIds` records *every* layer a node belongs to. Drives
@@ -119,10 +118,6 @@ interface DashboardStore {
   codeViewerOpen: boolean;
   codeViewerNodeId: string | null;
   codeViewerExpanded: boolean;
-
-  tourActive: boolean;
-  currentTourStep: number;
-  tourHighlightedNodeIds: string[];
 
   persona: Persona;
 
@@ -182,12 +177,6 @@ interface DashboardStore {
   resetFilters: () => void;
   hasActiveFilters: () => boolean;
 
-  startTour: () => void;
-  stopTour: () => void;
-  setTourStep: (step: number) => void;
-  nextTourStep: () => void;
-  prevTourStep: () => void;
-
   // View mode
   viewMode: ViewMode;
   isKnowledgeGraph: boolean;
@@ -209,9 +198,6 @@ interface DashboardStore {
   /** Container the user just manually expanded; viewport should lock onto it. Cleared by GraphView once the lock is applied. */
   pendingFocusContainer: string | null;
   setPendingFocusContainer: (containerId: string | null) => void;
-  /** True while TourFitView is waiting for highlighted nodes to materialise (Stage 2 layout in progress). Drives the "Computing layout…" overlay. */
-  tourFitPending: boolean;
-  setTourFitPending: (pending: boolean) => void;
 
   containerLayoutCache: Map<
     string,
@@ -239,53 +225,6 @@ interface DashboardStore {
   clearLayoutIssues: () => void;
 }
 
-function getSortedTour(graph: KnowledgeGraph): TourStep[] {
-  const tour = graph.tour ?? [];
-  return [...tour].sort((a, b) => a.order - b.order);
-}
-
-/** Navigate tour step to the correct layer for the first highlighted node. */
-function navigateTourToLayer(
-  nodeIdToLayerId: Map<string, string>,
-  nodeIds: string[],
-): Partial<DashboardStore> {
-  if (nodeIds.length === 0) return {};
-  const layerId = nodeIdToLayerId.get(nodeIds[0]);
-  if (layerId) {
-    return {
-      navigationLevel: "layer-detail" as const,
-      activeLayerId: layerId,
-    };
-  }
-  return {};
-}
-
-/**
- * Container ids derive from per-layer state — folder names in folder-strategy
- * layers, community indices (`container:cluster-N`) in community-strategy
- * layers — and collide across layers (e.g. API Contracts and Load Testing
- * both produce `container:cluster-0`). When a tour step crosses layers we
- * must drop the previous layer's container caches so Stage 2 actually re-
- * runs for the new layer's children. Mirrors the reset block in
- * `drillIntoLayer`.
- */
-function layerResetIfChanged(
-  layerNav: Partial<DashboardStore>,
-  prevLayerId: string | null,
-): Partial<DashboardStore> {
-  const next = layerNav.activeLayerId;
-  if (!next || next === prevLayerId) return {};
-  return {
-    containerLayoutCache: new Map(),
-    containerSizeMemory: new Map(),
-    expandedContainers: new Set(),
-    // Drop any pending focus too — its id was scoped to the previous
-    // layer and would otherwise re-collide with a same-id container in
-    // the new layer for the duration of the 1.2s timer.
-    pendingFocusContainer: null,
-  };
-}
-
 export const useDashboardStore = create<DashboardStore>()((set, get) => ({
   graph: null,
   nodesById: new Map<string, GraphNode>(),
@@ -302,10 +241,6 @@ export const useDashboardStore = create<DashboardStore>()((set, get) => ({
   codeViewerOpen: false,
   codeViewerNodeId: null,
   codeViewerExpanded: false,
-
-  tourActive: false,
-  currentTourStep: 0,
-  tourHighlightedNodeIds: [],
 
   persona: "junior",
 
@@ -601,74 +536,6 @@ export const useDashboardStore = create<DashboardStore>()((set, get) => ({
       || filters.edgeCategories.size !== ALL_EDGE_CATEGORIES.length;
   },
 
-  startTour: () => {
-    const { graph, nodeIdToLayerId, activeLayerId } = get();
-    if (!graph || !graph.tour || graph.tour.length === 0) return;
-    const sorted = getSortedTour(graph);
-    const layerNav = navigateTourToLayer(nodeIdToLayerId, sorted[0].nodeIds);
-    set({
-      tourActive: true,
-      currentTourStep: 0,
-      tourHighlightedNodeIds: sorted[0].nodeIds,
-      selectedNodeId: null,
-      ...layerNav,
-      ...layerResetIfChanged(layerNav, activeLayerId),
-    });
-  },
-
-  stopTour: () =>
-    set({
-      tourActive: false,
-      currentTourStep: 0,
-      tourHighlightedNodeIds: [],
-    }),
-
-  setTourStep: (step) => {
-    const { graph, nodeIdToLayerId, activeLayerId } = get();
-    if (!graph || !graph.tour || graph.tour.length === 0) return;
-    const sorted = getSortedTour(graph);
-    if (step < 0 || step >= sorted.length) return;
-    const layerNav = navigateTourToLayer(nodeIdToLayerId, sorted[step].nodeIds);
-    set({
-      currentTourStep: step,
-      tourHighlightedNodeIds: sorted[step].nodeIds,
-      ...layerNav,
-      ...layerResetIfChanged(layerNav, activeLayerId),
-    });
-  },
-
-  nextTourStep: () => {
-    const { graph, currentTourStep, nodeIdToLayerId, activeLayerId } = get();
-    if (!graph || !graph.tour || graph.tour.length === 0) return;
-    const sorted = getSortedTour(graph);
-    if (currentTourStep < sorted.length - 1) {
-      const next = currentTourStep + 1;
-      const layerNav = navigateTourToLayer(nodeIdToLayerId, sorted[next].nodeIds);
-      set({
-        currentTourStep: next,
-        tourHighlightedNodeIds: sorted[next].nodeIds,
-        ...layerNav,
-        ...layerResetIfChanged(layerNav, activeLayerId),
-      });
-    }
-  },
-
-  prevTourStep: () => {
-    const { graph, currentTourStep, nodeIdToLayerId, activeLayerId } = get();
-    if (!graph || !graph.tour || graph.tour.length === 0) return;
-    if (currentTourStep > 0) {
-      const sorted = getSortedTour(graph);
-      const prev = currentTourStep - 1;
-      const layerNav = navigateTourToLayer(nodeIdToLayerId, sorted[prev].nodeIds);
-      set({
-        currentTourStep: prev,
-        tourHighlightedNodeIds: sorted[prev].nodeIds,
-        ...layerNav,
-        ...layerResetIfChanged(layerNav, activeLayerId),
-      });
-    }
-  },
-
   viewMode: "structural",
   isKnowledgeGraph: false,
   domainGraph: null,
@@ -718,8 +585,6 @@ export const useDashboardStore = create<DashboardStore>()((set, get) => ({
   pendingFocusContainer: null,
   setPendingFocusContainer: (containerId) =>
     set({ pendingFocusContainer: containerId }),
-  tourFitPending: false,
-  setTourFitPending: (pending) => set({ tourFitPending: pending }),
   toggleContainer: (containerId) =>
     set((state) => {
       const next = new Set(state.expandedContainers);

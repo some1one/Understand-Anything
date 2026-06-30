@@ -127,7 +127,6 @@ The output JSON should have this shape:
   "action": "SKIP | PARTIAL_UPDATE | ARCHITECTURE_UPDATE | FULL_UPDATE",
   "filesToReanalyze": ["src/new-feature.ts"],
   "rerunArchitecture": false,
-  "rerunTour": false,
   "reason": "1 file has structural changes (new function added)",
   "fileChanges": [
     { "filePath": "src/utils.ts", "changeLevel": "COSMETIC", "details": ["internal logic changed"] },
@@ -194,7 +193,7 @@ Only re-analyze files with structural changes. This is the **only** phase that c
 
 ---
 
-## Phase 3 — Conditional Architecture/Tour + Save
+## Phase 3 — Conditional Architecture + Save
 
 ### 3a. Architecture update (only if `rerunArchitecture === true`)
 
@@ -209,8 +208,6 @@ If the change analysis flagged `ARCHITECTURE_UPDATE`:
    > Maintain the same layer names and IDs where possible. Only add/remove layers if the file structure has materially changed.
 
 2. After completion, read and normalize layers (same normalization as `/understand` Phase 4).
-
-3. Optionally re-run tour builder if layers changed significantly.
 
 ### 3b. Lite layer update (if `rerunArchitecture === false`)
 

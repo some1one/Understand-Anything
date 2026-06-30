@@ -47,14 +47,6 @@ const validGraph: KnowledgeGraph = {
       nodeIds: ["node-1"],
     },
   ],
-  tour: [
-    {
-      order: 1,
-      title: "Start here",
-      description: "Begin with the entry point",
-      nodeIds: ["node-1"],
-    },
-  ],
 };
 
 describe("schema validation", () => {
@@ -321,26 +313,16 @@ describe("sanitizeGraph", () => {
     expect(edge.direction).toBe("forward");
   });
 
-  it("converts null tour/layers to empty arrays", () => {
+  it("converts null layers to empty arrays", () => {
     const graph = structuredClone(validGraph);
-    (graph as any).tour = null;
     (graph as any).layers = null;
 
     const result = sanitizeGraph(graph as any);
-    expect((result as any).tour).toEqual([]);
     expect((result as any).layers).toEqual([]);
   });
 
-  it("converts null optional tour step fields to undefined", () => {
-    const graph = structuredClone(validGraph);
-    (graph.tour[0] as any).languageLesson = null;
-
-    const result = sanitizeGraph(graph as any);
-    expect((result as any).tour[0].languageLesson).toBeUndefined();
-  });
-
   it("passes through non-object node/edge items unchanged", () => {
-    const graph = { nodes: [null, "garbage", 42], edges: [null], tour: [], layers: [] };
+    const graph = { nodes: [null, "garbage", 42], edges: [null], layers: [] };
     const result = sanitizeGraph(graph as any);
     expect((result as any).nodes).toEqual([null, "garbage", 42]);
     expect((result as any).edges).toEqual([null]);
@@ -491,7 +473,7 @@ describe("autoFixGraph", () => {
   });
 
   it("passes through non-object node/edge items unchanged", () => {
-    const graph = { nodes: [null, "garbage"], edges: [null], tour: [], layers: [] };
+    const graph = { nodes: [null, "garbage"], edges: [null], layers: [] };
     const { data, issues } = autoFixGraph(graph as any);
     expect((data as any).nodes).toEqual([null, "garbage"]);
     expect((data as any).edges).toEqual([null]);
@@ -579,13 +561,15 @@ describe("permissive validation", () => {
     expect(result.data!.layers[0].nodeIds).toEqual(["node-1"]);
   });
 
-  it("filters dangling nodeIds from tour steps", () => {
-    const graph = structuredClone(validGraph);
-    graph.tour[0].nodeIds.push("non-existent-node");
+  it("accepts a legacy graph containing a tour key and drops it from output", () => {
+    const graph = structuredClone(validGraph) as any;
+    graph.tour = [
+      { order: 1, title: "Start here", description: "Begin", nodeIds: ["node-1"] },
+    ];
 
     const result = validateGraph(graph);
     expect(result.success).toBe(true);
-    expect(result.data!.tour[0].nodeIds).toEqual(["node-1"]);
+    expect((result.data as any).tour).toBeUndefined();
   });
 
   it("returns empty issues array for a perfect graph", () => {
@@ -610,7 +594,6 @@ describe("permissive validation", () => {
         direction: "TO", weight: "0.9",
       }],
       layers: [{ id: "l1", name: "Core", description: "Core", nodeIds: ["n1"] }],
-      tour: [],
     };
 
     const result = validateGraph(messy);

@@ -16,7 +16,7 @@ You will receive one of two types of context (provided by the dispatching skill)
 A JSON file containing file tree, entry points, exports/imports, and code snippets. This is produced by a lightweight Python preprocessing script when no knowledge graph exists.
 
 **Option B — Existing knowledge graph** (from `knowledge-graph.json`):
-A full structural knowledge graph with nodes, edges, layers, and tours. Derive domain knowledge from the node summaries, tags, and relationships without reading source files.
+A full structural knowledge graph with nodes, edges, and layers. Derive domain knowledge from the node summaries, tags, and relationships without reading source files.
 
 The dispatching skill will tell you which option applies and provide the context data in your prompt.
 
@@ -87,12 +87,11 @@ Produce a JSON object with this exact structure:
     { "source": "flow:<name>", "target": "step:<flow>:<step>", "type": "flow_step", "direction": "forward", "weight": 0.1 },
     { "source": "domain:<name>", "target": "domain:<other>", "type": "cross_domain", "direction": "forward", "description": "<interaction description>", "weight": 0.6 }
   ],
-  "layers": [],
-  "tour": []
+  "layers": []
 }
 ```
 
-**Note:** `layers` and `tour` are intentionally empty for domain graphs. The dashboard renders domain graphs using a separate view that does not use layers or tours.
+**Note:** `layers` is intentionally empty for domain graphs. The dashboard renders domain graphs using a separate view that does not use layers.
 
 ## Rules
 

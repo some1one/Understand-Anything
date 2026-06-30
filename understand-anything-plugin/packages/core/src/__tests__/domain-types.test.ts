@@ -61,7 +61,6 @@ const domainGraph: KnowledgeGraph = {
     },
   ],
   layers: [],
-  tour: [],
 };
 
 describe("domain graph types", () => {

@@ -116,7 +116,6 @@ const sampleGraph: KnowledgeGraph = {
   nodes: sampleNodes,
   edges: sampleEdges,
   layers: sampleLayers,
-  tour: [],
 };
 
 describe("buildChatContext", () => {

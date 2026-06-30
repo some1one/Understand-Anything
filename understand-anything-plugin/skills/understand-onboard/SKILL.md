@@ -19,7 +19,6 @@ The knowledge graph JSON has this structure:
 - `edges[]` — each has {source, target, type, direction, weight}
   - Key types: imports, contains, calls, depends_on, configures, documents, deploys, triggers, contains_flow, flow_step, related, cites
 - `layers[]` — each has {id, name, description, nodeIds[]}
-- `tour[]` — each has {order, title, description, nodeIds[]}
 
 ## How to Read Efficiently
 
@@ -36,20 +35,18 @@ The knowledge graph JSON has this structure:
 
 3. **Read layers** — Grep for `"layers"` to get the full layers array. These define the architecture and will structure the guide.
 
-4. **Read the tour** — Grep for `"tour"` to get the guided walkthrough steps. These provide the recommended learning path.
+4. **Read file-level structural nodes only** — use Grep to find nodes with file-level types (`file`, `config`, `document`, `service`, `pipeline`, `table`, `schema`, `resource`, `endpoint`) in the knowledge graph. Skip function-level and class-level nodes to keep the guide high-level. Extract each node's `name`, `filePath`, `summary`, and `complexity`.
 
-5. **Read file-level structural nodes only** — use Grep to find nodes with file-level types (`file`, `config`, `document`, `service`, `pipeline`, `table`, `schema`, `resource`, `endpoint`) in the knowledge graph. Skip function-level and class-level nodes to keep the guide high-level. Extract each node's `name`, `filePath`, `summary`, and `complexity`.
+5. **Identify complexity hotspots** — from the file-level nodes, find those with the highest `complexity` values. These are areas new developers should approach carefully.
 
-6. **Identify complexity hotspots** — from the file-level nodes, find those with the highest `complexity` values. These are areas new developers should approach carefully.
-
-7. **Generate the onboarding guide** with these sections:
+6. **Generate the onboarding guide** with these sections:
    - **Project Overview**: name, languages, frameworks, description (from project metadata)
    - **Architecture Layers**: each layer's name, description, and key files (from layers + file nodes)
    - **Key Concepts**: important patterns and design decisions (from node summaries and tags)
-   - **Guided Tour**: step-by-step walkthrough (from the tour section)
+   - **Recommended Reading Path**: a suggested order for exploring the codebase, starting from entry-point files and following dependency edges (imports/calls) through the layers
    - **File Map**: what each key file does (from file-level nodes, organized by layer)
    - **Complexity Hotspots**: areas to approach carefully (from complexity values)
 
-8. Format as clean markdown
-9. Offer to save the guide to `docs/ONBOARDING.md` in the project
-10. Suggest the user commit it to the repo for the team
+7. Format as clean markdown
+8. Offer to save the guide to `docs/ONBOARDING.md` in the project
+9. Suggest the user commit it to the repo for the team

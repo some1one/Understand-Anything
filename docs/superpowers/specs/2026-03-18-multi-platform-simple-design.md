@@ -14,7 +14,7 @@ Follows the [obra/superpowers](https://github.com/obra/superpowers) pattern:
 
 ## Change 1: Move Pipeline Agents Into Skill
 
-The 5 pipeline agents (project-scanner, file-analyzer, architecture-analyzer, tour-builder, graph-reviewer) are used exclusively by the `/understand` skill. They become prompt templates co-located with the skill:
+The 4 pipeline agents (project-scanner, file-analyzer, architecture-analyzer, graph-reviewer) are used exclusively by the `/understand` skill. They become prompt templates co-located with the skill:
 
 **Before:**
 ```
@@ -22,7 +22,6 @@ agents/
   project-scanner.md          # agent definition
   file-analyzer.md
   architecture-analyzer.md
-  tour-builder.md
   graph-reviewer.md
 skills/understand/
   SKILL.md                    # dispatches named agents
@@ -35,7 +34,6 @@ skills/understand/
   project-scanner-prompt.md          # prompt template (no agent frontmatter)
   file-analyzer-prompt.md
   architecture-analyzer-prompt.md
-  tour-builder-prompt.md
   graph-reviewer-prompt.md
 ```
 
@@ -56,18 +54,18 @@ name: knowledge-graph-guide
 description: |
   Use this agent when users need help understanding, querying, or working
   with an Understand-Anything knowledge graph. Guides users through graph
-  structure, node/edge relationships, layer architecture, tours, and
+  structure, node/edge relationships, layer architecture, and
   dashboard usage.
 model: inherit
 ---
 ```
 
 This agent knows:
-- The KnowledgeGraph JSON schema (nodes, edges, layers, tours)
+- The KnowledgeGraph JSON schema (nodes, edges, layers)
 - The 5 node types and 18 edge types
 - How to navigate and query the graph
 - How to use the interactive dashboard
-- How to interpret architectural layers and guided tours
+- How to interpret architectural layers
 
 ## Change 3: Platform Installation Files
 
@@ -95,8 +93,8 @@ Add a "Multi-Platform Installation" section to README.md with one-liner per plat
 
 | Action | Files |
 |--------|-------|
-| Delete | `agents/project-scanner.md`, `agents/file-analyzer.md`, `agents/architecture-analyzer.md`, `agents/tour-builder.md`, `agents/graph-reviewer.md` |
-| Create | `skills/understand/project-scanner-prompt.md`, `skills/understand/file-analyzer-prompt.md`, `skills/understand/architecture-analyzer-prompt.md`, `skills/understand/tour-builder-prompt.md`, `skills/understand/graph-reviewer-prompt.md` |
+| Delete | `agents/project-scanner.md`, `agents/file-analyzer.md`, `agents/architecture-analyzer.md`, `agents/graph-reviewer.md` |
+| Create | `skills/understand/project-scanner-prompt.md`, `skills/understand/file-analyzer-prompt.md`, `skills/understand/architecture-analyzer-prompt.md`, `skills/understand/graph-reviewer-prompt.md` |
 | Create | `agents/knowledge-graph-guide.md` |
 | Create | `.codex/INSTALL.md`, `.opencode/INSTALL.md`, `.openclaw/INSTALL.md`, `.cursor/INSTALL.md` |
 | Modify | `skills/understand/SKILL.md` (dispatch references) |

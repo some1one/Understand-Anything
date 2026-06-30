@@ -374,20 +374,43 @@ def _truncate_to_fit(context: dict[str, Any]) -> dict[str, Any]:
 
 
 def main() -> None:
-    if len(sys.argv) < 2:
-        print("Usage: python extract-domain-context.py <project-root>", file=sys.stderr)
+    args = sys.argv[1:]
+    if not args:
+        print(
+            "Usage: python -m arch_analysis.extract_domain_context <project-root> [--output PATH]",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
-    project_root = Path(sys.argv[1]).resolve()
+    positional: list[str] = []
+    output_override: str | None = None
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg == "--output" and i + 1 < len(args):
+            output_override = args[i + 1]
+            i += 2
+            continue
+        if arg.startswith("--output="):
+            output_override = arg.split("=", 1)[1]
+            i += 1
+            continue
+        positional.append(arg)
+        i += 1
+
+    project_root = Path(positional[0]).resolve()
     if not project_root.is_dir():
         print(f"Error: {project_root} is not a directory", file=sys.stderr)
         sys.exit(1)
 
     try:
-        # Ensure output directory exists
-        output_dir = project_root / ".understand-anything" / "intermediate"
-        output_dir.mkdir(parents=True, exist_ok=True)
-        output_path = output_dir / "domain-context.json"
+        if output_override:
+            output_path = Path(output_override)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+        else:
+            output_dir = project_root / ".understand-anything" / "intermediate"
+            output_dir.mkdir(parents=True, exist_ok=True)
+            output_path = output_dir / "domain-context.json"
 
         print(f"Scanning {project_root} ...", file=sys.stderr)
 

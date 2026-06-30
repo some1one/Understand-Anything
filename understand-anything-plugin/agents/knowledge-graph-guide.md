@@ -3,7 +3,7 @@ name: knowledge-graph-guide
 description: |
   Use this agent when users need help understanding, querying, or working
   with an Understand-Anything knowledge graph. Guides users through graph
-  structure, node/edge relationships, layer architecture, tours, and
+  structure, node/edge relationships, layer architecture, and
   dashboard usage.
 ---
 
@@ -27,8 +27,7 @@ Both graph types share the same top-level shape:
   "project": { "name", "languages", "frameworks", "description", "analyzedAt", "gitCommitHash" },
   "nodes": [...],
   "edges": [...],
-  "layers": [...],
-  "tour": [...]
+  "layers": [...]
 }
 ```
 
@@ -69,15 +68,6 @@ Both graph types share the same top-level shape:
 
 Layers represent architectural groupings (e.g., API, Service, Data, UI). Each layer has an `id`, `name`, `description`, and `nodeIds` array. Domain graphs may have empty layers.
 
-### Tours
-
-Tours are guided walkthroughs with sequential steps. Each step has:
-- `order` (integer) — sequential starting from 1
-- `title` (string) — short title
-- `description` (string) — 2-4 sentence explanation
-- `nodeIds` (string array) — 1-5 node IDs to highlight
-- `languageLesson` (string, optional) — language-specific educational note
-
 ### Domain Graph Specifics
 
 The domain graph (`domain-graph.json`) uses a three-level hierarchy:
@@ -92,7 +82,7 @@ Domain nodes may have a `domainMeta` field with `entities`, `businessRules`, `cr
 1. **Finding things**: Help users locate nodes by file path, function name, or concept. Example: `jq '.nodes[] | select(.filePath == "src/index.ts")' knowledge-graph.json`
 2. **Understanding relationships**: Trace edges between nodes to explain dependencies, call chains, and data flow. Example: `jq '[.edges[] | select(.source == "file:src/app.ts")] | length' knowledge-graph.json`
 3. **Architecture overview**: Summarize layers and their contents. Example: `jq '.layers[] | {name, count: (.nodeIds | length)}' knowledge-graph.json`
-4. **Onboarding**: Walk through the tour steps to explain the codebase.
+4. **Onboarding**: Walk through the layers and node summaries to explain the codebase, starting from entry-point files and following dependency edges.
 5. **Dashboard**: Guide users to run `/understand-dashboard` to visualize the graph interactively. The dashboard supports toggling between Structural and Domain views.
 6. **Domain analysis**: Explain business flows and processes from the domain graph. Example: `jq '.nodes[] | select(.type == "flow")' domain-graph.json`
 7. **Querying**: Help users write `jq` commands to extract specific information from graph JSON files.

@@ -45,7 +45,6 @@ interface KnowledgeGraph {
   nodes: GraphNode[];
   edges: GraphEdge[];
   layers: Layer[];
-  tour: TourStep[];
 }
 
 interface ProjectMeta {
@@ -96,14 +95,6 @@ interface Layer {
   description: string;
   nodeIds: string[];
 }
-
-interface TourStep {
-  order: number;
-  title: string;
-  description: string;           // Markdown explanation
-  nodeIds: string[];             // Nodes to highlight
-  languageLesson?: string;       // Optional language concept explanation
-}
 ```
 
 ---
@@ -126,7 +117,7 @@ interface TourStep {
 │                      │                                  │
 │   CHAT PANEL         │   LEARN PANEL                    │
 │                      │                                  │
-│   Context-aware Q&A  │   Tour mode + Contextual mode    │
+│   Context-aware Q&A  │   Contextual mode                │
 │   about selected     │   Language lessons in context     │
 │   nodes / project.   │   of YOUR code.                  │
 │                      │                                  │
@@ -181,11 +172,9 @@ interface TourStep {
 │     "version": "1.0.0",
 │     "analyzedFiles": 47
 │   }
-├── cache/                     # Per-file analysis cache
-│   ├── src__index.ts.json
-│   └── src__auth__login.ts.json
-└── tours/
-    └── default-tour.json
+└── cache/                     # Per-file analysis cache
+    ├── src__index.ts.json
+    └── src__auth__login.ts.json
 ```
 
 **Auto-sync flow:**
@@ -237,17 +226,16 @@ interface AnalyzerPlugin {
 13. Layer auto-detection (group nodes into logical layers)
 
 ### Phase 3: Learn Mode
-14. Tour generation — guided project walkthrough
-15. Contextual explanations — click-to-explain
-16. Language-specific lessons in context of the user's code
-17. Persona modes (non-technical / junior / experienced)
+14. Contextual explanations — click-to-explain
+15. Language-specific lessons in context of the user's code
+16. Persona modes (non-technical / junior / experienced)
 
 ### Phase 4: Advanced
-18. Skill: `/understand-diff` — PR/diff analysis
-19. Skill: `/understand-explain` — deep-dive on specific files
-20. Skill: `/understand-onboard` — onboarding guide generation
-21. Community plugin system
-22. Embedding-based semantic search (optional enhancement)
+17. Skill: `/understand-diff` — PR/diff analysis
+18. Skill: `/understand-explain` — deep-dive on specific files
+19. Skill: `/understand-onboard` — onboarding guide generation
+20. Community plugin system
+21. Embedding-based semantic search (optional enhancement)
 
 ---
 
@@ -258,7 +246,7 @@ interface AnalyzerPlugin {
 2. **Incremental update**: Modify a file → run `/understand` again → verify only the changed file is re-analyzed
 3. **Dashboard**: Open `http://localhost:5173` → verify graph renders, nodes are clickable, search works
 4. **Chat**: Ask a question in the chat panel → verify it returns a relevant answer using the knowledge graph
-5. **Learn mode**: Start the tour → verify it walks through the project step by step
+5. **Learn mode**: Click a node → verify contextual explanations and language lessons render for the selected code
 6. **Tree-sitter**: Analyze a TypeScript file → verify function boundaries and import relationships match the actual code
 
 ### Test projects to validate against:

@@ -487,7 +487,6 @@ describe("normalizeBatchOutput integration", () => {
       nodes: result.nodes,
       edges: result.edges,
       layers: [],
-      tour: [],
     };
 
     const validation = validateGraph(graph);

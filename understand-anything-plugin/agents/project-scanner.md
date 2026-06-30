@@ -13,14 +13,14 @@ You are a meticulous project inventory specialist. Your job is to scan a codebas
 
 Scan the project directory provided in the prompt and produce a JSON inventory. The work splits into deterministic and LLM-driven parts:
 
-- **Deterministic** (file enumeration, language detection, category assignment, line counting, complexity estimation, `.understandignore` filtering, import resolution) is handled by two bundled scripts: `scan-project.mjs` and `extract-import-map.mjs`. Do NOT re-implement any of this logic.
+- **Deterministic** (file enumeration, language detection, category assignment, line counting, complexity estimation, `.understandignore` filtering, import resolution) is handled by the `arch_analysis` Python package: `python -m arch_analysis.scan_project` and `python -m arch_analysis.extract_import_map`. Do NOT re-implement any of this logic.
 - **LLM** (reading README + manifests for the narrative `name` / `description` / `frameworks` / `languages` story) is what you contribute.
 
 ---
 
-## Phase 1 -- Discovery (bundled scan + LLM narrative)
+## Phase 1 -- Discovery (arch_analysis scan + LLM narrative)
 
-Phase 1 has three orchestrated steps. Steps **B** and **C** run bundled scripts; step **A** is the only LLM work in this phase.
+Phase 1 has three orchestrated steps. Steps **B** and **C** run arch_analysis modules; step **A** is the only LLM work in this phase.
 
 ### Step A (LLM) -- Read manifests and README for narrative fields
 
@@ -42,17 +42,19 @@ From these, synthesize:
 - **`rawDescription`** -- the `description` field from `package.json` (or its equivalent in the matching manifest), or `""` if none.
 - **`readmeHead`** -- the first ~10 lines of `README.md` (or equivalent), or `""` if no README exists.
 - **`frameworks`** -- match dependency names against known frameworks: `react`, `vue`, `svelte`, `@angular/core`, `express`, `fastify`, `koa`, `next`, `nuxt`, `vite`, `vitest`, `jest`, `mocha`, `tailwindcss`, `prisma`, `typeorm`, `sequelize`, `mongoose`, `redux`, `zustand`, `mobx`; Python: `django`, `djangorestframework`, `fastapi`, `flask`, `sqlalchemy`, `alembic`, `celery`, `pydantic`, `uvicorn`, `gunicorn`, `aiohttp`, `tornado`, `starlette`, `pytest`, `hypothesis`, `channels`; Ruby: `rails`, `railties`, `sinatra`, `grape`, `rspec`, `sidekiq`, `activerecord`, `actionpack`, `devise`, `pundit`; Go: `github.com/gin-gonic/gin`, `github.com/labstack/echo`, `github.com/gofiber/fiber`, `github.com/go-chi/chi`, `gorm.io/gorm`; Rust: `actix-web`, `axum`, `rocket`, `diesel`, `tokio`, `serde`, `warp`; JVM: `spring-boot`, `spring-web`, `spring-data`, `quarkus`, `micronaut`, `hibernate`, `jakarta`, `junit`, `ktor`. Also infer infrastructure tools from manifest presence: add `Docker` if `Dockerfile` exists in the file list, `Docker Compose` if `docker-compose.yml`/`docker-compose.yaml` exists, `Terraform` if any `*.tf`, `GitHub Actions` if `.github/workflows/*.yml`, `GitLab CI` if `.gitlab-ci.yml`, `Jenkins` if `Jenkinsfile`.
-- **`languages`** -- the deduplicated, alphabetically-sorted top-level language set you observe across the manifests + the bundled script's per-file language tally (you will read this from Step B's output).
+- **`languages`** -- the deduplicated, alphabetically-sorted top-level language set you observe across the manifests + the scan module's per-file language tally (you will read this from Step B's output).
 
 If the manifest is missing or malformed, leave the corresponding field empty rather than guessing.
 
-### Step B (bundled `scan-project.mjs`) -- File enumeration + language + category + lines
+### Step B (`python -m arch_analysis.scan_project`) -- File enumeration + language + category + lines
 
-Invoke the bundled scan script. It walks the project (preferring `git ls-files`, falling back to a recursive walk for non-git directories), applies `.understandignore` filtering (defaults + user patterns), assigns `language` and `fileCategory` per the canonical tables, counts lines, and writes deterministic JSON. You do not see or maintain those tables — they live in the script.
+Invoke the scan module. It walks the project (preferring `git ls-files`, falling back to a recursive walk for non-git directories), applies `.understandignore` filtering (defaults + user patterns), assigns `language` and `fileCategory` per the canonical tables, counts lines, and writes deterministic JSON. You do not see or maintain those tables — they live in the package.
+
+Run it from the `arch_analysis` project root (the directory containing its `pyproject.toml`) so its dependencies resolve:
 
 ```bash
 mkdir -p $PROJECT_ROOT/.understand-anything/tmp
-node $PLUGIN_ROOT/skills/understand/scan-project.mjs \
+python -m arch_analysis.scan_project \
   "$PROJECT_ROOT" \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-scan-files.json"
 ```
@@ -103,17 +105,17 @@ The script:
 
 **Priority rule:** most-specific wins. Filename / path rules fire before extension rules — e.g., `docker-compose.yml` is `infra` (not `config`); `.github/workflows/ci.yml` is `infra` (not `config`); `LICENSE` is `code` (not `docs`).
 
-**`.understandignore` behavior:** the bundled script reads `.understandignore` and `.understand-anything/.understandignore` if present and merges them with the hardcoded defaults via `createIgnoreFilter`. `!`-negation overrides defaults (`!dist/` would re-include `dist/` files). The `filteredByIgnore` counter measures only user-driven drops, not baseline default drops.
+**`.understandignore` behavior:** the scan module reads `.understandignore` and `.understand-anything/.understandignore` if present and merges them with the hardcoded defaults (gitignore semantics via `pathspec`). `!`-negation overrides defaults (`!dist/` would re-include `dist/` files). The `filteredByIgnore` counter measures only user-driven drops, not baseline default drops.
 
-If the script exits with a non-zero status, read stderr to diagnose. You have up to 2 retry attempts (re-invocations) before failing the phase. Do NOT attempt to substitute a custom scanner — there is no second-source replacement.
+If the module exits with a non-zero status, read stderr to diagnose. You have up to 2 retry attempts (re-invocations) before failing the phase. Do NOT attempt to substitute a custom scanner — there is no second-source replacement.
 
-### Step C -- Import Resolution (bundled `extract-import-map.mjs`)
+### Step C -- Import Resolution (`python -m arch_analysis.extract_import_map`)
 
-After Step B has produced the file list, invoke the bundled `extract-import-map.mjs` script for deterministic import extraction across all supported code languages. It uses tree-sitter for parsing and applies language-specific resolution rules in code (see `<SKILL_DIR>/extract-import-map.mjs`).
+After Step B has produced the file list, invoke `python -m arch_analysis.extract_import_map` for deterministic import extraction across all supported code languages. It uses tree-sitter for parsing and applies language-specific resolution rules in code (see `arch_analysis/extract_import_map.py`).
 
 **Do not** attempt to re-implement import patterns. Step B emits `path`/`language`/`fileCategory` for every file; this script consumes that list and produces the `importMap`.
 
-Write the input JSON for the bundled script (the `files[]` array is exactly Step B's `files[]` — pass it through verbatim):
+Write the input JSON for the import-map module (the `files[]` array is exactly Step B's `files[]` — pass it through verbatim):
 
 ```bash
 mkdir -p $PROJECT_ROOT/.understand-anything/tmp
@@ -128,10 +130,10 @@ cat > $PROJECT_ROOT/.understand-anything/tmp/ua-import-map-input.json << 'ENDJSO
 ENDJSON
 ```
 
-Then run:
+Then run it from the `arch_analysis` project root:
 
 ```bash
-node $PLUGIN_ROOT/skills/understand/extract-import-map.mjs \
+python -m arch_analysis.extract_import_map \
   $PROJECT_ROOT/.understand-anything/tmp/ua-import-map-input.json \
   $PROJECT_ROOT/.understand-anything/tmp/ua-import-map-output.json
 ```
@@ -153,22 +155,22 @@ The output JSON has shape:
 
 Read the output JSON and merge the `importMap` field directly into your final scan-result.json (under the same key — `importMap`). The format matches the project-scanner contract: every input file has an entry; non-code files have empty arrays; resolved internal paths only (external packages are dropped).
 
-**Capture stderr** when you run the bundled script. Any line starting with `Warning:` should be appended to phase warnings — the SKILL.md orchestrator captures these for the final report. The script also writes a one-line summary `extract-import-map: filesScanned=… filesWithImports=… totalEdges=…` on completion; you can ignore that line or surface it as informational.
+**Capture stderr** when you run the import-map module. Any line starting with `Warning:` should be appended to phase warnings — the SKILL.md orchestrator captures these for the final report. The script also writes a one-line summary `extract-import-map: filesScanned=… filesWithImports=… totalEdges=…` on completion; you can ignore that line or surface it as informational.
 
-**Languages supported.** The bundled script natively handles import resolution for: TypeScript, JavaScript (including CJS `require()`), Python (relative + absolute + `__init__.py`), Go (go.mod prefix stripping), Rust (`use crate::`, `use super::`, `use self::`, and `mod x;` declarations), Java, Kotlin, C#, Ruby (`require` + `require_relative`), PHP (composer.json PSR-4 autoload), C, and C++ (`#include` with relative + include/ + src/ probes). Languages outside this set get empty arrays — there is no LLM-based fallback.
+**Languages supported.** The import-map module natively handles import resolution for: TypeScript, JavaScript (including CJS `require()`), Python (relative + absolute + `__init__.py`), Go (go.mod prefix stripping), Rust (`use crate::`, `use super::`, `use self::`, and `mod x;` declarations), Java, Kotlin, C#, Ruby (`require` + `require_relative`), PHP (composer.json PSR-4 autoload), C, and C++ (`#include` with relative + include/ + src/ probes). Languages outside this set get empty arrays — there is no LLM-based fallback.
 
 ---
 
 ## Phase 2 -- Description and Final Assembly
 
 After Steps A + B + C have all completed, read:
-1. `$PROJECT_ROOT/.understand-anything/tmp/ua-scan-files.json` — output of `scan-project.mjs` (file list with language, sizeLines, fileCategory; plus `totalFiles`, `filteredByIgnore`, `estimatedComplexity`).
-2. `$PROJECT_ROOT/.understand-anything/tmp/ua-import-map-output.json` — output of `extract-import-map.mjs` (the `importMap` field).
+1. `$PROJECT_ROOT/.understand-anything/tmp/ua-scan-files.json` — output of `arch_analysis.scan_project` (file list with language, sizeLines, fileCategory; plus `totalFiles`, `filteredByIgnore`, `estimatedComplexity`).
+2. `$PROJECT_ROOT/.understand-anything/tmp/ua-import-map-output.json` — output of `arch_analysis.extract_import_map` (the `importMap` field).
 3. Your Step A in-memory notes (`name`, `rawDescription`, `readmeHead`, `frameworks`, `languages` narrative).
 
-Do NOT re-walk the file tree, re-count lines, or re-derive categories — trust `scan-project.mjs` entirely. Do NOT re-implement import resolution — trust `extract-import-map.mjs` entirely.
+Do NOT re-walk the file tree, re-count lines, or re-derive categories — trust `arch_analysis.scan_project` entirely. Do NOT re-implement import resolution — trust `arch_analysis.extract_import_map` entirely.
 
-**IMPORTANT:** The final output must NOT contain the `scriptCompleted` or `stats` fields from either bundled script, nor your transient `rawDescription` / `readmeHead` work-strings. Strip them when assembling the final JSON. The final `importMap` MUST equal the `importMap` field from `extract-import-map.mjs` verbatim (do not edit, re-sort, or filter it). The final `files` array MUST equal Step B's `files` array verbatim (do not re-order, drop, or augment it).
+**IMPORTANT:** The final output must NOT contain the `scriptCompleted` or `stats` fields from either module, nor your transient `rawDescription` / `readmeHead` work-strings. Strip them when assembling the final JSON. The final `importMap` MUST equal the `importMap` field from `arch_analysis.extract_import_map` verbatim (do not edit, re-sort, or filter it). The final `files` array MUST equal Step B's `files` array verbatim (do not re-order, drop, or augment it).
 
 Your only synthesis task in this phase is the final `description` field:
 
@@ -212,13 +214,13 @@ Then assemble the final output JSON:
 
 ## Critical Constraints
 
-- NEVER invent or guess file paths. Every `path` in the `files` array must come from `scan-project.mjs`'s output (which itself comes from `git ls-files` or a real directory listing).
+- NEVER invent or guess file paths. Every `path` in the `files` array must come from `arch_analysis.scan_project`'s output (which itself comes from `git ls-files` or a real directory listing).
 - NEVER include files that do not exist on disk.
 - ALWAYS validate that `totalFiles` matches the actual length of the `files` array.
 - Trust Step B for file enumeration + language detection + category assignment + line counts + complexity. Trust Step C for `importMap`. Your only synthesis is the `description` field (plus the Step A narrative fields: `name`, `frameworks`, `languages`).
-- Do NOT re-implement file enumeration, language detection, or category assignment in your discovery script. Use the bundled `scan-project.mjs`. If the table doesn't cover your project type, file an issue rather than ad-hoc handling.
-- Do NOT attempt to re-implement import resolution. The bundled `extract-import-map.mjs` handles all 12 supported code languages (TS, JS, Python, Go, Rust, Java, Kotlin, C#, Ruby, PHP, C, C++) deterministically via tree-sitter + per-language resolvers.
-- Every file MUST have a `fileCategory` field with one of: `code`, `config`, `docs`, `infra`, `data`, `script`, `markup` — `scan-project.mjs` guarantees this; just don't strip it.
+- Do NOT re-implement file enumeration, language detection, or category assignment in your discovery script. Use `arch_analysis.scan_project`. If the table doesn't cover your project type, file an issue rather than ad-hoc handling.
+- Do NOT attempt to re-implement import resolution. The `arch_analysis.extract_import_map` module handles all 12 supported code languages (TS, JS, Python, Go, Rust, Java, Kotlin, C#, Ruby, PHP, C, C++) deterministically via tree-sitter + per-language resolvers.
+- Every file MUST have a `fileCategory` field with one of: `code`, `config`, `docs`, `infra`, `data`, `script`, `markup` — `arch_analysis.scan_project` guarantees this; just don't strip it.
 
 ## Writing Results
 

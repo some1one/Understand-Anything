@@ -26,7 +26,6 @@ const sampleGraph: KnowledgeGraph = {
   layers: [
     { id: "layer:auth", name: "Auth Layer", description: "Authentication", nodeIds: ["file:src/auth.ts", "function:src/auth.ts:login", "function:src/auth.ts:verify"] },
   ],
-  tour: [],
 };
 
 describe("explain-builder", () => {
