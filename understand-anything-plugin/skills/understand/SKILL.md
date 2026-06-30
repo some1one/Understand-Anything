@@ -491,12 +491,13 @@ Assemble the full KnowledgeGraph JSON object:
 
 #### Default path (no `--review`): deterministic validation
 
-Run the `arch_analysis` graph validator (from the `arch_analysis` project root). It performs the full referential-integrity, completeness, layer-coverage, uniqueness, and quality checks and writes the review payload (`scriptCompleted`, `issues`, `warnings`, `stats`):
+Run the `arch_analysis` graph validator (from the `arch_analysis` project root). It performs the full referential-integrity, completeness, layer-coverage, uniqueness, and quality checks; with `--scan-result` it also cross-checks scan coverage (every scanned file has a node; no node references an unscanned file). It writes the review payload (`scriptCompleted`, `issues`, `warnings`, `stats`):
 
 ```bash
 python -m arch_analysis.validate_graph \
   "$PROJECT_ROOT/.understand-anything/intermediate/assembled-graph.json" \
-  "$PROJECT_ROOT/.understand-anything/intermediate/review.json"
+  "$PROJECT_ROOT/.understand-anything/intermediate/review.json" \
+  --scan-result "$PROJECT_ROOT/.understand-anything/intermediate/scan-result.json"
 ```
 
 If the module exits non-zero, read stderr to diagnose (almost always an unreadable or malformed graph file), then retry once. Read `review.json`: the graph is approved when `issues` is empty (warnings are acceptable).
@@ -519,7 +520,7 @@ Dispatch a subagent using the `graph-reviewer` agent definition (at `agents/grap
 > Phase warnings/errors accumulated during analysis:
 > - [list any batch failures, skipped files, or warnings from Phases 2-4]
 >
-> Cross-validate: every file in the scan inventory should have a corresponding node in the graph (node types may vary: `file:`, `config:`, `document:`, `service:`, `pipeline:`, `table:`, `schema:`, `resource:`, `endpoint:`). Flag any missing files. Also flag any graph nodes whose `filePath` doesn't appear in the scan inventory.
+> Scan coverage is cross-checked deterministically — the graph-reviewer runs `validate_graph` with `--scan-result`, which flags any scanned file lacking a node and any node referencing a file absent from the scan inventory. You do not need to cross-validate coverage by hand.
 
 Pass these parameters in the dispatch prompt:
 

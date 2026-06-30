@@ -24,11 +24,17 @@ merge-subdomains = { cmd = "python -m arch_analysis.merge_subdomain_graphs", hel
 domain-context = { cmd = "python -m arch_analysis.extract_domain_context", help = "Extract domain context: domain-context <project_root> [--output PATH]" }
 validate-graph = { cmd = "python -m arch_analysis.validate_graph", help = "Validate an assembled graph: validate-graph <graph.json> <review.json>" }
 validate-domain-graph = { cmd = "python -m arch_analysis.validate_domain_graph", help = "Validate a domain graph: validate-domain-graph <domain-graph.json>" }
-assemble-scan = { cmd = "python -m arch_analysis.assemble_project_scan_result", help = "Assemble scan-result.json: assemble-scan <project-root> <narrative.json>" }
+validate-assembled-graph = { cmd = "python -m arch_analysis.validate_assembled_graph", help = "Validate the pre-layer assembled graph: validate-assembled-graph <graph.json> <review.json> [--scan-result PATH]" }
+assemble-scan ={ cmd = "python -m arch_analysis.assemble_project_scan_result", help = "Assemble scan-result.json: assemble-scan <project-root> <narrative.json>" }
 prepare-batch = { cmd = "python -m arch_analysis.prepare_file_analysis_batch", help = "Prepare file-analyzer batch input/context: prepare-batch <project-root> <batchIndex>..." }
 validate-structure-output = { cmd = "python -m arch_analysis.validate_structure_output", help = "Validate extract_structure output: validate-structure-output <input.json> <results.json>" }
 seed-file-batch = { cmd = "python -m arch_analysis.seed_file_batch_graph", help = "Seed deterministic file-batch graph: seed-file-batch <context.json> <results.json> <seed.json>" }
 finalize-file-batch = { cmd = "python -m arch_analysis.finalize_file_batch_output", help = "Finalize file-batch output: finalize-file-batch <project-root> <context.json> <seed.json> <draft.json>" }
+auto-update-preflight = { cmd = "python -m arch_analysis.auto_update_preflight", help = "Auto-update pre-flight: auto-update-preflight <project-root> [--force]" }
+auto-update-fingerprint-check = { cmd = "python -m arch_analysis.auto_update_fingerprint_check", help = "Auto-update fingerprint check: auto-update-fingerprint-check <project-root>" }
+auto-update-prepare-batches = { cmd = "python -m arch_analysis.auto_update_prepare_batches", help = "Auto-update batch prep: auto-update-prepare-batches <project-root>" }
+auto-update-apply-batches = { cmd = "python -m arch_analysis.auto_update_apply_batches", help = "Auto-update prune+merge: auto-update-apply-batches <project-root>" }
+auto-update-finalize = { cmd = "python -m arch_analysis.auto_update_finalize", help = "Auto-update finalize: auto-update-finalize <project-root>" }
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

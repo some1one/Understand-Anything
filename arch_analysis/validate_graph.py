@@ -67,8 +67,94 @@ _EXPECTED_EDGE_BY_TYPE: dict[str, tuple[str, ...]] = {
 }
 
 
-def review_graph(graph: dict[str, Any]) -> dict[str, Any]:
-    """Validate ``graph`` and return the review payload."""
+# Node-id prefixes whose second ``:``-segment is a project-relative file path.
+_PATH_BEARING_PREFIXES = frozenset(
+    {
+        "file", "function", "class", "config", "document",
+        "service", "table", "endpoint", "pipeline", "schema", "resource",
+    }
+)
+
+_MAX_COVERAGE_WARNINGS = 50
+
+
+def _node_file_path(node: dict[str, Any]) -> str | None:
+    """The project-relative file path a node refers to, or None."""
+    fp = node.get("filePath")
+    if isinstance(fp, str) and fp:
+        return fp
+    nid = node.get("id", "")
+    if not isinstance(nid, str):
+        return None
+    parts = nid.split(":")
+    if len(parts) >= 2 and parts[0] in _PATH_BEARING_PREFIXES:
+        return parts[1]
+    return None
+
+
+def load_scanned_paths(scan_result_path: Path) -> list[str]:
+    """Read the file-path inventory from a ``scan-result.json``."""
+    data = json.loads(scan_result_path.read_text(encoding="utf-8"))
+    return [
+        f["path"]
+        for f in data.get("files", [])
+        if isinstance(f, dict) and isinstance(f.get("path"), str)
+    ]
+
+
+def add_scan_coverage(
+    review: dict[str, Any], graph: dict[str, Any], scanned_paths: list[str]
+) -> dict[str, Any]:
+    """Cross-check graph node coverage against the scan inventory (mutates ``review``).
+
+    Adds a warning for every scanned file with no corresponding node (possible
+    data loss) and for every node whose file path is absent from the inventory
+    (stale or invented reference), plus a ``coverage`` block in ``stats``.
+    """
+    nodes = graph.get("nodes", []) if isinstance(graph.get("nodes"), list) else []
+    covered: set[str] = set()
+    for n in nodes:
+        if isinstance(n, dict):
+            p = _node_file_path(n)
+            if p:
+                covered.add(p)
+
+    scanned = set(scanned_paths)
+    missing = sorted(scanned - covered)
+    extra = sorted(covered - scanned)
+    warnings = review["warnings"]
+
+    for p in missing[:_MAX_COVERAGE_WARNINGS]:
+        warnings.append(f"Scanned file '{p}' has no corresponding node in the graph")
+    if len(missing) > _MAX_COVERAGE_WARNINGS:
+        warnings.append(
+            f"... and {len(missing) - _MAX_COVERAGE_WARNINGS} more scanned files with no node"
+        )
+    for p in extra[:_MAX_COVERAGE_WARNINGS]:
+        warnings.append(f"Node references file '{p}' not present in the scan inventory")
+    if len(extra) > _MAX_COVERAGE_WARNINGS:
+        warnings.append(
+            f"... and {len(extra) - _MAX_COVERAGE_WARNINGS} more nodes referencing unknown files"
+        )
+
+    review["stats"]["coverage"] = {
+        "scannedFiles": len(scanned),
+        "filesWithNodes": len(scanned & covered),
+        "missingFileNodes": len(missing),
+        "unknownFileNodes": len(extra),
+    }
+    return review
+
+
+def review_graph(graph: dict[str, Any], require_layers: bool = True) -> dict[str, Any]:
+    """Validate ``graph`` and return the review payload.
+
+    ``require_layers=False`` is for the **pre-layer assembled graph** (the
+    merge output, before the architecture-analyzer adds layers): it relaxes the
+    zero-layers critical to a warning and skips the file-level layer-coverage
+    check, while keeping every other check (schema fields, referential
+    integrity, uniqueness, quality).
+    """
     issues: list[str] = []
     warnings: list[str] = []
 
@@ -179,11 +265,13 @@ def review_graph(graph: dict[str, Any]) -> dict[str, Any]:
     if len(layers) == 0:
         if is_domain_graph:
             warnings.append("Domain graph has zero layers (relaxed to warning)")
+        elif not require_layers:
+            warnings.append("Assembled graph has zero layers (pre-layer stage — relaxed to warning)")
         else:
             issues.append("Graph has zero layers")
 
     # Check 4: file-level nodes must appear in exactly one layer (structural only).
-    if not (is_domain_graph and len(layers) == 0):
+    if require_layers and not (is_domain_graph and len(layers) == 0):
         for n in nodes:
             if not isinstance(n, dict):
                 continue
@@ -256,13 +344,30 @@ def review_graph(graph: dict[str, Any]) -> dict[str, Any]:
 
 def main(argv: list[str] | None = None) -> int:
     args = sys.argv[1:] if argv is None else argv
-    if len(args) < 2:
+    positional: list[str] = []
+    scan_result: str | None = None
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg == "--scan-result" and i + 1 < len(args):
+            scan_result = args[i + 1]
+            i += 2
+            continue
+        if arg.startswith("--scan-result="):
+            scan_result = arg.split("=", 1)[1]
+            i += 1
+            continue
+        positional.append(arg)
+        i += 1
+
+    if len(positional) < 2:
         sys.stderr.write(
-            "Usage: python -m arch_analysis.validate_graph <graph.json> <review.json>\n"
+            "Usage: python -m arch_analysis.validate_graph <graph.json> <review.json> "
+            "[--scan-result <scan-result.json>]\n"
         )
         return 1
 
-    graph_path, review_path = args[0], args[1]
+    graph_path, review_path = positional[0], positional[1]
     try:
         graph = json.loads(Path(graph_path).read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as err:
@@ -270,6 +375,13 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     review = review_graph(graph)
+    if scan_result is not None:
+        try:
+            add_scan_coverage(review, graph, load_scanned_paths(Path(scan_result)))
+        except (OSError, json.JSONDecodeError) as err:
+            sys.stderr.write(
+                f"validate_graph: scan-coverage skipped — cannot read {scan_result}: {err}\n"
+            )
     Path(review_path).write_text(json.dumps(review, indent=2, ensure_ascii=False), encoding="utf-8")
 
     sys.stderr.write(

@@ -1,193 +1,129 @@
-# Deterministic Schemas And Validators For Analysis Agents
+# Deterministic Auto-Update Scripts
 
   ## Summary
 
-  - Make arch_analysis the schema and validation source of
-    truth for domain, project scan, and file batch
-    outputs.
+  Move the deterministic parts of understand-anything-
+  plugin/hooks/auto-update-prompt.md into Python modules
+  under arch_analysis, using the existing Python
+  structural extractor and fingerprint baseline format.
+  The hook prompt should stop embedding temporary Node/
+  Bash scripts and instead call these commands, leaving
+  LLM work only for file-analyzer and architecture-
+  analyzer dispatches.
 
-  - Replace LLM-authored JSON assembly where it is
-    deterministic: project scan assembly, file-analyzer
-    batch input/context prep, seeded file tags/edges,
-    import-edge self-checking, and batch output splitting.
+  ## Key Changes
 
-  - Update agent prompts under understand-anything-plugin/
-    agents to reference arch_analysis/schemas/
-    *.schema.json contracts instead of duplicating
-    required-field/schema lists in markdown.
+  - Add shared fingerprint logic in arch_analysis/
+    fingerprints.py.
+      - Refactor build_fingerprints.py to reuse it while
+        preserving its current CLI.
 
-  ## Public APIs And Schemas
+      - Implement content hashing, structural fingerprint
+        extraction, fingerprint comparison, update
+        classification, and load-patch-save fingerprint
+        writes.
 
-  - Extend arch_analysis.models and arch_analysis.schema
-    so generated schemas cover:
-      - project-scan-output.schema.json: final project-
-        scanner output written to intermediate/scan-
-        result.json.
+      - Match current TypeScript semantics: NONE for
+        identical hash, COSMETIC for same structure,
+        STRUCTURAL for signature/import/export changes or
+        files without structural support.
 
-      - knowledge-graph.schema.json and domain-
-        graph.schema.json: full graph contracts used by
-        domain-analyzer, graph-reviewer, and the guide.
+  - Add auto-update command modules:
+      - auto_update_preflight.py: validate graph/meta,
+        read commit hashes, collect changed files, filter
+        source files, apply .understandignore, create
+        intermediate/, write auto-update-state.json, and
+        handle metadata-only stop cases.
 
-      - graph-fragment.schema.json: { "nodes": [...],
-        "edges": [...] } batch/part output from file-
-        analyzer.
+      - auto_update_fingerprint_check.py: read state +
+        fingerprints.json, compute changed-file
+        fingerprints, write change-analysis.json, and
+        update metadata on SKIP.
 
-      - file-analysis-context.schema.json: deterministic
-        per-batch context consumed by file-analyzer.
+      - auto_update_prepare_batches.py: write changed-file
+        input for compute_batches, run/reuse changed-file
+        batching, and write a dispatch summary for the LLM
+        file-analysis phase.
 
-  - Add/update CLIs:
-      - python -m
-        arch_analysis.assemble_project_scan_result
-        <project-root> <narrative.json>: merges LLM
-        narrative fields with raw scan/import outputs and
-        writes validated scan-result.json.
+      - auto_update_apply_batches.py: prune old nodes/
+        edges for changed/deleted files, write batch-
+        existing.json, reuse merge normalization, and
+        produce either a partial final graph or an
+        architecture-rerun input graph.
 
-      - python -m
-        arch_analysis.prepare_file_analysis_batch
-        <project-root> <batchIndex> [<batchIndex>...]:
-        reads batches.json, writes ua-file-analyzer-
-        input-<batchIndex>.json and ua-file-
-        context-<batchIndex>.json.
+      - auto_update_finalize.py: apply optional
+        architecture layers, run lite validation cleanup,
+        write knowledge-graph.json, patch fingerprints
+        without clobbering unrelated entries, update
+        meta.json, and clean intermediate files safely
+        while preserving scan-result.json.
 
-      - python -m arch_analysis.validate_structure_output
-        <input.json> <extract-results.json>: validates
-        Phase 1 Step 3 extraction output against schema
-        and batch coverage.
+  - Add JSON contracts and validation.
+      - Add pydantic models/schema generation for
+        AutoUpdateState, ChangeAnalysis, FileChangeResult,
+        UpdateDecision, and AutoUpdateSummary.
 
-      - python -m arch_analysis.seed_file_batch_graph
-        <context.json> <extract-results.json> <seed.json>:
-        writes deterministic file nodes, deterministic
-        tags, and deterministic edges.
+      - Outputs must include machine-readable status,
+        action, reason, filesToReanalyze, newFiles,
+        deletedFiles, cosmeticOnlyFiles, unchangedFiles,
+        and metadataUpdated.
 
-      - python -m arch_analysis.finalize_file_batch_output
-        <project-root> <context.json> <seed.json>
-        <draft.json>: validates no seeded tags/edges/nodes
-        were lost, validates schema/reference/import
-        counts, then writes batch-<N>.json or
-        batch-<N>-part-<K>.json.
+  - Update docs and command registration.
+      - Add PDM scripts for each new module in
+        pyproject.toml.
 
-      - Update python -m
-        arch_analysis.validate_domain_graph to run JSON
-        Schema validation plus domain-specific checks and
-        write a review JSON.
+      - Update arch_analysis/README.md with the auto-
+        update command flow.
 
-  ## Implementation Changes
+      - Rewrite understand-anything-plugin/hooks/auto-
+        update-prompt.md so each phase invokes the Python
+        commands and reads their JSON outputs instead of
+        writing inline scripts.
 
-  - domain-analyzer.md:
-      - Replace the inline output schema with a reference
-        to arch_analysis/schemas/domain-graph.schema.json.
-
-      - Instruct the agent to write domain-analysis.json,
-        run validate_domain_graph, read the review output,
-        fix reported issues, and rerun until critical
-        issues are gone.
-
-      - Domain validator should enforce domain-only node/
-        edge types, contains_flow/flow_step coverage,
-        valid cross_domain edges, empty layers, no
-        duplicates/self-edges, and monotonic flow_step
-        ordering per flow.
-
-  - project-scanner.md:
-      - Keep raw scan/import-map CLIs as deterministic
-        sources, but stop asking the LLM to manually
-        assemble the final contract.
-
-      - Have the LLM write only a small narrative JSON:
-        name, optional description basis, and confirmed
-        frameworks.
-
-      - Run assemble_project_scan_result, which copies
-        files, totals, complexity, and importMap verbatim
-        from deterministic outputs, validates with
-        project-scan-output.schema.json, and writes
-        intermediate/scan-result.json.
-
-  - file-analyzer.md:
-      - Replace Phase 1 Step 1 manual JSON creation with
-        prepare_file_analysis_batch; cross-batch
-        neighborMap becomes validated context JSON, not
-        prose-maintained structure.
-
-      - After extract_structure, run
-        validate_structure_output; retry extraction once
-        on malformed/missing output, then fail hard if
-        still invalid.
-
-      - Before semantic edits, run seed_file_batch_graph;
-        this seed contains deterministic file nodes,
-        required deterministic tags, and required
-        deterministic edges such as exact imports, direct
-        contains, and direct exports where extraction
-        proves them.
-
-      - The LLM edits a draft by filling summaries,
-        complexity, semantic tags, and judgment-based
-        edges, but must preserve every seeded node/tag/
-        edge.
-
-      - Replace manual import-edge self-check and manual
-        part splitting with finalize_file_batch_output;
-        the finalizer enforces exact import edge coverage,
-        validates allowed cross-batch refs from context,
-        checks no seed information was lost, and writes
-        the correct final batch filenames.
-
-  - All agent prompts:
-      - Replace inline schema contracts, required-field
-        lists, and enum lists with references to the
-        matching schema files when one exists.
-
-      - Keep short examples only as illustrative examples,
-        explicitly saying the schema file is
-        authoritative.
-
-      - Update architecture-analyzer.md to reference
-        existing input.schema.json, output.schema.json,
-        and layers.schema.json instead of restating layer
-        fields.
-
-      - Update knowledge-graph-guide.md to treat
-        knowledge-graph.schema.json as the graph contract
-        while keeping concise explanatory tables if
-        useful.
+      - Keep LLM instructions only for targeted file re-
+        analysis and architecture layer re-analysis.
 
   ## Test Plan
 
-  - Update schema drift tests so every generated schema
-    file must match its Pydantic model.
+  - Unit test fingerprint behavior: unchanged, cosmetic
+    body-only edits, added/removed functions/classes,
+    changed params/return/export/imports, unsupported
+    files, new files, and deleted files.
 
-  - Add CLI tests for project scan assembly: deterministic
-    files and importMap are copied exactly, total
-    mismatches fail, and final output validates.
+  - Regression test fingerprint patching: existing entries
+    are preserved, deleted files are removed, changed
+    files are patched, and a non-empty store is never
+    overwritten with only the current batch.
 
-  - Add file-analyzer validator/finalizer tests: missing
-    import edges fail, deleted seeded tags fail, deleted
-    deterministic edges fail, invalid cross-batch refs
-    fail, valid multi-part output writes correct
-    filenames.
+  - CLI test preflight with temp git repos: missing graph/
+    meta stops, unchanged commit stops, non-source changes
+    update metadata, ignored source files update metadata,
+    changed source files continue.
 
-  - Add structure-output validator tests: duplicate paths,
-    missing batch files, bad filesAnalyzed, and malformed
-    metrics are reported.
+  - CLI test classification thresholds: SKIP,
+    PARTIAL_UPDATE, ARCHITECTURE_UPDATE, and FULL_UPDATE.
 
-  - Add domain validator tests: missing domain node, flow
-    without domain, step without flow, invalid edge type,
-    non-empty layers, and non-monotonic flow-step weights.
+  - Integration test auto-update apply/finalize using
+    small fixture graphs: old changed-file nodes are
+    pruned, fresh batch nodes merge in, dangling edges/
+    layer entries are removed, new files get deterministic
+    lite layer placement, and metadata is written only
+    after fingerprint patch success.
 
-  - Run pdm run python -m arch_analysis.schema, then pdm
-    run pytest arch_analysis/tests.
+  - Run pdm run pytest arch_analysis/tests and a targeted
+    markdown grep to confirm auto-update-prompt.md no
+    longer contains generated .mjs script bodies for
+    ignore filtering or fingerprint patching.
 
-  ## Assumptions
+    package.
 
-  - “pr-deterministic scripting” means pre-deterministic
-    seeding: generate tags/edges before LLM semantic
-    edits, then validate preservation afterward.
+  - No new runtime dependency is required beyond the
+    existing Python dependencies.
 
-  - Existing merge-time recovery in merge_batch_graphs
-    remains as a safety net, but file-analyzer validation
-    should catch missing deterministic data before merge.
+  - Existing dirty working-tree changes must be preserved;
+    implementation should edit only the files needed for
+    this auto-update scripting work.
 
-  - New schemas live under arch_analysis/schemas/; prompts
-    should not point at TypeScript/Zod schemas as the
-    primary contract.
+  - For architecture-level changes, deterministic scripts
+    prepare and validate data, but the architecture-
+    analyzer still owns semantic layer judgment.

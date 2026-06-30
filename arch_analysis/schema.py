@@ -21,6 +21,9 @@ from pydantic import BaseModel
 from .models import (
     AnalysisInput,
     AnalysisResult,
+    AutoUpdateState,
+    AutoUpdateSummary,
+    ChangeAnalysis,
     DomainGraph,
     FileAnalysisContext,
     GraphFragment,
@@ -48,6 +51,9 @@ KNOWLEDGE_GRAPH_SCHEMA_PATH = SCHEMA_DIR / "knowledge-graph.schema.json"
 DOMAIN_GRAPH_SCHEMA_PATH = SCHEMA_DIR / "domain-graph.schema.json"
 GRAPH_FRAGMENT_SCHEMA_PATH = SCHEMA_DIR / "graph-fragment.schema.json"
 FILE_ANALYSIS_CONTEXT_SCHEMA_PATH = SCHEMA_DIR / "file-analysis-context.schema.json"
+AUTO_UPDATE_STATE_SCHEMA_PATH = SCHEMA_DIR / "auto-update-state.schema.json"
+CHANGE_ANALYSIS_SCHEMA_PATH = SCHEMA_DIR / "change-analysis.schema.json"
+AUTO_UPDATE_SUMMARY_SCHEMA_PATH = SCHEMA_DIR / "auto-update-summary.schema.json"
 
 # Maps each on-disk schema to the pydantic model that defines it.
 _SCHEMA_MODELS: dict[Path, type[BaseModel]] = {
@@ -64,6 +70,9 @@ _SCHEMA_MODELS: dict[Path, type[BaseModel]] = {
     DOMAIN_GRAPH_SCHEMA_PATH: DomainGraph,
     GRAPH_FRAGMENT_SCHEMA_PATH: GraphFragment,
     FILE_ANALYSIS_CONTEXT_SCHEMA_PATH: FileAnalysisContext,
+    AUTO_UPDATE_STATE_SCHEMA_PATH: AutoUpdateState,
+    CHANGE_ANALYSIS_SCHEMA_PATH: ChangeAnalysis,
+    AUTO_UPDATE_SUMMARY_SCHEMA_PATH: AutoUpdateSummary,
 }
 
 
@@ -164,6 +173,21 @@ def validate_graph_fragment(data: Any) -> None:
 def validate_file_analysis_context(data: Any) -> None:
     """Validate a per-batch context against ``file-analysis-context.schema.json``."""
     _validate(data, FILE_ANALYSIS_CONTEXT_SCHEMA_PATH)
+
+
+def validate_auto_update_state(data: Any) -> None:
+    """Validate a pre-flight state against ``auto-update-state.schema.json``."""
+    _validate(data, AUTO_UPDATE_STATE_SCHEMA_PATH)
+
+
+def validate_change_analysis(data: Any) -> None:
+    """Validate a change analysis against ``change-analysis.schema.json``."""
+    _validate(data, CHANGE_ANALYSIS_SCHEMA_PATH)
+
+
+def validate_auto_update_summary(data: Any) -> None:
+    """Validate a finalize summary against ``auto-update-summary.schema.json``."""
+    _validate(data, AUTO_UPDATE_SUMMARY_SCHEMA_PATH)
 
 
 if __name__ == "__main__":

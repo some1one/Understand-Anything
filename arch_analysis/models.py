@@ -397,3 +397,117 @@ class FileAnalysisContext(BaseModel):
     batchFiles: list[StructureBatchFile] = Field(default_factory=list)
     batchImportData: dict[str, list[str]] = Field(default_factory=dict)
     neighborMap: dict[str, list[NeighborEntry]] = Field(default_factory=dict)
+
+
+# ---------------------------------------------------------------------------
+# Auto-update (incremental) contracts
+# ---------------------------------------------------------------------------
+
+# Pre-flight outcome: whether the run continues, and why it stopped if not.
+PreflightStatus = Literal["CONTINUE", "STOP"]
+
+# Stop/proceed actions the pre-flight can report.
+PreflightAction = Literal[
+    "PROCEED",
+    "NO_GRAPH",
+    "NO_META",
+    "UP_TO_DATE",
+    "NO_CHANGES",
+    "NO_SOURCE_CHANGES",
+    "ALL_IGNORED",
+]
+
+# The deterministic update decision derived from fingerprint comparison.
+UpdateAction = Literal["SKIP", "PARTIAL_UPDATE", "ARCHITECTURE_UPDATE", "FULL_UPDATE"]
+
+ChangeLevel = Literal["NONE", "COSMETIC", "STRUCTURAL"]
+FileChangeStatus = Literal["modified", "new", "deleted"]
+
+
+class AutoUpdateState(BaseModel):
+    """Pre-flight state (``intermediate/auto-update-state.json``).
+
+    Written by :mod:`arch_analysis.auto_update_preflight` and read by the
+    fingerprint-check phase. On a STOP outcome the pre-flight has already done
+    whatever metadata write is appropriate (``metadataUpdated``).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    status: PreflightStatus
+    action: PreflightAction
+    reason: str
+    projectRoot: str
+    previousCommit: str | None = None
+    currentCommit: str | None = None
+    changedSourceFiles: list[str] = Field(default_factory=list)
+    metadataUpdated: bool = False
+
+
+class FileChangeResult(BaseModel):
+    """Per-file classification from the fingerprint check."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    filePath: str
+    changeLevel: ChangeLevel
+    status: FileChangeStatus
+    details: list[str] = Field(default_factory=list)
+
+
+class ChangeAnalysis(BaseModel):
+    """Fingerprint-check output (``intermediate/change-analysis.json``).
+
+    The machine-readable contract that drives the decision gate: ``action``
+    plus the file partitions the later phases consume.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    action: UpdateAction
+    rerunArchitecture: bool
+    reason: str
+    filesToReanalyze: list[str] = Field(default_factory=list)
+    newFiles: list[str] = Field(default_factory=list)
+    deletedFiles: list[str] = Field(default_factory=list)
+    cosmeticOnlyFiles: list[str] = Field(default_factory=list)
+    unchangedFiles: list[str] = Field(default_factory=list)
+    fileChanges: list[FileChangeResult] = Field(default_factory=list)
+    metadataUpdated: bool = False
+
+
+class UpdateDecision(BaseModel):
+    """The classification result independent of file IO.
+
+    Returned by :func:`arch_analysis.fingerprints` classification helpers and
+    embedded into :class:`ChangeAnalysis`.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    action: UpdateAction
+    rerunArchitecture: bool
+    reason: str
+
+
+class AutoUpdateSummary(BaseModel):
+    """Finalize output (``intermediate/auto-update-summary.json``).
+
+    The end-of-run report: what was checked, what changed, what was written.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    status: Literal["UPDATED", "SKIPPED", "STOPPED"]
+    action: str
+    reason: str
+    filesChecked: int = 0
+    structuralChanges: int = 0
+    cosmeticOnly: int = 0
+    newFiles: int = 0
+    deletedFiles: int = 0
+    nodesUpdated: int = 0
+    totalNodes: int = 0
+    totalEdges: int = 0
+    metadataUpdated: bool = False
+    outputPath: str | None = None

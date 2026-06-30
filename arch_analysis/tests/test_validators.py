@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from arch_analysis.validate_graph import review_graph
+from arch_analysis.validate_graph import add_scan_coverage, review_graph
 from arch_analysis.validate_domain_graph import review_domain_graph
 from arch_analysis.generate_ignore import generate_starter_ignore_file
 
@@ -104,6 +104,75 @@ def test_domain_validator_requires_domain_node():
     }
     review = review_domain_graph(g)
     assert any("zero 'domain' nodes" in i for i in review["issues"])
+
+
+def test_require_layers_false_relaxes_zero_layers():
+    g = _valid_graph()
+    g["layers"] = []
+    review = review_graph(g, require_layers=False)
+    # No zero-layers critical, and the file-level coverage check is skipped.
+    assert not any("zero layers" in i for i in review["issues"])
+    assert not any("missing from all layers" in i for i in review["issues"])
+    assert any("pre-layer stage" in w for w in review["warnings"])
+
+
+def test_require_layers_false_still_catches_dangling_edges():
+    g = _valid_graph()
+    g["layers"] = []
+    g["edges"].append(_edge("file:a.ts", "file:missing.ts"))
+    review = review_graph(g, require_layers=False)
+    assert any("non-existent target" in i for i in review["issues"])
+
+
+def test_scan_coverage_flags_missing_and_unknown_files():
+    g = _valid_graph()  # nodes: file:a.ts, file:b.ts
+    review = review_graph(g, require_layers=False)
+    add_scan_coverage(review, g, ["a.ts", "b.ts", "c.ts"])  # c.ts has no node
+    assert any("Scanned file 'c.ts' has no corresponding node" in w for w in review["warnings"])
+    assert review["stats"]["coverage"]["missingFileNodes"] == 1
+    assert review["stats"]["coverage"]["scannedFiles"] == 3
+
+
+def test_scan_coverage_flags_node_for_unscanned_file():
+    g = _valid_graph()  # nodes reference a.ts, b.ts
+    review = review_graph(g, require_layers=False)
+    add_scan_coverage(review, g, ["a.ts"])  # b.ts not in inventory
+    assert any("not present in the scan inventory" in w for w in review["warnings"])
+    assert review["stats"]["coverage"]["unknownFileNodes"] == 1
+
+
+def test_scan_coverage_counts_function_nodes_as_covering_their_file():
+    g = {
+        "nodes": [
+            _node("file:a.ts"),
+            _node("function:a.ts:run", "function"),
+        ],
+        "edges": [_edge("file:a.ts", "function:a.ts:run", "contains")],
+        "layers": [],
+    }
+    review = review_graph(g, require_layers=False)
+    add_scan_coverage(review, g, ["a.ts"])
+    assert review["stats"]["coverage"]["missingFileNodes"] == 0
+
+
+def test_validate_assembled_graph_cli(tmp_path):
+    import json
+
+    from arch_analysis.validate_assembled_graph import main
+
+    g = _valid_graph()
+    g["layers"] = []
+    graph_path = tmp_path / "assembled-graph.json"
+    review_path = tmp_path / "review.json"
+    scan_path = tmp_path / "scan-result.json"
+    graph_path.write_text(json.dumps(g))
+    scan_path.write_text(json.dumps({"files": [{"path": "a.ts"}, {"path": "b.ts"}, {"path": "d.ts"}]}))
+
+    rc = main([str(graph_path), str(review_path), "--scan-result", str(scan_path)])
+    assert rc == 0
+    review = json.loads(review_path.read_text())
+    assert review["issues"] == []
+    assert review["stats"]["coverage"]["missingFileNodes"] == 1  # d.ts
 
 
 def test_type_prefix_mismatch_warning():

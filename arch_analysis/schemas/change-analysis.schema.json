@@ -1,0 +1,122 @@
+{
+  "$defs": {
+    "FileChangeResult": {
+      "additionalProperties": false,
+      "description": "Per-file classification from the fingerprint check.",
+      "properties": {
+        "filePath": {
+          "title": "Filepath",
+          "type": "string"
+        },
+        "changeLevel": {
+          "enum": [
+            "NONE",
+            "COSMETIC",
+            "STRUCTURAL"
+          ],
+          "title": "Changelevel",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "modified",
+            "new",
+            "deleted"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "details": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Details",
+          "type": "array"
+        }
+      },
+      "required": [
+        "filePath",
+        "changeLevel",
+        "status"
+      ],
+      "title": "FileChangeResult",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Fingerprint-check output (``intermediate/change-analysis.json``).\n\nThe machine-readable contract that drives the decision gate: ``action``\nplus the file partitions the later phases consume.",
+  "properties": {
+    "action": {
+      "enum": [
+        "SKIP",
+        "PARTIAL_UPDATE",
+        "ARCHITECTURE_UPDATE",
+        "FULL_UPDATE"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "rerunArchitecture": {
+      "title": "Rerunarchitecture",
+      "type": "boolean"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    },
+    "filesToReanalyze": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Filestoreanalyze",
+      "type": "array"
+    },
+    "newFiles": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Newfiles",
+      "type": "array"
+    },
+    "deletedFiles": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Deletedfiles",
+      "type": "array"
+    },
+    "cosmeticOnlyFiles": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Cosmeticonlyfiles",
+      "type": "array"
+    },
+    "unchangedFiles": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Unchangedfiles",
+      "type": "array"
+    },
+    "fileChanges": {
+      "items": {
+        "$ref": "#/$defs/FileChangeResult"
+      },
+      "title": "Filechanges",
+      "type": "array"
+    },
+    "metadataUpdated": {
+      "default": false,
+      "title": "Metadataupdated",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "action",
+    "rerunArchitecture",
+    "reason"
+  ],
+  "title": "ChangeAnalysis",
+  "type": "object"
+}

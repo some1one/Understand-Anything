@@ -29,7 +29,15 @@ per-run prompt — this package implements it once, in a tested, organized form.
 | `file_graph.py` | analyze | Shared deterministic file-node typing + tag rules (seed ↔ finalize) |
 | `seed_file_batch_graph.py` | analyze | Deterministic file/function/class nodes, tags, and `imports`/`contains`/`exports` edges |
 | `finalize_file_batch_output.py` | analyze | Validate seed preservation + import coverage + cross-batch refs, split, and write `batch-*.json` |
+| `validate_assembled_graph.py` | assemble | Pre-layer graph validation (`require_layers=False`) + optional scan-coverage cross-check |
 | `validate_domain_graph.py` | domain | Schema + domain-specific review (hierarchy coverage, monotonic flow weights) |
+| `fingerprints.py` | auto-update | Shared content-hash + structural-fingerprint logic, comparison, update classification, and load-patch-save store writes |
+| `auto_update_common.py` | auto-update | Shared `.understand-anything` path layout, JSON IO, git plumbing, source filtering, `meta.json` writes |
+| `auto_update_preflight.py` | auto-update | Phase 0: validate graph/meta, diff commits, filter source + `.understandignore`, handle metadata-only stops |
+| `auto_update_fingerprint_check.py` | auto-update | Phase 1: classify changed files vs. stored fingerprints, derive the SKIP/PARTIAL/ARCHITECTURE/FULL decision |
+| `auto_update_prepare_batches.py` | auto-update | Phase 2a: changed-file batching (reuses `compute_batches`) + dispatch summary |
+| `auto_update_apply_batches.py` | auto-update | Phase 2b: prune changed/deleted-file nodes, merge fresh batches, emit merged graph / arch-rerun input |
+| `auto_update_finalize.py` | auto-update | Phase 3: apply layers, lite validation, save graph, patch fingerprints, bump meta, clean intermediate |
 
 ## CLI scripts
 
@@ -45,6 +53,53 @@ pdm run analyze input.json results.json
 # 3. After the agent writes layers.json, cross-check it.
 pdm run python -m arch_analysis.validate_layers input.json layers.json
 ```
+
+## Auto-update (incremental) command flow
+
+The post-commit hook (`understand-anything-plugin/hooks/auto-update-prompt.md`)
+drives an incremental update by chaining these deterministic commands. Each
+writes its output under `.understand-anything/intermediate/` and prints a
+machine-readable JSON summary to stdout. LLM work is limited to the file-analyzer
+and architecture-analyzer dispatches between phases 2a and 3.
+
+```bash
+# Phase 0 — pre-flight. Validates graph/meta, diffs commits, filters source +
+# .understandignore. STOPs (and bumps meta.json) on no-op cases.
+pdm run auto-update-preflight <project-root> [--force]
+#   → intermediate/auto-update-state.json  {status, action, changedSourceFiles, ...}
+
+# Phase 1 — fingerprint check (zero LLM tokens). Classifies each changed file
+# NONE/COSMETIC/STRUCTURAL and derives the decision. SKIP bumps meta and stops.
+pdm run auto-update-fingerprint-check <project-root>
+#   → intermediate/change-analysis.json    {action, filesToReanalyze, newFiles, ...}
+
+# Phase 2a — batch the files to reanalyze (reuses compute_batches).
+pdm run auto-update-prepare-batches <project-root>
+#   → intermediate/batches.json, intermediate/dispatch-summary.json
+
+#   ⇣ LLM: dispatch file-analyzer once per batch → intermediate/batch-<N>.json
+
+# Phase 2b — prune changed/deleted-file nodes, merge fresh batches.
+pdm run auto-update-apply-batches <project-root>
+#   → intermediate/merged-graph.json (+ ua-arch-input.json when rerunArchitecture)
+
+#   ⇣ LLM (only when ARCHITECTURE_UPDATE): dispatch architecture-analyzer on
+#     ua-arch-input.json → intermediate/layers.json
+
+# Phase 3 — apply layers, validate, save, patch fingerprints, clean up.
+pdm run auto-update-finalize <project-root>
+#   → knowledge-graph.json, fingerprints.json (patched), meta.json,
+#     intermediate/auto-update-summary.json
+```
+
+The decision gate in `change-analysis.json`:
+
+| `action` | Trigger | Hook behavior |
+|---|---|---|
+| `SKIP` | no structural changes | bump meta, stop (zero tokens) |
+| `PARTIAL_UPDATE` | ≤10 structural files, known dirs | re-analyze files, lite layer update |
+| `ARCHITECTURE_UPDATE` | new/removed dirs or >10 structural files | re-analyze + re-run architecture |
+| `FULL_UPDATE` | >30 structural files or >50% of graph | recommend `/understand --full`, stop |
 
 ## JSON Schema
 
