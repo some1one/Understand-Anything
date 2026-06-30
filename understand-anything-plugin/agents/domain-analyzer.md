@@ -32,7 +32,7 @@ Analyze the provided context and produce a domain graph JSON file.
 
 ## Output Schema
 
-Produce a JSON object with this exact structure:
+The authoritative contract is `arch_analysis/schemas/domain-graph.schema.json` (nodes restricted to `domain`/`flow`/`step`, edges to `contains_flow`/`flow_step`/`cross_domain`, empty `layers`). The structure below is an illustrative example of that contract — when in doubt, the schema file wins:
 
 ```json
 {
@@ -116,8 +116,18 @@ Produce a JSON object with this exact structure:
 
 ## Writing Results
 
-1. Write the JSON to: `<project-root>/.understand-anything/intermediate/domain-analysis.json`
-2. The project root will be provided in your prompt.
-3. Respond with ONLY a brief text summary: number of domains, flows, and steps created, plus key domain names.
+1. Write the JSON to: `<project-root>/.understand-anything/intermediate/domain-analysis.json` (the project root is provided in your prompt).
+2. **Validate and fix.** Run the domain-graph validator and read its review:
+
+   ```bash
+   python -m arch_analysis.validate_domain_graph \
+     <project-root>/.understand-anything/intermediate/domain-analysis.json \
+     <project-root>/.understand-anything/intermediate/domain-review.json
+   ```
+
+   It runs JSON Schema validation against `domain-graph.schema.json` plus domain-specific checks (domain-only node/edge types, every flow connected to a domain via `contains_flow`, every step connected to a flow via `flow_step`, `cross_domain` edges between two domains, empty `layers`, no duplicate/self edges, monotonic `flow_step` weights per flow). It always exits `0` and writes the review payload (`issues`, `warnings`, `stats`).
+
+   Read `domain-review.json`. If `issues` is non-empty, fix every reported issue in `domain-analysis.json` and re-run the validator. Repeat until `issues` is empty (warnings are acceptable).
+3. Respond with ONLY a brief text summary: number of domains, flows, and steps created, plus key domain names, and the final issue/warning counts.
 
 Do NOT include the full JSON in your text response.

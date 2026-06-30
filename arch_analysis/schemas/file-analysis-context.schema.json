@@ -1,0 +1,125 @@
+{
+  "$defs": {
+    "NeighborEntry": {
+      "description": "A cross-batch neighbor of a file, with its batch index + exported symbols.",
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "batchIndex": {
+          "title": "Batchindex",
+          "type": "integer"
+        },
+        "symbols": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Symbols",
+          "type": "array"
+        }
+      },
+      "required": [
+        "path",
+        "batchIndex"
+      ],
+      "title": "NeighborEntry",
+      "type": "object"
+    },
+    "StructureBatchFile": {
+      "description": "One file entry in the extract-structure input batch.",
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "language": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Language"
+        },
+        "sizeLines": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sizelines"
+        },
+        "fileCategory": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Filecategory"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "title": "StructureBatchFile",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Deterministic per-batch context consumed by the file-analyzer.\n\nProduced by :mod:`arch_analysis.prepare_file_analysis_batch` from a single\n``batches.json`` entry. Carries everything the seeding and finalization\nsteps need: the batch's files, fully-resolved import data, and the\ncross-batch neighbor map (whose target paths bound the set of allowed\ncross-batch edge references).",
+  "properties": {
+    "projectRoot": {
+      "title": "Projectroot",
+      "type": "string"
+    },
+    "batchIndex": {
+      "title": "Batchindex",
+      "type": "integer"
+    },
+    "batchFiles": {
+      "items": {
+        "$ref": "#/$defs/StructureBatchFile"
+      },
+      "title": "Batchfiles",
+      "type": "array"
+    },
+    "batchImportData": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "Batchimportdata",
+      "type": "object"
+    },
+    "neighborMap": {
+      "additionalProperties": {
+        "items": {
+          "$ref": "#/$defs/NeighborEntry"
+        },
+        "type": "array"
+      },
+      "title": "Neighbormap",
+      "type": "object"
+    }
+  },
+  "required": [
+    "projectRoot",
+    "batchIndex"
+  ],
+  "title": "FileAnalysisContext",
+  "type": "object"
+}

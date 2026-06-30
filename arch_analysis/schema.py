@@ -21,9 +21,14 @@ from pydantic import BaseModel
 from .models import (
     AnalysisInput,
     AnalysisResult,
+    DomainGraph,
+    FileAnalysisContext,
+    GraphFragment,
     ImportMapInput,
     ImportMapResult,
+    KnowledgeGraph,
     LayersOutput,
+    ProjectScanOutput,
     ScanResult,
     StructureInput,
     StructureOutput,
@@ -38,6 +43,11 @@ IMPORT_MAP_INPUT_SCHEMA_PATH = SCHEMA_DIR / "import-map-input.schema.json"
 IMPORT_MAP_OUTPUT_SCHEMA_PATH = SCHEMA_DIR / "import-map-output.schema.json"
 STRUCTURE_INPUT_SCHEMA_PATH = SCHEMA_DIR / "structure-input.schema.json"
 STRUCTURE_OUTPUT_SCHEMA_PATH = SCHEMA_DIR / "structure-output.schema.json"
+PROJECT_SCAN_OUTPUT_SCHEMA_PATH = SCHEMA_DIR / "project-scan-output.schema.json"
+KNOWLEDGE_GRAPH_SCHEMA_PATH = SCHEMA_DIR / "knowledge-graph.schema.json"
+DOMAIN_GRAPH_SCHEMA_PATH = SCHEMA_DIR / "domain-graph.schema.json"
+GRAPH_FRAGMENT_SCHEMA_PATH = SCHEMA_DIR / "graph-fragment.schema.json"
+FILE_ANALYSIS_CONTEXT_SCHEMA_PATH = SCHEMA_DIR / "file-analysis-context.schema.json"
 
 # Maps each on-disk schema to the pydantic model that defines it.
 _SCHEMA_MODELS: dict[Path, type[BaseModel]] = {
@@ -49,6 +59,11 @@ _SCHEMA_MODELS: dict[Path, type[BaseModel]] = {
     IMPORT_MAP_OUTPUT_SCHEMA_PATH: ImportMapResult,
     STRUCTURE_INPUT_SCHEMA_PATH: StructureInput,
     STRUCTURE_OUTPUT_SCHEMA_PATH: StructureOutput,
+    PROJECT_SCAN_OUTPUT_SCHEMA_PATH: ProjectScanOutput,
+    KNOWLEDGE_GRAPH_SCHEMA_PATH: KnowledgeGraph,
+    DOMAIN_GRAPH_SCHEMA_PATH: DomainGraph,
+    GRAPH_FRAGMENT_SCHEMA_PATH: GraphFragment,
+    FILE_ANALYSIS_CONTEXT_SCHEMA_PATH: FileAnalysisContext,
 }
 
 
@@ -124,6 +139,31 @@ def validate_structure_input(data: Any) -> None:
 def validate_structure_output(data: Any) -> None:
     """Validate a structure output against ``structure-output.schema.json``."""
     _validate(data, STRUCTURE_OUTPUT_SCHEMA_PATH)
+
+
+def validate_project_scan_output(data: Any) -> None:
+    """Validate a scan-result against ``project-scan-output.schema.json``."""
+    _validate(data, PROJECT_SCAN_OUTPUT_SCHEMA_PATH)
+
+
+def validate_knowledge_graph(data: Any) -> None:
+    """Validate a graph against ``knowledge-graph.schema.json``."""
+    _validate(data, KNOWLEDGE_GRAPH_SCHEMA_PATH)
+
+
+def validate_domain_graph(data: Any) -> None:
+    """Validate a graph against ``domain-graph.schema.json``."""
+    _validate(data, DOMAIN_GRAPH_SCHEMA_PATH)
+
+
+def validate_graph_fragment(data: Any) -> None:
+    """Validate a batch fragment against ``graph-fragment.schema.json``."""
+    _validate(data, GRAPH_FRAGMENT_SCHEMA_PATH)
+
+
+def validate_file_analysis_context(data: Any) -> None:
+    """Validate a per-batch context against ``file-analysis-context.schema.json``."""
+    _validate(data, FILE_ANALYSIS_CONTEXT_SCHEMA_PATH)
 
 
 if __name__ == "__main__":

@@ -1,197 +1,193 @@
- # Consolidate Scriptable Analysis Into arch_analysis and Remove Tours
+# Deterministic Schemas And Validators For Analysis Agents
 
   ## Summary
 
-  - Make arch_analysis the canonical Python package for deterministic
-    pipeline logic currently spread across project-scanner.md, file-
-    analyzer.md, domain-analyzer.md, and helper scripts.
+  - Make arch_analysis the schema and validation source of
+    truth for domain, project scan, and file batch
+    outputs.
 
-  - Fully replace the JS helper scripts used by the /understand pipeline with
-    Python modules and CLIs in arch_analysis.
+  - Replace LLM-authored JSON assembly where it is
+    deterministic: project scan assembly, file-analyzer
+    batch input/context prep, seeded file tags/edges,
+    import-edge self-checking, and batch output splitting.
 
-  - Remove the tour feature: delete agents/tour-builder.md, remove tour
-    generation from /understand, remove tour UI/actions/instructions, and
-    stop emitting tour data in new graphs.
+  - Update agent prompts under understand-anything-plugin/
+    agents to reference arch_analysis/schemas/
+    *.schema.json contracts instead of duplicating
+    required-field/schema lists in markdown.
 
-  ## arch_analysis Implementation
+  ## Public APIs And Schemas
 
-  - Add typed Pydantic models and JSON Schemas for:
-      - scan result, import-map input/output, file-structure extraction
-        input/output, batch plan, graph fragment, knowledge graph, domain
-        context, domain graph, validation report.
+  - Extend arch_analysis.models and arch_analysis.schema
+    so generated schemas cover:
+      - project-scan-output.schema.json: final project-
+        scanner output written to intermediate/scan-
+        result.json.
 
-      - Keep existing AnalysisInput, architecture result, and layer schemas.
-      - Regenerate all schemas via python -m arch_analysis.schema; keep
-        schema drift tests.
+      - knowledge-graph.schema.json and domain-
+        graph.schema.json: full graph contracts used by
+        domain-analyzer, graph-reviewer, and the guide.
 
-  - Add Python CLIs and PDM scripts:
-      - arch_analysis.scan_project <project_root> <output.json>
-      - arch_analysis.extract_import_map <input.json> <output.json>
-      - arch_analysis.extract_structure <input.json> <output.json>
-      - arch_analysis.compute_batches <project_root> [--changed-files PATH]
-      - arch_analysis.merge_batch_graphs <project_root>
-      - arch_analysis.extract_domain_context <project_root> [--output PATH]
-      - arch_analysis.validate_graph <graph.json> <review.json>
-      - arch_analysis.validate_domain_graph <domain-graph.json>
-      - arch_analysis.generate_ignore <project_root> and
-        arch_analysis.build_fingerprints <input.json> if /understand still
-        needs those phases after JS helper removal.
+      - graph-fragment.schema.json: { "nodes": [...],
+        "edges": [...] } batch/part output from file-
+        analyzer.
 
-  - Required Python packages:
-      - Keep existing: orjson, pydantic, networkx, numpy, pandas, scipy,
-        jsonschema, pathspec.
+      - file-analysis-context.schema.json: deterministic
+        per-batch context consumed by file-analyzer.
 
-      - Add: tree-sitter, tree-sitter-language-pack, pyyaml.
-      - Use stdlib tomllib, json, xml.etree, re, pathlib, and subprocess
-        where sufficient.
+  - Add/update CLIs:
+      - python -m
+        arch_analysis.assemble_project_scan_result
+        <project-root> <narrative.json>: merges LLM
+        narrative fields with raw scan/import outputs and
+        writes validated scan-result.json.
 
-  - Replace JS helper behavior:
-      - scan_project: deterministic file enumeration, .understandignore,
-        language/category detection, line counts, manifest/README metadata,
-        framework detection, complexity, stats.
+      - python -m
+        arch_analysis.prepare_file_analysis_batch
+        <project-root> <batchIndex> [<batchIndex>...]:
+        reads batches.json, writes ua-file-analyzer-
+        input-<batchIndex>.json and ua-file-
+        context-<batchIndex>.json.
 
-      - extract_import_map: resolved internal imports for TS/JS, Python, Go,
-        Rust, Java, Kotlin, C#, Ruby, PHP, C/C++; warnings are per-file and
-        non-fatal.
+      - python -m arch_analysis.validate_structure_output
+        <input.json> <extract-results.json>: validates
+        Phase 1 Step 3 extraction output against schema
+        and batch coverage.
 
-      - extract_structure: tree-sitter-backed structural extraction plus non-
-        code parsers for Markdown, YAML, JSON, TOML, env, Dockerfile, SQL,
-        GraphQL, Protobuf, Terraform, Makefile, shell; output metrics must
-        match the current file-analyzer contract.
+      - python -m arch_analysis.seed_file_batch_graph
+        <context.json> <extract-results.json> <seed.json>:
+        writes deterministic file nodes, deterministic
+        tags, and deterministic edges.
 
-      - compute_batches: use networkx Louvain communities, preserve existing
-        max-size, fallback, non-code grouping, neighborMap, batchImportData,
-        and changed-files behavior.
+      - python -m arch_analysis.finalize_file_batch_output
+        <project-root> <context.json> <seed.json>
+        <draft.json>: validates no seeded tags/edges/nodes
+        were lost, validates schema/reference/import
+        counts, then writes batch-<N>.json or
+        batch-<N>-part-<K>.json.
 
-      - merge_batch_graphs: move the existing Python merge logic into
-        arch_analysis, preserving multipart batch handling, import recovery,
-        tested_by canonicalization, dedupe, normalization, warnings, and
-        stats.
+      - Update python -m
+        arch_analysis.validate_domain_graph to run JSON
+        Schema validation plus domain-specific checks and
+        write a review JSON.
 
-      - extract_domain_context: move the current domain context scan into
-        arch_analysis and validate its output schema.
+  ## Implementation Changes
 
-  ## Instruction and Pipeline Updates
+  - domain-analyzer.md:
+      - Replace the inline output schema with a reference
+        to arch_analysis/schemas/domain-graph.schema.json.
 
-  - Update project-scanner.md to run python -m arch_analysis.scan_project;
-    remove references to scan-project.mjs and extract-import-map.mjs.
+      - Instruct the agent to write domain-analysis.json,
+        run validate_domain_graph, read the review output,
+        fix reported issues, and rerun until critical
+        issues are gone.
 
-  - Update file-analyzer.md to run python -m arch_analysis.extract_structure;
-    keep LLM-only work limited to summaries, tags, semantic edges, and
-    significance judgement; add a required arch_analysis validation step for
-    batch fragments.
+      - Domain validator should enforce domain-only node/
+        edge types, contains_flow/flow_step coverage,
+        valid cross_domain edges, empty layers, no
+        duplicates/self-edges, and monotonic flow_step
+        ordering per flow.
 
-  - Update domain-analyzer.md and skills/understand-domain/SKILL.md to use
-    python -m arch_analysis.extract_domain_context and validate_domain_graph;
-    remove references to tours as graph context.
+  - project-scanner.md:
+      - Keep raw scan/import-map CLIs as deterministic
+        sources, but stop asking the LLM to manually
+        assemble the final contract.
 
-  - Update skills/understand/SKILL.md:
-      - Use arch_analysis CLIs for scan, batching, merge, validation, ignore
-        generation, and fingerprints.
+      - Have the LLM write only a small narrative JSON:
+        name, optional description basis, and confirmed
+        frameworks.
 
-      - Remove Phase 5 Tour entirely.
-      - Assemble final codebase graphs without tour.
-      - Remove final summary line for “Tour steps generated”.
+      - Run assemble_project_scan_result, which copies
+        files, totals, complexity, and importMap verbatim
+        from deterministic outputs, validates with
+        project-scan-output.schema.json, and writes
+        intermediate/scan-result.json.
 
-  - Update auto-update instructions/hooks to remove rerunTour, tour-builder
-    reruns, and tour-specific phase language.
+  - file-analyzer.md:
+      - Replace Phase 1 Step 1 manual JSON creation with
+        prepare_file_analysis_batch; cross-batch
+        neighborMap becomes validated context JSON, not
+        prose-maintained structure.
 
-  - Remove or rewrite docs/instructions that describe tours as part of the
-    product:
-      - agents/knowledge-graph-guide.md
-      - agents/graph-reviewer.md
-      - skills/understand-chat, understand-diff, understand-explain,
-        understand-onboard
+      - After extract_structure, run
+        validate_structure_output; retry extraction once
+        on malformed/missing output, then fail hard if
+        still invalid.
 
-      - CLAUDE.md
-      - generated demo/sample graph descriptions where they advertise tour
-        functionality.
+      - Before semantic edits, run seed_file_batch_graph;
+        this seed contains deterministic file nodes,
+        required deterministic tags, and required
+        deterministic edges such as exact imports, direct
+        contains, and direct exports where extraction
+        proves them.
 
-  ## Tour Feature Removal
+      - The LLM edits a draft by filling summaries,
+        complexity, semantic tags, and judgment-based
+        edges, but must preserve every seeded node/tag/
+        edge.
 
-  - Delete:
-      - understand-anything-plugin/agents/tour-builder.md
-      - understand-anything-plugin/packages/core/src/analyzer/tour-
-        generator.ts
+      - Replace manual import-edge self-check and manual
+        part splitting with finalize_file_batch_output;
+        the finalizer enforces exact import edge coverage,
+        validates allowed cross-batch refs from context,
+        checks no seed information was lost, and writes
+        the correct final batch filenames.
 
-      - tour-generator tests
-      - tour-specific dashboard components/actions such as LearnPanel tour
-        state, start/next/previous tour actions, tour highlighted node state,
-        tour keyboard shortcuts, and “Start Guided Tour” UI.
+  - All agent prompts:
+      - Replace inline schema contracts, required-field
+        lists, and enum lists with references to the
+        matching schema files when one exists.
 
-  - Stop generating or requiring tour in new graph output.
-  - Preserve legacy tolerance: schema validation may accept existing graphs
-    containing a tour key, but new graph assembly should omit it and no UI or
-    instructions should surface it.
+      - Keep short examples only as illustrative examples,
+        explicitly saying the schema file is
+        authoritative.
 
-  - Update TypeScript types/schemas so KnowledgeGraph no longer requires
-    tour; remove TourStep from public exports unless kept only as deprecated
-    legacy input parsing.
+      - Update architecture-analyzer.md to reference
+        existing input.schema.json, output.schema.json,
+        and layers.schema.json instead of restating layer
+        fields.
 
-  - Update onboarding generation to use project metadata, layers, file
-    summaries, and dependency edges instead of guided-tour steps.
-
-  ## Script Removal and Package Cleanup
-
-  - Remove replaced helper scripts after Python parity tests exist:
-      - skills/understand/scan-project.mjs
-      - skills/understand/extract-import-map.mjs
-      - skills/understand/extract-structure.mjs
-      - skills/understand/compute-batches.mjs
-      - skills/understand/build-fingerprints.mjs and generate-ignore.mjs only
-        after Python replacements are wired.
-
-  - Remove JS test files that target deleted helper scripts after porting
-    their assertions into Python tests.
-
-  - Remove no-longer-needed npm dependencies from understand-anything-plugin/
-    package.json / workspace packages, especially graphology batching deps
-    and tour-only exports.
-
-  - Keep TypeScript/dashboard packages where still needed for the dashboard
-    and non-tour skills.
+      - Update knowledge-graph-guide.md to treat
+        knowledge-graph.schema.json as the graph contract
+        while keeping concise explanatory tables if
+        useful.
 
   ## Test Plan
 
-  - Port existing helper coverage into arch_analysis/tests:
-      - scan language/category/.understandignore/determinism/schema/failure
-        tests.
+  - Update schema drift tests so every generated schema
+    file must match its Pydantic model.
 
-      - import resolution tests across supported languages and config edge
-        cases.
+  - Add CLI tests for project scan assembly: deterministic
+    files and importMap are copied exactly, total
+    mismatches fail, and final output validates.
 
-      - structure extraction metrics, non-code parser output, call graph,
-        fallback behavior.
+  - Add file-analyzer validator/finalizer tests: missing
+    import edges fail, deleted seeded tags fail, deleted
+    deterministic edges fail, invalid cross-batch refs
+    fail, valid multi-part output writes correct
+    filenames.
 
-      - batching Louvain/fallback/non-code grouping/neighborMap/changed-
-        files.
+  - Add structure-output validator tests: duplicate paths,
+    missing batch files, bad filesAnalyzed, and malformed
+    metrics are reported.
 
-      - merge batch graph multipart, import recovery, dedupe, and tested_by
-        tests.
+  - Add domain validator tests: missing domain node, flow
+    without domain, step without flow, invalid edge type,
+    non-empty layers, and non-monotonic flow-step weights.
 
-      - domain context and domain graph validation tests.
-
-  - Add tour-removal tests:
-      - /understand instructions contain no tour phase.
-      - graph validation accepts graphs without tour.
-      - dashboard has no tour controls, tour keyboard shortcuts, or
-        LearnPanel tour flow.
-
-      - onboarding output does not include a guided-tour section.
-
-  - Run:
-      - pdm run pytest
-      - targeted rg checks proving no live references remain to deleted
-        scripts or tour-builder.
-
-      - git diff --check.
+  - Run pdm run python -m arch_analysis.schema, then pdm
+    run pytest arch_analysis/tests.
 
   ## Assumptions
 
-  - arch_analysis should fully replace JS helper scripts, not wrap them.
-  - LLM agents still handle semantic judgement that cannot be made
-    deterministic: file summaries/tags, semantic edges, final architecture
-    layer descriptions, and business-domain interpretation.
+  - “pr-deterministic scripting” means pre-deterministic
+    seeding: generate tags/edges before LLM semantic
+    edits, then validate preservation afterward.
 
-  - Tour data is deprecated for legacy input tolerance only; new outputs omit
-    it and product surfaces do not display it.
+  - Existing merge-time recovery in merge_batch_graphs
+    remains as a safety net, but file-analyzer validation
+    should catch missing deterministic data before merge.
+
+  - New schemas live under arch_analysis/schemas/; prompts
+    should not point at TypeScript/Zod schemas as the
+    primary contract.

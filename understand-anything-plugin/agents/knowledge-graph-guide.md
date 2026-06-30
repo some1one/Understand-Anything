@@ -19,6 +19,8 @@ You are an expert on Understand-Anything knowledge graphs. You help users naviga
 
 ### Graph Structure
 
+The authoritative contracts are `arch_analysis/schemas/knowledge-graph.schema.json` (structural graph) and `arch_analysis/schemas/domain-graph.schema.json` (domain graph). The tables below are a concise explanatory reference; the schema files are the source of truth for required fields and valid enums.
+
 Both graph types share the same top-level shape:
 
 ```json

@@ -23,6 +23,13 @@ per-run prompt — this package implements it once, in a tested, organized form.
 | `validate_layers.py` | Phase 2 cross-check | Validate `layers.json`: every node in exactly one layer, no invented ids |
 | `schema.py` | I/O | JSON Schema generation + `jsonschema`-based validation |
 | `analyze.py` | — | CLI orchestrator: read → validate → compute → validate → write |
+| `assemble_project_scan_result.py` | scan | Merge narrative + deterministic scan/import outputs → validated `scan-result.json` |
+| `prepare_file_analysis_batch.py` | analyze | From `batches.json`, emit per-batch `extract_structure` input + validated context |
+| `validate_structure_output.py` | analyze | Validate `extract_structure` output: schema + batch coverage |
+| `file_graph.py` | analyze | Shared deterministic file-node typing + tag rules (seed ↔ finalize) |
+| `seed_file_batch_graph.py` | analyze | Deterministic file/function/class nodes, tags, and `imports`/`contains`/`exports` edges |
+| `finalize_file_batch_output.py` | analyze | Validate seed preservation + import coverage + cross-batch refs, split, and write `batch-*.json` |
+| `validate_domain_graph.py` | domain | Schema + domain-specific review (hierarchy coverage, monotonic flow weights) |
 
 ## CLI scripts
 
@@ -47,6 +54,11 @@ standalone Draft 2020-12 JSON Schema files under `schemas/`:
 - `schemas/input.schema.json` — the input payload contract
 - `schemas/output.schema.json` — the result contract
 - `schemas/layers.schema.json` — the Phase 2 layer-assignment contract
+- `schemas/scan-result.schema.json` / `schemas/project-scan-output.schema.json` — raw scan result and the final project-scanner contract
+- `schemas/structure-input.schema.json` / `schemas/structure-output.schema.json` — `extract_structure` I/O
+- `schemas/file-analysis-context.schema.json` — deterministic per-batch context for the file-analyzer
+- `schemas/graph-fragment.schema.json` — file-analyzer batch/part output (`{nodes, edges}`)
+- `schemas/knowledge-graph.schema.json` / `schemas/domain-graph.schema.json` — full structural and domain graph contracts
 
 `analyze.py` validates the input payload against `input.schema.json` before
 parsing and the result against `output.schema.json` before writing, in addition

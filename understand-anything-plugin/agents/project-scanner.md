@@ -161,25 +161,51 @@ Read the output JSON and merge the `importMap` field directly into your final sc
 
 ---
 
-## Phase 2 -- Description and Final Assembly
+## Phase 2 -- Narrative JSON + Deterministic Assembly
 
-After Steps A + B + C have all completed, read:
-1. `$PROJECT_ROOT/.understand-anything/tmp/ua-scan-files.json` — output of `arch_analysis.scan_project` (file list with language, sizeLines, fileCategory; plus `totalFiles`, `filteredByIgnore`, `estimatedComplexity`).
-2. `$PROJECT_ROOT/.understand-anything/tmp/ua-import-map-output.json` — output of `arch_analysis.extract_import_map` (the `importMap` field).
-3. Your Step A in-memory notes (`name`, `rawDescription`, `readmeHead`, `frameworks`, `languages` narrative).
+You do **not** hand-assemble the final contract. `arch_analysis.assemble_project_scan_result` merges your small narrative JSON with the deterministic scan/import outputs, copies `files` / `totalFiles` / `filteredByIgnore` / `estimatedComplexity` / `importMap` **verbatim**, validates the result against `arch_analysis/schemas/project-scan-output.schema.json` (the authoritative contract), and writes `intermediate/scan-result.json`.
 
-Do NOT re-walk the file tree, re-count lines, or re-derive categories — trust `arch_analysis.scan_project` entirely. Do NOT re-implement import resolution — trust `arch_analysis.extract_import_map` entirely.
+### Step 1 — Write the narrative JSON
 
-**IMPORTANT:** The final output must NOT contain the `scriptCompleted` or `stats` fields from either module, nor your transient `rawDescription` / `readmeHead` work-strings. Strip them when assembling the final JSON. The final `importMap` MUST equal the `importMap` field from `arch_analysis.extract_import_map` verbatim (do not edit, re-sort, or filter it). The final `files` array MUST equal Step B's `files` array verbatim (do not re-order, drop, or augment it).
-
-Your only synthesis task in this phase is the final `description` field:
+Synthesize the `description` from your Step A notes:
 
 1. If `rawDescription` is non-empty, use it as the basis. Clean it up if needed (remove marketing fluff, ensure it is 1-2 sentences).
 2. If `rawDescription` is empty but `readmeHead` is non-empty, synthesize a 1-2 sentence description from the README content.
-3. If both are empty, use: `"No description available"`
-4. If `totalFiles` > 100, append a note: `" Note: this project has over 100 source files; consider scoping analysis to a subdirectory for faster results."`
+3. If both are empty, omit `description` (the assembler defaults it to `"No description available"`).
 
-Then assemble the final output JSON:
+Do NOT add the "over 100 files" note yourself — the assembler appends it deterministically when `totalFiles > 100`.
+
+Write only your narrative fields (the assembler supplies everything else):
+
+```bash
+cat > $PROJECT_ROOT/.understand-anything/tmp/ua-scan-narrative.json << 'ENDJSON'
+{
+  "name": "project-name",
+  "description": "Brief description from README or package.json",
+  "languages": ["markdown", "typescript", "yaml"],
+  "frameworks": ["React", "Vite", "Vitest", "Docker"]
+}
+ENDJSON
+```
+
+- `name` (string): from your Step A narrative work. If omitted/empty the assembler falls back to the project directory name.
+- `description` (string, optional): your synthesized 1-2 sentence description.
+- `languages` (string[], optional): from your Step A narrative work (deduplicated, sorted alphabetically; cross-checked against Step B's `stats.byLanguage` keys). If omitted, the assembler fills it from the deterministic per-file language tally.
+- `frameworks` (string[]): only confirmed frameworks (empty array if none detected).
+
+### Step 2 — Run the assembler
+
+```bash
+python -m arch_analysis.assemble_project_scan_result \
+  "$PROJECT_ROOT" \
+  "$PROJECT_ROOT/.understand-anything/tmp/ua-scan-narrative.json"
+```
+
+It reads `tmp/ua-scan-files.json` (Step B) and `tmp/ua-import-map-output.json` (Step C) by default and writes the validated `intermediate/scan-result.json`. The `files` array and `importMap` are copied byte-for-byte from the deterministic outputs — you never re-walk the tree, re-count lines, re-derive categories, or re-resolve imports.
+
+If it exits non-zero, read stderr: the usual cause is a `totalFiles`/`len(files)` mismatch or an `importMap` missing entries for scanned files — both indicate Step B and Step C are out of sync, so re-run those steps rather than editing the outputs by hand. You have up to 2 retry attempts.
+
+The on-disk schema `arch_analysis/schemas/project-scan-output.schema.json` is the authoritative field contract; the example below is illustrative only:
 
 ```json
 {
@@ -188,29 +214,14 @@ Then assemble the final output JSON:
   "languages": ["markdown", "typescript", "yaml"],
   "frameworks": ["React", "Vite", "Vitest", "Docker"],
   "files": [
-    {"path": "src/index.ts", "language": "typescript", "sizeLines": 150, "fileCategory": "code"},
-    {"path": "README.md", "language": "markdown", "sizeLines": 45, "fileCategory": "docs"},
-    {"path": "Dockerfile", "language": "dockerfile", "sizeLines": 22, "fileCategory": "infra"}
+    {"path": "src/index.ts", "language": "typescript", "sizeLines": 150, "fileCategory": "code"}
   ],
   "totalFiles": 42,
   "filteredByIgnore": 0,
   "estimatedComplexity": "moderate",
-  "importMap": {
-    "src/index.ts": ["src/utils.ts"]
-  }
+  "importMap": {"src/index.ts": ["src/utils.ts"]}
 }
 ```
-
-**Field requirements:**
-- `name` (string): from your Step A narrative work
-- `description` (string): your synthesized 1-2 sentence description
-- `languages` (string[]): from your Step A narrative work (deduplicated, sorted alphabetically; cross-checked against Step B's `stats.byLanguage` keys)
-- `frameworks` (string[]): from your Step A narrative work; only confirmed frameworks (empty array if none detected)
-- `files` (object[]): directly from Step B's `files[]` (verbatim, including `fileCategory`)
-- `totalFiles` (integer): directly from Step B
-- `filteredByIgnore` (integer): directly from Step B
-- `estimatedComplexity` (string): directly from Step B
-- `importMap` (object): directly from Step C's `importMap` field
 
 ## Critical Constraints
 
@@ -224,10 +235,8 @@ Then assemble the final output JSON:
 
 ## Writing Results
 
-After producing the final JSON:
+`arch_analysis.assemble_project_scan_result` already wrote (and validated) `<project-root>/.understand-anything/intermediate/scan-result.json` in Phase 2 — you do NOT write it yourself.
 
-1. Create the output directory: `mkdir -p <project-root>/.understand-anything/intermediate`
-2. Write the JSON to: `<project-root>/.understand-anything/intermediate/scan-result.json`
-3. Respond with ONLY a brief text summary: project name, total file count (with breakdown by category), detected languages, estimated complexity.
+After the assembler exits `0`, respond with ONLY a brief text summary: project name, total file count (with breakdown by category), detected languages, estimated complexity.
 
 Do NOT include the full JSON in your text response.

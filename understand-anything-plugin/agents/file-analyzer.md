@@ -22,40 +22,29 @@ For each file in the batch provided to you, extract structural data via the `arc
 
 Run the `arch_analysis.extract_structure` module. It uses tree-sitter for code files and specialized parsers for non-code files, providing deterministic, high-quality structural extraction without writing any ad-hoc scripts.
 
-### Step 1 — Prepare the input JSON
+### Step 1 — Prepare the batch input + context
 
-Create the input file with the batch data. **IMPORTANT:** Use the batch index in ALL temp file paths to avoid collisions when multiple file-analyzer agents run concurrently.
+Do NOT hand-author the input JSON. Run `arch_analysis.prepare_file_analysis_batch`, passing the project root and your batch index (from the dispatch prompt's `Batch: <batchIndex>/<totalBatches>` line). It reads `intermediate/batches.json` (written in Phase 1.5) and writes two files into `tmp/`:
 
-Each entry in `batchFiles` MUST be an object with these four fields, copied verbatim from the dispatch prompt's batch list:
-
-- `path` (string) — project-relative file path
-- `language` (string) — language id from the project scanner (e.g. `"python"`, `"typescript"`); never null
-- `sizeLines` (integer) — line count
-- `fileCategory` (string) — `code`, `config`, `docs`, `infra`, `data`, `script`, or `markup`
+- `ua-file-analyzer-input-<batchIndex>.json` — the `extract_structure` input (`projectRoot` + `batchFiles` + `batchImportData`).
+- `ua-file-context-<batchIndex>.json` — the deterministic per-batch **context** (adds the cross-batch `neighborMap`), validated against `arch_analysis/schemas/file-analysis-context.schema.json`. The seeding and finalization steps consume this file.
 
 ```bash
-cat > $PROJECT_ROOT/.understand-anything/tmp/ua-file-analyzer-input-<batchIndex>.json << 'ENDJSON'
-{
-  "projectRoot": "<project-root>",
-  "batchFiles": [
-    {"path": "<path>", "language": "<language>", "sizeLines": <sizeLines>, "fileCategory": "<fileCategory>"}
-  ],
-  "batchImportData": <batchImportData JSON object — provided in your dispatch prompt>
-}
-ENDJSON
+python -m arch_analysis.prepare_file_analysis_batch "$PROJECT_ROOT" <batchIndex>
 ```
+
+You can pass several indices at once (`... <batchIndex> <batchIndex> ...`) if your dispatch fused multiple batches. Using the batch index in every temp path avoids collisions when file-analyzer agents run concurrently.
+
+The `batchFiles`, `batchImportData`, and `neighborMap` are now maintained as validated JSON — you do not transcribe them from prose. The inline `batchImportData`/`neighborMap` in your dispatch prompt are informational; the authoritative copies live in the context file.
 
 ### Cross-batch context (neighborMap)
 
-Your dispatch prompt includes a `neighborMap` — for each file in your batch, it lists project-internal neighbors in OTHER batches (files that import yours or that you import), with their exported symbols.
+The context file's `neighborMap` lists, for each file in your batch, its project-internal neighbors in OTHER batches (files that import yours or that you import), with their exported symbols. Use it as a confidence boost for cross-batch edges (`calls`, `related`, `inherits`, `implements` to nodes outside your batch):
 
-Use neighborMap as a confidence boost for cross-batch edges (`calls`, `related`, `inherits`, `implements` to nodes outside your batch):
+- If your source clearly references a symbol in some `neighbor.symbols`, emit the edge to `function:<neighbor.path>:<symbol>` or `class:<neighbor.path>:<symbol>`.
+- `imports` edges are seeded deterministically from `batchImportData` (see Phase 2) — you do not author them.
 
-- If your source clearly references a symbol that appears in some `neighbor.symbols`, emit the edge to `function:<neighbor.path>:<symbol>` or `class:<neighbor.path>:<symbol>` with confidence.
-- If your source references a cross-batch symbol that is NOT in neighborMap (the project-scanner may not have extracted it), you may still emit the edge if you saw it explicitly in the imported file's surface — but prefer matching neighborMap symbols when available.
-- Imports continue to use `batchImportData` (fully resolved), not neighborMap.
-
-The merge script's dangling-edge dropper is the safety net for genuinely unresolvable targets.
+`finalize_file_batch_output` enforces that every cross-batch edge target is either an import target or a `neighborMap` symbol, so prefer matching `neighborMap` symbols. The merge script's dangling-edge dropper remains a downstream safety net.
 
 ### Step 2 — Execute the extraction module
 
@@ -130,13 +119,48 @@ When any of these arrays is present and non-empty, you MUST iterate it and emit 
 
 Treat these the same as tree-sitter-derived functions for node creation (Step 2 significance filter still applies — only emit `function:` nodes for those exceeding the threshold).
 
+### Step 4 — Validate the extraction output
+
+Run `arch_analysis.validate_structure_output` to confirm the extraction is well-formed and covers every batch file before you build on it:
+
+```bash
+python -m arch_analysis.validate_structure_output \
+  $PROJECT_ROOT/.understand-anything/tmp/ua-file-analyzer-input-<batchIndex>.json \
+  $PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json
+```
+
+It checks the results against `arch_analysis/schemas/structure-output.schema.json` plus batch coverage (no duplicate paths, `filesAnalyzed` matches `results`, integer metrics, every batch file analyzed or explicitly skipped). It exits `0` when valid; non-zero prints the issues. **If it exits non-zero, re-run `extract_structure` once (Step 2); if it still fails, stop and report the error as a hard failure — do NOT proceed to Phase 2 on malformed extraction output.**
+
 ---
 
 ## Phase 2 -- Semantic Analysis
 
-After the script completes, read `$PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json`. Use these structured results as the foundation for your analysis. Do NOT re-read the source files unless the script skipped a file or you need to understand a specific pattern that the script could not capture.
+### Step 0 — Seed the deterministic draft
 
-For each file in the script's `results` array, produce `GraphNode` and `GraphEdge` objects by combining the script's structural data with your expert judgment.
+Before any semantic work, generate the deterministic skeleton with `arch_analysis.seed_file_batch_graph`:
+
+```bash
+python -m arch_analysis.seed_file_batch_graph \
+  $PROJECT_ROOT/.understand-anything/tmp/ua-file-context-<batchIndex>.json \
+  $PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json \
+  $PROJECT_ROOT/.understand-anything/tmp/ua-file-seed-<batchIndex>.json
+```
+
+The seed already contains, computed deterministically:
+- **File nodes** for every batch file whose type/id is unambiguous (code/script/markup → `file`, config → `config`, docs → `document`, infra → `service`/`pipeline`/`resource`, schema-definition data files → `schema`).
+- **Function / class nodes** for significant definitions (10+ line functions, 2+ method or 20+ line classes, or anything exported), with ids and `lineRange`.
+- **Deterministic tags** (test / entry-point / category tags) on those nodes.
+- **Deterministic edges**: exact `imports` (1:1 from `batchImportData`), `contains` (file → each definition), and `exports` (file → each exported definition).
+
+**This seed is your starting draft.** Copy it to your working draft file `ua-file-draft-<batchIndex>.json` (`{ "nodes": [...], "edges": [...] }`) and edit it in place. Your job is to ENRICH it — never to delete what it seeded:
+
+- Fill each node's **`summary`** (1-2 sentences, never empty), **`complexity`** (`simple`/`moderate`/`complex`), and **add semantic tags** on top of the deterministic ones (3-5 tags total per node).
+- Create the file/function/class nodes the seed deferred (named `data` sub-nodes — `table:`, `endpoint:` — and any significant definition the extractor missed for shell/Swift files).
+- Add **judgment-based edges** (`calls`, `inherits`, `implements`, `depends_on`, `tested_by`, `configures`, `documents`, `deploys`, `migrates`, `triggers`, `defines_schema`, `serves`, `provisions`, `routes`, `related`).
+
+You MUST preserve every seeded node id, every seeded tag, and every seeded edge — `finalize_file_batch_output` (run at the end) rejects the batch if any seeded data was dropped. Do NOT re-read source files unless the extractor skipped a file or you need a pattern it could not capture.
+
+The sections below describe the **enrichment** you apply to each seeded node/edge. The node/edge field contracts are authoritative in `arch_analysis/schemas/graph-fragment.schema.json`; the tables below are guidance for the semantic values only.
 
 ### Step 1 -- Create File Node
 
@@ -247,7 +271,7 @@ Using the script's structural data and file categories, create edges:
 | Edge Type | When to Create | Weight | Direction |
 |---|---|---|---|
 | `contains` | File contains a function or class node you created (use for ALL function/class nodes) | `1.0` | `forward` |
-| `imports` | File imports from another project file (use `batchImportData[filePath]` from input JSON — external imports already filtered out) | `0.7` | `forward` |
+| `imports` | **Seeded — do not author.** Already in your draft (1:1 from `batchImportData`); the finalizer enforces exact coverage | `0.7` | `forward` |
 | `calls` | A function in this file calls a function in another file (infer from imports + function names when confident) | `0.8` | `forward` |
 | `inherits` | A class extends another class in the project | `0.9` | `forward` |
 | `implements` | A class implements an interface in the project | `0.9` | `forward` |
@@ -273,17 +297,7 @@ Using the script's structural data and file categories, create edges:
 | `related` | Non-code file is topically related to another file without a specific structural relationship | `0.5` | `forward` |
 | `depends_on` | Non-code file depends on another file (e.g., docker-compose depends on Dockerfile, CI workflow depends on Makefile targets) | `0.6` | `forward` |
 
-**Import edge creation rule for code files (1:1 emission, NO aggregation):**
-
-For every code file in this batch:
-
-1. Read its `batchImportData[filePath]` array (provided in the input JSON).
-2. For EACH path in that array, emit ONE `imports` edge object: `{ "source": "file:<filePath>", "target": "file:<resolvedPath>", "type": "imports", "direction": "forward", "weight": 0.7 }`.
-3. The output edge count for this file MUST equal `batchImportData[filePath].length`. Not 90% of it. Not "the meaningful ones". All of them.
-
-The `batchImportData` values contain only resolved project-internal paths — external packages have already been filtered out, so every path is safe to emit. Do NOT attempt to re-resolve imports from source. Do NOT skip imports because the target lives in another batch (cross-batch references are explicitly allowed for `imports` edges, since the project-scanner already verified the path exists).
-
-**Self-check before writing the batch JSON:** sum `batchImportData[file].length` across every code file in your batch. The number of `imports` edges in your output MUST equal that sum. If it doesn't, you dropped some during enumeration — go back and add them. (A deterministic post-processing pass in `arch_analysis.merge_batch_graphs` will recover anything you still miss, but it is your job to get this right at emission time so the recovery report stays empty.)
+**Import edges are seeded — do not author them.** Every `imports` edge is generated deterministically by `seed_file_batch_graph` (1:1 from `batchImportData`, weight `0.7`) and is already in your draft. Do NOT add, remove, or re-resolve `imports` edges. `finalize_file_batch_output` enforces *exact* coverage: every `batchImportData` import must be present and no batch-file-sourced `imports` edge may exist that isn't backed by `batchImportData`. (The deterministic recovery pass in `arch_analysis.merge_batch_graphs` remains a downstream safety net.)
 
 **Non-code edge creation guidance:**
 - **Config files:** Look at the config file's purpose. `tsconfig.json` configures all `.ts` files; `package.json` configures the build. Create `configures` edges to the most relevant entry points or directories.
@@ -322,7 +336,9 @@ You MUST use these exact prefixes for node IDs:
 
 ## Output Format
 
-Produce a single, valid JSON block. Before writing, verify that all arrays and objects are properly closed, all strings are quoted, and no trailing commas exist — malformed JSON breaks the entire pipeline.
+Your draft is a single GraphFragment object: `{ "nodes": [...], "edges": [...] }`. The authoritative field contract — required fields, types, and valid enum values for nodes and edges — is `arch_analysis/schemas/graph-fragment.schema.json`, enforced by the finalizer. The example and field lists below are illustrative guidance for the *semantic* values you fill in; when in doubt, the schema file wins.
+
+Before running the finalizer, verify that all arrays and objects are properly closed, all strings are quoted, and no trailing commas exist — malformed JSON breaks the entire pipeline.
 
 ```json
 {
@@ -459,54 +475,33 @@ Use these hints for common edge patterns:
 ## Critical Constraints
 
 - NEVER invent file paths. Every `filePath` and every file reference in node IDs must correspond to a real file from the script's output, `batchFiles`, or `batchImportData`.
-- NEVER create edges to nodes that do not exist. Only create import edges for paths listed in `batchImportData` — these are already verified project-internal paths. For non-code edges (configures, documents, deploys, etc.), only target nodes that exist in your batch or that you know exist from other batches.
+- NEVER create edges to nodes that do not exist. `imports` edges are seeded for you. For judgment edges (configures, documents, deploys, calls, etc.), only target nodes that exist in your batch or that the context's `neighborMap` proves exist in other batches — the finalizer rejects edges to unknown cross-batch targets.
 - ALWAYS create a node for EVERY file in your batch, even if the file is trivial. Use the appropriate node type based on fileCategory.
 - For code files, check the script output for functions and classes that meet the significance filter (Step 2). If any exist, you MUST create `function:` and `class:` nodes for them — do not skip this step.
-- For import edges, use `batchImportData[filePath]` directly from the input JSON. Do NOT attempt to resolve import paths yourself -- the project scanner already did this deterministically.
+- Do NOT author, edit, or remove `imports` edges — `seed_file_batch_graph` emits them deterministically from `batchImportData` and the finalizer enforces exact coverage. Never attempt to re-resolve import paths yourself.
 - NEVER produce duplicate node IDs within your batch.
 - NEVER create self-referencing edges (where source equals target).
 - Trust the script's structural extraction. Do NOT re-read source files to re-extract functions, classes, or imports that the script already captured. Only re-read a file if you need deeper understanding for writing a summary.
 
-## Writing Results — single or multi-part
+## Writing Results — run the finalizer
 
-### Output File Naming — STRICT
+You do **not** hand-split parts, hand-name output files, or hand-check import coverage. After you finish editing the draft (`ua-file-draft-<batchIndex>.json`), run `arch_analysis.finalize_file_batch_output`:
 
-**For EVERY batch in your input, write a separate output file using ONLY one of these two filename patterns:**
-
-- `batch-<batchIndex>.json` — single-part output for batch `<batchIndex>`
-- `batch-<batchIndex>-part-<k>.json` — multi-part output when `nodes > 60` or `edges > 120` (per Step B below)
-
-`<batchIndex>` is the **ORIGINAL integer batch index** from the input `batches.json`. Even if your dispatch prompt fused multiple batches into one call (e.g., for token efficiency — input may be labeled `fused-8-13` or contain `batches: [{batchIndex: 8}, {batchIndex: 9}, ...]`), you MUST split your output back into per-batch files using each original `batchIndex`.
-
-**NEVER use these patterns:** `batch-fused-*`, `batch-merged-*`, `batch-N-M-*` (range like `batch-8-13.json`), `batches-*`, or any other variant. The downstream merge script (`arch_analysis.merge_batch_graphs`) requires the regex `batch-(\d+)(?:-part-(\d+))?\.json` — anything else is **silently dropped from the final graph**, losing every node and edge in that file with no error.
-
-**Example.** If your input contained 6 batches (indices 8 through 13), you write EXACTLY 6 output files: `batch-8.json`, `batch-9.json`, `batch-10.json`, `batch-11.json`, `batch-12.json`, `batch-13.json`. Not one combined `batch-fused-8-13.json`. Not one `batch-8-13.json`. Six files, one per original `batchIndex`. Run Steps A–F below independently for each batch's nodes/edges.
-
-**Step A — Compute totals.**
-```
-nodeCount = nodes.length
-edgeCount = edges.length
+```bash
+python -m arch_analysis.finalize_file_batch_output \
+  "$PROJECT_ROOT" \
+  $PROJECT_ROOT/.understand-anything/tmp/ua-file-context-<batchIndex>.json \
+  $PROJECT_ROOT/.understand-anything/tmp/ua-file-seed-<batchIndex>.json \
+  $PROJECT_ROOT/.understand-anything/tmp/ua-file-draft-<batchIndex>.json
 ```
 
-**Step B — Decide split.**
-- If `nodeCount ≤ 60` AND `edgeCount ≤ 120`: write ONE file to `.understand-anything/intermediate/batch-<batchIndex>.json`. Done. Skip to Step F.
-- Otherwise: `parts = ceil(max(nodeCount / 60, edgeCount / 120))`.
+The finalizer:
+1. Validates the draft against `arch_analysis/schemas/graph-fragment.schema.json` (every node/edge required field + enums).
+2. Verifies every seeded node, tag, and edge survived your edits — drop anything seeded and it fails.
+3. Enforces exact `imports` edge coverage against `batchImportData`.
+4. Verifies every edge endpoint is in-batch or an allowed cross-batch reference (import target or `neighborMap` symbol).
+5. Splits into `batch-<batchIndex>.json` (or `batch-<batchIndex>-part-<k>.json` when `nodes > 60` or `edges > 120`) using the canonical filename patterns the merge step requires, and writes them to `intermediate/`.
 
-**Step C — Partition.**
-Sort files in your batch alphabetically by path. Chunk them sequentially into `parts` groups of size `ceil(N / parts)`. For each part:
-- All nodes whose `filePath` is in this part's files (for non-file nodes like `module`/`concept`, use the file they belong to).
-- All edges whose `source` is in this part's nodes (target may be anywhere — same part, different part of same batch, different batch).
+If the finalizer exits non-zero, read its issue list, fix your draft (e.g. restore a dropped seeded tag/edge, fill a missing `summary`, remove an edge to an unknown cross-batch node), and re-run. Do NOT write `batch-*.json` files yourself — the filename patterns and the multi-batch fan-out (one file per original `batchIndex`, even when your dispatch fused several batches) are the finalizer's job. Run it once per `batchIndex` you were dispatched.
 
-**Step D — Write each part.**
-Write part `k` (1-indexed) to `.understand-anything/intermediate/batch-<batchIndex>-part-<k>.json`. Each part is a valid GraphFragment: `{ "nodes": [...], "edges": [...] }`.
-
-**Step E — Self-validate.**
-For each file written, verify:
-- Valid JSON.
-- `nodes` array exists and is well-formed.
-- For every edge: `source` and `target` both appear as either (a) a node `id` in this part's nodes, OR (b) a `file:<path>` reference where `<path>` is in `neighborMap` or `batchImportData`, OR (c) a `function:<path>:<symbol>` / `class:<path>:<symbol>` reference where `<symbol>` is in some `neighbor.symbols`.
-
-If validation fails on a part, do NOT silently rebuild. Respond with an explicit error stating which part failed, which edge(s) failed validation, and why. The dispatching session can then retry.
-
-**Step F — Respond.**
-Respond with ONLY a brief text summary: parts written (1 or more), total nodes/edges across all parts, any files skipped. Do NOT include JSON content in the response.
+Once the finalizer exits `0`, respond with ONLY a brief text summary: batch index(es) finalized, total nodes/edges, any files skipped. Do NOT include JSON content in the response.

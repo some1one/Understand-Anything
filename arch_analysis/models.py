@@ -7,6 +7,8 @@ a silently-wrong analysis.
 
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field, RootModel
 
 
@@ -215,3 +217,183 @@ class Layer(BaseModel):
 
 class LayersOutput(RootModel[list[Layer]]):
     """The Phase 2 output contract: a JSON array of layers."""
+
+
+# ---------------------------------------------------------------------------
+# Project-scanner final output (intermediate/scan-result.json)
+# ---------------------------------------------------------------------------
+
+
+class ProjectScanOutput(BaseModel):
+    """Final project-scanner contract written to ``intermediate/scan-result.json``.
+
+    Merges the LLM narrative fields (``name``/``description``/``languages``/
+    ``frameworks``) with the deterministic ``files``/``totalFiles``/
+    ``filteredByIgnore``/``estimatedComplexity`` from :mod:`scan_project` and the
+    ``importMap`` from :mod:`extract_import_map`. The transient
+    ``scriptCompleted``/``stats`` fields from those modules are NOT part of this
+    contract — they are stripped during assembly.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: str
+    description: str
+    languages: list[str] = Field(default_factory=list)
+    frameworks: list[str] = Field(default_factory=list)
+    files: list[ScanFile]
+    totalFiles: int
+    filteredByIgnore: int
+    estimatedComplexity: str
+    importMap: dict[str, list[str]] = Field(default_factory=dict)
+
+
+# ---------------------------------------------------------------------------
+# Knowledge-graph / domain-graph contracts
+# ---------------------------------------------------------------------------
+
+# Canonical enums — kept in sync with arch_analysis.validate_graph and the
+# dashboard schema (packages/core/src/schema.ts).
+NodeType = Literal[
+    "file", "function", "class", "module", "concept",
+    "config", "document", "service", "table", "endpoint",
+    "pipeline", "schema", "resource",
+    "domain", "flow", "step",
+]
+
+DomainNodeType = Literal["domain", "flow", "step"]
+
+EdgeType = Literal[
+    "imports", "exports", "contains", "inherits", "implements",
+    "calls", "subscribes", "publishes", "middleware",
+    "reads_from", "writes_to", "transforms", "validates",
+    "depends_on", "tested_by", "configures",
+    "related", "similar_to",
+    "deploys", "serves", "provisions", "triggers",
+    "migrates", "documents", "routes", "defines_schema",
+    "contains_flow", "flow_step", "cross_domain",
+]
+
+Complexity = Literal["simple", "moderate", "complex"]
+Direction = Literal["forward", "backward", "bidirectional"]
+
+
+class GraphNode(BaseModel):
+    """A node in an assembled knowledge graph or batch fragment.
+
+    ``extra="allow"`` keeps the contract open for optional fields the LLM and
+    extractors attach (``lineRange``, ``languageNotes``, ``domainMeta``, etc.).
+    """
+
+    model_config = ConfigDict(extra="allow")
+
+    id: str = Field(min_length=1)
+    type: NodeType
+    name: str = Field(min_length=1)
+    summary: str = Field(min_length=1)
+    tags: list[str]
+    complexity: Complexity
+    filePath: str | None = None
+    lineRange: list[int] | None = None
+
+
+class DomainNode(GraphNode):
+    """A domain-graph node — restricted to ``domain``/``flow``/``step``."""
+
+    type: DomainNodeType
+
+
+class GraphEdge(BaseModel):
+    """A directed, typed, weighted edge in an assembled graph or fragment."""
+
+    model_config = ConfigDict(extra="allow")
+
+    source: str = Field(min_length=1)
+    target: str = Field(min_length=1)
+    type: EdgeType
+    direction: Direction = "forward"
+    weight: float = Field(ge=0.0, le=1.0)
+
+
+class GraphProject(BaseModel):
+    """Project metadata block shared by knowledge and domain graphs."""
+
+    model_config = ConfigDict(extra="allow")
+
+    name: str
+    languages: list[str] = Field(default_factory=list)
+    frameworks: list[str] = Field(default_factory=list)
+    description: str
+    analyzedAt: str
+    gitCommitHash: str
+
+
+class KnowledgeGraph(BaseModel):
+    """The full structural knowledge-graph contract (``knowledge-graph.json``)."""
+
+    model_config = ConfigDict(extra="allow")
+
+    version: str
+    project: GraphProject
+    nodes: list[GraphNode]
+    edges: list[GraphEdge]
+    layers: list[Layer] = Field(default_factory=list)
+
+
+class DomainGraph(BaseModel):
+    """The domain-graph contract (``domain-graph.json``).
+
+    Nodes are restricted to domain/flow/step types and ``layers`` is empty by
+    convention (the dashboard renders domain graphs with a layer-free view).
+    """
+
+    model_config = ConfigDict(extra="allow")
+
+    version: str
+    project: GraphProject
+    nodes: list[DomainNode]
+    edges: list[GraphEdge]
+    layers: list[Layer] = Field(default_factory=list)
+
+
+class GraphFragment(BaseModel):
+    """A file-analyzer batch/part output: ``{ "nodes": [...], "edges": [...] }``."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    nodes: list[GraphNode] = Field(default_factory=list)
+    edges: list[GraphEdge] = Field(default_factory=list)
+
+
+# ---------------------------------------------------------------------------
+# Deterministic per-batch context for the file-analyzer
+# ---------------------------------------------------------------------------
+
+
+class NeighborEntry(BaseModel):
+    """A cross-batch neighbor of a file, with its batch index + exported symbols."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    path: str
+    batchIndex: int
+    symbols: list[str] = Field(default_factory=list)
+
+
+class FileAnalysisContext(BaseModel):
+    """Deterministic per-batch context consumed by the file-analyzer.
+
+    Produced by :mod:`arch_analysis.prepare_file_analysis_batch` from a single
+    ``batches.json`` entry. Carries everything the seeding and finalization
+    steps need: the batch's files, fully-resolved import data, and the
+    cross-batch neighbor map (whose target paths bound the set of allowed
+    cross-batch edge references).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    projectRoot: str
+    batchIndex: int
+    batchFiles: list[StructureBatchFile] = Field(default_factory=list)
+    batchImportData: dict[str, list[str]] = Field(default_factory=dict)
+    neighborMap: dict[str, list[NeighborEntry]] = Field(default_factory=dict)

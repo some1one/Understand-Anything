@@ -251,7 +251,7 @@ Use `layer:<kebab-case>` format consistently:
 
 ## Output Format
 
-Produce a single, valid JSON array. Every field shown is **required**.
+The authoritative contract for this output is `arch_analysis/schemas/layers.schema.json` (a JSON array of layer objects), and the `validate_layers` cross-check enforces it. The example below is illustrative — every field shown is **required** per that schema.
 
 ```json
 [

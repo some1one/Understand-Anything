@@ -29,6 +29,8 @@ It exits `0` on success (even when the graph has issues — a non-zero exit mean
 
 ### Validation Checks the Module Performs
 
+The node/edge field contract is defined authoritatively by `arch_analysis/schemas/knowledge-graph.schema.json` (and `domain-graph.schema.json` for domain graphs). The tables below explain the checks the module applies against that contract.
+
 **Check 1 -- Schema Validation (Critical)**
 
 Verify every **node** has ALL required fields with correct types:
