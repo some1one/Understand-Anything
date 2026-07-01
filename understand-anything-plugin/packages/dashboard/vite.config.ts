@@ -192,9 +192,9 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      "@understand-anything/core/schema": path.resolve(__dirname, "../core/dist/schema.js"),
-      "@understand-anything/core/search": path.resolve(__dirname, "../core/dist/search.js"),
-      "@understand-anything/core/types": path.resolve(__dirname, "../core/dist/types.js"),
+      "@understand-anything/core/schema": path.resolve(__dirname, "src/core/schema.ts"),
+      "@understand-anything/core/search": path.resolve(__dirname, "src/core/search.ts"),
+      "@understand-anything/core/types": path.resolve(__dirname, "src/core/types.ts"),
     },
   },
 
@@ -251,6 +251,7 @@ export default defineConfig({
             pathname === "/knowledge-graph.json" ||
             pathname === "/domain-graph.json" ||
             pathname === "/diff-overlay.json" ||
+            pathname === "/embeddings.json" ||
             pathname === "/meta.json" ||
             pathname === "/config.json" ||
             pathname === "/file-content.json";
@@ -294,6 +295,8 @@ export default defineConfig({
           const fileName =
             pathname === "/diff-overlay.json"
               ? "diff-overlay.json"
+              : pathname === "/embeddings.json"
+              ? "embeddings.json"
               : pathname === "/meta.json"
               ? "meta.json"
               : pathname === "/domain-graph.json"
