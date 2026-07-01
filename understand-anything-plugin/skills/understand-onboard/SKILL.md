@@ -20,26 +20,16 @@ The knowledge graph JSON has this structure:
   - Key types: imports, contains, calls, depends_on, configures, documents, deploys, triggers, contains_flow, flow_step, related, cites
 - `layers[]` — each has {id, name, description, nodeIds[]}
 
-## How to Read Efficiently
-
-1. Use Grep to search within the JSON for relevant entries BEFORE reading the full file
-2. Only read sections you need — don't dump the entire graph into context
-3. Node names and summaries are the most useful fields for understanding
-4. Edges tell you how components connect — follow imports and calls for dependency chains
-
 ## Instructions
 
-1. Check that `.understand-anything/knowledge-graph.json` exists. If not, tell the user to run `/understand` first.
+1. Set `SKILL_DIR` to the directory containing this `SKILL.md`.
 
-2. **Read project metadata** — use Grep or Read with a line limit to extract the `"project"` section (name, description, languages, frameworks).
+2. Run the bundled Python helper to load project metadata, layers, file-level nodes, and complexity hotspots:
+   ```bash
+   python "$SKILL_DIR/scripts/onboarding_context.py" "$PWD"
+   ```
 
-3. **Read layers** — Grep for `"layers"` to get the full layers array. These define the architecture and will structure the guide.
-
-4. **Read file-level structural nodes only** — use Grep to find nodes with file-level types (`file`, `config`, `document`, `service`, `pipeline`, `table`, `schema`, `resource`, `endpoint`) in the knowledge graph. Skip function-level and class-level nodes to keep the guide high-level. Extract each node's `name`, `filePath`, `summary`, and `complexity`.
-
-5. **Identify complexity hotspots** — from the file-level nodes, find those with the highest `complexity` values. These are areas new developers should approach carefully.
-
-6. **Generate the onboarding guide** with these sections:
+3. **Generate the onboarding guide** with these sections:
    - **Project Overview**: name, languages, frameworks, description (from project metadata)
    - **Architecture Layers**: each layer's name, description, and key files (from layers + file nodes)
    - **Key Concepts**: important patterns and design decisions (from node summaries and tags)
@@ -47,6 +37,6 @@ The knowledge graph JSON has this structure:
    - **File Map**: what each key file does (from file-level nodes, organized by layer)
    - **Complexity Hotspots**: areas to approach carefully (from complexity values)
 
-7. Format as clean markdown
-8. Offer to save the guide to `docs/ONBOARDING.md` in the project
-9. Suggest the user commit it to the repo for the team
+4. Format as clean markdown
+5. Offer to save the guide to `docs/ONBOARDING.md` in the project
+6. Suggest the user commit it to the repo for the team

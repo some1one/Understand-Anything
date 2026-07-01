@@ -44,77 +44,17 @@ Determine whether to run a full analysis or incremental update.
 
 1. **Resolve `PROJECT_ROOT`:**
    - Parse `$ARGUMENTS` for a non-flag token (any argument that does not start with `--`). If found, treat it as the target directory path.
-     - If the path is relative, resolve it against the current working directory.
-     - Verify the resolved path exists and is a directory (run `test -d <path>`). If it does not exist or is not a directory, report an error to the user and **STOP**.
-     - Set `PROJECT_ROOT` to the resolved absolute path.
-   - If no directory path argument is found, set `PROJECT_ROOT` to the current working directory.
-   - **Worktree redirect.** If `PROJECT_ROOT` is inside a git worktree (not the main checkout), redirect output to the main repository root. Worktrees managed by Claude Code are ephemeral — `.understand-anything/` written there is destroyed when the session ends, taking the knowledge graph with it (issue #133). Detect a worktree by comparing `git rev-parse --git-dir` against `git rev-parse --git-common-dir`; in a normal checkout or submodule they resolve to the same path, in a worktree they differ and the parent of `--git-common-dir` is the main repo root.
-
+   - Set `SKILL_DIR` to the directory containing this `SKILL.md`.
+   - Resolve the path and apply the git-worktree redirect by calling the bundled Bash script:
      ```bash
-     COMMON_DIR=$(git -C "$PROJECT_ROOT" rev-parse --git-common-dir 2>/dev/null)
-     GIT_DIR=$(git -C "$PROJECT_ROOT" rev-parse --git-dir 2>/dev/null)
-     if [ -n "$COMMON_DIR" ] && [ -n "$GIT_DIR" ]; then
-       COMMON_ABS=$(cd "$PROJECT_ROOT" && cd "$COMMON_DIR" 2>/dev/null && pwd -P)
-       GIT_ABS=$(cd "$PROJECT_ROOT" && cd "$GIT_DIR" 2>/dev/null && pwd -P)
-       if [ -n "$COMMON_ABS" ] && [ "$COMMON_ABS" != "$GIT_ABS" ]; then
-         MAIN_ROOT=$(dirname "$COMMON_ABS")
-         if [ -d "$MAIN_ROOT" ] && [ "${UNDERSTAND_NO_WORKTREE_REDIRECT:-0}" != "1" ]; then
-           echo "[understand] Detected git worktree at $PROJECT_ROOT"
-           echo "[understand] Redirecting output to main repo root: $MAIN_ROOT"
-           echo "[understand] (Set UNDERSTAND_NO_WORKTREE_REDIRECT=1 to keep PROJECT_ROOT as the worktree.)"
-           PROJECT_ROOT="$MAIN_ROOT"
-         fi
-       fi
-     fi
+     PROJECT_ROOT="$("$SKILL_DIR/scripts/resolve_project_root.sh" "<path-or-current-working-directory>")"
      ```
-
-     Set `UNDERSTAND_NO_WORKTREE_REDIRECT=1` if you intentionally want a per-worktree graph (rare — most users want the redirect).
+   - Set `UNDERSTAND_NO_WORKTREE_REDIRECT=1` if you intentionally want a per-worktree graph (rare — most users want the redirect).
 1.5. **Ensure the plugin is built.** Later phases invoke Node scripts that import `@understand-anything/core`. On a fresh install `packages/core/dist/` does not exist yet — build once.
 
-   **Important:** do **not** assume the plugin root is simply two directories above the skill path string. In many installations `~/.agents/skills/understand` is a symlink into the real plugin checkout. Prefer runtime-provided plugin roots first (for Claude), then fall back to universal symlinks, skill symlink resolution, and common clone-based install paths.
-
-   Resolve the plugin root like this:
-
+   Use the bundled Bash script, which resolves symlinked skill installs, locates the plugin root, and builds `@understand-anything/core` if needed:
    ```bash
-   SKILL_REAL=$(realpath ~/.agents/skills/understand 2>/dev/null || readlink -f ~/.agents/skills/understand 2>/dev/null || echo "")
-   SELF_RELATIVE=$([ -n "$SKILL_REAL" ] && cd "$SKILL_REAL/../.." 2>/dev/null && pwd || echo "")
-   COPILOT_SKILL_REAL=$(realpath ~/.copilot/skills/understand 2>/dev/null || readlink -f ~/.copilot/skills/understand 2>/dev/null || echo "")
-   COPILOT_SELF_RELATIVE=$([ -n "$COPILOT_SKILL_REAL" ] && cd "$COPILOT_SKILL_REAL/../.." 2>/dev/null && pwd || echo "")
-
-   PLUGIN_ROOT=""
-   for candidate in \
-     "${CLAUDE_PLUGIN_ROOT}" \
-     "$HOME/.understand-anything-plugin" \
-     "$SELF_RELATIVE" \
-     "$COPILOT_SELF_RELATIVE" \
-     "$HOME/.codex/understand-anything/understand-anything-plugin" \
-     "$HOME/.opencode/understand-anything/understand-anything-plugin" \
-     "$HOME/.pi/understand-anything/understand-anything-plugin" \
-     "$HOME/understand-anything/understand-anything-plugin"; do
-     if [ -n "$candidate" ] && [ -f "$candidate/package.json" ] && [ -f "$candidate/pnpm-workspace.yaml" ]; then
-       PLUGIN_ROOT="$candidate"
-       break
-     fi
-   done
-
-   if [ -z "$PLUGIN_ROOT" ]; then
-     echo "Error: Cannot find the understand-anything plugin root."
-     echo "Checked:"
-     echo "  - ${CLAUDE_PLUGIN_ROOT:-<unset CLAUDE_PLUGIN_ROOT>}"
-     echo "  - $HOME/.understand-anything-plugin"
-     echo "  - ${SELF_RELATIVE:-<unresolved path derived from ~/.agents/skills/understand>}"
-     echo "  - ${COPILOT_SELF_RELATIVE:-<unresolved path derived from ~/.copilot/skills/understand>}"
-     echo "  - $HOME/.codex/understand-anything/understand-anything-plugin"
-     echo "  - $HOME/.opencode/understand-anything/understand-anything-plugin"
-     echo "  - $HOME/.pi/understand-anything/understand-anything-plugin"
-     echo "  - $HOME/understand-anything/understand-anything-plugin"
-     echo "Make sure the plugin is installed correctly."
-     exit 1
-   fi
-
-   if [ ! -f "$PLUGIN_ROOT/packages/core/dist/index.js" ]; then
-     cd "$PLUGIN_ROOT" && (pnpm install --frozen-lockfile 2>/dev/null || pnpm install) && pnpm --filter @understand-anything/core build
-   fi
+   PLUGIN_ROOT="$("$SKILL_DIR/scripts/ensure_plugin_built.sh")"
    ```
 
    If `pnpm` is missing, report to the user: "Install Node.js ≥ 22 and pnpm ≥ 10, then re-run `/understand`."
@@ -123,19 +63,10 @@ Determine whether to run a full analysis or incremental update.
    ```bash
    git rev-parse HEAD
    ```
-3. Create the intermediate and temp output directories:
+3. Create the intermediate/temp output directories, purge stale trash dirs, and apply `--auto-update` / `--no-auto-update` config flags:
    ```bash
-   mkdir -p $PROJECT_ROOT/.understand-anything/intermediate
-   mkdir -p $PROJECT_ROOT/.understand-anything/tmp
+   "$SKILL_DIR/scripts/prepare_workspace.sh" "$PROJECT_ROOT" $ARGUMENTS
    ```
-3.1. **Purge stale trash dirs.** Phase 6 cleanup `mv`s scratch dirs into `.trash-<timestamp>/` rather than `rm -rf`ing them directly (see issue #301), so that destructive-action gates on hardened hosts don't trip on just-created paths. Reclaim the space here once the trash is older than 7 days — by this point any freshness-window check has long since stopped caring about those dirs:
-   ```bash
-   find $PROJECT_ROOT/.understand-anything/ -maxdepth 1 -type d -name '.trash-*' -mtime +7 -exec rm -rf {} + 2>/dev/null || true
-   ```
-3.5. **Auto-update configuration:**
-    - If `--auto-update` is in `$ARGUMENTS`: write `{"autoUpdate": true}` to `$PROJECT_ROOT/.understand-anything/config.json`
-    - If `--no-auto-update` is in `$ARGUMENTS`: write `{"autoUpdate": false}` to `$PROJECT_ROOT/.understand-anything/config.json`
-    - These flags only set the config — analysis proceeds normally regardless.
 
  4. **Check for subdomain knowledge graphs to merge:**
    List all `*knowledge-graph*.json` files in `$PROJECT_ROOT/.understand-anything/` **excluding** `knowledge-graph.json` itself (e.g. `frontend-knowledge-graph.json`, `backend-knowledge-graph.json`). If any subdomain graphs exist, run the merge module from the `arch_analysis` package (run from its project root so dependencies resolve):
@@ -160,19 +91,15 @@ Determine whether to run a full analysis or incremental update.
 
    For incremental updates, get the changed file list:
    ```bash
-   git diff <lastCommitHash>..HEAD --name-only
+   python "$SKILL_DIR/scripts/write_changed_files.py" "$PROJECT_ROOT" "<lastCommitHash>"
    ```
-   If this returns no files, report "Graph is up to date" and STOP.
+   If the generated `changed-files.txt` is empty, report "Graph is up to date" and STOP.
 
 8. **Collect project context for subagent injection:**
-   - Read `README.md` (or `README.rst`, `readme.md`) from `$PROJECT_ROOT` if it exists. Store as `$README_CONTENT` (first 3000 characters).
-   - Read the primary package manifest (`package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `pom.xml`) if it exists. Store as `$MANIFEST_CONTENT`.
-   - Capture the top-level directory tree:
+   - Run the bundled Python context capture script. It writes `.understand-anything/intermediate/project-context.json` and prints the same JSON to stdout; use its fields (`readmeContent`, `manifestContent`, `dirTree`, `entryPoint`) as `$README_CONTENT`, `$MANIFEST_CONTENT`, `$DIR_TREE`, and `$ENTRY_POINT`:
      ```bash
-     find $PROJECT_ROOT -maxdepth 2 -type f -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/dist/*' | head -100
+     python "$SKILL_DIR/scripts/capture_project_context.py" "$PROJECT_ROOT"
      ```
-     Store as `$DIR_TREE`.
-   - Detect the project entry point by checking for common patterns (in order): `src/index.ts`, `src/main.ts`, `src/App.tsx`, `index.js`, `main.py`, `manage.py`, `app.py`, `wsgi.py`, `asgi.py`, `run.py`, `__main__.py`, `main.go`, `cmd/*/main.go`, `src/main.rs`, `src/lib.rs`, `src/main/java/**/Application.java`, `Program.cs`, `config.ru`, `index.php`. Store first match as `$ENTRY_POINT`.
 
 ---
 
@@ -199,27 +126,12 @@ Set up and verify the `.understandignore` file before scanning.
 
 Report to the user: `[Phase 1/6] Scanning project files...`
 
-Dispatch a subagent using the `project-scanner` agent definition (at `agents/project-scanner.md`). Append the following additional context:
+Dispatch a subagent using the `project-scanner` agent definition (at `agents/project-scanner.md`) and the bundled prompt template `prompts/project-scanner-dispatch.md`.
 
-> **Additional context from main session:**
->
-> Project README (first 3000 chars):
-> ```
-> $README_CONTENT
-> ```
->
-> Package manifest:
-> ```
-> $MANIFEST_CONTENT
-> ```
->
-> Use this context to produce more accurate project name, description, and framework detection. The README and manifest are authoritative — prefer their information over heuristics.
-
-Pass these parameters in the dispatch prompt:
-
-> Scan this project directory to discover all project files (including non-code files like configs, docs, infrastructure), detect languages and frameworks.
-> Project root: `$PROJECT_ROOT`
-> Write output to: `$PROJECT_ROOT/.understand-anything/intermediate/scan-result.json`
+Fill the template arguments from Phase 0 context:
+- `PROJECT_ROOT`
+- `README_CONTENT`
+- `MANIFEST_CONTENT`
 
 After the subagent completes, read `$PROJECT_ROOT/.understand-anything/intermediate/scan-result.json` to get:
 - Project name, description
@@ -263,37 +175,20 @@ Load `.understand-anything/intermediate/batches.json` (produced by Phase 1.5). I
 
 Report: `[Phase 2/6] Analyzing files — <totalFiles> files in <totalBatches> batches (up to 5 concurrent)...`
 
-For each batch, dispatch a subagent using the `file-analyzer` agent definition (at `agents/file-analyzer.md`). Run up to **5 subagents concurrently**. Append the following additional context:
+For each batch, dispatch a subagent using the `file-analyzer` agent definition (at `agents/file-analyzer.md`) and the bundled prompt template `prompts/file-analyzer-batch-dispatch.md`. Run up to **5 subagents concurrently**.
 
-> **Additional context from main session:**
->
-> Project: `<projectName>` — `<projectDescription>`
-> Languages: `<languages from Phase 1>`
-
-Dispatch prompt template (fill in batch-specific values from `batches.json[i]`):
-
-> Analyze these files and produce GraphNode and GraphEdge objects.
-> Project root: `$PROJECT_ROOT`
-> Project: `<projectName>`
-> Languages: `<languages>`
-> Batch: `<batchIndex>/<totalBatches>`
-> Skill directory (for bundled scripts): `<SKILL_DIR>`
-> Output: write to `$PROJECT_ROOT/.understand-anything/intermediate/batch-<batchIndex>.json` (single-file mode) OR `batch-<batchIndex>-part-<k>.json` (split mode, per Step B of your output protocol).
->
-> Pre-resolved import data for this batch (use directly — do NOT re-resolve imports from source):
-> ```json
-> <batchImportData JSON from batches.json[i].batchImportData>
-> ```
->
-> Cross-batch neighbors with their exported symbols (confidence boost for cross-batch edges):
-> ```json
-> <neighborMap JSON from batches.json[i].neighborMap>
-> ```
->
-> Files to analyze in this batch (every entry MUST be passed through to `batchFiles` with all four fields — `path`, `language`, `sizeLines`, `fileCategory`):
-> 1. `<path>` (<sizeLines> lines, language: `<language>`, fileCategory: `<fileCategory>`)
-> 2. `<path>` (<sizeLines> lines, language: `<language>`, fileCategory: `<fileCategory>`)
-> ...
+Fill the template arguments from `scan-result.json`, `batches.json[i]`, and Phase 0 context:
+- `PROJECT_ROOT`
+- `PROJECT_NAME`
+- `PROJECT_DESCRIPTION`
+- `LANGUAGES`
+- `BATCH_INDEX`
+- `TOTAL_BATCHES`
+- `SKILL_DIR`
+- `OUTPUT_PATH`
+- `BATCH_IMPORT_DATA_JSON`
+- `NEIGHBOR_MAP_JSON`
+- `BATCH_FILES`
 
 **Output naming is per-batchIndex — no fusion.** If you fuse multiple small batches into a single file-analyzer dispatch for token efficiency, the dispatched agent must STILL write one output file per original `batchIndex` using `batch-<batchIndex>.json` or `batch-<batchIndex>-part-<k>.json`. The merge script's regex (`batch-(\d+)(?:-part-(\d+))?\.json`) silently drops any other naming (e.g., `batch-fused-8-13.json`, `batch-8-13.json`), losing every node and edge in that file. After each dispatch returns, verify each `batchIndex` in the dispatched input has a corresponding `batch-<batchIndex>.json` (or `batch-<batchIndex>-part-*.json`) on disk before proceeding to the next dispatch.
 
@@ -321,9 +216,9 @@ Include the script's warnings in `$PHASE_WARNINGS` for the reviewer.
 
 ### Incremental update path
 
-Write the changed-files list (one path per line) to a temp file:
+Write the changed-files list (one path per line) to a temp file if Phase 0 has not already done so:
 ```bash
-git diff <lastCommitHash>..HEAD --name-only > $PROJECT_ROOT/.understand-anything/tmp/changed-files.txt
+python "$SKILL_DIR/scripts/write_changed_files.py" "$PROJECT_ROOT" "<lastCommitHash>"
 ```
 
 Run compute-batches with `--changed-files`:
@@ -337,10 +232,13 @@ This produces a `batches.json` that contains only batches with changed files, bu
 Then dispatch file-analyzer subagents per the same template as the full path.
 
 After batches complete:
-1. Remove old nodes whose `filePath` matches any changed file from the existing graph
-2. Remove old edges whose `source` or `target` references a removed node
-3. Write the pruned existing nodes/edges as `batch-existing.json` in the intermediate directory
-4. Run the same merge module — it will combine `batch-existing.json` with the fresh `batch-*.json` files:
+1. Write `batch-existing.json` by pruning old nodes/edges for changed files with the bundled Python helper:
+   ```bash
+   python "$SKILL_DIR/scripts/prune_incremental_batch.py" \
+     "$PROJECT_ROOT" \
+     "$PROJECT_ROOT/.understand-anything/tmp/changed-files.txt"
+   ```
+2. Run the same merge module — it will combine `batch-existing.json` with the fresh `batch-*.json` files:
    ```bash
    python -m arch_analysis.merge_batch_graphs $PROJECT_ROOT
    ```
@@ -351,24 +249,12 @@ After batches complete:
 
 Report to the user: `[Phase 3/6] Reviewing assembled graph...`
 
-Dispatch a subagent using the `assemble-reviewer` agent definition (at `agents/assemble-reviewer.md`).
+Dispatch a subagent using the `assemble-reviewer` agent definition (at `agents/assemble-reviewer.md`) and the bundled prompt template `prompts/assemble-review-dispatch.md`.
 
-Pass these parameters in the dispatch prompt:
-
-> Review the assembled graph at `$PROJECT_ROOT/.understand-anything/intermediate/assembled-graph.json`.
-> Project root: `$PROJECT_ROOT`
-> Batch files are at: `$PROJECT_ROOT/.understand-anything/intermediate/batch-*.json`
-> Write review output to: `$PROJECT_ROOT/.understand-anything/intermediate/assemble-review.json`
->
-> **Merge script report:**
-> ```
-> <paste the full stderr output from arch_analysis.merge_batch_graphs>
-> ```
->
-> **Import map for cross-batch edge verification:**
-> ```json
-> $IMPORT_MAP
-> ```
+Fill the template arguments from Phase 2 output:
+- `PROJECT_ROOT`
+- `MERGE_REPORT`
+- `IMPORT_MAP_JSON`
 
 After the subagent completes, read `$PROJECT_ROOT/.understand-anything/intermediate/assemble-review.json` and add any notes to `$PHASE_WARNINGS`.
 
@@ -380,77 +266,35 @@ Report to the user: `[Phase 4/6] Identifying architectural layers...`
 
 **Build the combined prompt template:**
  1. Use the `architecture-analyzer` agent definition (at `agents/architecture-analyzer.md`).
- 2. **Language context injection:** For each language detected in Phase 1 (e.g., `python`, `markdown`, `dockerfile`, `yaml`, `sql`, `terraform`, `graphql`, `protobuf`, `shell`, `html`, `css`), read the file at `./languages/<language-id>.md` (e.g., `./languages/python.md`, `./languages/dockerfile.md`) and append its content after the base template under a `## Language Context` header. If the file does not exist for a detected language, skip it silently and continue. These files are in the `languages/` subdirectory next to this SKILL.md file. **Include non-code language snippets** — they provide edge patterns and summary styles for non-code files.
- 3. **Framework addendum injection:** For each framework detected in Phase 1 (e.g., `Django`), read the file at `./frameworks/<framework-id-lowercase>.md` (e.g., `./frameworks/django.md`) and append its full content after the language context. If the file does not exist for a detected framework, skip it silently and continue. These files are in the `frameworks/` subdirectory next to this SKILL.md file.
+ 2. Use the bundled dispatch template `prompts/architecture-analyzer-dispatch.md`.
+ 3. Use `architecture-template-args.json` from the helper below for language addenda, framework addenda, file nodes, import edges, all edges, directory tree, and previous layer definitions.
 
-Append the language/framework context and the following additional context to the agent's prompt:
-
-> **Additional context from main session:**
->
-> Frameworks detected: `<frameworks from Phase 1>`
->
-> Directory tree (top 2 levels):
-> ```
-> $DIR_TREE
-> ```
->
-> Use the directory tree, language context, and framework addendums (appended above) to inform layer assignments. Directory structure is strong evidence for layer boundaries. Non-code files (config, docs, infrastructure, data) should be assigned to appropriate layers — see the prompt template for guidance.
-
-Pass these parameters in the dispatch prompt:
-
-> Analyze this codebase's structure to identify architectural layers.
-> Project root: `$PROJECT_ROOT`
-> Write output to: `$PROJECT_ROOT/.understand-anything/intermediate/layers.json`
-> Project: `<projectName>` — `<projectDescription>`
->
-> File nodes (all node types — includes code files, config, document, service, pipeline, table, schema, resource, endpoint):
-> ```json
-> [list of {id, type, name, filePath, summary, tags} for ALL file-level nodes — omit complexity, languageNotes]
-> ```
->
-> Import edges:
-> ```json
-> [list of edges with type "imports"]
-> ```
->
-> All edges (for cross-category analysis — includes configures, documents, deploys, triggers, etc.):
-> ```json
-> [list of ALL edges — include all edge types]
-> ```
-
-After the subagent completes, read `$PROJECT_ROOT/.understand-anything/intermediate/layers.json` and normalize it into a final `layers` array. Apply these steps **in order**:
-
-1. **Unwrap envelope:** If the file contains `{ "layers": [...] }` instead of a plain array, extract the inner array. (The prompt requests a plain array, but LLMs may still produce an envelope.)
-2. **Rename legacy fields:** If any layer object has a `nodes` field instead of `nodeIds`, rename `nodes` → `nodeIds`. If `nodes` entries are objects with an `id` field rather than plain strings, extract just the `id` values into `nodeIds`.
-3. **Synthesize missing IDs:** If any layer is missing an `id`, generate one as `layer:<kebab-case-name>`.
-4. **Convert file paths:** If `nodeIds` entries are raw file paths without a known prefix (`file:`, `config:`, `document:`, `service:`, `pipeline:`, `table:`, `schema:`, `resource:`, `endpoint:`), convert them to `file:<relative-path>`.
-5. **Drop dangling refs:** Remove any `nodeIds` entries that do not exist in the merged node set.
-
-Each element of the final `layers` array MUST have this shape:
-
-```json
-[
-  {
-    "id": "layer:<kebab-case-name>",
-    "name": "<layer name>",
-    "description": "<what belongs in this layer>",
-    "nodeIds": ["file:src/App.tsx", "config:tsconfig.json", "document:README.md"]
-  }
-]
+Prepare deterministic template arguments first:
+```bash
+python "$SKILL_DIR/scripts/prepare_architecture_context.py" "$PROJECT_ROOT" "$SKILL_DIR"
 ```
 
-All four fields (`id`, `name`, `description`, `nodeIds`) are required.
+Fill the architecture dispatch template arguments from `.understand-anything/intermediate/architecture-template-args.json`:
+- `PROJECT_ROOT`
+- `PROJECT_NAME`
+- `PROJECT_DESCRIPTION`
+- `FRAMEWORKS`
+- `DIR_TREE`
+- `LANGUAGE_CONTEXT`
+- `FRAMEWORK_CONTEXT`
+- `FILE_NODES_JSON`
+- `IMPORT_EDGES_JSON`
+- `ALL_EDGES_JSON`
+- `PREVIOUS_LAYERS_JSON`
+
+After the subagent completes, normalize `$PROJECT_ROOT/.understand-anything/intermediate/layers.json` with the bundled deterministic helper:
+```bash
+python "$SKILL_DIR/scripts/normalize_layers.py" "$PROJECT_ROOT"
+```
 
 **For incremental updates:** Always re-run architecture analysis on the full merged node set, since layer assignments may shift when files change.
 
-**Context for incremental updates:** When re-running architecture analysis, also inject the previous layer definitions:
-
-> Previous layer definitions (for naming consistency):
-> ```json
-> [previous layers from existing graph]
-> ```
->
-> Maintain the same layer names and IDs where possible. Only add/remove layers if the file structure has materially changed.
+**Context for incremental updates:** When re-running architecture analysis, pass previous layer definitions through the template's `PREVIOUS_LAYERS_JSON` argument for naming consistency.
 
 ---
 
@@ -477,15 +321,12 @@ Assemble the full KnowledgeGraph JSON object:
 }
 ```
 
-1. Before writing the assembled graph, validate that:
-   - `layers` is an array of objects with these required fields: `id`, `name`, `description`, `nodeIds`
-   - Every `layers[*].nodeIds` entry exists in the merged node set
+1. Assemble the full KnowledgeGraph object from `scan-result.json`, the reviewed `assembled-graph.json` nodes/edges, normalized `layers.json`, and the current commit hash:
+   ```bash
+   python "$SKILL_DIR/scripts/assemble_knowledge_graph.py" "$PROJECT_ROOT" "<commit hash from Phase 0>"
+   ```
 
-   If validation fails, automatically normalize and rewrite the graph into this shape before saving. If the graph still fails final validation after the normalization pass, save it with warnings but mark dashboard auto-launch as skipped.
-
-2. Write the assembled graph to `$PROJECT_ROOT/.understand-anything/intermediate/assembled-graph.json`.
-
-3. **Check `$ARGUMENTS` for `--review` flag.** Then run the appropriate validation path:
+2. **Check `$ARGUMENTS` for `--review` flag.** Then run the appropriate validation path:
 
 ---
 
@@ -508,41 +349,27 @@ If the module exits non-zero, read stderr to diagnose (almost always an unreadab
 
 If `--review` IS in `$ARGUMENTS`, dispatch the LLM graph-reviewer subagent as follows:
 
-Dispatch a subagent using the `graph-reviewer` agent definition (at `agents/graph-reviewer.md`). Append the following additional context:
+Dispatch a subagent using the `graph-reviewer` agent definition (at `agents/graph-reviewer.md`) and the bundled prompt template `prompts/graph-reviewer-dispatch.md`.
 
-> **Additional context from main session:**
->
-> Phase 1 scan results (file inventory):
-> ```json
-> [list of {path, sizeLines} from scan-result.json]
-> ```
->
-> Phase warnings/errors accumulated during analysis:
-> - [list any batch failures, skipped files, or warnings from Phases 2-4]
->
-> Scan coverage is cross-checked deterministically — the graph-reviewer runs `validate_graph` with `--scan-result`, which flags any scanned file lacking a node and any node referencing a file absent from the scan inventory. You do not need to cross-validate coverage by hand.
-
-Pass these parameters in the dispatch prompt:
-
-> Validate the knowledge graph at `$PROJECT_ROOT/.understand-anything/intermediate/assembled-graph.json`.
-> Project root: `$PROJECT_ROOT`
-> Read the file and validate it for completeness and correctness.
-> Write output to: `$PROJECT_ROOT/.understand-anything/intermediate/review.json`
+Fill the template arguments from scan output and accumulated phase warnings:
+- `PROJECT_ROOT`
+- `SCAN_FILE_LIST_JSON`
+- `PHASE_WARNINGS`
 
 ---
 
-4. Read `$PROJECT_ROOT/.understand-anything/intermediate/review.json`.
+3. Read `$PROJECT_ROOT/.understand-anything/intermediate/review.json`.
 
-5. **If `issues` array is non-empty:**
+4. **If `issues` array is non-empty:**
    - Review the `issues` list
-   - Apply automated fixes where possible:
-     - Remove edges with dangling references
-     - Fill missing required fields with sensible defaults (e.g., empty `tags` -> `["untagged"]`, empty `summary` -> `"No summary available"`)
-     - Remove nodes with invalid types
+   - Apply deterministic fixes where possible:
+     ```bash
+     python "$SKILL_DIR/scripts/apply_review_fixes.py" "$PROJECT_ROOT"
+     ```
    - Re-run the final graph validation after automated fixes
    - If critical issues remain after one fix attempt, save the graph anyway but include the warnings in the final report and mark dashboard auto-launch as skipped
 
-6. **If `issues` array is empty:** Proceed to Phase 6.
+5. **If `issues` array is empty:** Proceed to Phase 6.
 
 ---
 
@@ -550,19 +377,17 @@ Pass these parameters in the dispatch prompt:
 
 Report to the user: `[Phase 6/6] Saving knowledge graph...`
 
-1. Write the final knowledge graph to `$PROJECT_ROOT/.understand-anything/knowledge-graph.json`.
+1. Save the final knowledge graph and emit deterministic summary counts:
+   ```bash
+   python "$SKILL_DIR/scripts/save_knowledge_graph.py" "$PROJECT_ROOT"
+   ```
+   The helper writes `$PROJECT_ROOT/.understand-anything/knowledge-graph.json` and `$PROJECT_ROOT/.understand-anything/intermediate/save-summary.json`.
 
 2. **Generate structural fingerprints baseline.** This creates the basis for future automatic incremental updates and **must succeed before `meta.json` is written** — otherwise auto-update sees a fresh commit hash with no fingerprints to compare against, classifies every file as STRUCTURAL, and escalates to `FULL_UPDATE` on every subsequent commit (issue #152).
 
-   Write the input file:
+   Write the input file with the bundled Python helper:
    ```bash
-   cat > $PROJECT_ROOT/.understand-anything/intermediate/fingerprint-input.json <<EOF
-   {
-     "projectRoot": "$PROJECT_ROOT",
-     "sourceFilePaths": [<all source file paths from Phase 1, as JSON array>],
-     "gitCommitHash": "<current commit hash>"
-   }
-   EOF
+   python "$SKILL_DIR/scripts/write_fingerprint_input.py" "$PROJECT_ROOT" "<current commit hash>"
    ```
 
    Then invoke the module from the `arch_analysis` project root:
@@ -575,36 +400,20 @@ Report to the user: `[Phase 6/6] Saving knowledge graph...`
 
    **If the module exits non-zero or stdout does not include `Fingerprints baseline:`, abort Phase 6 and report the error. Do NOT proceed to step 3 (writing `meta.json`).**
 
-3. Write metadata to `$PROJECT_ROOT/.understand-anything/meta.json` (only after step 2 succeeded):
-   ```json
-   {
-     "lastAnalyzedAt": "<ISO 8601 timestamp>",
-     "gitCommitHash": "<commit hash>",
-     "version": "1.0.0",
-     "analyzedFiles": <number of files analyzed>
-   }
+3. Write metadata to `$PROJECT_ROOT/.understand-anything/meta.json` with the bundled Python helper (only after step 2 succeeded). Use `analyzedFiles` from `save-summary.json`:
+   ```bash
+   python "$SKILL_DIR/scripts/write_meta.py" "$PROJECT_ROOT" "<commit hash>" "<number of files analyzed>"
    ```
 
 4. Clean up intermediate files, **preserving `scan-result.json`** so future incremental runs can skip Phase 1 SCAN (see issue #293). We `mv` scratch dirs into a timestamped `.trash-*` instead of `rm -rf`ing them directly — this avoids tripping destructive-action gates on hardened hosts (e.g. freshness-window checks) that flag deleting directories created moments earlier (see issue #301). The delayed-purge step in Phase 0 reclaims the space once the trash is older than 7 days.
    ```bash
-   # Preserve scan-result.json — Phase 1's deterministic file inventory.
-   # Future incremental runs (Phase 2 arch_analysis.compute_batches --changed-files=…)
-   # need this inventory; without it, Phase 1 must re-dispatch and pay ~157k
-   # tokens / ~158s per incremental run.
-   TRASH="$PROJECT_ROOT/.understand-anything/.trash-$(date +%s)"
-   mkdir -p "$TRASH"
-   INTER="$PROJECT_ROOT/.understand-anything/intermediate"
-   if [ -d "$INTER" ]; then
-     # Move every entry except scan-result.json into the trash dir.
-     find "$INTER" -mindepth 1 -maxdepth 1 -not -name 'scan-result.json' -exec mv {} "$TRASH/" \; 2>/dev/null || true
-   fi
-   mv "$PROJECT_ROOT/.understand-anything/tmp" "$TRASH/" 2>/dev/null || true
+   "$SKILL_DIR/scripts/cleanup_intermediate.sh" "$PROJECT_ROOT"
    ```
 
-5. Report a summary to the user containing:
+5. Report a summary to the user using `$PROJECT_ROOT/.understand-anything/intermediate/save-summary.json`:
    - Project name and description
-   - Files analyzed / total files (with breakdown by fileCategory: code, config, docs, infra, data, script, markup)
-   - Nodes created (broken down by type: file, function, class, config, document, service, table, endpoint, pipeline, schema, resource)
+   - Files analyzed
+   - Nodes created (broken down by type)
    - Edges created (broken down by type)
    - Layers identified (with names)
    - Any warnings from the reviewer
@@ -626,43 +435,12 @@ Report to the user: `[Phase 6/6] Saving knowledge graph...`
 
 ---
 
-## Reference: KnowledgeGraph Schema
+## Reference Schemas
 
-### Node Types (13 total)
-| Type | Description | ID Convention |
-|---|---|---|
-| `file` | Source code file | `file:<relative-path>` |
-| `function` | Function or method | `function:<relative-path>:<name>` |
-| `class` | Class, interface, or type | `class:<relative-path>:<name>` |
-| `module` | Logical module or package | `module:<name>` |
-| `concept` | Abstract concept or pattern | `concept:<name>` |
-| `config` | Configuration file (YAML, JSON, TOML, env) | `config:<relative-path>` |
-| `document` | Documentation file (Markdown, RST, TXT) | `document:<relative-path>` |
-| `service` | Deployable service definition (Dockerfile, K8s) | `service:<relative-path>` |
-| `table` | Database table or migration | `table:<relative-path>:<table-name>` |
-| `endpoint` | API endpoint or route definition | `endpoint:<relative-path>:<endpoint-name>` |
-| `pipeline` | CI/CD pipeline configuration | `pipeline:<relative-path>` |
-| `schema` | Schema definition (GraphQL, Protobuf, Prisma) | `schema:<relative-path>` |
-| `resource` | Infrastructure resource (Terraform, CloudFormation) | `resource:<relative-path>` |
+Do not duplicate schema tables in this skill. Use the generated `arch_analysis` JSON Schemas as the authoritative contracts:
 
-### Edge Types (26 total)
-| Category | Types |
-|---|---|
-| Structural | `imports`, `exports`, `contains`, `inherits`, `implements` |
-| Behavioral | `calls`, `subscribes`, `publishes`, `middleware` |
-| Data flow | `reads_from`, `writes_to`, `transforms`, `validates` |
-| Dependencies | `depends_on`, `tested_by`, `configures` |
-| Semantic | `related`, `similar_to` |
-| Infrastructure | `deploys`, `serves`, `provisions`, `triggers` |
-| Schema/Data | `migrates`, `documents`, `routes`, `defines_schema` |
-
-### Edge Weight Conventions
-| Edge Type | Weight |
-|---|---|
-| `contains` | 1.0 |
-| `inherits`, `implements` | 0.9 |
-| `calls`, `exports`, `defines_schema` | 0.8 |
-| `imports`, `deploys`, `migrates` | 0.7 |
-| `depends_on`, `configures`, `triggers` | 0.6 |
-| `tested_by`, `documents`, `provisions`, `serves`, `routes` | 0.5 |
-| All others | 0.5 (default) |
+- Knowledge graph: `arch_analysis/schemas/knowledge-graph.schema.json`
+- Batch graph fragment: `arch_analysis/schemas/graph-fragment.schema.json`
+- Project scan output: `arch_analysis/schemas/project-scan-output.schema.json`
+- File-analysis context: `arch_analysis/schemas/file-analysis-context.schema.json`
+- Architecture layers: `arch_analysis/schemas/layers.schema.json`

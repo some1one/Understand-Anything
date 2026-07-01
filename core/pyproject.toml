@@ -1,0 +1,35 @@
+[project]
+name = "understand-anything-core"
+version = "0.1.0"
+description = "Python port of @understand-anything/core and the skill builders: graph types, schema, search, semantic/embedding search, LLM prompt builders, language/framework registries, structural plugins, and the chat/diff/explain/onboard skill builders."
+authors = [
+    { name = "Justin Phillips", email = "justin.phillips@trucesoftware.com" },
+]
+requires-python = ">=3.14"
+readme = "README.md"
+license = { text = "MIT" }
+dependencies = [
+    "orjson>=3.11.9",
+    "pydantic>=2.13.4",
+    "networkx>=3.6",
+    "numpy>=2.5.0",
+    "scipy>=1.18.0",
+    "jsonschema>=4.26.0",
+    "pathspec>=1.1.1",
+    "tree-sitter>=0.23.0",
+    "tree-sitter-language-pack>=0.7.0",
+    "pyyaml>=6.0",
+    "rapidfuzz>=3.10.0",
+]
+
+[tool.pdm]
+distribution = false
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
