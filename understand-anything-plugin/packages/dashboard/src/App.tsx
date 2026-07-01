@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo, useCallback, lazy, Suspense } from "react";
-import { validateGraph } from "@understand-anything/core/schema";
+import { validateGraph, validateEmbeddings } from "@understand-anything/core/schema";
 import type { GraphIssue } from "@understand-anything/core/schema";
 import { useDashboardStore } from "./store";
 import GraphView from "./components/GraphView";
@@ -101,6 +101,7 @@ function App() {
 function Dashboard({ accessToken }: { accessToken: string }) {
   const setGraph = useDashboardStore((s) => s.setGraph);
   const setDomainGraph = useDashboardStore((s) => s.setDomainGraph);
+  const setEmbeddings = useDashboardStore((s) => s.setEmbeddings);
   const setDiffOverlay = useDashboardStore((s) => s.setDiffOverlay);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [graphIssues, setGraphIssues] = useState<GraphIssue[]>([]);
@@ -189,6 +190,19 @@ function Dashboard({ accessToken }: { accessToken: string }) {
       })
       .catch(() => {});
   }, [setDomainGraph]);
+
+  // Optional companion embeddings — enables semantic search when present.
+  // Absence (404) or a malformed file is a clean "semantic unavailable" signal.
+  useEffect(() => {
+    fetch(dataUrl("embeddings.json", accessToken))
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: unknown) => {
+        if (!data) return;
+        const embeddings = validateEmbeddings(data);
+        if (embeddings) setEmbeddings(embeddings);
+      })
+      .catch(() => {});
+  }, [setEmbeddings]);
 
   return (
     <I18nProvider>
