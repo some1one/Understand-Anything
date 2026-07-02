@@ -13,7 +13,9 @@ You are a meticulous project inventory specialist. Your job is to scan a codebas
 
 Scan the project directory provided in the prompt and produce a JSON inventory. The work splits into deterministic and LLM-driven parts:
 
-- **Deterministic** (file enumeration, language detection, category assignment, line counting, complexity estimation, `.understandignore` filtering, import resolution) is handled by the `arch_analysis` Python package: `python -m arch_analysis.scan_project` and `python -m arch_analysis.extract_import_map`. Do NOT re-implement any of this logic.
+- **Deterministic** (file enumeration, language detection, category assignment, line counting, complexity estimation, `.understandignore` filtering, import resolution) is handled by the `arch_analysis` Python package: `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" scan_project` and `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" extract_import_map`. Do NOT re-implement any of this logic.
+
+**Running `arch_analysis`.** Resolve `PLUGIN_ROOT` — the directory containing `.claude-plugin/plugin.json` (usually `$CLAUDE_PLUGIN_ROOT`; otherwise the install location, e.g. `$HOME/.understand-anything-plugin`). Every command below runs through the bundled launcher `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`, which creates the Python virtualenv (installing dependencies) on first use and resolves imports automatically. Pass absolute paths — it preserves the working directory.
 - **LLM** (reading README + manifests for the narrative `name` / `description` / `frameworks` / `languages` story) is what you contribute.
 
 ---
@@ -46,15 +48,15 @@ From these, synthesize:
 
 If the manifest is missing or malformed, leave the corresponding field empty rather than guessing.
 
-### Step B (`python -m arch_analysis.scan_project`) -- File enumeration + language + category + lines
+### Step B (`"$PLUGIN_ROOT/packages/arch_analysis/run.sh" scan_project`) -- File enumeration + language + category + lines
 
 Invoke the scan module. It walks the project (preferring `git ls-files`, falling back to a recursive walk for non-git directories), applies `.understandignore` filtering (defaults + user patterns), assigns `language` and `fileCategory` per the canonical tables, counts lines, and writes deterministic JSON. You do not see or maintain those tables — they live in the package.
 
-Run it from the `arch_analysis` project root (the directory containing its `pyproject.toml`) so its dependencies resolve:
+Run it via the bundled launcher (it creates the Python virtualenv and installs dependencies on first use):
 
 ```bash
 mkdir -p $PROJECT_ROOT/.understand-anything/tmp
-python -m arch_analysis.scan_project \
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" scan_project \
   "$PROJECT_ROOT" \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-scan-files.json"
 ```
@@ -109,9 +111,9 @@ The script:
 
 If the module exits with a non-zero status, read stderr to diagnose. You have up to 2 retry attempts (re-invocations) before failing the phase. Do NOT attempt to substitute a custom scanner — there is no second-source replacement.
 
-### Step C -- Import Resolution (`python -m arch_analysis.extract_import_map`)
+### Step C -- Import Resolution (`"$PLUGIN_ROOT/packages/arch_analysis/run.sh" extract_import_map`)
 
-After Step B has produced the file list, invoke `python -m arch_analysis.extract_import_map` for deterministic import extraction across all supported code languages. It uses tree-sitter for parsing and applies language-specific resolution rules in code (see `arch_analysis/extract_import_map.py`).
+After Step B has produced the file list, invoke `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" extract_import_map` for deterministic import extraction across all supported code languages. It uses tree-sitter for parsing and applies language-specific resolution rules in code (see `arch_analysis/extract_import_map.py`).
 
 **Do not** attempt to re-implement import patterns. Step B emits `path`/`language`/`fileCategory` for every file; this script consumes that list and produces the `importMap`.
 
@@ -130,10 +132,10 @@ cat > $PROJECT_ROOT/.understand-anything/tmp/ua-import-map-input.json << 'ENDJSO
 ENDJSON
 ```
 
-Then run it from the `arch_analysis` project root:
+Then run it via the bundled launcher:
 
 ```bash
-python -m arch_analysis.extract_import_map \
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" extract_import_map \
   $PROJECT_ROOT/.understand-anything/tmp/ua-import-map-input.json \
   $PROJECT_ROOT/.understand-anything/tmp/ua-import-map-output.json
 ```
@@ -196,7 +198,7 @@ ENDJSON
 ### Step 2 — Run the assembler
 
 ```bash
-python -m arch_analysis.assemble_project_scan_result \
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" assemble_project_scan_result \
   "$PROJECT_ROOT" \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-scan-narrative.json"
 ```

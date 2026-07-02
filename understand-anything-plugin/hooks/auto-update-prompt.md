@@ -8,7 +8,7 @@ Incrementally update the knowledge graph using deterministic structural fingerpr
 
 Each command writes its outputs under `$PROJECT_ROOT/.understand-anything/intermediate/` and prints a single machine-readable JSON object to stdout. Read that JSON (or the written file) to drive the next step.
 
-**Running `arch_analysis` commands.** Set `PROJECT_ROOT` to the current working directory. Run every `python -m arch_analysis.*` command from the `arch_analysis` project root (the directory containing its `pyproject.toml`) so its dependencies resolve — the same resolution `/understand` uses (`$CLAUDE_PLUGIN_ROOT`, `$HOME/.understand-anything-plugin`, …). Equivalently use the `pdm run` script names shown in parentheses.
+**Running `arch_analysis` commands.** Set `PROJECT_ROOT` to the current working directory. Resolve `PLUGIN_ROOT` — the directory containing `.claude-plugin/plugin.json` (usually `$CLAUDE_PLUGIN_ROOT`; otherwise the install location, e.g. `$HOME/.understand-anything-plugin`). Run every deterministic step through the bundled launcher `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`, which creates the Python virtualenv on first use and resolves imports automatically. It preserves the working directory, so pass absolute paths (the commands below already use `$PROJECT_ROOT/…`).
 
 ---
 
@@ -17,8 +17,7 @@ Each command writes its outputs under `$PROJECT_ROOT/.understand-anything/interm
 Run the pre-flight command. It validates that `knowledge-graph.json` and `meta.json` exist, reads the stored commit hash, runs `git rev-parse HEAD`, diffs the commits, filters to source files, applies `.understandignore`, creates `intermediate/`, and writes `auto-update-state.json`. It also handles every metadata-only stop case (bumping `meta.json` itself where appropriate).
 
 ```bash
-python -m arch_analysis.auto_update_preflight "$PROJECT_ROOT"
-# (pdm run auto-update-preflight "$PROJECT_ROOT")
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" auto_update_preflight "$PROJECT_ROOT"
 # add --force to re-run even when the commit hash is unchanged
 ```
 
@@ -39,8 +38,7 @@ Read `$PROJECT_ROOT/.understand-anything/intermediate/auto-update-state.json` (a
 Run the fingerprint check. It reads `auto-update-state.json` and `fingerprints.json`, classifies each changed source file as `NONE` / `COSMETIC` / `STRUCTURAL` against its stored fingerprint (new files and files without structural support are `STRUCTURAL`; deleted files are recorded as removals), derives the overall decision, and writes `change-analysis.json`. On a `SKIP` decision it bumps `meta.json` to the new commit.
 
 ```bash
-python -m arch_analysis.auto_update_fingerprint_check "$PROJECT_ROOT"
-# (pdm run auto-update-fingerprint-check "$PROJECT_ROOT")
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" auto_update_fingerprint_check "$PROJECT_ROOT"
 ```
 
 Read `$PROJECT_ROOT/.understand-anything/intermediate/change-analysis.json`. It contains `action`, `rerunArchitecture`, `reason`, `filesToReanalyze`, `newFiles`, `deletedFiles`, `cosmeticOnlyFiles`, `unchangedFiles`, and `fileChanges`.
@@ -63,8 +61,7 @@ Only files with structural changes are re-analyzed. This is the **only** phase t
 ### 2a. Prepare batches (deterministic)
 
 ```bash
-python -m arch_analysis.auto_update_prepare_batches "$PROJECT_ROOT"
-# (pdm run auto-update-prepare-batches "$PROJECT_ROOT")
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" auto_update_prepare_batches "$PROJECT_ROOT"
 ```
 
 This reuses the `/understand` batching machinery (`compute_batches`) on just `filesToReanalyze` — loading the preserved `intermediate/scan-result.json`, scanning any new files, and writing:
@@ -92,8 +89,7 @@ If a dispatch fails, retry once; if it fails again, continue with the batches th
 ### 2c. Prune + merge (deterministic)
 
 ```bash
-python -m arch_analysis.auto_update_apply_batches "$PROJECT_ROOT"
-# (pdm run auto-update-apply-batches "$PROJECT_ROOT")
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" auto_update_apply_batches "$PROJECT_ROOT"
 ```
 
 This prunes old nodes for every changed/deleted file, writes the survivors as `intermediate/batch-existing.json`, then runs the standard merge normalization over `batch-existing.json` + all `batch-<N>.json` fragments (dedup by id, drop dangling edges, canonicalize edges, `tested_by` linking). It writes `intermediate/merged-graph.json`. When `rerunArchitecture` is `true` it also writes `intermediate/ua-arch-input.json` (the `{fileNodes, importEdges, allEdges}` payload for the architecture-analyzer).
@@ -106,7 +102,7 @@ This prunes old nodes for every changed/deleted file, writes the survivors as `i
 
 Dispatch a subagent using the **`architecture-analyzer`** agent definition (at `agents/architecture-analyzer.md`). Point it at the prepared input rather than having it generate its own:
 
-> Use `$PROJECT_ROOT/.understand-anything/intermediate/ua-arch-input.json` as the analyzer input (skip `generate_input`). Run `python -m arch_analysis.analyze ua-arch-input.json results.json`, then assign layers per your normal process and write the layer array to `$PROJECT_ROOT/.understand-anything/intermediate/layers.json`.
+> Use `$PROJECT_ROOT/.understand-anything/intermediate/ua-arch-input.json` as the analyzer input (skip `generate_input`). Run `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" analyze $PROJECT_ROOT/.understand-anything/intermediate/ua-arch-input.json $PROJECT_ROOT/.understand-anything/intermediate/results.json`, then assign layers per your normal process and write the layer array to `$PROJECT_ROOT/.understand-anything/intermediate/layers.json`.
 >
 > For naming consistency, reuse the previous layer names/IDs from `intermediate/merged-graph.json#layers` wherever the structure still matches; only add/remove layers if the file structure has materially changed.
 
@@ -117,8 +113,7 @@ If `rerunArchitecture` is `false`, skip directly to 3b — the finalize command 
 ### 3b. Finalize (deterministic)
 
 ```bash
-python -m arch_analysis.auto_update_finalize "$PROJECT_ROOT"
-# (pdm run auto-update-finalize "$PROJECT_ROOT")
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" auto_update_finalize "$PROJECT_ROOT"
 ```
 
 This applies the layers (fresh `layers.json` when present, otherwise a lite update of the carried-forward layers), runs lite validation cleanup (drop dangling edges, prune unknown layer ids, ensure every file-level node sits in exactly one layer), writes `knowledge-graph.json`, **patches `fingerprints.json` LOAD-PATCH-SAVE** (only `filesToReanalyze` + `deletedFiles` are touched — every other entry is preserved, and the write is refused if the store would be clobbered), bumps `meta.json` (`gitCommitHash`, `lastAnalyzedAt`, `analyzedFiles`), and cleans `intermediate/` while preserving `scan-result.json` (and `auto-update-summary.json`).

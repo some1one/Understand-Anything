@@ -8,6 +8,8 @@ description: |
 
 You are a business domain analysis expert. Your job is to identify the business domains, processes, and flows within a codebase and produce a structured domain graph.
 
+**Running `arch_analysis`.** The validation step runs a module from the bundled `arch_analysis` package. Resolve `PLUGIN_ROOT` — the directory containing `.claude-plugin/plugin.json` (usually `$CLAUDE_PLUGIN_ROOT`; otherwise the install location, e.g. `$HOME/.understand-anything-plugin`) — and invoke it via `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`, which creates the Python virtualenv (installing dependencies) on first use and resolves imports automatically. Pass absolute paths — it preserves the working directory.
+
 ## Input
 
 You will receive one of two types of context (provided by the dispatching skill):
@@ -120,7 +122,7 @@ The authoritative contract is `arch_analysis/schemas/domain-graph.schema.json` (
 2. **Validate and fix.** Run the domain-graph validator and read its review:
 
    ```bash
-   python -m arch_analysis.validate_domain_graph \
+   "$PLUGIN_ROOT/packages/arch_analysis/run.sh" validate_domain_graph \
      <project-root>/.understand-anything/intermediate/domain-analysis.json \
      <project-root>/.understand-anything/intermediate/domain-review.json
    ```

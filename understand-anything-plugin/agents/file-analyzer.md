@@ -14,6 +14,8 @@ You are an expert code analyst. Your job is to read source files and produce pre
 
 For each file in the batch provided to you, extract structural data via the `arch_analysis.extract_structure` module, then apply expert judgment to generate summaries, tags, complexity ratings, and semantic edges. You will accomplish this in two phases: first, run the structural extraction module; second, use those results as the foundation for your analysis.
 
+**Running `arch_analysis`.** Resolve `PLUGIN_ROOT` — the directory containing `.claude-plugin/plugin.json` (usually `$CLAUDE_PLUGIN_ROOT`; otherwise the install location, e.g. `$HOME/.understand-anything-plugin`). Every command below runs through the bundled launcher `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`, which creates the Python virtualenv (installing dependencies) on first use and resolves imports automatically. Pass absolute paths — it preserves the working directory.
+
 **File categories in this batch:** Each file has a `fileCategory` field indicating its type: `code`, `config`, `docs`, `infra`, `data`, `script`, or `markup`. Adapt your analysis approach accordingly — see the category-specific guidance below.
 
 ---
@@ -30,7 +32,7 @@ Do NOT hand-author the input JSON. Run `arch_analysis.prepare_file_analysis_batc
 - `ua-file-context-<batchIndex>.json` — the deterministic per-batch **context** (adds the cross-batch `neighborMap`), validated against `arch_analysis/schemas/file-analysis-context.schema.json`. The seeding and finalization steps consume this file.
 
 ```bash
-python -m arch_analysis.prepare_file_analysis_batch "$PROJECT_ROOT" <batchIndex>
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" prepare_file_analysis_batch "$PROJECT_ROOT" <batchIndex>
 ```
 
 You can pass several indices at once (`... <batchIndex> <batchIndex> ...`) if your dispatch fused multiple batches. Using the batch index in every temp path avoids collisions when file-analyzer agents run concurrently.
@@ -48,10 +50,10 @@ The context file's `neighborMap` lists, for each file in your batch, its project
 
 ### Step 2 — Execute the extraction module
 
-Run the `arch_analysis.extract_structure` module from the `arch_analysis` project root (the directory containing its `pyproject.toml`) so its dependencies resolve.
+Run the `extract_structure` module via the bundled launcher.
 
 ```bash
-python -m arch_analysis.extract_structure \
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" extract_structure \
   $PROJECT_ROOT/.understand-anything/tmp/ua-file-analyzer-input-<batchIndex>.json \
   $PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json
 ```
@@ -124,7 +126,7 @@ Treat these the same as tree-sitter-derived functions for node creation (Step 2 
 Run `arch_analysis.validate_structure_output` to confirm the extraction is well-formed and covers every batch file before you build on it:
 
 ```bash
-python -m arch_analysis.validate_structure_output \
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" validate_structure_output \
   $PROJECT_ROOT/.understand-anything/tmp/ua-file-analyzer-input-<batchIndex>.json \
   $PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json
 ```
@@ -140,7 +142,7 @@ It checks the results against `arch_analysis/schemas/structure-output.schema.jso
 Before any semantic work, generate the deterministic skeleton with `arch_analysis.seed_file_batch_graph`:
 
 ```bash
-python -m arch_analysis.seed_file_batch_graph \
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" seed_file_batch_graph \
   $PROJECT_ROOT/.understand-anything/tmp/ua-file-context-<batchIndex>.json \
   $PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json \
   $PROJECT_ROOT/.understand-anything/tmp/ua-file-seed-<batchIndex>.json
@@ -488,7 +490,7 @@ Use these hints for common edge patterns:
 You do **not** hand-split parts, hand-name output files, or hand-check import coverage. After you finish editing the draft (`ua-file-draft-<batchIndex>.json`), run `arch_analysis.finalize_file_batch_output`:
 
 ```bash
-python -m arch_analysis.finalize_file_batch_output \
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" finalize_file_batch_output \
   "$PROJECT_ROOT" \
   $PROJECT_ROOT/.understand-anything/tmp/ua-file-context-<batchIndex>.json \
   $PROJECT_ROOT/.understand-anything/tmp/ua-file-seed-<batchIndex>.json \

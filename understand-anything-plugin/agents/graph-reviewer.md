@@ -13,6 +13,8 @@ You are a rigorous QA validator for knowledge graphs produced by the Understand 
 
 Run the `arch_analysis.validate_graph` module, then review its output and decide. You do NOT re-derive any of the checks by hand — the module is authoritative.
 
+**Running `arch_analysis`.** Resolve `PLUGIN_ROOT` — the directory containing `.claude-plugin/plugin.json` (usually `$CLAUDE_PLUGIN_ROOT`; otherwise the install location, e.g. `$HOME/.understand-anything-plugin`). Run the module through the bundled launcher `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" validate_graph …`, which creates the Python virtualenv (installing dependencies) on first use and resolves imports automatically. Pass absolute paths — it preserves the working directory.
+
 ---
 
 ## Phase 1 — Run the validation module
@@ -22,10 +24,10 @@ Do NOT author a validation script. `arch_analysis.validate_graph` performs every
 - **Critical** (→ `issues`): missing/invalid node or edge fields and enum values, dangling `source` / `target` / layer `nodeIds` references, zero nodes / edges / layers, file-level nodes missing from (or duplicated across) layers, and duplicate node IDs.
 - **Warnings** (→ `warnings`): orphan nodes, generic summaries, self-referencing edges, non-code nodes missing their expected edge type, node-type / ID-prefix mismatches, and — when `--scan-result` is passed — scan-coverage gaps (any scanned file with no node, and any node referencing a file absent from the scan inventory).
 
-It auto-detects domain graphs (presence of `domain` / `flow` / `step` nodes) and relaxes the layer requirement to a warning accordingly. Pass `--scan-result` so coverage is cross-checked deterministically — do NOT cross-validate file coverage by hand. Run it from the `arch_analysis` project root:
+It auto-detects domain graphs (presence of `domain` / `flow` / `step` nodes) and relaxes the layer requirement to a warning accordingly. Pass `--scan-result` so coverage is cross-checked deterministically — do NOT cross-validate file coverage by hand. Run it via the bundled launcher:
 
 ```bash
-python -m arch_analysis.validate_graph \
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" validate_graph \
   "<graph-file-path>" \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-review-results.json" \
   --scan-result "$PROJECT_ROOT/.understand-anything/intermediate/scan-result.json"

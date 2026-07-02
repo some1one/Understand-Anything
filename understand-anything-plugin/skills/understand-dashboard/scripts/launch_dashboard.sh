@@ -15,25 +15,36 @@ fi
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 eval "$("$SCRIPT_DIR/resolve_dashboard.sh")"
 
-if ! command -v pnpm >/dev/null 2>&1; then
-  echo "Install Node.js >= 22 and pnpm >= 10, then re-run /understand-dashboard." >&2
-  exit 1
-fi
-
-(cd "$DASHBOARD_DIR" && (pnpm install --frozen-lockfile 2>/dev/null || pnpm install))
-(cd "$PLUGIN_ROOT" && pnpm --filter @understand-anything/core build)
-
 LOG_DIR="$PROJECT_DIR/.understand-anything/tmp"
 mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/dashboard.log"
 
+if ! command -v node >/dev/null 2>&1; then
+  echo "Install Node.js >= 22, then re-run /understand-dashboard." >&2
+  exit 1
+fi
+
 cd "$DASHBOARD_DIR"
-GRAPH_DIR="$PROJECT_DIR" npx vite --host 127.0.0.1 >"$LOG_FILE" 2>&1 &
-PID=$!
+
+if [ -f "$DASHBOARD_DIR/serve.mjs" ] && [ -f "$DASHBOARD_DIR/dist/index.html" ]; then
+  # Bundled / pre-built dashboard: serve the static build with the zero-dependency
+  # Node server (no install step, no pnpm required).
+  GRAPH_DIR="$PROJECT_DIR" node serve.mjs >"$LOG_FILE" 2>&1 &
+  PID=$!
+else
+  # Source checkout: run the Vite dev server (needs pnpm + a one-time install).
+  if ! command -v pnpm >/dev/null 2>&1; then
+    echo "Install Node.js >= 22 and pnpm >= 10 (or build the dashboard: make build-dashboard), then re-run /understand-dashboard." >&2
+    exit 1
+  fi
+  (pnpm install --frozen-lockfile 2>/dev/null || pnpm install)
+  GRAPH_DIR="$PROJECT_DIR" npx vite --host 127.0.0.1 >"$LOG_FILE" 2>&1 &
+  PID=$!
+fi
 
 URL=""
 for _ in $(seq 1 60); do
-  URL=$(grep -Eo 'http://127\.0\.0\.1:[0-9]+\?token=[^[:space:]]+' "$LOG_FILE" | tail -1 || true)
+  URL=$(grep -Eo 'http://127\.0\.0\.1:[0-9]+/?\?token=[^[:space:]]+' "$LOG_FILE" | tail -1 || true)
   if [ -n "$URL" ]; then
     break
   fi

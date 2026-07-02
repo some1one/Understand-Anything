@@ -48,7 +48,7 @@ The preprocessing script does NOT produce a domain graph — it produces **raw m
 
 1. Run the preprocessing module from the `arch_analysis` package (from its project root), passing `$PROJECT_ROOT` from Phase 0:
    ```
-   python -m arch_analysis.extract_domain_context "$PROJECT_ROOT"
+   "$PLUGIN_ROOT/packages/arch_analysis/run.sh" extract_domain_context "$PROJECT_ROOT"
    ```
    This outputs `$PROJECT_ROOT/.understand-anything/intermediate/domain-context.json` containing:
    - File tree (respecting `.gitignore`)

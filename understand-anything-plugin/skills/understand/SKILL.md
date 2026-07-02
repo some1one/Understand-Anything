@@ -50,14 +50,14 @@ Determine whether to run a full analysis or incremental update.
      PROJECT_ROOT="$("$SKILL_DIR/scripts/resolve_project_root.sh" "<path-or-current-working-directory>")"
      ```
    - Set `UNDERSTAND_NO_WORKTREE_REDIRECT=1` if you intentionally want a per-worktree graph (rare — most users want the redirect).
-1.5. **Ensure the plugin is built.** Later phases invoke Node scripts that import `@understand-anything/core`. On a fresh install `packages/core/dist/` does not exist yet — build once.
+1.5. **Ensure the Python environment is ready.** Later phases run the deterministic `arch_analysis` pipeline via `packages/arch_analysis/run.sh`. On a fresh install its virtualenv does not exist yet — set it up once.
 
-   Use the bundled Bash script, which resolves symlinked skill installs, locates the plugin root, and builds `@understand-anything/core` if needed:
+   Use the bundled Bash script, which resolves symlinked skill installs, locates the plugin root, and creates the `arch_analysis` virtualenv (installing dependencies) if needed. It prints `PLUGIN_ROOT`:
    ```bash
-   PLUGIN_ROOT="$("$SKILL_DIR/scripts/ensure_plugin_built.sh")"
+   PLUGIN_ROOT="$("$SKILL_DIR/scripts/ensure_python_env.sh")"
    ```
 
-   If `pnpm` is missing, report to the user: "Install Node.js ≥ 22 and pnpm ≥ 10, then re-run `/understand`."
+   All later `arch_analysis` steps invoke `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`. If neither `pdm` nor `python3` is available, report: "Install Python ≥ 3.14 (and ideally PDM), then re-run `/understand`."
 
 2. Get the current git commit hash:
    ```bash
@@ -71,7 +71,7 @@ Determine whether to run a full analysis or incremental update.
  4. **Check for subdomain knowledge graphs to merge:**
    List all `*knowledge-graph*.json` files in `$PROJECT_ROOT/.understand-anything/` **excluding** `knowledge-graph.json` itself (e.g. `frontend-knowledge-graph.json`, `backend-knowledge-graph.json`). If any subdomain graphs exist, run the merge module from the `arch_analysis` package (run from its project root so dependencies resolve):
    ```bash
-   python -m arch_analysis.merge_subdomain_graphs $PROJECT_ROOT
+   "$PLUGIN_ROOT/packages/arch_analysis/run.sh" merge_subdomain_graphs $PROJECT_ROOT
    ```
    The module discovers subdomain graphs, loads the existing `knowledge-graph.json` as a base (if present), and merges everything into `knowledge-graph.json` (deduplicating nodes and edges). Report the merge summary to the user, then continue with the merged graph.
 
@@ -108,9 +108,9 @@ Determine whether to run a full analysis or incremental update.
 Set up and verify the `.understandignore` file before scanning.
 
 1. Check if `$PROJECT_ROOT/.understand-anything/.understandignore` exists.
-2. **If it does NOT exist**, generate a starter file with the `arch_analysis` module (reads `.gitignore`, deduplicates against built-in defaults, and emits language-grouped test-file suggestions). Run from the `arch_analysis` project root:
+2. **If it does NOT exist**, generate a starter file with the `arch_analysis` module (reads `.gitignore`, deduplicates against built-in defaults, and emits language-grouped test-file suggestions). Run it via the bundled launcher:
      ```bash
-     python -m arch_analysis.generate_ignore $PROJECT_ROOT
+     "$PLUGIN_ROOT/packages/arch_analysis/run.sh" generate_ignore $PROJECT_ROOT
      ```
    - Report to the user:
      > Generated `.understand-anything/.understandignore` with suggested exclusions based on your project structure. Please review it and uncomment any patterns you'd like to exclude from analysis. When ready, confirm to continue.
@@ -154,9 +154,9 @@ If the scan result includes `filteredByIgnore > 0`, report:
 
 Report: `[Phase 1.5/6] Computing semantic batches...`
 
-Run the batching module (from the `arch_analysis` project root):
+Run the batching module:
 ```bash
-python -m arch_analysis.compute_batches $PROJECT_ROOT
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" compute_batches $PROJECT_ROOT
 ```
 
 Reads `.understand-anything/intermediate/scan-result.json`, writes `.understand-anything/intermediate/batches.json`.
@@ -196,7 +196,7 @@ After ALL batches complete, report to the user: `Phase 2 complete. All <totalBat
 
 Run the merge-and-normalize module from the `arch_analysis` package (run from its project root):
 ```bash
-python -m arch_analysis.merge_batch_graphs $PROJECT_ROOT
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" merge_batch_graphs $PROJECT_ROOT
 ```
 
 This module reads all `batch-*.json` files (including `batch-<i>-part-<k>.json` produced by file-analyzers that split their output) from `$PROJECT_ROOT/.understand-anything/intermediate/`, then in one pass:
@@ -223,7 +223,7 @@ python "$SKILL_DIR/scripts/write_changed_files.py" "$PROJECT_ROOT" "<lastCommitH
 
 Run compute-batches with `--changed-files`:
 ```bash
-python -m arch_analysis.compute_batches $PROJECT_ROOT \
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" compute_batches $PROJECT_ROOT \
   --changed-files=$PROJECT_ROOT/.understand-anything/tmp/changed-files.txt
 ```
 
@@ -240,7 +240,7 @@ After batches complete:
    ```
 2. Run the same merge module — it will combine `batch-existing.json` with the fresh `batch-*.json` files:
    ```bash
-   python -m arch_analysis.merge_batch_graphs $PROJECT_ROOT
+   "$PLUGIN_ROOT/packages/arch_analysis/run.sh" merge_batch_graphs $PROJECT_ROOT
    ```
 
 ---
@@ -332,10 +332,10 @@ Assemble the full KnowledgeGraph JSON object:
 
 #### Default path (no `--review`): deterministic validation
 
-Run the `arch_analysis` graph validator (from the `arch_analysis` project root). It performs the full referential-integrity, completeness, layer-coverage, uniqueness, and quality checks; with `--scan-result` it also cross-checks scan coverage (every scanned file has a node; no node references an unscanned file). It writes the review payload (`scriptCompleted`, `issues`, `warnings`, `stats`):
+Run the `arch_analysis` graph validator. It performs the full referential-integrity, completeness, layer-coverage, uniqueness, and quality checks; with `--scan-result` it also cross-checks scan coverage (every scanned file has a node; no node references an unscanned file). It writes the review payload (`scriptCompleted`, `issues`, `warnings`, `stats`):
 
 ```bash
-python -m arch_analysis.validate_graph \
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" validate_graph \
   "$PROJECT_ROOT/.understand-anything/intermediate/assembled-graph.json" \
   "$PROJECT_ROOT/.understand-anything/intermediate/review.json" \
   --scan-result "$PROJECT_ROOT/.understand-anything/intermediate/scan-result.json"
@@ -390,9 +390,9 @@ Report to the user: `[Phase 6/6] Saving knowledge graph...`
    python "$SKILL_DIR/scripts/write_fingerprint_input.py" "$PROJECT_ROOT" "<current commit hash>"
    ```
 
-   Then invoke the module from the `arch_analysis` project root:
+   Then invoke the module via the bundled launcher:
    ```bash
-   python -m arch_analysis.build_fingerprints \
+   "$PLUGIN_ROOT/packages/arch_analysis/run.sh" build_fingerprints \
      $PROJECT_ROOT/.understand-anything/intermediate/fingerprint-input.json
    ```
 

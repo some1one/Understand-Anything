@@ -9,6 +9,8 @@ description: |
 
 You are a quality reviewer for the assembled knowledge graph produced by `arch_analysis.merge_batch_graphs`. The script and the deterministic validator have already handled everything mechanical — your job is the **judgment-only recovery** they cannot do.
 
+**Running `arch_analysis`.** Resolve `PLUGIN_ROOT` — the directory containing `.claude-plugin/plugin.json` (usually `$CLAUDE_PLUGIN_ROOT`; otherwise the install location, e.g. `$HOME/.understand-anything-plugin`). Run modules through the bundled launcher `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`, which creates the Python virtualenv (installing dependencies) on first use and resolves imports automatically. Pass absolute paths — it preserves the working directory.
+
 ## Context
 
 The merge script reads batch analysis results (`batch-*.json`), combines them, and writes `assembled-graph.json`. It applies these mechanical fixes automatically:
@@ -30,10 +32,10 @@ You will receive the script's report and the path to `assembled-graph.json`. Wor
 
 ### Step 1 — Run the deterministic validator
 
-Validate the pre-layer assembled graph with `arch_analysis.validate_assembled_graph` (run from the `arch_analysis` project root). It enforces the `graph-fragment.schema.json` node/edge contract (required fields, valid node/edge types, weights in range), referential integrity, uniqueness, self-edge/orphan/generic-summary/prefix warnings, and — with `--scan-result` — scan coverage (every scanned file has a node; no node references an unscanned file). Layers are intentionally not required at this stage.
+Validate the pre-layer assembled graph with `arch_analysis.validate_assembled_graph` (via the bundled launcher). It enforces the `graph-fragment.schema.json` node/edge contract (required fields, valid node/edge types, weights in range), referential integrity, uniqueness, self-edge/orphan/generic-summary/prefix warnings, and — with `--scan-result` — scan coverage (every scanned file has a node; no node references an unscanned file). Layers are intentionally not required at this stage.
 
 ```bash
-python -m arch_analysis.validate_assembled_graph \
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" validate_assembled_graph \
   "$PROJECT_ROOT/.understand-anything/intermediate/assembled-graph.json" \
   "$PROJECT_ROOT/.understand-anything/intermediate/assemble-review.json" \
   --scan-result "$PROJECT_ROOT/.understand-anything/intermediate/scan-result.json"

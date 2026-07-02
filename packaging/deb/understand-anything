@@ -1,0 +1,223 @@
+#!/usr/bin/env bash
+# Understand-Anything — per-user linker for the Debian package.
+#
+# The .deb already did the heavy lifting via dpkg:
+#   * Depends: (python3 >= 3.14, python3-venv/pip) — prerequisites.
+#   * postinst — assembled the payload into /usr/share/understand-anything,
+#     warmed the arch_analysis virtualenv (offline), and wrote a
+#     .claude-plugin/marketplace.json there so `claude plugin` can install it.
+# This command only wires the system payload into the *current user's* agent
+# skill directories, preferring a target's native CLI (e.g. `claude plugin
+# install`) before the scripted symlink fallback. For assembly/prereqs/env
+# warming from source or tarballs, use the standalone install.sh instead.
+#
+# Usage:
+#   understand-anything <platform>                     Enable for your user
+#   understand-anything <platform> --local <PATH>      Install into a project
+#   understand-anything --uninstall <platform> [--local <PATH>]
+#   understand-anything --help
+set -euo pipefail
+
+SHARE="/usr/share/understand-anything"
+PLUGIN="$SHARE/understand-anything-plugin"
+PLUGIN_LINK="$HOME/.understand-anything-plugin"
+MARKETPLACE="understand-anything"
+PLUGIN_NAME="understand-anything"
+
+ok()  { printf -- '  ✓ %s\n' "$*"; }
+warn(){ printf -- '  ! %s\n' "$*" >&2; }
+die() { printf 'Error: %s\n' "$*" >&2; exit 1; }
+need_payload() { [ -d "$PLUGIN" ] || die "Payload not found at $PLUGIN. Reinstall the understand-anything package."; }
+
+# id | global-skills-dir | style | project-local-skills-dir | local-flag | native-cli
+platforms_table() {
+  cat <<EOF
+claude|$HOME/.claude/skills|per-skill|.claude/skills|optional|claude
+codex|$HOME/.agents/skills|per-skill|.agents/skills|optional|codex
+opencode|$HOME/.agents/skills|per-skill|.agents/skills|optional|-
+agents|$HOME/.agents/skills|per-skill|.agents/skills|optional|-
+vscode|$HOME/.copilot/skills|per-skill|.github/skills|optional|-
+jetbrains|$HOME/.junie/skills|per-skill|.junie/skills|optional|-
+kilo|$HOME/.kilo/skills|per-skill|.kilo/skills|optional|-
+kiro|$HOME/.kiro/skills|per-skill|.kiro/skills|optional|-
+cursor||per-skill|.cursor/skills|required|-
+EOF
+}
+platform_ids() { platforms_table | cut -d'|' -f1; }
+row_for()      { platforms_table | awk -F'|' -v id="$1" '$1==id{print;exit}'; }
+field()        { cut -d'|' -f"$2" <<<"$1"; }
+list_skills()  { local d; for d in "$1"/skills/*/; do [ -d "$d" ] && basename "$d"; done; }
+
+marketplace_source() { [ -f "$SHARE/.claude-plugin/marketplace.json" ] && printf '%s\n' "$SHARE"; }
+
+native_available() {
+  local native="$1" project="${2:-}"
+  [ -z "${UA_NO_NATIVE:-}" ] || return 1
+  case "$native" in
+    claude) command -v claude >/dev/null 2>&1 && [ -n "$(marketplace_source)" ] ;;
+    codex)  [ -z "$project" ] && command -v codex >/dev/null 2>&1 && [ -n "$(marketplace_source)" ] ;;
+    *) return 1 ;;
+  esac
+}
+native_install() {
+  local native="$1" project="$2" src
+  case "$native" in
+    claude)
+      src="$(marketplace_source)" || return 1
+      claude plugin marketplace add "$src" >/dev/null 2>&1 \
+        || claude plugin marketplace update "$MARKETPLACE" >/dev/null 2>&1 || true
+      if [ -n "$project" ]; then
+        ( cd "$project" && claude plugin install "$PLUGIN_NAME@$MARKETPLACE" --scope project >/dev/null 2>&1 ) || true
+        ( cd "$project" && claude plugin list 2>/dev/null | grep -qi "$PLUGIN_NAME" ) || return 1
+      else
+        claude plugin install "$PLUGIN_NAME@$MARKETPLACE" --scope user >/dev/null 2>&1 || true
+        claude plugin list 2>/dev/null | grep -qi "$PLUGIN_NAME" || return 1
+      fi
+      ok "claude plugin install $PLUGIN_NAME@$MARKETPLACE"
+      return 0 ;;
+    codex)
+      [ -z "$project" ] || return 1   # codex marketplace install is global-only
+      src="$(marketplace_source)" || return 1
+      codex plugin marketplace add "$src" >/dev/null 2>&1 \
+        || codex plugin marketplace upgrade >/dev/null 2>&1 || true
+      codex plugin add "$PLUGIN_NAME@$MARKETPLACE" >/dev/null 2>&1 || true
+      codex plugin list 2>/dev/null | grep -qi "$PLUGIN_NAME" || return 1
+      ok "codex plugin add $PLUGIN_NAME@$MARKETPLACE"
+      return 0 ;;
+  esac
+  return 1
+}
+native_uninstall() {
+  case "$1" in
+    claude) command -v claude >/dev/null 2>&1 || return 1
+      claude plugin uninstall "$PLUGIN_NAME" >/dev/null 2>&1 && ok "claude plugin uninstall $PLUGIN_NAME" && return 0 || return 1 ;;
+    codex) command -v codex >/dev/null 2>&1 || return 1
+      codex plugin remove "$PLUGIN_NAME" >/dev/null 2>&1 && ok "codex plugin remove $PLUGIN_NAME" && return 0 || return 1 ;;
+  esac
+  return 1
+}
+
+write_kiro_agent() {
+  local plugin="$1" resources="" a
+  mkdir -p "$HOME/.kiro/agents"
+  while IFS= read -r a; do
+    [ -n "$a" ] || continue
+    [ -n "$resources" ] && resources+=$',\n'
+    resources+="    \"file://$a\""
+  done < <(find "$plugin/agents" -maxdepth 1 -type f -name '*.md' | LC_ALL=C sort)
+  cat > "$HOME/.kiro/agents/understand.json" <<KIROEOF
+{
+  "name": "understand",
+  "description": "Analyze codebase into interactive knowledge graph — Understand Anything",
+  "prompt": "file://$plugin/skills/understand/SKILL.md",
+  "tools": ["read", "write", "shell", "grep", "glob", "code", "subagent"],
+  "resources": [
+$resources
+  ]
+}
+KIROEOF
+  ok "$HOME/.kiro/agents/understand.json"
+}
+
+cmd_install() {
+  need_payload
+  local id="$1" project="${2:-}" row global style local_dir local_flag native skill
+  row="$(row_for "$id")"
+  [ -n "$row" ] || die "Unknown platform: $id (supported: $(platform_ids | tr '\n' ' '))"
+  global="$(field "$row" 2)"; style="$(field "$row" 3)"
+  local_dir="$(field "$row" 4)"; local_flag="$(field "$row" 5)"; native="$(field "$row" 6)"
+
+  if [ -n "$project" ]; then
+    [ "$local_flag" != "none" ] || die "$id does not support --local"
+    [ -d "$project" ] || die "project dir does not exist: $project"
+    project="$(cd "$project" && pwd -P)"
+  else
+    [ "$local_flag" != "required" ] || die "$id is project-only — pass --local <PATH>"
+  fi
+
+  # 1) Native CLI first.
+  if native_available "$native" "$project" && native_install "$native" "$project"; then
+    printf '\n✓ Enabled Understand-Anything for %s (native CLI). Restart your CLI/IDE.\n' "$id"
+    return 0
+  fi
+
+  # 2) Scripted fallback.
+  if [ -n "$project" ]; then
+    cp -R "$PLUGIN/." "$project/"
+    local dirs d back depth
+    dirs="$(printf '%s\n%s\n' ".agents/skills" "$local_dir" | sort -u)"
+    while IFS= read -r d; do
+      [ -n "$d" ] && [ "$d" != "skills" ] || continue
+      mkdir -p "$project/$d"; depth="$(awk -F/ '{print NF}' <<<"$d")"; back="$(printf '../%.0s' $(seq 1 "$depth"))skills"
+      while IFS= read -r skill; do ln -sfn "$back/$skill" "$project/$d/$skill"; ok "$d/$skill"; done < <(list_skills "$project")
+    done <<<"$dirs"
+    [ "$id" = "kiro" ] && write_kiro_agent "$project"
+    printf '\n✓ Installed project-local Understand-Anything into %s\n' "$project"
+  else
+    [ -n "$global" ] || die "$id has no global install target"
+    mkdir -p "$global"
+    if [ "$style" = "folder" ]; then
+      ln -sfn "$PLUGIN/skills" "$global/understand-anything"; ok "$global/understand-anything"
+    else
+      while IFS= read -r skill; do ln -sfn "$PLUGIN/skills/$skill" "$global/$skill"; ok "$global/$skill"; done < <(list_skills "$PLUGIN")
+    fi
+    if [ -L "$PLUGIN_LINK" ] || [ -e "$PLUGIN_LINK" ]; then ok "$PLUGIN_LINK already exists"; else ln -s "$PLUGIN" "$PLUGIN_LINK"; ok "$PLUGIN_LINK → $PLUGIN"; fi
+    [ "$id" = "kiro" ] && write_kiro_agent "$PLUGIN"
+    printf '\n✓ Enabled Understand-Anything for %s. Restart your CLI/IDE.\n' "$id"
+  fi
+}
+
+cmd_uninstall() {
+  need_payload
+  local id="$1" project="${2:-}" row global style local_dir native skill target
+  row="$(row_for "$id")"
+  [ -n "$row" ] || die "Unknown platform: $id"
+  global="$(field "$row" 2)"; style="$(field "$row" 3)"
+  local_dir="$(field "$row" 4)"; native="$(field "$row" 6)"
+  [ -n "$project" ] && project="$(cd "$project" 2>/dev/null && pwd -P || echo "$project")"
+
+  if native_available "$native" "$project" && native_uninstall "$native"; then return 0; fi
+
+  if [ -n "$project" ]; then target="$project/$local_dir"; else target="$global"; fi
+  [ -n "$target" ] || { warn "nothing to remove for $id"; return 0; }
+  if [ "$style" = "folder" ]; then
+    [ -L "$target/understand-anything" ] && rm -f "$target/understand-anything" && ok "removed $target/understand-anything"
+  elif [ -d "$target" ]; then
+    for skill in "$target"/*; do [ -L "$skill" ] || continue; case "$(readlink "$skill" 2>/dev/null||true)" in "$PLUGIN"/skills/*|../*skills/*) rm -f "$skill"; ok "removed $skill";; esac; done
+  fi
+  [ "$id" = "kiro" ] && [ -f "$HOME/.kiro/agents/understand.json" ] && rm -f "$HOME/.kiro/agents/understand.json" && ok "removed kiro agent"
+  [ -z "$project" ] && [ -L "$PLUGIN_LINK" ] && rm -f "$PLUGIN_LINK" && ok "removed $PLUGIN_LINK"
+}
+
+usage() {
+  cat <<USAGE
+Understand-Anything (Debian package)
+
+  understand-anything <platform>                     Enable for your user
+  understand-anything <platform> --local <PATH>      Install into a project
+  understand-anything --uninstall <platform> [--local <PATH>]
+
+Platforms: $(platform_ids | tr '\n' ' ')
+  cursor is project-only (requires --local). Native CLIs are preferred when
+  available (e.g. claude plugin install); set UA_NO_NATIVE=1 to force symlinks.
+USAGE
+}
+
+LOCAL_PATH=""
+parse_local() {
+  LOCAL_PATH=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --local) shift; [ -n "${1:-}" ] || die "--local requires <PATH>"; LOCAL_PATH="$1" ;;
+      *) die "Unexpected argument: $1" ;;
+    esac
+    shift
+  done
+}
+
+case "${1:-}" in
+  -h|--help|"") usage ;;
+  --uninstall) shift; [ -n "${1:-}" ] || die "--uninstall requires a platform"; id="$1"; shift; parse_local "$@"; cmd_uninstall "$id" "$LOCAL_PATH" ;;
+  -*) die "Unknown option: $1" ;;
+  *) id="$1"; shift; parse_local "$@"; cmd_install "$id" "$LOCAL_PATH" ;;
+esac

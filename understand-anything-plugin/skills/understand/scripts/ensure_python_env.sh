@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+# Locate the installed plugin root and ensure the arch_analysis Python
+# environment is ready. Prints PLUGIN_ROOT on stdout.
+#
+# The deterministic pipeline is Python (`arch_analysis`); this replaces the old
+# Node/pnpm "build @understand-anything/core" step. All arch_analysis modules
+# are then invoked via "$PLUGIN_ROOT/packages/arch_analysis/run.sh <module> …".
 set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
@@ -22,7 +28,7 @@ for candidate in \
   "$HOME/.opencode/understand-anything/understand-anything-plugin" \
   "$HOME/.pi/understand-anything/understand-anything-plugin" \
   "$HOME/understand-anything/understand-anything-plugin"; do
-  if [ -n "$candidate" ] && [ -f "$candidate/package.json" ] && [ -f "$candidate/pnpm-workspace.yaml" ]; then
+  if [ -n "$candidate" ] && [ -f "$candidate/.claude-plugin/plugin.json" ] && [ -d "$candidate/packages/arch_analysis" ]; then
     PLUGIN_ROOT="$candidate"
     break
   fi
@@ -44,14 +50,11 @@ if [ -z "$PLUGIN_ROOT" ]; then
   exit 1
 fi
 
-if [ ! -f "$PLUGIN_ROOT/packages/core/dist/index.js" ]; then
-  if ! command -v pnpm >/dev/null 2>&1; then
-    echo "Install Node.js >= 22 and pnpm >= 10, then re-run /understand." >&2
-    exit 1
-  fi
-  cd "$PLUGIN_ROOT"
-  (pnpm install --frozen-lockfile 2>/dev/null || pnpm install)
-  pnpm --filter @understand-anything/core build
+# Warm the arch_analysis virtualenv (creates it + installs deps on first run).
+if ! command -v pdm >/dev/null 2>&1 && ! command -v python3 >/dev/null 2>&1; then
+  echo "Install Python >= 3.14 (and ideally PDM), then re-run /understand." >&2
+  exit 1
 fi
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" --ensure
 
 printf '%s\n' "$PLUGIN_ROOT"

@@ -8,9 +8,9 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      "@understand-anything/core/schema": path.resolve(__dirname, "../core/dist/schema.js"),
-      "@understand-anything/core/search": path.resolve(__dirname, "../core/dist/search.js"),
-      "@understand-anything/core/types": path.resolve(__dirname, "../core/dist/types.js"),
+      "@understand-anything/core/schema": path.resolve(__dirname, "src/core/schema.ts"),
+      "@understand-anything/core/search": path.resolve(__dirname, "src/core/search.ts"),
+      "@understand-anything/core/types": path.resolve(__dirname, "src/core/types.ts"),
     },
   },
 

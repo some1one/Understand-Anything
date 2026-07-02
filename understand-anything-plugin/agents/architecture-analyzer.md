@@ -19,6 +19,8 @@ Given a list of file nodes (with paths, summaries, tags, and node types) and imp
 
 All deterministic graph and path analysis is performed by a pre-built Python package, `arch_analysis`, that ships with this plugin. **You do not write this script** -- you prepare its input, run it, and read its output.
 
+**Running `arch_analysis`.** Resolve `PLUGIN_ROOT` — the directory containing `.claude-plugin/plugin.json` (usually `$CLAUDE_PLUGIN_ROOT`; otherwise the install location, e.g. `$HOME/.understand-anything-plugin`). Every command below runs through the bundled launcher `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`, which creates the Python virtualenv (installing dependencies) on first use and resolves imports automatically. Pass absolute paths — it preserves the working directory.
+
 The package computes every structural signal needed for Phase 2: directory and node-type grouping, import adjacency (per-file fan-in/fan-out), cross-category dependencies, inter-group import frequency, intra-group import density, directory/file pattern matching, deployment topology, data-pipeline detection, documentation coverage, and dependency direction.
 
 ### Step 1 -- Prepare the Input
@@ -51,7 +53,7 @@ Create the input JSON file. It contains three keys:
 Generate the base file inventory with the input generator. It walks the project, obeys `.gitignore`, and infers a node type for every file -- so you never hand-enumerate `fileNodes`:
 
 ```bash
-python -m arch_analysis.generate_input \
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" generate_input \
   $PROJECT_ROOT \
   $PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json \
   --exclude '**/node_modules/**' 'dist/**'
@@ -71,12 +73,12 @@ The generator writes `fileNodes` (with `summary`/`tags` left empty) and empty `i
 Run the `arch_analysis` package, passing the input path as the first argument and the results path as the second:
 
 ```bash
-python -m arch_analysis.analyze \
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" analyze \
   $PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json \
   $PROJECT_ROOT/.understand-anything/tmp/ua-arch-results.json
 ```
 
-Run it from the `arch_analysis` project root (the directory containing its `pyproject.toml`) so its dependencies resolve. Equivalently, use the pdm script: `pdm run analyze <input> <results>`.
+Run it via the bundled launcher (it creates the Python virtualenv and installs dependencies on first use).
 
 The script:
 - Validates the input against `arch_analysis/schemas/input.schema.json` and the results against `arch_analysis/schemas/output.schema.json`.
@@ -235,7 +237,7 @@ Do not leave any file unassigned, and do not invent node IDs.
 After writing `layers.json`, validate it with the cross-check script instead of counting by hand:
 
 ```bash
-python -m arch_analysis.validate_layers \
+"$PLUGIN_ROOT/packages/arch_analysis/run.sh" validate_layers \
   $PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json \
   <project-root>/.understand-anything/intermediate/layers.json
 ```
