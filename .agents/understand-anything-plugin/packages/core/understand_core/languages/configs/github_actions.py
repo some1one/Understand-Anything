@@ -1,0 +1,18 @@
+"""Port of ``configs/github-actions.ts``."""
+
+from __future__ import annotations
+
+from ..types import LanguageConfig
+
+github_actions_config = LanguageConfig(
+    id="github-actions",
+    displayName="GitHub Actions",
+    extensions=[],
+    concepts=["workflows", "jobs", "steps", "actions", "triggers", "secrets", "matrix strategy", "artifacts"],
+    filePatterns={
+        "entryPoints": [],
+        "barrels": [],
+        "tests": [],
+        "config": [".github/workflows/*.yml"],
+    },
+)

@@ -1,0 +1,22 @@
+{
+  "scriptCompleted": true,
+  "issues": [],
+  "warnings": [
+    "Domain graph has zero layers (relaxed to warning)"
+  ],
+  "stats": {
+    "totalNodes": 31,
+    "totalEdges": 30,
+    "totalLayers": 0,
+    "nodeTypes": {
+      "domain": 4,
+      "flow": 6,
+      "step": 21
+    },
+    "edgeTypes": {
+      "contains_flow": 6,
+      "flow_step": 21,
+      "cross_domain": 3
+    }
+  }
+}

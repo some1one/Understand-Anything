@@ -51,7 +51,10 @@ die()  { printf 'Error: %s\n' "$*" >&2; exit 1; }
 #   global-skills-dir empty  → platform is project-only (local-flag = required)
 #   local-flag ∈ required|optional|none
 #   native-cli  ∈ claude|-   (a built-in CLI tried before the scripted installer)
-# "agents" is the cross-client ~/.agents/skills (Codex, opencode, Zed, VSCodium, …).
+# "agents" is the cross-client ~/.agents/skills (Codex, opencode, VSCodium, …).
+# NOTE: the Zed IDE does NOT read ~/.agents/skills — it loads instructions from
+# AGENTS.md/.rules (worktree root or ~/.config/zed/AGENTS.md) and slash commands
+# only from extensions, so it is intentionally not a skills-drop target here.
 platforms_table() {
   cat <<EOF
 claude|$HOME/.claude/skills|per-skill|.claude/skills|optional|claude
@@ -281,39 +284,136 @@ KIROEOF
   ok "$HOME/.kiro/agents/understand.json"
 }
 
-# Copy the assembled plugin payload into a project root (scripted local install).
+# --- Kilo workflows (kilo target only) --------------------------------------
+# Install the deterministic tools/commands as Kilo workflows (/understand-<cmd>),
+# baking the plugin's absolute path into each. Only the kilo target calls these;
+# every other target ignores tools/commands entirely.
+install_kilo_workflows() {
+  local plugin="$1" wf_dir="$2" src name
+  [ -d "$plugin/tools/commands" ] || return 0
+  mkdir -p "$wf_dir"
+  for src in "$plugin"/tools/commands/*/kilo-workflow.md; do
+    [ -f "$src" ] || continue
+    name="$(basename "$(dirname "$src")")"
+    sed "s#__PLUGIN_ROOT__#$plugin#g" "$src" > "$wf_dir/understand-$name.md"
+    ok "$wf_dir/understand-$name.md"
+  done
+}
+
+# Remove only the workflow files we generated (identified by our signature),
+# leaving any user-authored workflows in place.
+remove_kilo_workflows() {
+  local wf_dir="$1" f
+  [ -d "$wf_dir" ] || return 0
+  for f in "$wf_dir"/understand-*.md; do
+    [ -f "$f" ] || continue
+    if grep -q "tools/commands/" "$f" 2>/dev/null && grep -qi "Understand-Anything" "$f" 2>/dev/null; then
+      rm -f "$f"; ok "removed $f"
+    fi
+  done
+}
+
+# --- project-local tool wrappers (all local/project installs) ---------------
+# Drop callable bash wrappers under <project>/.understand-anything/tools/, one
+# per deterministic command, forwarding to the copied plugin payload's run.sh.
+# Wrappers self-resolve relative to their own location, so they survive the
+# project being moved. Applies to every --local install, not just kilo.
+install_project_tools() {
+  local project="$1" payload_rel="$2" tools_dir="$project/.understand-anything/tools" src name
+  [ -d "$project/$payload_rel/tools/commands" ] || return 0
+  mkdir -p "$tools_dir"
+  for src in "$project/$payload_rel"/tools/commands/*/run.sh; do
+    [ -f "$src" ] || continue
+    name="$(basename "$(dirname "$src")")"
+    cat > "$tools_dir/$name" <<EOF
+#!/usr/bin/env bash
+# Understand-Anything tool wrapper ($name) — forwards to the installed plugin.
+set -euo pipefail
+HERE=\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd -P)
+exec "\$HERE/../../$payload_rel/tools/commands/$name/run.sh" "\$@"
+EOF
+    chmod +x "$tools_dir/$name"
+    ok ".understand-anything/tools/$name"
+  done
+}
+
+# Remove only the wrappers we generated; leave the rest of .understand-anything
+# (knowledge graph, etc.) untouched. Drops the tools/ dir only if left empty.
+remove_project_tools() {
+  local project="$1" tools_dir="$project/.understand-anything/tools" f
+  [ -d "$tools_dir" ] || return 0
+  for f in "$tools_dir"/*; do
+    [ -f "$f" ] || continue
+    grep -q "Understand-Anything tool wrapper" "$f" 2>/dev/null && { rm -f "$f"; ok "removed $f"; }
+  done
+  rmdir "$tools_dir" 2>/dev/null || true
+}
+
+# True when the payload at $1 is already assembled and no older than its source
+# (archives or the source checkout). Lets several `--local` installs into the
+# same project (e.g. `LOCAL=. make install-vscode install-kilo`) share one
+# assembly + one venv warm-up instead of wiping and rebuilding per platform.
+_payload_current() {
+  local dest="$1" marker="$dest/.ua-assembled" t src
+  [ -f "$marker" ] || return 1
+  if find_assets; then
+    for t in "$CORE_TGZ" "$WHEELHOUSE_TGZ" "$DASH_TGZ"; do
+      [ -n "$t" ] && [ "$t" -nt "$marker" ] && return 1
+    done
+    return 0
+  fi
+  src="$(resolve_plugin_home)" || return 1
+  [ -z "$(find "$src" -type f -newer "$marker" \
+            -not -path '*/.venv/*' -not -path '*/node_modules/*' \
+            -not -path '*/.git/*' -print -quit 2>/dev/null)" ]
+}
+
+# Copy the assembled plugin payload into a project-local hidden plugin root.
+# Skips the wipe+copy when the destination is already current, so the venv
+# warmed by an earlier install in the same run survives (no re-warm).
 copy_payload_to() {
-  local project="$1"
+  local dest="$1"
+  if _payload_current "$dest"; then
+    info "Plugin payload already current — reusing $dest"
+    return 0
+  fi
+  rm -rf "$dest"
+  mkdir -p "$dest"
   if find_assets; then
     local tmp; tmp="$(mktemp -d)"
     tar -xzf "$CORE_TGZ" -C "$tmp"
-    cp -R "$tmp/understand-anything-plugin/." "$project/"
-    [ -n "$WHEELHOUSE_TGZ" ] && tar -xzf "$WHEELHOUSE_TGZ" -C "$project/packages/arch_analysis"
-    [ -n "$DASH_TGZ" ] && tar -xzf "$DASH_TGZ" -C "$project/packages/dashboard"
+    cp -R "$tmp/understand-anything-plugin/." "$dest/"
+    [ -n "$WHEELHOUSE_TGZ" ] && tar -xzf "$WHEELHOUSE_TGZ" -C "$dest/packages/arch_analysis"
+    [ -n "$DASH_TGZ" ] && tar -xzf "$DASH_TGZ" -C "$dest/packages/dashboard"
     rm -rf "$tmp"
   else
     local src; src="$(resolve_plugin_home)"
     ( cd "$src" && tar --exclude='./packages/*/.venv' --exclude='./packages/*/node_modules' \
-        --exclude='*/__pycache__' --exclude='*/.pytest_cache' -cf - . ) | tar -xf - -C "$project"
+        --exclude='./packages/*/.pdm-build' --exclude='./packages/*/.pdm-python' \
+        --exclude='*/__pycache__' --exclude='*/.pytest_cache' -cf - . ) | tar -xf - -C "$dest"
   fi
+  touch "$dest/.ua-assembled"
 }
 
 scripted_local_install() {
-  local id="$1" local_dir="$2" project="$3" dirs d skill
+  local id="$1" local_dir="$2" project="$3" payload_dir=".agents/understand-anything-plugin" dirs d skill
   info "Installing project-local plugin into $project"
-  copy_payload_to "$project"
+  copy_payload_to "$project/$payload_dir"
   # Wire the universal .agents/skills + this target's own project skills dir.
   dirs="$(printf '%s\n%s\n' ".agents/skills" "$local_dir" | sort -u)"
   while IFS= read -r d; do
     [ -n "$d" ] && [ "$d" != "skills" ] || continue
     mkdir -p "$project/$d"
-    local depth back; depth="$(awk -F/ '{print NF}' <<<"$d")"; back="$(printf '../%.0s' $(seq 1 "$depth"))skills"
+    local depth back; depth="$(awk -F/ '{print NF}' <<<"$d")"; back="$(printf '../%.0s' $(seq 1 "$depth"))$payload_dir/skills"
     while IFS= read -r skill; do
       ln -sfn "$back/$skill" "$project/$d/$skill"; ok "$d/$skill → $back/$skill"
-    done < <(list_skills "$project")
+    done < <(list_skills "$project/$payload_dir")
   done <<<"$dirs"
-  [ "$id" = "kiro" ] && write_kiro_agent "$project"
-  warm_env "$project"
+  [ "$id" = "kiro" ] && write_kiro_agent "$project/$payload_dir"
+  [ "$id" = "kilo" ] && { info "Installing Kilo workflows"; install_kilo_workflows "$project/$payload_dir" "$project/.kilocode/workflows"; }
+  info "Installing project tool wrappers (.understand-anything/tools)"
+  install_project_tools "$project" "$payload_dir"
+  warm_env "$project/$payload_dir"
 }
 
 # --- commands ---------------------------------------------------------------
@@ -357,10 +457,12 @@ cmd_install() {
     info "Linking universal plugin root"
     link_plugin_root "$plugin"
     [ "$id" = "kiro" ] && { info "Writing Kiro agent config"; write_kiro_agent "$plugin"; }
+    [ "$id" = "kilo" ] && { info "Installing Kilo workflows"; install_kilo_workflows "$plugin" "$HOME/.kilocode/workflows"; }
     warm_env "$plugin"
     printf '\n✓ Installed Understand-Anything for %s\n' "$id"
     printf '  Restart your CLI/IDE to pick up the skills.\n'
     [ "$id" = "kiro" ] && printf '  Usage: kiro-cli chat --agent understand "Analyze this project"\n'
+    [ "$id" = "kilo" ] && printf '  Kilo workflows installed: /understand-generate-ignore, /understand-merge-subdomains, /understand-validate-graph (type / in Kilo)\n'
   fi
   return 0
 }
@@ -394,6 +496,15 @@ cmd_uninstall() {
     done
   fi
   [ "$id" = "kiro" ] && [ -f "$HOME/.kiro/agents/understand.json" ] && rm -f "$HOME/.kiro/agents/understand.json" && ok "removed kiro agent"
+  if [ "$id" = "kilo" ]; then
+    info "Removing Kilo workflows"
+    if [ -n "$project" ]; then
+      remove_kilo_workflows "$project/.kilocode/workflows"
+    else
+      remove_kilo_workflows "$HOME/.kilocode/workflows"
+    fi
+  fi
+  [ -n "$project" ] && { info "Removing project tool wrappers"; remove_project_tools "$project"; }
   [ -z "$project" ] && [ -L "$PLUGIN_LINK" ] && rm -f "$PLUGIN_LINK" && ok "removed $PLUGIN_LINK"
   return 0
 }

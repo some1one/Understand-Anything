@@ -1,0 +1,195 @@
+{
+  "$defs": {
+    "GraphEdge": {
+      "additionalProperties": true,
+      "description": "A directed, typed, weighted edge in an assembled graph or fragment.",
+      "properties": {
+        "source": {
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "target": {
+          "minLength": 1,
+          "title": "Target",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "imports",
+            "exports",
+            "contains",
+            "inherits",
+            "implements",
+            "calls",
+            "subscribes",
+            "publishes",
+            "middleware",
+            "reads_from",
+            "writes_to",
+            "transforms",
+            "validates",
+            "depends_on",
+            "tested_by",
+            "configures",
+            "related",
+            "similar_to",
+            "deploys",
+            "serves",
+            "provisions",
+            "triggers",
+            "migrates",
+            "documents",
+            "routes",
+            "defines_schema",
+            "contains_flow",
+            "flow_step",
+            "cross_domain"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "direction": {
+          "default": "forward",
+          "enum": [
+            "forward",
+            "backward",
+            "bidirectional"
+          ],
+          "title": "Direction",
+          "type": "string"
+        },
+        "weight": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "source",
+        "target",
+        "type",
+        "weight"
+      ],
+      "title": "GraphEdge",
+      "type": "object"
+    },
+    "GraphNode": {
+      "additionalProperties": true,
+      "description": "A node in an assembled knowledge graph or batch fragment.\n\n``extra=\"allow\"`` keeps the contract open for optional fields the LLM and\nextractors attach (``lineRange``, ``languageNotes``, ``domainMeta``, etc.).",
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "file",
+            "function",
+            "class",
+            "module",
+            "concept",
+            "config",
+            "document",
+            "service",
+            "table",
+            "endpoint",
+            "pipeline",
+            "schema",
+            "resource",
+            "domain",
+            "flow",
+            "step"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "summary": {
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Tags",
+          "type": "array"
+        },
+        "complexity": {
+          "enum": [
+            "simple",
+            "moderate",
+            "complex"
+          ],
+          "title": "Complexity",
+          "type": "string"
+        },
+        "filePath": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Filepath"
+        },
+        "lineRange": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Linerange"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "name",
+        "summary",
+        "tags",
+        "complexity"
+      ],
+      "title": "GraphNode",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A file-analyzer batch/part output: ``{ \"nodes\": [...], \"edges\": [...] }``.",
+  "properties": {
+    "nodes": {
+      "items": {
+        "$ref": "#/$defs/GraphNode"
+      },
+      "title": "Nodes",
+      "type": "array"
+    },
+    "edges": {
+      "items": {
+        "$ref": "#/$defs/GraphEdge"
+      },
+      "title": "Edges",
+      "type": "array"
+    }
+  },
+  "title": "GraphFragment",
+  "type": "object"
+}

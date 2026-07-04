@@ -1,0 +1,121 @@
+{
+  "additionalProperties": true,
+  "description": "The output contract (``ua-arch-results.json``).\n\nRequired keys are strongly typed; ``extra=\"allow\"`` lets the analyzer attach\nadditional deterministic signals (graph metrics, matrices, per-file pattern\nclassifications) without breaking the documented schema.",
+  "properties": {
+    "scriptCompleted": {
+      "title": "Scriptcompleted",
+      "type": "boolean"
+    },
+    "directoryGroups": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "Directorygroups",
+      "type": "object"
+    },
+    "nodeTypeGroups": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "Nodetypegroups",
+      "type": "object"
+    },
+    "crossCategoryEdges": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Crosscategoryedges",
+      "type": "array"
+    },
+    "interGroupImports": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Intergroupimports",
+      "type": "array"
+    },
+    "intraGroupDensity": {
+      "additionalProperties": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Intragroupdensity",
+      "type": "object"
+    },
+    "patternMatches": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Patternmatches",
+      "type": "object"
+    },
+    "deploymentTopology": {
+      "additionalProperties": true,
+      "title": "Deploymenttopology",
+      "type": "object"
+    },
+    "dataPipeline": {
+      "additionalProperties": true,
+      "title": "Datapipeline",
+      "type": "object"
+    },
+    "docCoverage": {
+      "additionalProperties": true,
+      "title": "Doccoverage",
+      "type": "object"
+    },
+    "dependencyDirection": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Dependencydirection",
+      "type": "array"
+    },
+    "fileStats": {
+      "additionalProperties": true,
+      "title": "Filestats",
+      "type": "object"
+    },
+    "fileFanIn": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "title": "Filefanin",
+      "type": "object"
+    },
+    "fileFanOut": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "title": "Filefanout",
+      "type": "object"
+    }
+  },
+  "required": [
+    "scriptCompleted",
+    "directoryGroups",
+    "nodeTypeGroups",
+    "crossCategoryEdges",
+    "interGroupImports",
+    "intraGroupDensity",
+    "patternMatches",
+    "deploymentTopology",
+    "dataPipeline",
+    "docCoverage",
+    "dependencyDirection",
+    "fileStats",
+    "fileFanIn",
+    "fileFanOut"
+  ],
+  "title": "AnalysisResult",
+  "type": "object"
+}

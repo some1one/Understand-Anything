@@ -1,0 +1,22 @@
+"""Port of ``configs/javascript.ts``."""
+
+from __future__ import annotations
+
+from ..types import LanguageConfig
+
+javascript_config = LanguageConfig(
+    id="javascript",
+    displayName="JavaScript",
+    extensions=[".js", ".jsx", ".mjs", ".cjs"],
+    treeSitter={
+        "wasmPackage": "tree-sitter-javascript",
+        "wasmFile": "tree-sitter-javascript.wasm",
+    },
+    concepts=["closures", "prototypes", "promises", "async/await", "event loop", "destructuring", "spread operator", "proxies", "generators", "modules (ESM/CJS)"],
+    filePatterns={
+        "entryPoints": ["index.js", "src/index.js", "main.js"],
+        "barrels": ["index.js"],
+        "tests": ["*.test.js", "*.spec.js"],
+        "config": ["package.json", "jsconfig.json"],
+    },
+)

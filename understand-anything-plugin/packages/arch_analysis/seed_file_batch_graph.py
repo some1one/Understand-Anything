@@ -9,15 +9,17 @@ Generates the deterministic skeleton of a batch's knowledge-graph fragment
   - **Function / class nodes** — significant definitions from the extraction
     results (10+ line functions, 2+ method or 20+ line classes, or anything
     exported), with deterministic ids and line ranges.
-  - **Deterministic tags** — test/entry-point/category tags the finalizer will
-    require the LLM to preserve.
+  - **Deterministic metadata** — summaries, complexity, and baseline tags the
+    finalizer will require the LLM to preserve or enrich.
   - **Deterministic edges** — exact ``imports`` (1:1 from ``batchImportData``),
     ``contains`` (file → each definition node), and ``exports`` (file → each
     exported definition node).
 
-The LLM loads this seed as its draft, then fills summaries, complexity, and
-semantic tags/edges. :mod:`arch_analysis.finalize_file_batch_output` verifies
-nothing seeded was dropped.
+The LLM may load this seed as its draft, then enrich summaries, tags, and
+semantic edges. The seed is already a valid graph fragment once the optional
+``batchIndex`` wrapper is stripped, so fully deterministic runs can finalize it
+without an extra draft-enrichment step. :mod:`arch_analysis.finalize_file_batch_output`
+verifies nothing seeded was dropped.
 
 Usage:
     python -m arch_analysis.seed_file_batch_graph <context.json> <extract-results.json> <seed.json>
@@ -42,6 +44,98 @@ def _line_span(start: Any, end: Any) -> int:
     if isinstance(start, int) and isinstance(end, int) and end >= start:
         return end - start + 1
     return 0
+
+
+def _complexity(non_empty_lines: int) -> str:
+    if non_empty_lines > 200:
+        return "complex"
+    if non_empty_lines >= 50:
+        return "moderate"
+    return "simple"
+
+
+def _unique_tags(*groups: list[str]) -> list[str]:
+    tags: list[str] = []
+    for group in groups:
+        for tag in group:
+            if tag and tag not in tags:
+                tags.append(tag)
+    for tag in ("analysis", "project-structure", "codebase"):
+        if len(tags) >= 3:
+            break
+        if tag not in tags:
+            tags.append(tag)
+    return tags[:5]
+
+
+def _category_tags(node_type: str, category: str | None, path: str, language: str) -> list[str]:
+    tags: list[str]
+    if node_type == "document":
+        tags = ["documentation", "reference", "project-knowledge"]
+    elif node_type == "config":
+        tags = ["configuration", "build-system", "project-settings"]
+    elif node_type in {"service", "pipeline", "resource"}:
+        tags = ["infrastructure", "automation", "deployment"]
+    elif node_type == "schema":
+        tags = ["schema-definition", "data-model", "validation"]
+    else:
+        tags = ["source-code", language or "unknown-language", "implementation"]
+
+    lower = path.lower()
+    if lower.endswith(".sh") or category == "script":
+        tags.append("script")
+    if "arch_analysis" in lower:
+        tags.append("architecture-analysis")
+    if "dashboard" in lower:
+        tags.append("dashboard")
+    if "skill" in lower:
+        tags.append("skill")
+    return tags
+
+
+def _file_summary(path: str, node_type: str, language: str, result: dict[str, Any] | None) -> str:
+    metrics = (result or {}).get("metrics") or {}
+    functions = int(metrics.get("functionCount") or 0)
+    classes = int(metrics.get("classCount") or 0)
+    imports = int(metrics.get("importCount") or 0)
+
+    if node_type == "document":
+        return f"Documentation file covering project guidance or reference material for {path}."
+    if node_type == "config":
+        return f"Configuration file that controls project tooling or package behavior for {path}."
+    if node_type in {"service", "pipeline", "resource"}:
+        return f"Infrastructure or automation file defining build, deployment, or operational behavior for {path}."
+    if node_type == "schema":
+        return f"Schema file defining structured data or API contracts for {path}."
+
+    details: list[str] = []
+    if functions:
+        details.append(f"{functions} function{'s' if functions != 1 else ''}")
+    if classes:
+        details.append(f"{classes} class{'es' if classes != 1 else ''}")
+    if imports:
+        details.append(f"{imports} internal import{'s' if imports != 1 else ''}")
+    lang = language.title() if language else "Source"
+    if details:
+        return f"{lang} file {path} with " + ", ".join(details) + " identified by structural extraction."
+    return f"{lang} file {path} represented as part of the project implementation graph."
+
+
+def _symbol_summary(kind: str, name: str, path: str) -> str:
+    return f"{kind.title()} {name} defined in {path}, included because structural extraction marked it significant for the file graph."
+
+
+def _result_language(result: dict[str, Any] | None, path: str) -> str:
+    language = (result or {}).get("language")
+    if isinstance(language, str) and language:
+        return language
+    suffix = Path(path).suffix.lstrip(".")
+    return suffix or "unknown"
+
+
+def _non_empty_lines(result: dict[str, Any] | None) -> int:
+    value = (result or {}).get("nonEmptyLines")
+    return value if isinstance(value, int) else 0
 
 
 def build_seed(
@@ -96,6 +190,8 @@ def build_seed(
         if not isinstance(path, str):
             continue
         category = f.get("fileCategory")
+        result = results_by_path.get(path)
+        language = _result_language(result, path)
         typed = file_level_node(category, path)
         if typed is None:
             continue  # data sub-node files — deferred to the LLM.
@@ -107,7 +203,12 @@ def build_seed(
                 "type": node_type,
                 "name": basename(path),
                 "filePath": path,
-                "tags": deterministic_tags(category, path),
+                "summary": _file_summary(path, node_type, language, result),
+                "tags": _unique_tags(
+                    deterministic_tags(category, path),
+                    _category_tags(node_type, category, path, language),
+                ),
+                "complexity": _complexity(_non_empty_lines(result)),
             }
         )
 
@@ -138,6 +239,9 @@ def build_seed(
                 "type": "function",
                 "name": name,
                 "filePath": path,
+                "summary": _symbol_summary("function", name, path),
+                "tags": _unique_tags(["function"], _category_tags("file", "code", path, result.get("language", ""))),
+                "complexity": _complexity(span),
             }
             if isinstance(fn.get("startLine"), int) and isinstance(fn.get("endLine"), int):
                 node["lineRange"] = [fn["startLine"], fn["endLine"]]
@@ -165,6 +269,9 @@ def build_seed(
                 "type": "class",
                 "name": name,
                 "filePath": path,
+                "summary": _symbol_summary("class", name, path),
+                "tags": _unique_tags(["class"], _category_tags("file", "code", path, result.get("language", ""))),
+                "complexity": _complexity(span),
             }
             if isinstance(cls.get("startLine"), int) and isinstance(cls.get("endLine"), int):
                 node["lineRange"] = [cls["startLine"], cls["endLine"]]

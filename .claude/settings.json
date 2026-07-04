@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pdm run pytest *)",
+      "Bash(pdm python list*)",
+      "Bash(mypy *)",
+      "Bash(black *)",
+      "Bash(pdm info*)",
+      "Bash(pdm add *)"
+    ]
+  }
+}

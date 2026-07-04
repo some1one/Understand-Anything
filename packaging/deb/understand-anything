@@ -119,6 +119,63 @@ KIROEOF
   ok "$HOME/.kiro/agents/understand.json"
 }
 
+# Kilo workflows (kilo target only): install tools/commands as /understand-<cmd>
+# workflows with the plugin's absolute path baked in. No other target gets them.
+install_kilo_workflows() {
+  local plugin="$1" wf_dir="$2" src name
+  [ -d "$plugin/tools/commands" ] || return 0
+  mkdir -p "$wf_dir"
+  for src in "$plugin"/tools/commands/*/kilo-workflow.md; do
+    [ -f "$src" ] || continue
+    name="$(basename "$(dirname "$src")")"
+    sed "s#__PLUGIN_ROOT__#$plugin#g" "$src" > "$wf_dir/understand-$name.md"
+    ok "$wf_dir/understand-$name.md"
+  done
+}
+
+remove_kilo_workflows() {
+  local wf_dir="$1" f
+  [ -d "$wf_dir" ] || return 0
+  for f in "$wf_dir"/understand-*.md; do
+    [ -f "$f" ] || continue
+    if grep -q "tools/commands/" "$f" 2>/dev/null && grep -qi "Understand-Anything" "$f" 2>/dev/null; then
+      rm -f "$f"; ok "removed $f"
+    fi
+  done
+}
+
+# Callable bash wrappers under <project>/.understand-anything/tools/ (project
+# installs only), forwarding to the copied payload's run.sh; self-resolving so
+# they survive the project being moved.
+install_project_tools() {
+  local project="$1" payload_rel="$2" tools_dir="$project/.understand-anything/tools" src name
+  [ -d "$project/$payload_rel/tools/commands" ] || return 0
+  mkdir -p "$tools_dir"
+  for src in "$project/$payload_rel"/tools/commands/*/run.sh; do
+    [ -f "$src" ] || continue
+    name="$(basename "$(dirname "$src")")"
+    cat > "$tools_dir/$name" <<EOF
+#!/usr/bin/env bash
+# Understand-Anything tool wrapper ($name) — forwards to the installed plugin.
+set -euo pipefail
+HERE=\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd -P)
+exec "\$HERE/../../$payload_rel/tools/commands/$name/run.sh" "\$@"
+EOF
+    chmod +x "$tools_dir/$name"
+    ok ".understand-anything/tools/$name"
+  done
+}
+
+remove_project_tools() {
+  local project="$1" tools_dir="$project/.understand-anything/tools" f
+  [ -d "$tools_dir" ] || return 0
+  for f in "$tools_dir"/*; do
+    [ -f "$f" ] || continue
+    grep -q "Understand-Anything tool wrapper" "$f" 2>/dev/null && { rm -f "$f"; ok "removed $f"; }
+  done
+  rmdir "$tools_dir" 2>/dev/null || true
+}
+
 cmd_install() {
   need_payload
   local id="$1" project="${2:-}" row global style local_dir local_flag native skill
@@ -143,15 +200,28 @@ cmd_install() {
 
   # 2) Scripted fallback.
   if [ -n "$project" ]; then
-    cp -R "$PLUGIN/." "$project/"
+    local payload_dir=".agents/understand-anything-plugin" dest marker
+    dest="$project/$payload_dir"; marker="$dest/.ua-assembled"
+    # Reuse an already-current payload so multiple installs into the same
+    # project (e.g. two `understand-anything <p> --local .` in a row) copy once.
+    if [ -f "$marker" ] && [ -z "$(find "$PLUGIN" -type f -newer "$marker" -print -quit 2>/dev/null)" ]; then
+      ok "plugin payload already current — reusing $dest"
+    else
+      rm -rf "$dest"
+      mkdir -p "$dest"
+      cp -R "$PLUGIN/." "$dest/"
+      touch "$marker"
+    fi
     local dirs d back depth
     dirs="$(printf '%s\n%s\n' ".agents/skills" "$local_dir" | sort -u)"
     while IFS= read -r d; do
       [ -n "$d" ] && [ "$d" != "skills" ] || continue
-      mkdir -p "$project/$d"; depth="$(awk -F/ '{print NF}' <<<"$d")"; back="$(printf '../%.0s' $(seq 1 "$depth"))skills"
-      while IFS= read -r skill; do ln -sfn "$back/$skill" "$project/$d/$skill"; ok "$d/$skill"; done < <(list_skills "$project")
+      mkdir -p "$project/$d"; depth="$(awk -F/ '{print NF}' <<<"$d")"; back="$(printf '../%.0s' $(seq 1 "$depth"))$payload_dir/skills"
+      while IFS= read -r skill; do ln -sfn "$back/$skill" "$project/$d/$skill"; ok "$d/$skill"; done < <(list_skills "$project/$payload_dir")
     done <<<"$dirs"
-    [ "$id" = "kiro" ] && write_kiro_agent "$project"
+    [ "$id" = "kiro" ] && write_kiro_agent "$project/$payload_dir"
+    [ "$id" = "kilo" ] && install_kilo_workflows "$project/$payload_dir" "$project/.kilocode/workflows"
+    install_project_tools "$project" "$payload_dir"
     printf '\n✓ Installed project-local Understand-Anything into %s\n' "$project"
   else
     [ -n "$global" ] || die "$id has no global install target"
@@ -163,6 +233,7 @@ cmd_install() {
     fi
     if [ -L "$PLUGIN_LINK" ] || [ -e "$PLUGIN_LINK" ]; then ok "$PLUGIN_LINK already exists"; else ln -s "$PLUGIN" "$PLUGIN_LINK"; ok "$PLUGIN_LINK → $PLUGIN"; fi
     [ "$id" = "kiro" ] && write_kiro_agent "$PLUGIN"
+    [ "$id" = "kilo" ] && install_kilo_workflows "$PLUGIN" "$HOME/.kilocode/workflows"
     printf '\n✓ Enabled Understand-Anything for %s. Restart your CLI/IDE.\n' "$id"
   fi
 }
@@ -186,6 +257,10 @@ cmd_uninstall() {
     for skill in "$target"/*; do [ -L "$skill" ] || continue; case "$(readlink "$skill" 2>/dev/null||true)" in "$PLUGIN"/skills/*|../*skills/*) rm -f "$skill"; ok "removed $skill";; esac; done
   fi
   [ "$id" = "kiro" ] && [ -f "$HOME/.kiro/agents/understand.json" ] && rm -f "$HOME/.kiro/agents/understand.json" && ok "removed kiro agent"
+  if [ "$id" = "kilo" ]; then
+    if [ -n "$project" ]; then remove_kilo_workflows "$project/.kilocode/workflows"; else remove_kilo_workflows "$HOME/.kilocode/workflows"; fi
+  fi
+  [ -n "$project" ] && remove_project_tools "$project"
   [ -z "$project" ] && [ -L "$PLUGIN_LINK" ] && rm -f "$PLUGIN_LINK" && ok "removed $PLUGIN_LINK"
 }
 

@@ -34,6 +34,11 @@ _MAX_NODES_PER_PART = 60
 _MAX_EDGES_PER_PART = 120
 
 
+def graph_fragment(data: dict[str, Any]) -> dict[str, Any]:
+    """Return only the graph-fragment fields from a draft or seed wrapper."""
+    return {"nodes": data.get("nodes", []), "edges": data.get("edges", [])}
+
+
 def _node_path(node: dict[str, Any]) -> str | None:
     fp = node.get("filePath")
     if isinstance(fp, str) and fp:
@@ -231,6 +236,7 @@ def main(argv: list[str] | None = None) -> int:
         sys.stderr.write(f"finalize_file_batch_output failed: cannot read input: {err}\n")
         return 1
 
+    draft = graph_fragment(draft)
     issues = validate_draft(context, seed, draft)
     if issues:
         sys.stderr.write(

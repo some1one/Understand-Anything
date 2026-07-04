@@ -1,0 +1,105 @@
+{
+  "$defs": {
+    "ScanFile": {
+      "additionalProperties": false,
+      "description": "A single file entry in the scan result.",
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "language": {
+          "title": "Language",
+          "type": "string"
+        },
+        "sizeLines": {
+          "title": "Sizelines",
+          "type": "integer"
+        },
+        "fileCategory": {
+          "title": "Filecategory",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "language",
+        "sizeLines",
+        "fileCategory"
+      ],
+      "title": "ScanFile",
+      "type": "object"
+    },
+    "ScanStats": {
+      "additionalProperties": false,
+      "description": "Aggregate counts for a scan result.",
+      "properties": {
+        "filesScanned": {
+          "title": "Filesscanned",
+          "type": "integer"
+        },
+        "byCategory": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Bycategory",
+          "type": "object"
+        },
+        "byLanguage": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Bylanguage",
+          "type": "object"
+        }
+      },
+      "required": [
+        "filesScanned",
+        "byCategory",
+        "byLanguage"
+      ],
+      "title": "ScanStats",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Output contract for :mod:`arch_analysis.scan_project`.",
+  "properties": {
+    "scriptCompleted": {
+      "title": "Scriptcompleted",
+      "type": "boolean"
+    },
+    "files": {
+      "items": {
+        "$ref": "#/$defs/ScanFile"
+      },
+      "title": "Files",
+      "type": "array"
+    },
+    "totalFiles": {
+      "title": "Totalfiles",
+      "type": "integer"
+    },
+    "filteredByIgnore": {
+      "title": "Filteredbyignore",
+      "type": "integer"
+    },
+    "estimatedComplexity": {
+      "title": "Estimatedcomplexity",
+      "type": "string"
+    },
+    "stats": {
+      "$ref": "#/$defs/ScanStats"
+    }
+  },
+  "required": [
+    "scriptCompleted",
+    "files",
+    "totalFiles",
+    "filteredByIgnore",
+    "estimatedComplexity",
+    "stats"
+  ],
+  "title": "ScanResult",
+  "type": "object"
+}

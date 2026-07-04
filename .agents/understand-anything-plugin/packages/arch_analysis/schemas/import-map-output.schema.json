@@ -1,0 +1,57 @@
+{
+  "$defs": {
+    "ImportMapStats": {
+      "additionalProperties": false,
+      "description": "Aggregate counts for an import-map result.",
+      "properties": {
+        "filesScanned": {
+          "title": "Filesscanned",
+          "type": "integer"
+        },
+        "filesWithImports": {
+          "title": "Fileswithimports",
+          "type": "integer"
+        },
+        "totalEdges": {
+          "title": "Totaledges",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "filesScanned",
+        "filesWithImports",
+        "totalEdges"
+      ],
+      "title": "ImportMapStats",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Output contract for :mod:`arch_analysis.extract_import_map`.",
+  "properties": {
+    "scriptCompleted": {
+      "title": "Scriptcompleted",
+      "type": "boolean"
+    },
+    "stats": {
+      "$ref": "#/$defs/ImportMapStats"
+    },
+    "importMap": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "Importmap",
+      "type": "object"
+    }
+  },
+  "required": [
+    "scriptCompleted",
+    "stats",
+    "importMap"
+  ],
+  "title": "ImportMapResult",
+  "type": "object"
+}

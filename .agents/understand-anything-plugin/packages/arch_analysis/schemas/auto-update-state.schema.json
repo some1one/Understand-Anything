@@ -1,0 +1,79 @@
+{
+  "additionalProperties": false,
+  "description": "Pre-flight state (``intermediate/auto-update-state.json``).\n\nWritten by :mod:`arch_analysis.auto_update_preflight` and read by the\nfingerprint-check phase. On a STOP outcome the pre-flight has already done\nwhatever metadata write is appropriate (``metadataUpdated``).",
+  "properties": {
+    "status": {
+      "enum": [
+        "CONTINUE",
+        "STOP"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "action": {
+      "enum": [
+        "PROCEED",
+        "NO_GRAPH",
+        "NO_META",
+        "UP_TO_DATE",
+        "NO_CHANGES",
+        "NO_SOURCE_CHANGES",
+        "ALL_IGNORED"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    },
+    "projectRoot": {
+      "title": "Projectroot",
+      "type": "string"
+    },
+    "previousCommit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Previouscommit"
+    },
+    "currentCommit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Currentcommit"
+    },
+    "changedSourceFiles": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Changedsourcefiles",
+      "type": "array"
+    },
+    "metadataUpdated": {
+      "default": false,
+      "title": "Metadataupdated",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "status",
+    "action",
+    "reason",
+    "projectRoot"
+  ],
+  "title": "AutoUpdateState",
+  "type": "object"
+}

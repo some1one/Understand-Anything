@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Understand-Anything tool wrapper (merge-subdomains) — forwards to the installed plugin.
+set -euo pipefail
+HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
+exec "$HERE/../../.agents/understand-anything-plugin/tools/commands/merge-subdomains/run.sh" "$@"

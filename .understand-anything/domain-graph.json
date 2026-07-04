@@ -1,0 +1,771 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "arch_analysis",
+    "languages": [
+      "javascript",
+      "json",
+      "makefile",
+      "markdown",
+      "python",
+      "shell",
+      "toml",
+      "txt",
+      "unknown"
+    ],
+    "frameworks": [
+      "Pydantic"
+    ],
+    "description": "Understand-Anything analyzes codebases into structural and domain knowledge graphs that can be reviewed, updated, and explored through skills and dashboards.",
+    "analyzedAt": "2026-07-02T21:58:14.240283Z",
+    "gitCommitHash": "4cdb743f34477116e52512101829c9da53427eb2"
+  },
+  "nodes": [
+    {
+      "id": "domain:codebase-discovery",
+      "type": "domain",
+      "name": "Codebase Discovery",
+      "summary": "Identifies project files, language/framework signals, ignore rules, and deterministic import relationships before deeper analysis begins.",
+      "tags": [
+        "scan",
+        "imports",
+        "inventory"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Project files",
+          "Import map",
+          "Ignore rules"
+        ],
+        "businessRules": [
+          "Every analyzed file must come from the scanner output",
+          "Import edges must be resolved deterministically"
+        ],
+        "crossDomainInteractions": [
+          "Feeds graph construction with validated scan-result data"
+        ]
+      }
+    },
+    {
+      "id": "domain:knowledge-graph-construction",
+      "type": "domain",
+      "name": "Knowledge Graph Construction",
+      "summary": "Builds the structural graph by batching files, extracting code structure, seeding nodes and edges, merging fragments, and validating coverage.",
+      "tags": [
+        "graph",
+        "batching",
+        "validation"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Graph nodes",
+          "Graph edges",
+          "Batches"
+        ],
+        "businessRules": [
+          "Every scanned file needs a graph node",
+          "Imports are preserved exactly from deterministic extraction"
+        ],
+        "crossDomainInteractions": [
+          "Consumes discovery output and feeds architecture modeling"
+        ]
+      }
+    },
+    {
+      "id": "domain:architecture-and-domain-modeling",
+      "type": "domain",
+      "name": "Architecture and Domain Modeling",
+      "summary": "Assigns graph nodes to architecture layers and derives a higher-level domain graph from the saved structural graph.",
+      "tags": [
+        "architecture",
+        "layers",
+        "domain-model"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Layers",
+          "Domains",
+          "Flows"
+        ],
+        "businessRules": [
+          "Each file node belongs to exactly one layer",
+          "Domain graphs use domain, flow, and step nodes only"
+        ],
+        "crossDomainInteractions": [
+          "Depends on the completed knowledge graph"
+        ]
+      }
+    },
+    {
+      "id": "domain:interactive-understanding",
+      "type": "domain",
+      "name": "Interactive Understanding",
+      "summary": "Exposes generated graphs through skills, dashboard assets, chat, explain, diff, and onboarding workflows for users exploring a project.",
+      "tags": [
+        "dashboard",
+        "skills",
+        "exploration"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Dashboard",
+          "Skills",
+          "User queries"
+        ],
+        "businessRules": [
+          "Saved graph files are the source of truth for exploration",
+          "Skill commands operate against the selected project root"
+        ],
+        "crossDomainInteractions": [
+          "Consumes saved graph and domain artifacts"
+        ]
+      }
+    },
+    {
+      "id": "flow:scan-project",
+      "type": "flow",
+      "name": "Scan Project",
+      "summary": "Discovers files, applies ignore rules, detects metadata, and resolves internal imports for analysis input.",
+      "tags": [
+        "scan",
+        "preflight"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "manual",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:scan-project:resolve-project-root",
+      "type": "step",
+      "name": "Resolve Project Root",
+      "summary": "Performs the resolve project root stage of the scan project workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/skills/understand/scripts/resolve_project_root.sh",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:scan-project:generate-ignore-rules",
+      "type": "step",
+      "name": "Generate Ignore Rules",
+      "summary": "Performs the generate ignore rules stage of the scan project workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/packages/arch_analysis/generate_ignore.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:scan-project:scan-files",
+      "type": "step",
+      "name": "Scan Files",
+      "summary": "Performs the scan files stage of the scan project workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/packages/arch_analysis/scan_project.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:scan-project:extract-import-map",
+      "type": "step",
+      "name": "Extract Import Map",
+      "summary": "Performs the extract import map stage of the scan project workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/packages/arch_analysis/extract_import_map.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:analyze-file-batches",
+      "type": "flow",
+      "name": "Analyze File Batches",
+      "summary": "Turns scan output into semantic batches, extracts structure, seeds graph fragments, and finalizes batch files.",
+      "tags": [
+        "batching",
+        "structure"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "manual",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:analyze-file-batches:compute-batches",
+      "type": "step",
+      "name": "Compute Batches",
+      "summary": "Performs the compute batches stage of the analyze file batches workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/packages/arch_analysis/compute_batches.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:analyze-file-batches:extract-structure",
+      "type": "step",
+      "name": "Extract Structure",
+      "summary": "Performs the extract structure stage of the analyze file batches workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/packages/arch_analysis/extract_structure.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:analyze-file-batches:seed-batch-graph",
+      "type": "step",
+      "name": "Seed Batch Graph",
+      "summary": "Performs the seed batch graph stage of the analyze file batches workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/packages/arch_analysis/seed_file_batch_graph.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:analyze-file-batches:finalize-batch-output",
+      "type": "step",
+      "name": "Finalize Batch Output",
+      "summary": "Performs the finalize batch output stage of the analyze file batches workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/packages/arch_analysis/finalize_file_batch_output.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:assemble-and-validate-graph",
+      "type": "flow",
+      "name": "Assemble And Validate Graph",
+      "summary": "Merges batch fragments, normalizes identifiers, validates graph quality, saves the graph, and builds fingerprint metadata.",
+      "tags": [
+        "merge",
+        "validate"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "manual",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:assemble-and-validate-graph:merge-fragments",
+      "type": "step",
+      "name": "Merge Fragments",
+      "summary": "Performs the merge fragments stage of the assemble and validate graph workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/packages/arch_analysis/merge_batch_graphs.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:assemble-and-validate-graph:validate-graph",
+      "type": "step",
+      "name": "Validate Graph",
+      "summary": "Performs the validate graph stage of the assemble and validate graph workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/packages/arch_analysis/validate_assembled_graph.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:assemble-and-validate-graph:save-knowledge-graph",
+      "type": "step",
+      "name": "Save Knowledge Graph",
+      "summary": "Performs the save knowledge graph stage of the assemble and validate graph workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/skills/understand/scripts/save_knowledge_graph.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:assemble-and-validate-graph:build-fingerprints",
+      "type": "step",
+      "name": "Build Fingerprints",
+      "summary": "Performs the build fingerprints stage of the assemble and validate graph workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/packages/arch_analysis/build_fingerprints.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:assign-architecture-layers",
+      "type": "flow",
+      "name": "Assign Architecture Layers",
+      "summary": "Uses structural recommendations and validated node coverage to create project-specific architecture layers.",
+      "tags": [
+        "layers",
+        "architecture"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "manual",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:assign-architecture-layers:prepare-architecture-context",
+      "type": "step",
+      "name": "Prepare Architecture Context",
+      "summary": "Performs the prepare architecture context stage of the assign architecture layers workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/skills/understand/scripts/prepare_architecture_context.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:assign-architecture-layers:analyze-architecture",
+      "type": "step",
+      "name": "Analyze Architecture",
+      "summary": "Performs the analyze architecture stage of the assign architecture layers workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/packages/arch_analysis/analyze.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:assign-architecture-layers:validate-layers",
+      "type": "step",
+      "name": "Validate Layers",
+      "summary": "Performs the validate layers stage of the assign architecture layers workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/packages/arch_analysis/validate_layers.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:derive-domain-graph",
+      "type": "flow",
+      "name": "Derive Domain Graph",
+      "summary": "Transforms the saved knowledge graph into domain, flow, and step artifacts for domain-oriented exploration.",
+      "tags": [
+        "domain-graph",
+        "modeling"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "manual",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:derive-domain-graph:extract-domain-context",
+      "type": "step",
+      "name": "Extract Domain Context",
+      "summary": "Performs the extract domain context stage of the derive domain graph workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/skills/understand/scripts/graph_domain_context.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:derive-domain-graph:validate-domain-graph",
+      "type": "step",
+      "name": "Validate Domain Graph",
+      "summary": "Performs the validate domain graph stage of the derive domain graph workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/packages/arch_analysis/validate_domain_graph.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:derive-domain-graph:save-domain-graph",
+      "type": "step",
+      "name": "Save Domain Graph",
+      "summary": "Performs the save domain graph stage of the derive domain graph workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/skills/understand/scripts/save_domain_graph.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:explore-graph",
+      "type": "flow",
+      "name": "Explore Graph",
+      "summary": "Loads saved graph artifacts into dashboard and skill workflows so users can inspect architecture, ask questions, and generate explanations.",
+      "tags": [
+        "dashboard",
+        "query"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "manual",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:explore-graph:launch-dashboard",
+      "type": "step",
+      "name": "Launch Dashboard",
+      "summary": "Performs the launch dashboard stage of the explore graph workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/skills/understand-dashboard/scripts/launch_dashboard.sh",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:explore-graph:query-graph",
+      "type": "step",
+      "name": "Query Graph",
+      "summary": "Performs the query graph stage of the explore graph workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/skills/understand-chat/scripts/query_graph.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:explore-graph:build-explanations",
+      "type": "step",
+      "name": "Build Explanations",
+      "summary": "Performs the build explanations stage of the explore graph workflow.",
+      "tags": [
+        "workflow-step",
+        "analysis"
+      ],
+      "complexity": "simple",
+      "filePath": ".agents/understand-anything-plugin/skills/understand-explain/scripts/component_context.py",
+      "lineRange": [
+        0,
+        0
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "domain:codebase-discovery",
+      "target": "flow:scan-project",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:scan-project",
+      "target": "step:scan-project:resolve-project-root",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:scan-project",
+      "target": "step:scan-project:generate-ignore-rules",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:scan-project",
+      "target": "step:scan-project:scan-files",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:scan-project",
+      "target": "step:scan-project:extract-import-map",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:knowledge-graph-construction",
+      "target": "flow:analyze-file-batches",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:analyze-file-batches",
+      "target": "step:analyze-file-batches:compute-batches",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:analyze-file-batches",
+      "target": "step:analyze-file-batches:extract-structure",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:analyze-file-batches",
+      "target": "step:analyze-file-batches:seed-batch-graph",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:analyze-file-batches",
+      "target": "step:analyze-file-batches:finalize-batch-output",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:knowledge-graph-construction",
+      "target": "flow:assemble-and-validate-graph",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:assemble-and-validate-graph",
+      "target": "step:assemble-and-validate-graph:merge-fragments",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:assemble-and-validate-graph",
+      "target": "step:assemble-and-validate-graph:validate-graph",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:assemble-and-validate-graph",
+      "target": "step:assemble-and-validate-graph:save-knowledge-graph",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:assemble-and-validate-graph",
+      "target": "step:assemble-and-validate-graph:build-fingerprints",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:architecture-and-domain-modeling",
+      "target": "flow:assign-architecture-layers",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:assign-architecture-layers",
+      "target": "step:assign-architecture-layers:prepare-architecture-context",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:assign-architecture-layers",
+      "target": "step:assign-architecture-layers:analyze-architecture",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:assign-architecture-layers",
+      "target": "step:assign-architecture-layers:validate-layers",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:architecture-and-domain-modeling",
+      "target": "flow:derive-domain-graph",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:derive-domain-graph",
+      "target": "step:derive-domain-graph:extract-domain-context",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:derive-domain-graph",
+      "target": "step:derive-domain-graph:validate-domain-graph",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:derive-domain-graph",
+      "target": "step:derive-domain-graph:save-domain-graph",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:interactive-understanding",
+      "target": "flow:explore-graph",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:explore-graph",
+      "target": "step:explore-graph:launch-dashboard",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:explore-graph",
+      "target": "step:explore-graph:query-graph",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:explore-graph",
+      "target": "step:explore-graph:build-explanations",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:codebase-discovery",
+      "target": "domain:knowledge-graph-construction",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Validated scan and import data drive batch graph construction.",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:knowledge-graph-construction",
+      "target": "domain:architecture-and-domain-modeling",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "The assembled structural graph is the source for layers and domain extraction.",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:architecture-and-domain-modeling",
+      "target": "domain:interactive-understanding",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Layer and domain artifacts enrich dashboard and skill-based exploration.",
+      "weight": 0.6
+    }
+  ],
+  "layers": []
+}

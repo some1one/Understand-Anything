@@ -1,0 +1,87 @@
+{
+  "additionalProperties": false,
+  "description": "Finalize output (``intermediate/auto-update-summary.json``).\n\nThe end-of-run report: what was checked, what changed, what was written.",
+  "properties": {
+    "status": {
+      "enum": [
+        "UPDATED",
+        "SKIPPED",
+        "STOPPED"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "action": {
+      "title": "Action",
+      "type": "string"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    },
+    "filesChecked": {
+      "default": 0,
+      "title": "Fileschecked",
+      "type": "integer"
+    },
+    "structuralChanges": {
+      "default": 0,
+      "title": "Structuralchanges",
+      "type": "integer"
+    },
+    "cosmeticOnly": {
+      "default": 0,
+      "title": "Cosmeticonly",
+      "type": "integer"
+    },
+    "newFiles": {
+      "default": 0,
+      "title": "Newfiles",
+      "type": "integer"
+    },
+    "deletedFiles": {
+      "default": 0,
+      "title": "Deletedfiles",
+      "type": "integer"
+    },
+    "nodesUpdated": {
+      "default": 0,
+      "title": "Nodesupdated",
+      "type": "integer"
+    },
+    "totalNodes": {
+      "default": 0,
+      "title": "Totalnodes",
+      "type": "integer"
+    },
+    "totalEdges": {
+      "default": 0,
+      "title": "Totaledges",
+      "type": "integer"
+    },
+    "metadataUpdated": {
+      "default": false,
+      "title": "Metadataupdated",
+      "type": "boolean"
+    },
+    "outputPath": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Outputpath"
+    }
+  },
+  "required": [
+    "status",
+    "action",
+    "reason"
+  ],
+  "title": "AutoUpdateSummary",
+  "type": "object"
+}

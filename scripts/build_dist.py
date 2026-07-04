@@ -108,12 +108,15 @@ def build_python(out: Path) -> None:
     run(["pdm", "build", "--no-clean", "--project", str(stage), "--dest", str(out)])
 
 
-def build_wheelhouse(pywheels: Path, wheelhouse: Path) -> None:
+def build_wheelhouse(pywheels: Path, wheelhouse: Path, requirements: Path) -> None:
     print("• Collecting offline wheelhouse (arch_analysis + core + all deps)…")
     if wheelhouse.exists():
         shutil.rmtree(wheelhouse)
     wheelhouse.mkdir(parents=True)
+    # Pin from requirements.txt so the wheelhouse holds exactly the lock-pinned
+    # versions run.sh's `pip install --no-index -r requirements.txt` will ask for.
     run([find_python(), "-m", "pip", "wheel", "--find-links", str(pywheels),
+         "-r", str(requirements),
          "understand-anything-arch-analysis", "understand-anything-core",
          "-w", str(wheelhouse)])
 
@@ -134,13 +137,26 @@ def _die(msg: str):
 # Payload (copied/source artifacts only)
 # --------------------------------------------------------------------------- #
 
-def assemble_payload(payload: Path) -> None:
+def export_requirements(out: Path) -> Path:
+    """Export arch_analysis's locked prod deps to a PDM-free requirements.txt.
+
+    The wheelhouse is built from this file and it is shipped in the payload, so
+    both agree on exact (lock-pinned) versions and the target's offline
+    ``pip install --no-index -r requirements.txt`` always resolves.
+    """
+    out.parent.mkdir(parents=True, exist_ok=True)
+    run(["pdm", "export", "--project", str(PKGS / "arch_analysis"),
+         "-f", "requirements", "--without-hashes", "--prod", "-o", str(out)])
+    return out
+
+
+def assemble_payload(payload: Path, requirements: Path) -> None:
     print("• Assembling copied/source payload…")
     if payload.exists():
         shutil.rmtree(payload)
     payload.mkdir(parents=True)
     shutil.copytree(PLUGIN / ".claude-plugin", payload / ".claude-plugin")
-    for d in ("agents", "hooks", "skills"):
+    for d in ("agents", "hooks", "skills", "tools"):
         shutil.copytree(PLUGIN / d, payload / d, ignore=IGNORE)
     if (PLUGIN / "README.md").exists():
         shutil.copy2(PLUGIN / "README.md", payload / "README.md")
@@ -154,6 +170,11 @@ def assemble_payload(payload: Path) -> None:
     for junk in ("pdm.lock", "pdm.toml", ".python-version"):
         (arch / junk).unlink(missing_ok=True)
     shutil.rmtree(arch / "tests", ignore_errors=True)
+    # Ship the pre-generated, fully-pinned, PDM-free requirements.txt. run.sh
+    # installs from it with plain pip (PDM is only a build-time tool); the
+    # package itself runs from source via PYTHONPATH, so only the third-party
+    # deps need installing.
+    shutil.copy2(requirements, arch / "requirements.txt")
     # core: source + pyproject.
     core = pkgs / "core"
     shutil.copytree(PKGS / "core", core, ignore=IGNORE)
@@ -173,7 +194,8 @@ def agents_md() -> str:
         "# Understand-Anything\n\n"
         "AI-powered codebase understanding — analyze, visualize, and explain any project.\n\n"
         "Skills live in `skills/` (`understand`, `understand-dashboard`, `understand-chat`,\n"
-        "`understand-diff`, `understand-explain`, `understand-onboard`, `understand-domain`).\n"
+        "`understand-diff`, `understand-explain`, `understand-onboard`,\n"
+        "`understand-language`, `understand-framework`).\n"
         "The deterministic pipeline runs via `packages/arch_analysis/run.sh <module> …`.\n"
     )
 
@@ -315,10 +337,14 @@ def main() -> int:
     pywheels = DIST / "python"
     wheelhouse = BUILD / "wheelhouse"
 
+    # Export the locked deps first — the wheelhouse is built from this file and
+    # it ships in the payload, so both agree on exact versions.
+    requirements = export_requirements(BUILD / "requirements.txt")
+
     if not args.skip_python:
         build_python(pywheels)
     if not args.skip_wheelhouse:
-        build_wheelhouse(pywheels, wheelhouse)
+        build_wheelhouse(pywheels, wheelhouse, requirements)
     if args.python_only:
         print("\n✓ dist/python built.")
         return 0
@@ -326,7 +352,7 @@ def main() -> int:
         build_dashboard()
 
     payload = BUILD / "payload"
-    assemble_payload(payload)
+    assemble_payload(payload, requirements)
     archives = make_archives(payload, wheelhouse, version,
                              do_wheelhouse=not args.skip_wheelhouse,
                              do_dashboard=not args.skip_dashboard)

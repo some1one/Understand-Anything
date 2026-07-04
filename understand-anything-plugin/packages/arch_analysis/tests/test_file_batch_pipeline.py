@@ -122,6 +122,14 @@ def test_seed_tags_include_deterministic_infra_tags():
     assert "containerization" in docker["tags"]
 
 
+def test_seed_nodes_are_valid_draft_metadata():
+    seed = build_seed(_context(), _extract_results())
+    for node in seed["nodes"]:
+        assert node["summary"]
+        assert node["complexity"] in {"simple", "moderate", "complex"}
+        assert len(node["tags"]) >= 3
+
+
 # ── finalize_file_batch_output: validation ───────────────────────────────────
 
 
@@ -274,6 +282,26 @@ def test_finalize_cli_writes_batch_file(tmp_path):
     assert out.exists()
     written = json.loads(out.read_text())
     assert {n["id"] for n in written["nodes"]} == {n["id"] for n in draft["nodes"]}
+
+
+def test_finalize_cli_accepts_seed_as_draft(tmp_path):
+    from arch_analysis.finalize_file_batch_output import main
+
+    project_root = tmp_path
+    ctx = _context()
+    ctx["projectRoot"] = str(project_root)
+    seed = build_seed(ctx, _extract_results())
+
+    ctx_path = tmp_path / "context.json"
+    seed_path = tmp_path / "seed.json"
+    ctx_path.write_text(json.dumps(ctx))
+    seed_path.write_text(json.dumps(seed))
+
+    rc = main([str(project_root), str(ctx_path), str(seed_path), str(seed_path)])
+    assert rc == 0
+    out = project_root / ".understand-anything" / "intermediate" / "batch-7.json"
+    written = json.loads(out.read_text())
+    assert {n["id"] for n in written["nodes"]} == {n["id"] for n in seed["nodes"]}
 
 
 # ── validate_structure_output ────────────────────────────────────────────────
