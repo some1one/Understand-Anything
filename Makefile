@@ -34,11 +34,10 @@ PYTEST := pdm run python -m pytest
 # removes the stamps to force a full rebuild.
 #
 # NOTE: these stamps are intentionally EMPTY files — Make only reads their
-# mtimes, never their contents. They are not build artifacts. Real output goes
-# to build/ (intermediate staging) and dist/ (release archives). The dir is
-# named .make (not .build) so it isn't mistaken for build output or
-# confused with the build/ staging dir.
-STAMPDIR := .make
+# mtimes, never their contents. They live under build/ (which also holds the
+# intermediate staging dirs) so all build scratch is in one gitignored place;
+# `make clean` wipes build/ and dist/ together.
+STAMPDIR := build/.make
 
 # Inputs that invalidate each dependency install.
 ARCH_DEPS_SRC := $(ARCH)/pyproject.toml $(wildcard $(ARCH)/pdm.lock)
@@ -192,7 +191,7 @@ $(STAMPDIR)/package-python: $(PY_SRC) $(ARCH_DEPS_SRC) $(CORE_DEPS_SRC) scripts/
 clean: ## Remove venvs, node_modules, build output, caches, stamps, and dist/
 	rm -rf $(ARCH)/.venv $(CORE)/.venv
 	rm -rf $(DASH)/node_modules $(DASH)/dist
-	rm -rf build dist $(STAMPDIR)
+	rm -rf build dist
 	find $(PKGS) -type d -name __pycache__ -prune -exec rm -rf {} +
 	find $(PKGS) -type d -name .pytest_cache -prune -exec rm -rf {} +
 

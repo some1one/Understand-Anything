@@ -108,18 +108,29 @@ Determine whether to run a full analysis or incremental update.
 
 Set up and verify the `.understandignore` file before scanning.
 
-1. Check if `$PROJECT_ROOT/.understand-anything/.understandignore` exists.
-2. **If it does NOT exist**, generate a starter file with the `arch_analysis` module (reads `.gitignore`, deduplicates against built-in defaults, and emits language-grouped test-file suggestions). Run it via the bundled launcher:
-     ```bash
-     "$PLUGIN_ROOT/packages/arch_analysis/run.sh" generate_ignore $PROJECT_ROOT
-     ```
-   - Report to the user:
+Note the **run mode** decided in Phase 0 step 7: a *new/full run* (`--full`, or no existing graph/meta) versus an *incremental update* (existing graph + changed files).
+
+1. If `$PROJECT_ROOT/.understand-anything/.understandignore` does **not** exist, generate a starter file with the `arch_analysis` module (reads `.gitignore`, deduplicates against built-in defaults, and emits language-grouped test-file suggestions):
+   ```bash
+   "$PLUGIN_ROOT/packages/arch_analysis/run.sh" generate_ignore $PROJECT_ROOT
+   ```
+
+2. **Decide whether to prompt for review:**
+   - **New/full run:** always prompt and **wait for confirmation** (step 3) — the user should review ignore rules before the first analysis.
+   - **Incremental update:** do **not** prompt or wait — proceed straight to Phase 1 — **unless** the changed-file set (from `changed-files.txt`) includes any of the following, in which case ignore rules likely need revisiting, so prompt and wait as in a new run:
+     - a **dot-prefixed** path — any file or directory whose name begins with `.` (e.g. `.eslintrc`, `.github/…`, `.env`, `.dockerignore`, `.gitignore`);
+     - **workspace tooling** — dependency manifests or lockfiles (`package.json`, `pnpm-lock.yaml`, `yarn.lock`, `pyproject.toml`, `pdm.lock`, `requirements.txt`, `go.mod`, `Cargo.toml`, `Gemfile`, `pom.xml`, `build.gradle`, `composer.json`), `tsconfig*.json`, `Makefile`, or CI config;
+     - an obvious **framework or domain** change — a newly introduced framework, or new top-level domain/service directories.
+   - When none of these are present on an incremental update, skip the prompt silently (the existing `.understandignore` still applies) and go to Phase 1.
+
+3. **Prompt-and-wait** (only when step 2 requires it):
+   - If just generated in step 1:
      > Generated `.understand-anything/.understandignore` with suggested exclusions based on your project structure. Please review it and uncomment any patterns you'd like to exclude from analysis. When ready, confirm to continue.
+   - If it already existed:
+     > Found `.understand-anything/.understandignore`. Review it if needed, then confirm to continue.
    - **Wait for user confirmation before proceeding.**
-3. **If it already exists**, report:
-   > Found `.understand-anything/.understandignore`. Review it if needed, then confirm to continue.
-   - **Wait for user confirmation before proceeding.**
-4. After confirmation, proceed to Phase 1.
+
+4. Proceed to Phase 1.
 
 ---
 
@@ -370,7 +381,7 @@ Fill the template arguments from scan output and accumulated phase warnings:
      python "$SKILL_DIR/scripts/apply_review_fixes.py" "$PROJECT_ROOT"
      ```
    - Re-run the final graph validation after automated fixes
-   - If critical issues remain after one fix attempt, save the graph anyway but include the warnings in the final report and mark dashboard auto-launch as skipped
+   - If critical issues remain after one fix attempt, save the graph anyway but include the warnings in the final report (the dashboard instructions are still printed in Phase 7, noting the warnings)
 
 5. **If `issues` array is empty:** Proceed to Phase 6.
 
@@ -422,7 +433,7 @@ Report to the user: `[Phase 6/7] Saving knowledge graph...`
    - Any warnings from the reviewer
    - Path to the output file: `$PROJECT_ROOT/.understand-anything/knowledge-graph.json`
 
-6. Proceed to Phase 7 (domain graph) unless `--no-domain` was passed. The dashboard is launched at the end of Phase 7 so it can pick up both the knowledge graph and the domain graph in one go.
+6. Proceed to Phase 7 (domain graph) unless `--no-domain` was passed. The dashboard is **not** started automatically — Phase 7's final step prints instructions for the user to launch it themselves.
 
 ---
 
@@ -433,8 +444,8 @@ Report to the user: `[Phase 7/7] Extracting business-domain graph...`
 Extracts business domain knowledge — domains, business flows, and process steps — and produces `domain-graph.json` alongside `knowledge-graph.json`. This derives cheaply from the knowledge graph just built (no re-scanning of files).
 
 **Skip conditions:**
-- If `$ARGUMENTS` contains `--no-domain`, skip this phase entirely and go straight to the dashboard launch (final step below).
-- If final graph validation did not pass in Phase 5, skip domain generation, report it, and skip the dashboard launch.
+- If `$ARGUMENTS` contains `--no-domain`, skip this phase entirely and go straight to the final step below (dashboard instructions).
+- If final graph validation did not pass in Phase 5, skip domain generation and report it — still print the dashboard instructions in the final step, noting the graph was saved with warnings.
 
 1. Derive deterministic domain-analyzer context from the knowledge graph:
    ```bash
@@ -449,7 +460,7 @@ Extracts business domain knowledge — domains, business flows, and process step
 
    The agent writes its output to `$PROJECT_ROOT/.understand-anything/intermediate/domain-analysis.json`.
 
-   If the domain subagent fails after one retry, report the failure, skip to the dashboard launch, and continue — a missing domain graph must not block saving the knowledge graph or launching the dashboard.
+   If the domain subagent fails after one retry, report the failure, skip to the final step, and continue — a missing domain graph must not block saving the knowledge graph.
 
 3. Validate and save the domain graph (also cleans the domain intermediate files):
    ```bash
@@ -457,8 +468,10 @@ Extracts business domain knowledge — domains, business flows, and process step
    ```
    Read the helper's JSON output and include any warnings in the final report.
 
-4. **Launch the dashboard.** Automatically invoke the `/understand-dashboard` skill if final graph validation passed after normalization/review fixes. The dashboard detects `domain-graph.json` and can show the domain view alongside the structural graph.
-   If final validation did not pass, report that the graph was saved with warnings and dashboard launch was skipped.
+4. **Print dashboard instructions — do NOT auto-launch.** Do not invoke `/understand-dashboard` or start any server automatically. Instead, tell the user how to open it themselves:
+   > Knowledge graph ready. To explore it in the interactive dashboard, run `/understand-dashboard` (or `make dev` from the repo). The dashboard shows the structural graph and, when present, the domain view from `domain-graph.json`.
+
+   If final validation did not pass, still print these instructions but note the graph was saved with warnings.
 
 ---
 

@@ -32,7 +32,7 @@ Import model (Python): `packages/` is on `sys.path` so `import arch_analysis` re
 - Skills resolve `PLUGIN_ROOT` (the dir with `.claude-plugin/plugin.json`) and warm the env via `skills/understand/scripts/ensure_python_env.sh`; agents/the hook resolve it via `$CLAUDE_PLUGIN_ROOT` with documented fallbacks. The skill `.py` scripts (e.g. `query_graph.py`) are standalone stdlib operating on `.understand-anything/*.json` — they do not import the packages.
 - Agents write intermediate results to `.understand-anything/intermediate/` on disk (not returned to context)
 - Agent model field is omitted from frontmatter so each platform falls back to its configured default — `inherit` was a Claude Code-only keyword that opencode (and similar tools) treated as a literal model id and rejected with `ProviderModelNotFoundError` (see #167)
-- `/understand` auto-triggers `/understand-dashboard` after completion
+- `/understand` does **not** auto-launch the dashboard — on completion it prints instructions for the user to run `/understand-dashboard` themselves
 - Intermediate files cleaned up after graph assembly
 
 ## Key Commands

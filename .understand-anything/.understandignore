@@ -31,6 +31,7 @@
 .kilocode/
 .make/
 .worktrees/
+.junie/
 .understand-anything/
 homepage/public/demo/
 .private/
@@ -38,6 +39,7 @@ homepage/public/demo/
 *.pyo
 Thumbs.db
 *.whl
+.trash*/
 
 # --- Detected directories (uncomment to exclude) ---
 

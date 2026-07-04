@@ -1,7 +1,6 @@
 node_modules
-dist
-/build/
-/.make/
+dist/
+build/
 *.tsbuildinfo
 .DS_Store
 .env
@@ -17,3 +16,4 @@ venv/
 *.pyc
 *.pyo
 Thumbs.db
+.trash*/
