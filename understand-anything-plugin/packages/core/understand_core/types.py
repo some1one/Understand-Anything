@@ -237,10 +237,10 @@ class ExportInfo(BaseModel):
 
 
 class StructuralAnalysis(BaseModel):
-    """Structural analysis result from a code analyzer (e.g. :class:`~understand_core.plugins.tree_sitter_plugin.TreeSitterPlugin`).
+    """Structural analysis result shape (parity with ``arch_analysis.structure``).
 
-    The auto-update pipeline often passes plain dicts here; the helpers in
-    :mod:`understand_core.fingerprint` accept either dicts or these models.
+    The deterministic pipeline produces these as plain camelCase dicts; this
+    model documents the wire shape for the TS-parity view-model layer.
     """
 
     model_config = ConfigDict(populate_by_name=True, extra="allow")

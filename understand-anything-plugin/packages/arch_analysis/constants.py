@@ -26,6 +26,44 @@ NODE_TYPES: tuple[str, ...] = (
 )
 
 # --------------------------------------------------------------------------- #
+# Canonical graph type sets (single source of truth)
+# --------------------------------------------------------------------------- #
+# Superset covering structural + domain + knowledge graphs so valid
+# knowledge/domain graphs are not rejected. These are the authoritative sets
+# imported by both the strict validator (arch_analysis.validate_graph) and the
+# repair validator (understand_core.schema) so the taxonomy lives in one place.
+
+VALID_NODE_TYPES: frozenset[str] = frozenset(
+    {
+        "file", "function", "class", "module", "concept",
+        "config", "document", "service", "table", "endpoint",
+        "pipeline", "schema", "resource",
+        "domain", "flow", "step",
+        "article", "entity", "topic", "claim", "source",
+    }
+)
+
+VALID_EDGE_TYPES: frozenset[str] = frozenset(
+    {
+        "imports", "exports", "contains", "inherits", "implements",
+        "calls", "subscribes", "publishes", "middleware",
+        "reads_from", "writes_to", "transforms", "validates",
+        "depends_on", "tested_by", "configures",
+        "related", "similar_to",
+        "deploys", "serves", "provisions", "triggers",
+        "migrates", "documents", "routes", "defines_schema",
+        "contains_flow", "flow_step", "cross_domain",
+        "cites", "contradicts", "builds_on", "exemplifies",
+        "categorized_under", "authored_by",
+    }
+)
+
+VALID_COMPLEXITY: frozenset[str] = frozenset({"simple", "moderate", "complex"})
+VALID_DIRECTIONS: frozenset[str] = frozenset(
+    {"forward", "backward", "bidirectional"}
+)
+
+# --------------------------------------------------------------------------- #
 # Directory pattern matching (section G)
 # --------------------------------------------------------------------------- #
 

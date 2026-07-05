@@ -18,34 +18,15 @@ from pathlib import Path
 from typing import Any
 
 # Canonical type sets (superset covering structural + domain + knowledge graphs
-# so valid knowledge/domain graphs are not rejected).
-VALID_NODE_TYPES = frozenset(
-    {
-        "file", "function", "class", "module", "concept",
-        "config", "document", "service", "table", "endpoint",
-        "pipeline", "schema", "resource",
-        "domain", "flow", "step",
-        "article", "entity", "topic", "claim", "source",
-    }
+# so valid knowledge/domain graphs are not rejected). Defined once in
+# arch_analysis.constants and shared with understand_core.schema's repair
+# validator so the taxonomy never drifts between the two.
+from arch_analysis.constants import (  # noqa: E402
+    VALID_COMPLEXITY,
+    VALID_DIRECTIONS,
+    VALID_EDGE_TYPES,
+    VALID_NODE_TYPES,
 )
-
-VALID_EDGE_TYPES = frozenset(
-    {
-        "imports", "exports", "contains", "inherits", "implements",
-        "calls", "subscribes", "publishes", "middleware",
-        "reads_from", "writes_to", "transforms", "validates",
-        "depends_on", "tested_by", "configures",
-        "related", "similar_to",
-        "deploys", "serves", "provisions", "triggers",
-        "migrates", "documents", "routes", "defines_schema",
-        "contains_flow", "flow_step", "cross_domain",
-        "cites", "contradicts", "builds_on", "exemplifies",
-        "categorized_under", "authored_by",
-    }
-)
-
-VALID_DIRECTIONS = frozenset({"forward", "backward", "bidirectional"})
-VALID_COMPLEXITY = frozenset({"simple", "moderate", "complex"})
 
 # File-level node types that must appear in exactly one layer (structural graphs).
 FILE_LEVEL_TYPES = frozenset(

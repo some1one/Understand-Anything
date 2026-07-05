@@ -20,34 +20,14 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_valida
 # ---------------------------------------------------------------------------
 # Enum value sets
 # ---------------------------------------------------------------------------
-
-_NODE_TYPES: frozenset[str] = frozenset(
-    {
-        "file", "function", "class", "module", "concept",
-        "config", "document", "service", "table", "endpoint",
-        "pipeline", "schema", "resource",
-        "domain", "flow", "step",
-        "article", "entity", "topic", "claim", "source",
-    }
+# The canonical type taxonomy lives in arch_analysis.constants (shared with the
+# strict validator arch_analysis.validate_graph) so it is defined once.
+from arch_analysis.constants import (  # noqa: E402
+    VALID_COMPLEXITY as _COMPLEXITIES,
+    VALID_DIRECTIONS as _DIRECTIONS,
+    VALID_EDGE_TYPES as _EDGE_TYPES,
+    VALID_NODE_TYPES as _NODE_TYPES,
 )
-
-_EDGE_TYPES: frozenset[str] = frozenset(
-    {
-        "imports", "exports", "contains", "inherits", "implements",
-        "calls", "subscribes", "publishes", "middleware",
-        "reads_from", "writes_to", "transforms", "validates",
-        "depends_on", "tested_by", "configures",
-        "related", "similar_to",
-        "deploys", "serves", "provisions", "triggers",
-        "migrates", "documents", "routes", "defines_schema",
-        "contains_flow", "flow_step", "cross_domain",
-        "cites", "contradicts", "builds_on", "exemplifies",
-        "categorized_under", "authored_by",
-    }
-)
-
-_COMPLEXITIES: frozenset[str] = frozenset({"simple", "moderate", "complex"})
-_DIRECTIONS: frozenset[str] = frozenset({"forward", "backward", "bidirectional"})
 
 
 # Aliases that LLMs commonly generate instead of canonical node types.

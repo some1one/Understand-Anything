@@ -1,5 +1,3 @@
-"""Pytest conftest. Re-exports the shared parser helper for convenience."""
+"""Pytest conftest for the understand_core test suite."""
 
 from __future__ import annotations
-
-from tests._ts_helper import get_parser, parse_source  # noqa: F401

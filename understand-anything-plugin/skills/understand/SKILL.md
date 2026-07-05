@@ -60,6 +60,11 @@ Determine whether to run a full analysis or incremental update.
 
    All later `arch_analysis` steps invoke `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`. If neither `pdm` nor `python3` is available, report: "Install Python ≥ 3.14 (and ideally PDM), then re-run `/understand`."
 
+   **Path conventions (do not resolve plugin paths against the analyzed project).** This skill is installed apart from the codebase it analyzes, sometimes via symlink, so always use these three roots — never a bare relative path:
+   - `$PROJECT_ROOT` — the codebase being analyzed (the cwd, or the `$ARGUMENTS` directory). All `.understand-anything/*` artifacts, source files, and git state live here.
+   - `$SKILL_DIR` — this skill's own directory. Its bundled `scripts/`, `prompts/`, `frameworks/`, and `languages/` travel with the skill in every install layout, so reference them as `$SKILL_DIR/<subdir>/…`.
+   - `$PLUGIN_ROOT` — the full plugin root (resolved above). The shared `agents/` definitions and the `packages/arch_analysis/` engine (and its `schemas/`) live here, so reference them as `$PLUGIN_ROOT/agents/…` and `$PLUGIN_ROOT/packages/arch_analysis/…`.
+
 2. Get the current git commit hash:
    ```bash
    git rev-parse HEAD
@@ -138,7 +143,7 @@ Note the **run mode** decided in Phase 0 step 7: a *new/full run* (`--full`, or 
 
 Report to the user: `[Phase 1/7] Scanning project files...`
 
-Dispatch a subagent using the `project-scanner` agent definition (at `agents/project-scanner.md`) and the bundled prompt template `prompts/project-scanner-dispatch.md`.
+Dispatch a subagent using the `project-scanner` agent definition (at `$PLUGIN_ROOT/agents/project-scanner.md`) and the bundled prompt template `$SKILL_DIR/prompts/project-scanner-dispatch.md`.
 
 Fill the template arguments from Phase 0 context:
 - `PROJECT_ROOT`
@@ -187,7 +192,7 @@ Load `.understand-anything/intermediate/batches.json` (produced by Phase 1.5). I
 
 Report: `[Phase 2/7] Analyzing files — <totalFiles> files in <totalBatches> batches (up to 5 concurrent)...`
 
-For each batch, dispatch a subagent using the `file-analyzer` agent definition (at `agents/file-analyzer.md`) and the bundled prompt template `prompts/file-analyzer-batch-dispatch.md`. Run up to **5 subagents concurrently**.
+For each batch, dispatch a subagent using the `file-analyzer` agent definition (at `$PLUGIN_ROOT/agents/file-analyzer.md`) and the bundled prompt template `$SKILL_DIR/prompts/file-analyzer-batch-dispatch.md`. Run up to **5 subagents concurrently**.
 
 Fill the template arguments from `scan-result.json`, `batches.json[i]`, and Phase 0 context:
 - `PROJECT_ROOT`
@@ -261,7 +266,7 @@ After batches complete:
 
 Report to the user: `[Phase 3/7] Reviewing assembled graph...`
 
-Dispatch a subagent using the `assemble-reviewer` agent definition (at `agents/assemble-reviewer.md`) and the bundled prompt template `prompts/assemble-review-dispatch.md`.
+Dispatch a subagent using the `assemble-reviewer` agent definition (at `$PLUGIN_ROOT/agents/assemble-reviewer.md`) and the bundled prompt template `$SKILL_DIR/prompts/assemble-review-dispatch.md`.
 
 Fill the template arguments from Phase 2 output:
 - `PROJECT_ROOT`
@@ -277,8 +282,8 @@ After the subagent completes, read `$PROJECT_ROOT/.understand-anything/intermedi
 Report to the user: `[Phase 4/7] Identifying architectural layers...`
 
 **Build the combined prompt template:**
- 1. Use the `architecture-analyzer` agent definition (at `agents/architecture-analyzer.md`).
- 2. Use the bundled dispatch template `prompts/architecture-analyzer-dispatch.md`.
+ 1. Use the `architecture-analyzer` agent definition (at `$PLUGIN_ROOT/agents/architecture-analyzer.md`).
+ 2. Use the bundled dispatch template `$SKILL_DIR/prompts/architecture-analyzer-dispatch.md`.
  3. Use `architecture-template-args.json` from the helper below for language addenda, framework addenda, file nodes, import edges, all edges, directory tree, and previous layer definitions. The helper loads language addenda through the sibling `/understand-language` skill and framework addenda through the sibling `/understand-framework` skill.
 
 Prepare deterministic template arguments first:
@@ -363,7 +368,7 @@ If the module exits non-zero, read stderr to diagnose (almost always an unreadab
 
 If `--review` IS in `$ARGUMENTS`, dispatch the LLM graph-reviewer subagent as follows:
 
-Dispatch a subagent using the `graph-reviewer` agent definition (at `agents/graph-reviewer.md`) and the bundled prompt template `prompts/graph-reviewer-dispatch.md`.
+Dispatch a subagent using the `graph-reviewer` agent definition (at `$PLUGIN_ROOT/agents/graph-reviewer.md`) and the bundled prompt template `$SKILL_DIR/prompts/graph-reviewer-dispatch.md`.
 
 Fill the template arguments from scan output and accumulated phase warnings:
 - `PROJECT_ROOT`
@@ -453,7 +458,7 @@ Extracts business domain knowledge — domains, business flows, and process step
    ```
    This writes `$PROJECT_ROOT/.understand-anything/intermediate/domain-context.json`. Read it as context for the next step.
 
-2. Dispatch a subagent using the `domain-analyzer` agent definition (at `$PLUGIN_ROOT/agents/domain-analyzer.md`) and the bundled prompt template `prompts/domain-analyzer-dispatch.md`. Fill the template arguments:
+2. Dispatch a subagent using the `domain-analyzer` agent definition (at `$PLUGIN_ROOT/agents/domain-analyzer.md`) and the bundled prompt template `$SKILL_DIR/prompts/domain-analyzer-dispatch.md`. Fill the template arguments:
    - `PROJECT_ROOT`
    - `CONTEXT_SOURCE` — set to `knowledge-graph`
    - `DOMAIN_CONTEXT_JSON` — the contents of `domain-context.json` from step 1
@@ -490,8 +495,8 @@ Extracts business domain knowledge — domains, business flows, and process step
 
 Do not duplicate schema tables in this skill. Use the generated `arch_analysis` JSON Schemas as the authoritative contracts:
 
-- Knowledge graph: `arch_analysis/schemas/knowledge-graph.schema.json`
-- Batch graph fragment: `arch_analysis/schemas/graph-fragment.schema.json`
-- Project scan output: `arch_analysis/schemas/project-scan-output.schema.json`
-- File-analysis context: `arch_analysis/schemas/file-analysis-context.schema.json`
-- Architecture layers: `arch_analysis/schemas/layers.schema.json`
+- Knowledge graph: `$PLUGIN_ROOT/packages/arch_analysis/schemas/knowledge-graph.schema.json`
+- Batch graph fragment: `$PLUGIN_ROOT/packages/arch_analysis/schemas/graph-fragment.schema.json`
+- Project scan output: `$PLUGIN_ROOT/packages/arch_analysis/schemas/project-scan-output.schema.json`
+- File-analysis context: `$PLUGIN_ROOT/packages/arch_analysis/schemas/file-analysis-context.schema.json`
+- Architecture layers: `$PLUGIN_ROOT/packages/arch_analysis/schemas/layers.schema.json`

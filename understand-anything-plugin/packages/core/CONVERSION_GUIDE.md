@@ -40,38 +40,37 @@ arch_analysis function signature differs, adapt with a small shim. If only part
 overlaps, reuse the overlapping part and port the rest.
 
 Genuinely **new** ports (no arch_analysis equivalent — port faithfully):
-`search.ts`, `embedding-search.ts`, `analyzer/llm-analyzer.ts`,
-`analyzer/layer-detector.ts` (prompt builders), `analyzer/language-lesson.ts`,
-`analyzer/graph-builder.ts`, the language/framework **config registries** and
-config data, `plugins/discovery.ts`, and all of `src/` (skill builders).
+`search.ts`, `embedding-search.ts`, and all of `src/` (skill builders).
+
+> **Consolidation note (post-port):** the modules that only *duplicated*
+> arch_analysis were removed from this package once the port was verified. The
+> structural extractors/parsers (`plugins/`), the language/framework config
+> registries (`languages/`), the graph-builder/normalize/layer/LLM prompt layer
+> (`analyzer/`), and `change_classifier.py` all lived in `arch_analysis` already
+> and are no longer re-implemented here. `fingerprint.py` was reduced to the
+> `fingerprints.json` wire-shape `TypedDict`s (plus a `content_hash` re-export);
+> the fingerprint *logic* is `arch_analysis.fingerprints`. What remains in
+> `understand_core` is the on-top layer: graph types (re-exported from
+> `arch_analysis.models`), persistence, the repair validator (`schema.py`),
+> lexical + semantic search, staleness helpers, and the ignore-filter shims.
 
 ## Project layout
 
 ```
 core/
   pyproject.toml          # PDM project, distribution=false, py>=3.14
-  understand_core/        # port of packages/core  (package: understand_core)
-    types.py              # <- types.ts
-    schema.py             # <- schema.ts
+  understand_core/        # on-top layer over arch_analysis (package: understand_core)
+    types.py              # <- types.ts  (re-exports arch_analysis.models)
+    schema.py             # <- schema.ts (repair validator; enum sets from arch_analysis.constants)
     search.py             # <- search.ts            (use rapidfuzz)
     embedding_search.py   # <- embedding-search.ts  (use numpy)
     persistence.py        # <- persistence/index.ts
-    fingerprint.py        # <- fingerprint.ts
-    change_classifier.py  # <- change-classifier.ts
+    fingerprint.py        # fingerprints.json wire TypedDicts + content_hash re-export
     staleness.py          # <- staleness.ts
-    ignore_filter.py      # <- ignore-filter.ts
-    ignore_generator.py   # <- ignore-generator.ts
-    analyzer/
-      graph_builder.py language_lesson.py layer_detector.py
-      llm_analyzer.py normalize_graph.py
-    languages/
-      types.py language_registry.py framework_registry.py
-      configs/<lang>.py   # one module per language config
-      frameworks/<fw>.py  # one module per framework config
-    plugins/
-      tree_sitter_plugin.py registry.py discovery.py
-      extractors/<lang>_extractor.py + base_extractor.py + types.py
-      parsers/<kind>_parser.py
+    ignore_filter.py      # thin shim over arch_analysis.languages
+    ignore_generator.py   # thin shim over arch_analysis.generate_ignore
+    # NOTE: analyzer/, languages/, plugins/, and change_classifier.py were
+    # removed — those duplicated arch_analysis and now live only there.
   skill_builders/         # port of src/  (package: skill_builders)
     __init__.py           # <- src/index.ts (public re-exports)
     context_builder.py understand_chat.py diff_analyzer.py
