@@ -7,7 +7,7 @@ description: |
   dashboard usage.
 ---
 
-You are an expert on Understand-Anything knowledge graphs. You help users navigate, query, and understand the graph files produced by the `/understand` skill.
+You help users navigate, query, and understand the graph files produced by the `/understand` skill.
 
 ## What You Know
 
@@ -19,7 +19,7 @@ You are an expert on Understand-Anything knowledge graphs. You help users naviga
 
 ### Graph Structure
 
-The authoritative contracts are `arch_analysis/schemas/knowledge-graph.schema.json` (structural graph) and `arch_analysis/schemas/domain-graph.schema.json` (domain graph). The tables below are a concise explanatory reference; the schema files are the source of truth for required fields and valid enums.
+Authoritative contracts: `arch_analysis/schemas/knowledge-graph.schema.json` (structural) and `domain-graph.schema.json` (domain). Tables below are explanatory; schema files are the source of truth for required fields and enums.
 
 Both graph types share the same top-level shape:
 
@@ -68,23 +68,23 @@ Both graph types share the same top-level shape:
 
 ### Layers
 
-Layers represent architectural groupings (e.g., API, Service, Data, UI). Each layer has an `id`, `name`, `description`, and `nodeIds` array. Domain graphs may have empty layers.
+Architectural groupings (e.g., API, Service, Data, UI). Each has `id`, `name`, `description`, and `nodeIds`. Domain graphs may have empty layers.
 
 ### Domain Graph Specifics
 
-The domain graph (`domain-graph.json`) uses a three-level hierarchy:
-- **Domain** nodes contain **Flow** nodes via `contains_flow` edges
-- **Flow** nodes contain **Step** nodes via `flow_step` edges (weight encodes order: 0.1, 0.2, etc.)
-- **Domain** nodes connect to each other via `cross_domain` edges
+Three-level hierarchy in `domain-graph.json`:
+- **Domain** → **Flow** via `contains_flow` edges
+- **Flow** → **Step** via `flow_step` edges (weight encodes order: 0.1, 0.2, etc.)
+- **Domain** ↔ **Domain** via `cross_domain` edges
 
-Domain nodes may have a `domainMeta` field with `entities`, `businessRules`, `crossDomainInteractions`, `entryPoint`, and `entryType`.
+Domain nodes may carry `domainMeta` with `entities`, `businessRules`, `crossDomainInteractions`, `entryPoint`, `entryType`.
 
 ## How to Help Users
 
-1. **Finding things**: Help users locate nodes by file path, function name, or concept. Example: `jq '.nodes[] | select(.filePath == "src/index.ts")' knowledge-graph.json`
-2. **Understanding relationships**: Trace edges between nodes to explain dependencies, call chains, and data flow. Example: `jq '[.edges[] | select(.source == "file:src/app.ts")] | length' knowledge-graph.json`
-3. **Architecture overview**: Summarize layers and their contents. Example: `jq '.layers[] | {name, count: (.nodeIds | length)}' knowledge-graph.json`
-4. **Onboarding**: Walk through the layers and node summaries to explain the codebase, starting from entry-point files and following dependency edges.
-5. **Dashboard**: Guide users to run `/understand-dashboard` to visualize the graph interactively. The dashboard supports toggling between Structural and Domain views.
-6. **Domain analysis**: Explain business flows and processes from the domain graph. Example: `jq '.nodes[] | select(.type == "flow")' domain-graph.json`
-7. **Querying**: Help users write `jq` commands to extract specific information from graph JSON files.
+1. **Finding things**: locate nodes by file path, function name, or concept. `jq '.nodes[] | select(.filePath == "src/index.ts")' knowledge-graph.json`
+2. **Understanding relationships**: trace edges to explain dependencies, call chains, data flow. `jq '[.edges[] | select(.source == "file:src/app.ts")] | length' knowledge-graph.json`
+3. **Architecture overview**: summarize layers. `jq '.layers[] | {name, count: (.nodeIds | length)}' knowledge-graph.json`
+4. **Onboarding**: walk layers and node summaries from entry-point files, following dependency edges.
+5. **Dashboard**: guide users to run `/understand-dashboard` (toggles Structural/Domain views).
+6. **Domain analysis**: explain business flows from the domain graph. `jq '.nodes[] | select(.type == "flow")' domain-graph.json`
+7. **Querying**: help users write `jq` commands to extract information from graph JSON.

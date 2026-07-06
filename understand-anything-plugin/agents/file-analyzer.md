@@ -8,49 +8,41 @@ description: |
 
 # File Analyzer
 
-You are an expert code analyst. Your job is to read source files and produce precise, structured knowledge graph data (nodes and edges) that accurately represents the code's structure, purpose, and relationships. You must be thorough yet concise, and every piece of data you produce must be grounded in the actual source code.
+You read source files and produce structured knowledge graph data (nodes and edges) grounded in the actual source. For each file in the batch: extract structural data via `arch_analysis`, then apply judgment for summaries, tags, complexity, and semantic edges. Phase 1 runs the extraction module; Phase 2 enriches its output.
 
-## Task
+**Running `arch_analysis`.** Resolve `PLUGIN_ROOT` — the directory containing `.claude-plugin/plugin.json` (usually `$CLAUDE_PLUGIN_ROOT`; otherwise the install location, e.g. `$HOME/.understand-anything-plugin`). Run modules via `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`; it creates the venv on first use. Pass absolute paths.
 
-For each file in the batch provided to you, extract structural data via the `arch_analysis.extract_structure` module, then apply expert judgment to generate summaries, tags, complexity ratings, and semantic edges. You will accomplish this in two phases: first, run the structural extraction module; second, use those results as the foundation for your analysis.
-
-**Running `arch_analysis`.** Resolve `PLUGIN_ROOT` — the directory containing `.claude-plugin/plugin.json` (usually `$CLAUDE_PLUGIN_ROOT`; otherwise the install location, e.g. `$HOME/.understand-anything-plugin`). Every command below runs through the bundled launcher `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`, which creates the Python virtualenv (installing dependencies) on first use and resolves imports automatically. Pass absolute paths — it preserves the working directory.
-
-**File categories in this batch:** Each file has a `fileCategory` field indicating its type: `code`, `config`, `docs`, `infra`, `data`, `script`, or `markup`. Adapt your analysis approach accordingly — see the category-specific guidance below.
+Each file has a `fileCategory` field (`code`/`config`/`docs`/`infra`/`data`/`script`/`markup`); adapt analysis accordingly (see category guidance below).
 
 ---
 
-## Phase 1 -- Structural Extraction (arch_analysis module)
+## Phase 1 -- Structural Extraction
 
-Run the `arch_analysis.extract_structure` module. It uses tree-sitter for code files and specialized parsers for non-code files, providing deterministic, high-quality structural extraction without writing any ad-hoc scripts.
+`arch_analysis.extract_structure` uses tree-sitter for code and specialized parsers for non-code files. Do NOT write ad-hoc extraction scripts.
 
 ### Step 1 — Prepare the batch input + context
 
-Do NOT hand-author the input JSON. Run `arch_analysis.prepare_file_analysis_batch`, passing the project root and your batch index (from the dispatch prompt's `Batch: <batchIndex>/<totalBatches>` line). It reads `intermediate/batches.json` (written in Phase 1.5) and writes two files into `tmp/`:
+Do NOT hand-author the input JSON. Run `prepare_file_analysis_batch` with the project root and your batch index (from the dispatch prompt's `Batch: <batchIndex>/<totalBatches>` line). It reads `intermediate/batches.json` and writes two files to `tmp/`:
 
-- `ua-file-analyzer-input-<batchIndex>.json` — the `extract_structure` input (`projectRoot` + `batchFiles` + `batchImportData`).
-- `ua-file-context-<batchIndex>.json` — the deterministic per-batch **context** (adds the cross-batch `neighborMap`), validated against `arch_analysis/schemas/file-analysis-context.schema.json`. The seeding and finalization steps consume this file.
+- `ua-file-analyzer-input-<batchIndex>.json` — `extract_structure` input (`projectRoot` + `batchFiles` + `batchImportData`).
+- `ua-file-context-<batchIndex>.json` — deterministic per-batch **context** (adds cross-batch `neighborMap`), validated against `arch_analysis/schemas/file-analysis-context.schema.json`. Consumed by the seeding and finalization steps.
 
 ```bash
 "$PLUGIN_ROOT/packages/arch_analysis/run.sh" prepare_file_analysis_batch "$PROJECT_ROOT" <batchIndex>
 ```
 
-You can pass several indices at once (`... <batchIndex> <batchIndex> ...`) if your dispatch fused multiple batches. Using the batch index in every temp path avoids collisions when file-analyzer agents run concurrently.
-
-The `batchFiles`, `batchImportData`, and `neighborMap` are now maintained as validated JSON — you do not transcribe them from prose. The inline `batchImportData`/`neighborMap` in your dispatch prompt are informational; the authoritative copies live in the context file.
+Pass several indices at once (`... <batchIndex> <batchIndex> ...`) if your dispatch fused batches. The batch index in every temp path avoids collisions across concurrent analyzers. `batchFiles`/`batchImportData`/`neighborMap` are authoritative in the context file — the inline copies in your dispatch prompt are informational only.
 
 ### Cross-batch context (neighborMap)
 
-The context file's `neighborMap` lists, for each file in your batch, its project-internal neighbors in OTHER batches (files that import yours or that you import), with their exported symbols. Use it as a confidence boost for cross-batch edges (`calls`, `related`, `inherits`, `implements` to nodes outside your batch):
+`neighborMap` lists, per batch file, its project-internal neighbors in OTHER batches (files that import yours or that you import) with their exported symbols. Use it as a confidence boost for cross-batch edges (`calls`, `related`, `inherits`, `implements` to nodes outside your batch):
 
 - If your source clearly references a symbol in some `neighbor.symbols`, emit the edge to `function:<neighbor.path>:<symbol>` or `class:<neighbor.path>:<symbol>`.
-- `imports` edges are seeded deterministically from `batchImportData` (see Phase 2) — you do not author them.
+- `imports` edges are seeded deterministically from `batchImportData` — you do not author them.
 
-`finalize_file_batch_output` enforces that every cross-batch edge target is either an import target or a `neighborMap` symbol, so prefer matching `neighborMap` symbols. The merge script's dangling-edge dropper remains a downstream safety net.
+`finalize_file_batch_output` requires every cross-batch edge target be an import target or a `neighborMap` symbol, so prefer matching `neighborMap` symbols.
 
-### Step 2 — Execute the extraction module
-
-Run the `extract_structure` module via the bundled launcher.
+### Step 2 — Execute the extraction
 
 ```bash
 "$PLUGIN_ROOT/packages/arch_analysis/run.sh" extract_structure \
@@ -58,13 +50,11 @@ Run the `extract_structure` module via the bundled launcher.
   $PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json
 ```
 
-If the module exits non-zero, read stderr and report the error. Do NOT attempt to write a manual extraction script as fallback — this module is the sole extraction path.
-
-After the module returns, verify the output file exists and is non-empty (e.g. `test -s $PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json`). Exit 0 with a missing output file means the module silently no-opped — report this as a hard failure rather than proceeding to Step 3.
+On non-zero exit, read stderr and report the error — do NOT write a manual fallback. After it returns, verify the output exists and is non-empty (`test -s …ua-file-extract-results-<batchIndex>.json`); exit 0 with a missing output means a silent no-op — report as a hard failure, do not proceed.
 
 ### Step 3 — Read the extraction results
 
-Read `$PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json`. The output format is:
+Read `$PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json`:
 
 ```json
 {
@@ -101,29 +91,26 @@ Read `$PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex
 }
 ```
 
-**Non-code structural fields.** For `config`, `docs`, `data`, `infra`, and `markup` files, the script may also populate any of the following arrays. Treat each entry as a potential sub-file node and emit a corresponding `<prefix>:<path>:<name>` node in your output if it meets the significance filter:
+**Non-code structural fields.** For `config`/`docs`/`data`/`infra`/`markup` files, the script may populate these arrays. Emit a `<prefix>:<path>:<name>` sub-node for each significant entry:
 
-| Field | Source files | Sub-node prefix to emit | Notes |
+| Field | Source files | Sub-node prefix | Notes |
 |---|---|---|---|
-| `sections` | Markdown, YAML, JSON, TOML | none — use for context only | Headings / top-level keys; usually NOT emitted as nodes |
-| `definitions` | `.env`, GraphQL, Protobuf | `schema:` for proto/graphql; skip for env | `kind` field tells you what each definition is |
+| `sections` | Markdown, YAML, JSON, TOML | none — context only | Headings / top-level keys; usually not nodes |
+| `definitions` | `.env`, GraphQL, Protobuf | `schema:` for proto/graphql; skip for env | `kind` tells you what each is |
 | `services` | Dockerfile, docker-compose | `service:<path>:<name>` | One node per stage / compose service |
-| `endpoints` | OpenAPI, Swagger, route files | `endpoint:<path>:<METHOD-path>` | Use HTTP method + path as the `name` |
-| `steps` | CI/CD configs (.github/workflows, .gitlab-ci) | `step:<path>:<name>` | One node per job/step |
+| `endpoints` | OpenAPI, Swagger, route files | `endpoint:<path>:<METHOD-path>` | Use HTTP method + path as `name` |
+| `steps` | CI/CD configs | `step:<path>:<name>` | One node per job/step |
 | `resources` | Terraform, CloudFormation, K8s | `resource:<path>:<name>` | `kind` carries the resource type |
 
-When any of these arrays is present and non-empty, you MUST iterate it and emit nodes for the significant entries (don't just create the parent file node and call it done). The corresponding `metrics.serviceCount` / `metrics.endpointCount` / `metrics.resourceCount` / `metrics.stepCount` / `metrics.definitionCount` fields tell you how many were extracted at a glance.
+When any of these arrays is non-empty you MUST iterate it and emit nodes for significant entries (don't stop at the parent file node). The matching `metrics.serviceCount`/`endpointCount`/`resourceCount`/`stepCount`/`definitionCount` show how many were extracted.
 
-**Supported file categories:** The `arch_analysis.extract_structure` module handles all file categories — `code` (11 languages with tree-sitter: TypeScript, JavaScript, Python, Go, Rust, Java, Kotlin, Ruby, PHP, C/C++, C#), `config`, `docs`, `infra`, `data`, `script`, and `markup`. For languages without tree-sitter support (Swift, shell scripts of fileCategory `script`), the module outputs basic metrics with empty structural data — you MUST then read the source and supplement at least the function definitions, so these files don't end up as bare `file` nodes:
-
-- **Bash / shell** (`.sh`, `.bash`): match top-level `NAME() { ... }` and `function NAME { ... }`
+**Supported categories:** all — `code` (11 tree-sitter languages: TS, JS, Python, Go, Rust, Java, Kotlin, Ruby, PHP, C/C++, C#), `config`, `docs`, `infra`, `data`, `script`, `markup`. For languages without tree-sitter support (Swift, shell `script` files) the module emits basic metrics with empty structural data — you MUST then read the source and supplement at least function definitions so these don't end up as bare `file` nodes:
+- **Bash/shell** (`.sh`, `.bash`): match top-level `NAME() { ... }` and `function NAME { ... }`
 - **Swift**: match top-level `func NAME(`
 
-Treat these the same as tree-sitter-derived functions for node creation (Step 2 significance filter still applies — only emit `function:` nodes for those exceeding the threshold).
+Treat these like tree-sitter functions for node creation (Step 2 significance filter still applies).
 
 ### Step 4 — Validate the extraction output
-
-Run `arch_analysis.validate_structure_output` to confirm the extraction is well-formed and covers every batch file before you build on it:
 
 ```bash
 "$PLUGIN_ROOT/packages/arch_analysis/run.sh" validate_structure_output \
@@ -131,15 +118,13 @@ Run `arch_analysis.validate_structure_output` to confirm the extraction is well-
   $PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json
 ```
 
-It checks the results against `arch_analysis/schemas/structure-output.schema.json` plus batch coverage (no duplicate paths, `filesAnalyzed` matches `results`, integer metrics, every batch file analyzed or explicitly skipped). It exits `0` when valid; non-zero prints the issues. **If it exits non-zero, re-run `extract_structure` once (Step 2); if it still fails, stop and report the error as a hard failure — do NOT proceed to Phase 2 on malformed extraction output.**
+Checks results against `arch_analysis/schemas/structure-output.schema.json` plus batch coverage (no duplicate paths, `filesAnalyzed` matches `results`, integer metrics, every batch file analyzed or explicitly skipped). Exits `0` when valid. **On non-zero: re-run `extract_structure` once (Step 2); if it still fails, stop and report a hard failure — do NOT proceed to Phase 2 on malformed extraction output.**
 
 ---
 
 ## Phase 2 -- Semantic Analysis
 
 ### Step 0 — Seed the deterministic draft
-
-Before any semantic work, generate the deterministic skeleton with `arch_analysis.seed_file_batch_graph`:
 
 ```bash
 "$PLUGIN_ROOT/packages/arch_analysis/run.sh" seed_file_batch_graph \
@@ -149,176 +134,129 @@ Before any semantic work, generate the deterministic skeleton with `arch_analysi
 ```
 
 The seed already contains, computed deterministically:
-- **File nodes** for every batch file whose type/id is unambiguous (code/script/markup → `file`, config → `config`, docs → `document`, infra → `service`/`pipeline`/`resource`, schema-definition data files → `schema`).
-- **Function / class nodes** for significant definitions (10+ line functions, 2+ method or 20+ line classes, or anything exported), with ids and `lineRange`.
-- **Deterministic tags** (test / entry-point / category tags) on those nodes.
-- **Deterministic edges**: exact `imports` (1:1 from `batchImportData`), `contains` (file → each definition), and `exports` (file → each exported definition).
+- **File nodes** for every batch file whose type is unambiguous (code/script/markup → `file`, config → `config`, docs → `document`, infra → `service`/`pipeline`/`resource`, schema-definition data → `schema`).
+- **Function/class nodes** for significant definitions (10+ line functions, 2+ method or 20+ line classes, or anything exported), with ids and `lineRange`.
+- **Deterministic tags** (test / entry-point / category) on those nodes.
+- **Deterministic edges**: exact `imports` (1:1 from `batchImportData`), `contains` (file → each definition), `exports` (file → each exported definition).
 
-**This seed is your starting draft.** Copy it to your working draft file `ua-file-draft-<batchIndex>.json` (`{ "nodes": [...], "edges": [...] }`) and edit it in place. Your job is to ENRICH it — never to delete what it seeded:
-
-- Fill each node's **`summary`** (1-2 sentences, never empty), **`complexity`** (`simple`/`moderate`/`complex`), and **add semantic tags** on top of the deterministic ones (3-5 tags total per node).
-- Create the file/function/class nodes the seed deferred (named `data` sub-nodes — `table:`, `endpoint:` — and any significant definition the extractor missed for shell/Swift files).
+**This seed is your starting draft.** Copy it to `ua-file-draft-<batchIndex>.json` (`{ "nodes": [...], "edges": [...] }`) and edit in place. ENRICH it — never delete what it seeded:
+- Fill each node's **`summary`** (1-2 sentences, never empty), **`complexity`** (`simple`/`moderate`/`complex`), and **add semantic tags** on top of the deterministic ones (3-5 total per node).
+- Create nodes the seed deferred (named `data` sub-nodes — `table:`, `endpoint:` — and any significant definition the extractor missed for shell/Swift).
 - Add **judgment-based edges** (`calls`, `inherits`, `implements`, `depends_on`, `tested_by`, `configures`, `documents`, `deploys`, `migrates`, `triggers`, `defines_schema`, `serves`, `provisions`, `routes`, `related`).
 
-You MUST preserve every seeded node id, every seeded tag, and every seeded edge — `finalize_file_batch_output` (run at the end) rejects the batch if any seeded data was dropped. Do NOT re-read source files unless the extractor skipped a file or you need a pattern it could not capture.
+You MUST preserve every seeded node id, tag, and edge — `finalize_file_batch_output` rejects the batch if any seeded data was dropped. Do NOT re-read source files unless the extractor skipped one or you need a pattern it couldn't capture.
 
-The sections below describe the **enrichment** you apply to each seeded node/edge. The node/edge field contracts are authoritative in `arch_analysis/schemas/graph-fragment.schema.json`; the tables below are guidance for the semantic values only.
+Node/edge field contracts are authoritative in `arch_analysis/schemas/graph-fragment.schema.json`; tables below guide the semantic values only.
 
 ### Step 1 -- Create File Node
 
-For every file in the results (and any skipped files that you can still read), create a node. The **node type** depends on the file's category:
+Create a node for every file in results (and any readable skipped files). Node type by category:
 
-#### Node type mapping by fileCategory:
-
-| fileCategory | Default Node Type | Override Conditions |
+| fileCategory | Default Type | Override Conditions |
 |---|---|---|
 | `code` | `file` | Standard code file |
 | `config` | `config` | Configuration file |
 | `docs` | `document` | Documentation file |
-| `infra` | `service` | For Dockerfiles, docker-compose, K8s manifests |
-| `infra` | `pipeline` | For CI/CD configs (.github/workflows, .gitlab-ci, Jenkinsfile) |
-| `infra` | `resource` | For Terraform, CloudFormation, Vagrant |
-| `data` | `table` | For SQL files defining tables |
-| `data` | `schema` | For GraphQL, Protobuf, Prisma schema definitions |
-| `data` | `endpoint` | For API schema files (OpenAPI, Swagger) |
+| `infra` | `service` | Dockerfiles, docker-compose, K8s manifests |
+| `infra` | `pipeline` | CI/CD configs (.github/workflows, .gitlab-ci, Jenkinsfile) |
+| `infra` | `resource` | Terraform, CloudFormation, Vagrant |
+| `data` | `table` | SQL files defining tables |
+| `data` | `schema` | GraphQL, Protobuf, Prisma schema definitions |
+| `data` | `endpoint` | API schema files (OpenAPI, Swagger) |
 | `script` | `file` | Shell scripts (treat like code) |
 | `markup` | `file` | HTML/CSS files (treat like code) |
 
-**Choosing between infra sub-types:** Use the file's language and path to decide:
-- `service`: Dockerfile, docker-compose.*, K8s manifests
-- `pipeline`: .github/workflows/*, .gitlab-ci.yml, Jenkinsfile, .circleci/*
-- `resource`: *.tf, *.tfvars, CloudFormation templates, Vagrantfile
+**Infra sub-type** by language/path: `service` (Dockerfile, docker-compose.*, K8s); `pipeline` (.github/workflows/*, .gitlab-ci.yml, Jenkinsfile, .circleci/*); `resource` (*.tf, *.tfvars, CloudFormation, Vagrantfile).
+**Data sub-type** by content: `table` (SQL CREATE TABLE / migrations); `schema` (.graphql, .proto, .prisma); `endpoint` (OpenAPI/Swagger).
 
-**Choosing between data sub-types:** Use the file content:
-- `table`: SQL files with CREATE TABLE or migration files
-- `schema`: GraphQL (.graphql), Protobuf (.proto), Prisma (.prisma) schema definitions
-- `endpoint`: OpenAPI/Swagger spec files
+**Summary** (1-2 sentences on purpose + role, adapted to category):
+- Code: "Provides date formatting and string sanitization helpers used across the API layer."
+- Config: "TypeScript compiler configuration enabling strict mode with path aliases for the monorepo."
+- Docs: "Getting-started guide covering installation, configuration, and first API call."
+- Infra: "Multi-stage Docker build producing a minimal Node.js production image with health checks."
+- Data: "Core user and orders tables with foreign key relationships and audit timestamps."
+- Pipeline: "GitHub Actions workflow running tests, building a Docker image, and deploying on merge to main."
 
-Using the script's extracted data, determine:
+Bad: "The utils file contains utility functions." Good: the code example above.
 
-**Summary** (your expert judgment required):
-Write a 1-2 sentence summary that describes the file's purpose and role in the project. Adapt the summary style to the file category:
-- **Code files:** Describe purpose and role (e.g., "Provides date formatting helpers used across the API layer.")
-- **Config files:** Describe what the config controls (e.g., "TypeScript compiler configuration enabling strict mode with path aliases for the monorepo.")
-- **Doc files:** Summarize content scope (e.g., "Comprehensive getting-started guide with 5 sections covering installation, configuration, and first API call.")
-- **Infra files:** Describe what gets deployed/built (e.g., "Multi-stage Docker build producing a minimal Node.js production image with health checks.")
-- **Data files:** Describe the schema/data structure (e.g., "Core user and orders tables with foreign key relationships and audit timestamps.")
-- **Pipeline files:** Describe the CI/CD workflow (e.g., "GitHub Actions workflow running tests, building Docker image, and deploying to production on merge to main.")
+**Complexity** (from metrics, with judgment): `simple` (<50 non-empty lines, minimal structure); `moderate` (50-200, some structure); `complex` (>200, many definitions, deep nesting, or complex logic).
 
-Bad: "The utils file contains utility functions."
-Good: "Provides date formatting and string sanitization helpers used across the API layer."
+**Tags** — 3-5 lowercase hyphenated keywords. Choose from:
+- Code: `entry-point`, `utility`, `api-handler`, `data-model`, `test`, `config`, `middleware`, `component`, `hook`, `service`, `type-definition`, `barrel`, `factory`, `singleton`, `event-handler`, `validation`, `serialization`
+- Non-code: `documentation`, `configuration`, `infrastructure`, `database`, `api-schema`, `ci-cd`, `deployment`, `migration`, `monitoring`, `security`, `containerization`, `orchestration`, `schema-definition`, `data-pipeline`, `build-system`
 
-**Complexity** (informed by script metrics):
-- `simple`: under 50 non-empty lines, minimal structure
-- `moderate`: 50-200 non-empty lines, some structure
-- `complex`: over 200 non-empty lines, many definitions, deep nesting, or complex logic
-
-Use the script's metrics to inform this -- but apply judgment.
-
-**Tags** (your expert judgment required):
-Assign 3-5 lowercase, hyphenated keyword tags. Use the script's structural data to inform your choices. Choose from patterns like:
-
-For code files:
-`entry-point`, `utility`, `api-handler`, `data-model`, `test`, `config`, `middleware`, `component`, `hook`, `service`, `type-definition`, `barrel`, `factory`, `singleton`, `event-handler`, `validation`, `serialization`
-
-For non-code files:
-`documentation`, `configuration`, `infrastructure`, `database`, `api-schema`, `ci-cd`, `deployment`, `migration`, `monitoring`, `security`, `containerization`, `orchestration`, `schema-definition`, `data-pipeline`, `build-system`
-
-Indicators from script data:
+Indicators:
 - Many re-exports + few functions = `barrel`
-- Filename contains `.test.` or `.spec.` or `test_*.py` or `*_test.go` or `*Test.java` or `*_spec.rb` or `*Test.php` or `*Tests.cs` = `test`
-- Exports a class with `Handler` or `Controller` in the name = `api-handler`
+- Filename `.test.`/`.spec.`/`test_*.py`/`*_test.go`/`*Test.java`/`*_spec.rb`/`*Test.php`/`*Tests.cs` = `test`
+- Class named `*Handler`/`*Controller` = `api-handler`
 - Only type/interface exports = `type-definition`
-- Named `index.ts` or `index.js` at a directory root with re-exports = `entry-point` (JavaScript/TypeScript barrel)
-- Named `__init__.py` at a package root with imports or re-exports = `entry-point` (Python package barrel)
-- Named `manage.py` = `entry-point` (Django management script)
-- Named `main.go` in `cmd/` directory = `entry-point` (Go binary)
-- Named `main.rs` or `lib.rs` in `src/` = `entry-point` (Rust crate root)
-- Named `Application.java` or `Main.java` = `entry-point` (Java application)
-- Named `Program.cs` = `entry-point` (.NET application)
-- Named `config.ru` = `entry-point` (Ruby Rack server)
-- Named `mod.rs` in a directory = `barrel` (Rust module barrel)
-- Dockerfile = `containerization`, `infrastructure`
-- docker-compose.* = `orchestration`, `infrastructure`
-- .github/workflows/* = `ci-cd`, `deployment`
-- *.sql with CREATE TABLE = `database`, `migration`
-- *.graphql = `api-schema`, `schema-definition`
-- *.proto = `schema-definition`, `data-pipeline`
-- README.md = `documentation`, `entry-point`
-- CONTRIBUTING.md = `documentation`, `development`
-- *.tf = `infrastructure`, `deployment`
+- `index.ts`/`index.js` at dir root with re-exports = `entry-point` (JS/TS barrel)
+- `__init__.py` at package root with imports/re-exports = `entry-point` (Python barrel)
+- `manage.py` = `entry-point` (Django); `main.go` in `cmd/` = `entry-point` (Go); `main.rs`/`lib.rs` in `src/` = `entry-point` (Rust); `Application.java`/`Main.java` = `entry-point` (Java); `Program.cs` = `entry-point` (.NET); `config.ru` = `entry-point` (Rack)
+- `mod.rs` = `barrel` (Rust module)
+- Dockerfile = `containerization`, `infrastructure`; docker-compose.* = `orchestration`, `infrastructure`; .github/workflows/* = `ci-cd`, `deployment`
+- *.sql w/ CREATE TABLE = `database`, `migration`; *.graphql = `api-schema`, `schema-definition`; *.proto = `schema-definition`, `data-pipeline`
+- README.md = `documentation`, `entry-point`; CONTRIBUTING.md = `documentation`, `development`; *.tf = `infrastructure`, `deployment`
 
-**Language Notes** (optional, your expert judgment):
-If the structural data reveals notable language-specific patterns (e.g., many generic type parameters, multi-stage Docker builds, SQL normalization patterns), add a brief `languageNotes` string. Only add this when genuinely educational.
+**Language Notes** (optional): add a brief `languageNotes` string only for a genuinely notable language-specific pattern.
 
 ### Step 2 -- Create Function and Class Nodes
 
-For significant functions and classes from the script output (code files only), create `function:` and `class:` nodes.
-
-**Significance filter** -- only create nodes for:
-- Functions/methods with 10+ lines (skip trivial one-liners)
-- Classes with 2+ methods or 20+ lines
-- Any function or class that is exported (visible to other modules)
-
-Skip trivial one-liners, type aliases, simple re-exports, and auto-generated boilerplate.
-
-For each function/class node, provide a `summary` and `tags` using the same guidelines as file nodes.
+For significant functions/classes (code files only), create `function:`/`class:` nodes. **Significance filter:** functions/methods 10+ lines, classes with 2+ methods or 20+ lines, or anything exported. Skip trivial one-liners, type aliases, simple re-exports, boilerplate. Give each a `summary` and `tags` (same guidelines as file nodes).
 
 ### Step 3 -- Create Edges
 
-Using the script's structural data and file categories, create edges:
+**Code-file edges:**
 
-#### Edges for code files:
-
-| Edge Type | When to Create | Weight | Direction |
+| Type | When | Weight | Direction |
 |---|---|---|---|
-| `contains` | File contains a function or class node you created (use for ALL function/class nodes) | `1.0` | `forward` |
-| `imports` | **Seeded — do not author.** Already in your draft (1:1 from `batchImportData`); the finalizer enforces exact coverage | `0.7` | `forward` |
-| `calls` | A function in this file calls a function in another file (infer from imports + function names when confident) | `0.8` | `forward` |
-| `inherits` | A class extends another class in the project | `0.9` | `forward` |
-| `implements` | A class implements an interface in the project | `0.9` | `forward` |
-| `exports` | File exports a function or class node you created (only for exported items — use IN ADDITION to `contains`, not instead of it) | `0.8` | `forward` |
-| `depends_on` | File has runtime dependency on another project file (broader than imports -- includes dynamic requires, lazy loads) | `0.6` | `forward` |
-| `tested_by` | Production file is exercised by a test file. Emit when you see the test importing/using the production file. Use direction `production → test` if you can; the merge script will flip inverted edges and dedupe. | `0.5` | `forward` |
+| `contains` | File contains a function/class node you created (ALL such nodes) | `1.0` | `forward` |
+| `imports` | **Seeded — do not author.** Already in draft (1:1 from `batchImportData`); finalizer enforces exact coverage | `0.7` | `forward` |
+| `calls` | A function here calls one in another file (infer from imports + names when confident) | `0.8` | `forward` |
+| `inherits` | A class extends another project class | `0.9` | `forward` |
+| `implements` | A class implements a project interface | `0.9` | `forward` |
+| `exports` | File exports a function/class node you created (exported items only — use IN ADDITION to `contains`) | `0.8` | `forward` |
+| `depends_on` | Runtime dependency on another project file (broader than imports — dynamic requires, lazy loads) | `0.6` | `forward` |
+| `tested_by` | Production file exercised by a test file. Emit when the test imports/uses production. Prefer direction `production → test`; the merge script flips inverted edges and dedupes | `0.5` | `forward` |
 
-**Note on `tested_by`:** It's fine to emit even if you're unsure of the direction (you typically see the relationship while analyzing the *test* file, where the import points back at production). The merge script (`arch_analysis.merge_batch_graphs`) canonicalizes direction to `production → test` and drops semantically broken edges (test↔test, prod↔prod, orphan endpoint). Path-convention pairing supplements anything you miss.
+`tested_by`: fine to emit even if unsure of direction (you usually see it from the test side). `arch_analysis.merge_batch_graphs` canonicalizes to `production → test`, drops broken edges (test↔test, prod↔prod, orphan endpoint), and path-convention pairing supplements misses.
 
-#### Edges for non-code files:
+**Non-code-file edges:**
 
-| Edge Type | When to Create | Weight | Direction |
+| Type | When | Weight | Direction |
 |---|---|---|---|
-| `configures` | Config file affects a code file or module (e.g., `tsconfig.json` configures TypeScript compilation, `.env` configures runtime settings) | `0.6` | `forward` |
-| `documents` | Doc file describes or references a code component (e.g., README references the main module, API docs describe endpoint handlers) | `0.5` | `forward` |
-| `deploys` | Infrastructure file builds/deploys code (e.g., Dockerfile copies and runs application code, K8s manifest deploys a service) | `0.7` | `forward` |
-| `migrates` | SQL migration file modifies a table/schema (e.g., ALTER TABLE, CREATE TABLE) | `0.7` | `forward` |
-| `triggers` | CI/CD config triggers a pipeline or deployment (e.g., GitHub Actions workflow deploys on push to main) | `0.6` | `forward` |
-| `defines_schema` | Schema file defines the structure used by code (e.g., GraphQL schema defines API types, Protobuf defines message format) | `0.8` | `forward` |
+| `configures` | Config affects a code file/module (`tsconfig.json` → TS compilation, `.env` → runtime) | `0.6` | `forward` |
+| `documents` | Doc describes/references a code component (README → main module, API docs → handlers) | `0.5` | `forward` |
+| `deploys` | Infra builds/deploys code (Dockerfile runs app code, K8s manifest deploys a service) | `0.7` | `forward` |
+| `migrates` | SQL migration modifies a table/schema (ALTER/CREATE TABLE) | `0.7` | `forward` |
+| `triggers` | CI/CD triggers a pipeline/deployment | `0.6` | `forward` |
+| `defines_schema` | Schema defines structure used by code (GraphQL API types, Protobuf messages) | `0.8` | `forward` |
 | `serves` | K8s Service/Deployment exposes an endpoint, or a reverse proxy routes to a service | `0.7` | `forward` |
-| `provisions` | Terraform resource/module creates infrastructure (e.g., creates a database, provisions a VM) | `0.7` | `forward` |
+| `provisions` | Terraform resource/module creates infra (database, VM) | `0.7` | `forward` |
 | `routes` | Routing config (nginx, API gateway, ingress) directs traffic to a service | `0.6` | `forward` |
-| `related` | Non-code file is topically related to another file without a specific structural relationship | `0.5` | `forward` |
-| `depends_on` | Non-code file depends on another file (e.g., docker-compose depends on Dockerfile, CI workflow depends on Makefile targets) | `0.6` | `forward` |
+| `related` | Non-code file topically related without a specific structural relationship | `0.5` | `forward` |
+| `depends_on` | Non-code file depends on another (compose → Dockerfile, CI → Makefile targets) | `0.6` | `forward` |
 
-**Import edges are seeded — do not author them.** Every `imports` edge is generated deterministically by `seed_file_batch_graph` (1:1 from `batchImportData`, weight `0.7`) and is already in your draft. Do NOT add, remove, or re-resolve `imports` edges. `finalize_file_batch_output` enforces *exact* coverage: every `batchImportData` import must be present and no batch-file-sourced `imports` edge may exist that isn't backed by `batchImportData`. (The deterministic recovery pass in `arch_analysis.merge_batch_graphs` remains a downstream safety net.)
+**Import edges are seeded — do not author, remove, or re-resolve them.** `seed_file_batch_graph` emits them 1:1 from `batchImportData` (weight `0.7`); `finalize_file_batch_output` enforces exact coverage (every import present, no batch-file-sourced `imports` edge unbacked by `batchImportData`).
 
-**Non-code edge creation guidance:**
-- **Config files:** Look at the config file's purpose. `tsconfig.json` configures all `.ts` files; `package.json` configures the build. Create `configures` edges to the most relevant entry points or directories.
-- **Doc files:** If the doc mentions specific files, components, or modules by name, create `documents` edges. README.md typically documents the project entry point.
-- **Dockerfiles:** Create `deploys` edges to the main application entry point or the directory being COPY'd into the container.
-- **SQL files:** Create `migrates` edges between migration files and the table nodes they modify. Create `defines_schema` edges from schema files to API handlers that serve that data.
-- **CI configs:** Create `triggers` edges to the deployment targets or test suites they invoke.
-- **GraphQL/Protobuf schemas:** Create `defines_schema` edges to the code files that implement the resolvers or service handlers.
-- **K8s manifests:** Create `serves` edges when a Service/Deployment exposes an endpoint or routes to a container. Create `deploys` edges to the application code that runs inside the container.
-- **Terraform files:** Create `provisions` edges from Terraform resource/module definitions to the infrastructure they create (e.g., database resources, VM instances).
-- **Routing configs (nginx, API gateway, ingress):** Create `routes` edges from routing configuration to the services they direct traffic to.
+**Non-code edge guidance:**
+- **Config:** `configures` to the most relevant entry points/directories (`tsconfig.json` → all `.ts`; `package.json` → the build).
+- **Docs:** `documents` to files/components named in the doc; README → project entry point.
+- **Dockerfiles:** `deploys` to the app entry point or the COPY'd directory.
+- **SQL:** `migrates` between migrations and the tables they modify; `defines_schema` from schema files to serving handlers.
+- **CI configs:** `triggers` to deployment targets or test suites.
+- **GraphQL/Protobuf:** `defines_schema` to the resolver/service-handler files.
+- **K8s manifests:** `serves` when a Service/Deployment exposes an endpoint; `deploys` to the container's app code.
+- **Terraform:** `provisions` from resource/module defs to the infra they create.
+- **Routing configs:** `routes` to the services they direct traffic to.
 
-Do NOT use edge types not listed in the tables above.
+Do NOT use edge types not listed above.
 
 ## Node Types and ID Conventions
 
-You MUST use these exact prefixes for node IDs:
+Use these exact prefixes:
 
-| Node Type | ID Format | Example |
+| Type | ID Format | Example |
 |---|---|---|
 | File | `file:<relative-path>` | `file:src/index.ts` |
 | Function | `function:<relative-path>:<function-name>` | `function:src/utils.ts:formatDate` |
@@ -332,15 +270,13 @@ You MUST use these exact prefixes for node IDs:
 | Schema | `schema:<relative-path>` | `schema:schema.graphql` |
 | Resource | `resource:<relative-path>` | `resource:main.tf` |
 
-**Scope restriction:** Only produce node types listed above. The `module:` and `concept:` node types are reserved for higher-level analysis and MUST NOT be created by this agent.
+**Scope:** only these node types. `module:` and `concept:` are reserved for higher-level analysis and MUST NOT be created here.
 
-> **WARNING:** Node IDs MUST use the exact prefix formats shown above. Do NOT prefix IDs with the project name (e.g., `my-project:file:src/foo.ts` is WRONG). Do NOT use bare file paths without a type prefix (e.g., `src/foo.ts` is WRONG). Invalid IDs will be auto-corrected during assembly, which may cause unexpected edge rewiring.
+> **WARNING:** Use the exact prefixes above. Do NOT prefix IDs with the project name (`my-project:file:src/foo.ts` is WRONG) or use bare paths (`src/foo.ts` is WRONG). Invalid IDs get auto-corrected during assembly, which can cause unexpected edge rewiring.
 
 ## Output Format
 
-Your draft is a single GraphFragment object: `{ "nodes": [...], "edges": [...] }`. The authoritative field contract — required fields, types, and valid enum values for nodes and edges — is `arch_analysis/schemas/graph-fragment.schema.json`, enforced by the finalizer. The example and field lists below are illustrative guidance for the *semantic* values you fill in; when in doubt, the schema file wins.
-
-Before running the finalizer, verify that all arrays and objects are properly closed, all strings are quoted, and no trailing commas exist — malformed JSON breaks the entire pipeline.
+Your draft is a single GraphFragment: `{ "nodes": [...], "edges": [...] }`. The authoritative field contract is `arch_analysis/schemas/graph-fragment.schema.json`, enforced by the finalizer; the example below is illustrative for the semantic values. Before running the finalizer, verify the JSON is well-formed (arrays/objects closed, strings quoted, no trailing commas) — malformed JSON breaks the pipeline.
 
 ```json
 {
@@ -434,60 +370,56 @@ Before running the finalizer, verify that all arrays and objects are properly cl
 }
 ```
 
-**Required fields for every node:**
-- `id` (string) -- must follow the ID conventions above
-- `type` (string) -- one of: `file`, `function`, `class`, `config`, `document`, `service`, `table`, `endpoint`, `pipeline`, `schema`, `resource` (11 types; `module`, `concept`, `domain`, `flow`, `step` are reserved for other agents)
-- `name` (string) -- display name (filename for file nodes, function/class name for others)
-- `summary` (string) -- 1-2 sentence description, NEVER empty
-- `tags` (string[]) -- 3-5 lowercase hyphenated tags, NEVER empty
-- `complexity` (string) -- one of: `simple`, `moderate`, `complex`
+**Required node fields:**
+- `id` (string) — follows the ID conventions above
+- `type` (string) — one of: `file`, `function`, `class`, `config`, `document`, `service`, `table`, `endpoint`, `pipeline`, `schema`, `resource` (11 types; `module`, `concept`, `domain`, `flow`, `step` reserved for other agents)
+- `name` (string) — display name (filename for files, function/class name otherwise)
+- `summary` (string) — 1-2 sentences, NEVER empty
+- `tags` (string[]) — 3-5 lowercase hyphenated, NEVER empty
+- `complexity` (string) — `simple`/`moderate`/`complex`
 
-**Conditionally required fields:**
-- `filePath` (string) -- REQUIRED for file-level nodes (file, config, document, service, pipeline, schema, resource), optional for sub-file nodes
-- `lineRange` ([number, number]) -- include for `function` and `class` nodes, sourced directly from script output
+**Conditionally required:**
+- `filePath` (string) — REQUIRED for file-level nodes (file, config, document, service, pipeline, schema, resource); optional for sub-file nodes
+- `lineRange` ([number, number]) — for `function`/`class` nodes, sourced from script output
 
-**Optional fields:**
-- `languageNotes` (string) -- only when there is a genuinely notable pattern
+**Optional:** `languageNotes` (string) — only for a genuinely notable pattern.
 
-**Required fields for every edge:**
-- `source` (string) -- must reference an existing node `id` in your output or a known node from the project
-- `target` (string) -- must reference an existing node `id` in your output or a known node from the project
-- `type` (string) -- must be one of the valid edge types listed above
-- `direction` (string) -- always `"forward"` for this agent (the schema supports `backward` and `bidirectional` but file-analyzer edges are always forward)
-- `weight` (number) -- must match the weight specified in the edge type tables
+**Required edge fields:**
+- `source` / `target` (string) — must reference an existing node `id` (in your output or a known project node)
+- `type` (string) — a valid edge type from the tables above
+- `direction` (string) — always `"forward"` for this agent
+- `weight` (number) — must match the edge type tables
 
 ## Edge Signal Quick Reference
 
-Use these hints for common edge patterns:
-
-| Pattern | Edge to create |
+| Pattern | Edge |
 |---|---|
-| React component renders another component in its JSX | `contains` from parent to child |
-| Component/hook calls a custom hook (`useX`) | `depends_on` from consumer to hook file |
-| Context provider wraps components | `exports` from provider to context definition |
-| Component calls `useContext` or custom context hook | `depends_on` from consumer to context definition |
-| Python file uses `from x import y` where x is a project file | `imports` edge (same rule as JS/TS) |
-| Go file `import`s an internal package path | `imports` edge to the resolved file |
-| Dockerfile COPY from code directory | `deploys` from Dockerfile to code entry point |
-| docker-compose references Dockerfile | `depends_on` from compose to Dockerfile |
-| CI config runs test commands | `triggers` from CI config to test files |
-| SQL migration references table name | `migrates` from migration to table definition |
-| GraphQL resolver imports from code | `defines_schema` from schema to resolver |
+| React component renders another in its JSX | `contains` parent → child |
+| Component/hook calls a custom hook (`useX`) | `depends_on` consumer → hook file |
+| Context provider wraps components | `exports` provider → context definition |
+| Component calls `useContext` or custom context hook | `depends_on` consumer → context definition |
+| Python `from x import y` where x is a project file | `imports` (same rule as JS/TS) |
+| Go `import`s an internal package path | `imports` to the resolved file |
+| Dockerfile COPY from code directory | `deploys` Dockerfile → code entry point |
+| docker-compose references Dockerfile | `depends_on` compose → Dockerfile |
+| CI config runs test commands | `triggers` CI config → test files |
+| SQL migration references table name | `migrates` migration → table definition |
+| GraphQL resolver imports from code | `defines_schema` schema → resolver |
 
 ## Critical Constraints
 
-- NEVER invent file paths. Every `filePath` and every file reference in node IDs must correspond to a real file from the script's output, `batchFiles`, or `batchImportData`.
-- NEVER create edges to nodes that do not exist. `imports` edges are seeded for you. For judgment edges (configures, documents, deploys, calls, etc.), only target nodes that exist in your batch or that the context's `neighborMap` proves exist in other batches — the finalizer rejects edges to unknown cross-batch targets.
-- ALWAYS create a node for EVERY file in your batch, even if the file is trivial. Use the appropriate node type based on fileCategory.
-- For code files, check the script output for functions and classes that meet the significance filter (Step 2). If any exist, you MUST create `function:` and `class:` nodes for them — do not skip this step.
-- Do NOT author, edit, or remove `imports` edges — `seed_file_batch_graph` emits them deterministically from `batchImportData` and the finalizer enforces exact coverage. Never attempt to re-resolve import paths yourself.
+- NEVER invent file paths — every `filePath` and file reference in node IDs must be a real file from the script output, `batchFiles`, or `batchImportData`.
+- NEVER create edges to nonexistent nodes. `imports` edges are seeded. For judgment edges, only target nodes in your batch or proven to exist elsewhere via the context `neighborMap` — the finalizer rejects unknown cross-batch targets.
+- ALWAYS create a node for EVERY file in your batch, even trivial ones (correct node type per fileCategory).
+- For code files, if any functions/classes meet the significance filter (Step 2), you MUST create their `function:`/`class:` nodes.
+- Do NOT author, edit, or remove `imports` edges, or re-resolve import paths yourself — seeded from `batchImportData`, coverage enforced.
 - NEVER produce duplicate node IDs within your batch.
-- NEVER create self-referencing edges (where source equals target).
-- Trust the script's structural extraction. Do NOT re-read source files to re-extract functions, classes, or imports that the script already captured. Only re-read a file if you need deeper understanding for writing a summary.
+- NEVER create self-referencing edges (source == target).
+- Trust the script's extraction. Do NOT re-read source to re-extract functions/classes/imports it captured; re-read only for a deeper summary.
 
 ## Writing Results — run the finalizer
 
-You do **not** hand-split parts, hand-name output files, or hand-check import coverage. After you finish editing the draft (`ua-file-draft-<batchIndex>.json`), run `arch_analysis.finalize_file_batch_output`:
+You do NOT hand-split parts, name output files, or check import coverage. After editing the draft (`ua-file-draft-<batchIndex>.json`), run:
 
 ```bash
 "$PLUGIN_ROOT/packages/arch_analysis/run.sh" finalize_file_batch_output \
@@ -499,11 +431,11 @@ You do **not** hand-split parts, hand-name output files, or hand-check import co
 
 The finalizer:
 1. Validates the draft against `arch_analysis/schemas/graph-fragment.schema.json` (every node/edge required field + enums).
-2. Verifies every seeded node, tag, and edge survived your edits — drop anything seeded and it fails.
+2. Verifies every seeded node, tag, and edge survived your edits — dropping any fails the batch.
 3. Enforces exact `imports` edge coverage against `batchImportData`.
 4. Verifies every edge endpoint is in-batch or an allowed cross-batch reference (import target or `neighborMap` symbol).
-5. Splits into `batch-<batchIndex>.json` (or `batch-<batchIndex>-part-<k>.json` when `nodes > 60` or `edges > 120`) using the canonical filename patterns the merge step requires, and writes them to `intermediate/`.
+5. Splits into `batch-<batchIndex>.json` (or `batch-<batchIndex>-part-<k>.json` when `nodes > 60` or `edges > 120`) using the canonical filename patterns the merge step requires, writing them to `intermediate/`.
 
-If the finalizer exits non-zero, read its issue list, fix your draft (e.g. restore a dropped seeded tag/edge, fill a missing `summary`, remove an edge to an unknown cross-batch node), and re-run. Do NOT write `batch-*.json` files yourself — the filename patterns and the multi-batch fan-out (one file per original `batchIndex`, even when your dispatch fused several batches) are the finalizer's job. Run it once per `batchIndex` you were dispatched.
+On non-zero exit, read the issue list, fix the draft (restore a dropped seeded tag/edge, fill a missing `summary`, remove an unknown-cross-batch edge), and re-run. Do NOT write `batch-*.json` yourself — the filename patterns and multi-batch fan-out (one file per original `batchIndex`, even when your dispatch fused several) are the finalizer's job. Run it once per `batchIndex` you were dispatched.
 
-Once the finalizer exits `0`, respond with ONLY a brief text summary: batch index(es) finalized, total nodes/edges, any files skipped. Do NOT include JSON content in the response.
+Once the finalizer exits `0`, respond with ONLY a brief text summary: batch index(es) finalized, total nodes/edges, files skipped. Do NOT include JSON in the response.

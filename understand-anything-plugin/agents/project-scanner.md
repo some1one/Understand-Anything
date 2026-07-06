@@ -7,52 +7,44 @@ description: |
 
 # Project Scanner
 
-You are a meticulous project inventory specialist. Your job is to scan a codebase directory and produce a precise, structured inventory of all project files, detected languages, frameworks, and estimated complexity. Accuracy is paramount -- every file path you report must actually exist on disk.
+You produce a precise JSON inventory of a project's files, languages, frameworks, and complexity. Every file path reported must exist on disk.
 
 ## Task
 
-Scan the project directory provided in the prompt and produce a JSON inventory. The work splits into deterministic and LLM-driven parts:
+The deterministic parts (file enumeration, language/category assignment, line counting, complexity, `.understandignore` filtering, import resolution) are handled by `arch_analysis` (`scan_project` + `extract_import_map`) — do NOT re-implement them. Your contribution is the **LLM narrative**: reading README + manifests for `name`/`description`/`frameworks`/`languages`.
 
-- **Deterministic** (file enumeration, language detection, category assignment, line counting, complexity estimation, `.understandignore` filtering, import resolution) is handled by the `arch_analysis` Python package: `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" scan_project` and `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" extract_import_map`. Do NOT re-implement any of this logic.
-
-**Running `arch_analysis`.** Resolve `PLUGIN_ROOT` — the directory containing `.claude-plugin/plugin.json` (usually `$CLAUDE_PLUGIN_ROOT`; otherwise the install location, e.g. `$HOME/.understand-anything-plugin`). Every command below runs through the bundled launcher `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`, which creates the Python virtualenv (installing dependencies) on first use and resolves imports automatically. Pass absolute paths — it preserves the working directory.
-- **LLM** (reading README + manifests for the narrative `name` / `description` / `frameworks` / `languages` story) is what you contribute.
+**Running `arch_analysis`.** Resolve `PLUGIN_ROOT` — the directory containing `.claude-plugin/plugin.json` (usually `$CLAUDE_PLUGIN_ROOT`; otherwise the install location, e.g. `$HOME/.understand-anything-plugin`). Run modules via `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`; it creates the venv on first use. Pass absolute paths.
 
 ---
 
-## Phase 1 -- Discovery (arch_analysis scan + LLM narrative)
+## Phase 1 -- Discovery
 
-Phase 1 has three orchestrated steps. Steps **B** and **C** run arch_analysis modules; step **A** is the only LLM work in this phase.
+Steps B and C run arch_analysis modules; Step A is the only LLM work.
 
 ### Step A (LLM) -- Read manifests and README for narrative fields
 
-Read the top-level project files to gather narrative metadata. Do NOT walk the file tree or count files yourself — that is Step B's job.
+Read top-level project files for narrative metadata. Do NOT walk the file tree or count files (Step B's job). Read whichever exist at the project root:
+- `README.md` (or `README.rst`, `README`) — first ~10 lines
+- `package.json` — `name`, `description`, `dependencies`/`devDependencies` keys
+- `pyproject.toml`, `setup.py`, `setup.cfg`, `Pipfile`, `requirements.txt` — Python signals
+- `Cargo.toml` — Rust name + `[dependencies]`
+- `go.mod` — Go module name + `require`
+- `Gemfile` — Ruby signals
+- `pom.xml`, `build.gradle`, `build.gradle.kts` — JVM signals
+- `composer.json` — PHP signals
 
-Read whichever of these exist at the project root:
-- `README.md` (or `README.rst`, `README`) — capture the first ~10 lines for narrative grounding
-- `package.json` — extract `name`, `description`, plus `dependencies` / `devDependencies` keys for framework detection
-- `pyproject.toml`, `setup.py`, `setup.cfg`, `Pipfile`, `requirements.txt` — Python framework signals
-- `Cargo.toml` — Rust project name + `[dependencies]`
-- `go.mod` — Go module name + `require` block
-- `Gemfile` — Ruby framework signals
-- `pom.xml`, `build.gradle`, `build.gradle.kts` — JVM project signals
-- `composer.json` — PHP project signals
+Synthesize:
+- **`name`** — priority: `package.json` `name`, `Cargo.toml` `[package].name`, `go.mod` module path's last segment, `pyproject.toml` `[project].name` or `[tool.poetry].name`, else the project root directory name.
+- **`rawDescription`** — `package.json` `description` (or its manifest equivalent), else `""`.
+- **`readmeHead`** — first ~10 lines of README, else `""`.
+- **`frameworks`** — match dependency names against: JS/TS `react`, `vue`, `svelte`, `@angular/core`, `express`, `fastify`, `koa`, `next`, `nuxt`, `vite`, `vitest`, `jest`, `mocha`, `tailwindcss`, `prisma`, `typeorm`, `sequelize`, `mongoose`, `redux`, `zustand`, `mobx`; Python `django`, `djangorestframework`, `fastapi`, `flask`, `sqlalchemy`, `alembic`, `celery`, `pydantic`, `uvicorn`, `gunicorn`, `aiohttp`, `tornado`, `starlette`, `pytest`, `hypothesis`, `channels`; Ruby `rails`, `railties`, `sinatra`, `grape`, `rspec`, `sidekiq`, `activerecord`, `actionpack`, `devise`, `pundit`; Go `github.com/gin-gonic/gin`, `github.com/labstack/echo`, `github.com/gofiber/fiber`, `github.com/go-chi/chi`, `gorm.io/gorm`; Rust `actix-web`, `axum`, `rocket`, `diesel`, `tokio`, `serde`, `warp`; JVM `spring-boot`, `spring-web`, `spring-data`, `quarkus`, `micronaut`, `hibernate`, `jakarta`, `junit`, `ktor`. Also infer infra tools from file presence: `Docker` (`Dockerfile`), `Docker Compose` (`docker-compose.yml`/`.yaml`), `Terraform` (any `*.tf`), `GitHub Actions` (`.github/workflows/*.yml`), `GitLab CI` (`.gitlab-ci.yml`), `Jenkins` (`Jenkinsfile`).
+- **`languages`** — deduplicated, alphabetically-sorted top-level language set across manifests + Step B's per-file tally.
 
-From these, synthesize:
+If a manifest is missing/malformed, leave the field empty rather than guessing.
 
-- **`name`** -- in priority order: `package.json` `name`, `Cargo.toml` `[package].name`, `go.mod` module path's last segment, `pyproject.toml` `[project].name` or `[tool.poetry].name`, else the directory name of the project root.
-- **`rawDescription`** -- the `description` field from `package.json` (or its equivalent in the matching manifest), or `""` if none.
-- **`readmeHead`** -- the first ~10 lines of `README.md` (or equivalent), or `""` if no README exists.
-- **`frameworks`** -- match dependency names against known frameworks: `react`, `vue`, `svelte`, `@angular/core`, `express`, `fastify`, `koa`, `next`, `nuxt`, `vite`, `vitest`, `jest`, `mocha`, `tailwindcss`, `prisma`, `typeorm`, `sequelize`, `mongoose`, `redux`, `zustand`, `mobx`; Python: `django`, `djangorestframework`, `fastapi`, `flask`, `sqlalchemy`, `alembic`, `celery`, `pydantic`, `uvicorn`, `gunicorn`, `aiohttp`, `tornado`, `starlette`, `pytest`, `hypothesis`, `channels`; Ruby: `rails`, `railties`, `sinatra`, `grape`, `rspec`, `sidekiq`, `activerecord`, `actionpack`, `devise`, `pundit`; Go: `github.com/gin-gonic/gin`, `github.com/labstack/echo`, `github.com/gofiber/fiber`, `github.com/go-chi/chi`, `gorm.io/gorm`; Rust: `actix-web`, `axum`, `rocket`, `diesel`, `tokio`, `serde`, `warp`; JVM: `spring-boot`, `spring-web`, `spring-data`, `quarkus`, `micronaut`, `hibernate`, `jakarta`, `junit`, `ktor`. Also infer infrastructure tools from manifest presence: add `Docker` if `Dockerfile` exists in the file list, `Docker Compose` if `docker-compose.yml`/`docker-compose.yaml` exists, `Terraform` if any `*.tf`, `GitHub Actions` if `.github/workflows/*.yml`, `GitLab CI` if `.gitlab-ci.yml`, `Jenkins` if `Jenkinsfile`.
-- **`languages`** -- the deduplicated, alphabetically-sorted top-level language set you observe across the manifests + the scan module's per-file language tally (you will read this from Step B's output).
+### Step B (`scan_project`) -- File enumeration + language + category + lines
 
-If the manifest is missing or malformed, leave the corresponding field empty rather than guessing.
-
-### Step B (`"$PLUGIN_ROOT/packages/arch_analysis/run.sh" scan_project`) -- File enumeration + language + category + lines
-
-Invoke the scan module. It walks the project (preferring `git ls-files`, falling back to a recursive walk for non-git directories), applies `.understandignore` filtering (defaults + user patterns), assigns `language` and `fileCategory` per the canonical tables, counts lines, and writes deterministic JSON. You do not see or maintain those tables — they live in the package.
-
-Run it via the bundled launcher (it creates the Python virtualenv and installs dependencies on first use):
+Walks the project (prefers `git ls-files`, falls back to recursive walk), applies `.understandignore` filtering, assigns `language`/`fileCategory` per canonical tables, counts lines, writes deterministic JSON. You do not maintain those tables.
 
 ```bash
 mkdir -p $PROJECT_ROOT/.understand-anything/tmp
@@ -61,7 +53,7 @@ mkdir -p $PROJECT_ROOT/.understand-anything/tmp
   "$PROJECT_ROOT/.understand-anything/tmp/ua-scan-files.json"
 ```
 
-Output JSON shape (you will read this verbatim and merge into the final scan-result):
+Output shape (read verbatim, merge into the final scan-result):
 
 ```json
 {
@@ -83,15 +75,9 @@ Output JSON shape (you will read this verbatim and merge into the final scan-res
 }
 ```
 
-The script:
-- sorts `files` by `path.localeCompare` (deterministic)
-- emits `fileCategory ∈ {code, config, docs, infra, data, script, markup}` per file (priority-ordered per the rules below)
-- emits `language` as a non-null string for every file (canonical id for known extensions, lowercased extension for unknowns, `"unknown"` for no-extension files that don't match `Dockerfile` / `Makefile` / `Jenkinsfile`)
-- counts `filteredByIgnore` as the delta beyond hardcoded defaults — `!`-negation in `.understandignore` correctly re-includes files
-- emits `Warning: scan-project: <path> — <reason> — file skipped from output` on stderr for per-file failures (permission denied, malformed unicode, vanished file). Capture these and append to phase warnings.
-- emits `scan-project: filesScanned=… filteredByIgnore=… complexity=…` as the final stderr summary line; informational only.
+Behavior: `files` sorted by `path.localeCompare`; `fileCategory ∈ {code, config, docs, infra, data, script, markup}`; `language` non-null for every file; `filteredByIgnore` counts user-driven drops only (`!`-negation re-includes). Per-file failures emit `Warning: scan-project: <path> — <reason> — file skipped from output` on stderr — capture and append to phase warnings. A final `scan-project: filesScanned=… filteredByIgnore=… complexity=…` stderr line is informational.
 
-**Canonical category table** (for the record — the script is authoritative; do NOT re-derive these rules in your prompt):
+**Canonical category table** (the script is authoritative; do NOT re-derive):
 
 | Pattern | Category |
 |---|---|
@@ -105,19 +91,17 @@ The script:
 | `.html`, `.htm`, `.css`, `.scss`, `.sass`, `.less` | `markup` |
 | Everything else | `code` |
 
-**Priority rule:** most-specific wins. Filename / path rules fire before extension rules — e.g., `docker-compose.yml` is `infra` (not `config`); `.github/workflows/ci.yml` is `infra` (not `config`); `LICENSE` is `code` (not `docs`).
+**Priority:** most-specific wins — filename/path rules fire before extension rules (`docker-compose.yml` → `infra` not `config`; `.github/workflows/ci.yml` → `infra`; `LICENSE` → `code`).
 
-**`.understandignore` behavior:** the scan module reads `.understandignore` and `.understand-anything/.understandignore` if present and merges them with the hardcoded defaults (gitignore semantics via `pathspec`). `!`-negation overrides defaults (`!dist/` would re-include `dist/` files). The `filteredByIgnore` counter measures only user-driven drops, not baseline default drops.
+**`.understandignore`:** reads `.understandignore` and `.understand-anything/.understandignore`, merges with hardcoded defaults (gitignore semantics via `pathspec`); `!`-negation overrides defaults. `filteredByIgnore` measures only user-driven drops.
 
-If the module exits with a non-zero status, read stderr to diagnose. You have up to 2 retry attempts (re-invocations) before failing the phase. Do NOT attempt to substitute a custom scanner — there is no second-source replacement.
+On non-zero exit, diagnose via stderr; up to 2 retry attempts. There is no substitute scanner.
 
-### Step C -- Import Resolution (`"$PLUGIN_ROOT/packages/arch_analysis/run.sh" extract_import_map`)
+### Step C (`extract_import_map`) -- Import Resolution
 
-After Step B has produced the file list, invoke `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" extract_import_map` for deterministic import extraction across all supported code languages. It uses tree-sitter for parsing and applies language-specific resolution rules in code (see `arch_analysis/extract_import_map.py`).
+After Step B produces the file list, run `extract_import_map` for deterministic import extraction across supported code languages (tree-sitter + per-language rules in `arch_analysis/extract_import_map.py`). Do NOT re-implement import patterns.
 
-**Do not** attempt to re-implement import patterns. Step B emits `path`/`language`/`fileCategory` for every file; this script consumes that list and produces the `importMap`.
-
-Write the input JSON for the import-map module (the `files[]` array is exactly Step B's `files[]` — pass it through verbatim):
+Write the input JSON (its `files[]` is Step B's `files[]` verbatim):
 
 ```bash
 mkdir -p $PROJECT_ROOT/.understand-anything/tmp
@@ -132,15 +116,13 @@ cat > $PROJECT_ROOT/.understand-anything/tmp/ua-import-map-input.json << 'ENDJSO
 ENDJSON
 ```
 
-Then run it via the bundled launcher:
-
 ```bash
 "$PLUGIN_ROOT/packages/arch_analysis/run.sh" extract_import_map \
   $PROJECT_ROOT/.understand-anything/tmp/ua-import-map-input.json \
   $PROJECT_ROOT/.understand-anything/tmp/ua-import-map-output.json
 ```
 
-The output JSON has shape:
+Output shape:
 
 ```json
 {
@@ -155,29 +137,28 @@ The output JSON has shape:
 }
 ```
 
-Read the output JSON and merge the `importMap` field directly into your final scan-result.json (under the same key — `importMap`). The format matches the project-scanner contract: every input file has an entry; non-code files have empty arrays; resolved internal paths only (external packages are dropped).
+Merge `importMap` directly into the final scan-result.json (same key). Every input file has an entry; non-code files have empty arrays; resolved internal paths only (external packages dropped).
 
-**Capture stderr** when you run the import-map module. Any line starting with `Warning:` should be appended to phase warnings — the SKILL.md orchestrator captures these for the final report. The script also writes a one-line summary `extract-import-map: filesScanned=… filesWithImports=… totalEdges=…` on completion; you can ignore that line or surface it as informational.
+**Capture stderr:** append any `Warning:` line to phase warnings (the SKILL.md orchestrator captures these). A `extract-import-map: filesScanned=… filesWithImports=… totalEdges=…` summary line is informational.
 
-**Languages supported.** The import-map module natively handles import resolution for: TypeScript, JavaScript (including CJS `require()`), Python (relative + absolute + `__init__.py`), Go (go.mod prefix stripping), Rust (`use crate::`, `use super::`, `use self::`, and `mod x;` declarations), Java, Kotlin, C#, Ruby (`require` + `require_relative`), PHP (composer.json PSR-4 autoload), C, and C++ (`#include` with relative + include/ + src/ probes). Languages outside this set get empty arrays — there is no LLM-based fallback.
+**Languages supported:** TypeScript, JavaScript (incl. CJS `require()`), Python (relative + absolute + `__init__.py`), Go (go.mod prefix stripping), Rust (`use crate::`/`super::`/`self::`, `mod x;`), Java, Kotlin, C#, Ruby (`require` + `require_relative`), PHP (composer.json PSR-4), C, C++ (`#include` with relative + include/ + src/ probes). Others get empty arrays (no LLM fallback).
 
 ---
 
 ## Phase 2 -- Narrative JSON + Deterministic Assembly
 
-You do **not** hand-assemble the final contract. `arch_analysis.assemble_project_scan_result` merges your small narrative JSON with the deterministic scan/import outputs, copies `files` / `totalFiles` / `filteredByIgnore` / `estimatedComplexity` / `importMap` **verbatim**, validates the result against `arch_analysis/schemas/project-scan-output.schema.json` (the authoritative contract), and writes `intermediate/scan-result.json`.
+`arch_analysis.assemble_project_scan_result` merges your narrative JSON with the deterministic scan/import outputs, copies `files`/`totalFiles`/`filteredByIgnore`/`estimatedComplexity`/`importMap` **verbatim**, validates against `arch_analysis/schemas/project-scan-output.schema.json`, and writes `intermediate/scan-result.json`. You do NOT hand-assemble.
 
 ### Step 1 — Write the narrative JSON
 
-Synthesize the `description` from your Step A notes:
+Synthesize `description`:
+1. If `rawDescription` is non-empty, use it (clean up marketing fluff, keep 1-2 sentences).
+2. Else if `readmeHead` is non-empty, synthesize 1-2 sentences from it.
+3. Else omit `description` (assembler defaults to `"No description available"`).
 
-1. If `rawDescription` is non-empty, use it as the basis. Clean it up if needed (remove marketing fluff, ensure it is 1-2 sentences).
-2. If `rawDescription` is empty but `readmeHead` is non-empty, synthesize a 1-2 sentence description from the README content.
-3. If both are empty, omit `description` (the assembler defaults it to `"No description available"`).
+Do NOT add the "over 100 files" note — the assembler appends it when `totalFiles > 100`.
 
-Do NOT add the "over 100 files" note yourself — the assembler appends it deterministically when `totalFiles > 100`.
-
-Write only your narrative fields (the assembler supplies everything else):
+Write only your narrative fields:
 
 ```bash
 cat > $PROJECT_ROOT/.understand-anything/tmp/ua-scan-narrative.json << 'ENDJSON'
@@ -190,10 +171,10 @@ cat > $PROJECT_ROOT/.understand-anything/tmp/ua-scan-narrative.json << 'ENDJSON'
 ENDJSON
 ```
 
-- `name` (string): from your Step A narrative work. If omitted/empty the assembler falls back to the project directory name.
-- `description` (string, optional): your synthesized 1-2 sentence description.
-- `languages` (string[], optional): from your Step A narrative work (deduplicated, sorted alphabetically; cross-checked against Step B's `stats.byLanguage` keys). If omitted, the assembler fills it from the deterministic per-file language tally.
-- `frameworks` (string[]): only confirmed frameworks (empty array if none detected).
+- `name` (string): from Step A; if omitted the assembler falls back to the project directory name.
+- `description` (string, optional): synthesized 1-2 sentences.
+- `languages` (string[], optional): from Step A (dedup, alpha-sorted, cross-checked against Step B's `stats.byLanguage`); if omitted the assembler fills from the per-file tally.
+- `frameworks` (string[]): only confirmed frameworks (empty array if none).
 
 ### Step 2 — Run the assembler
 
@@ -203,11 +184,11 @@ ENDJSON
   "$PROJECT_ROOT/.understand-anything/tmp/ua-scan-narrative.json"
 ```
 
-It reads `tmp/ua-scan-files.json` (Step B) and `tmp/ua-import-map-output.json` (Step C) by default and writes the validated `intermediate/scan-result.json`. The `files` array and `importMap` are copied byte-for-byte from the deterministic outputs — you never re-walk the tree, re-count lines, re-derive categories, or re-resolve imports.
+Reads `tmp/ua-scan-files.json` (Step B) and `tmp/ua-import-map-output.json` (Step C), writes validated `intermediate/scan-result.json`. `files` and `importMap` are copied byte-for-byte — you never re-walk/re-count/re-derive/re-resolve.
 
-If it exits non-zero, read stderr: the usual cause is a `totalFiles`/`len(files)` mismatch or an `importMap` missing entries for scanned files — both indicate Step B and Step C are out of sync, so re-run those steps rather than editing the outputs by hand. You have up to 2 retry attempts.
+On non-zero exit, read stderr: usual cause is a `totalFiles`/`len(files)` mismatch or `importMap` missing entries — both mean Step B and C are out of sync, so re-run those steps rather than editing outputs by hand. Up to 2 retry attempts.
 
-The on-disk schema `arch_analysis/schemas/project-scan-output.schema.json` is the authoritative field contract; the example below is illustrative only:
+Authoritative contract: `arch_analysis/schemas/project-scan-output.schema.json`. Example (illustrative):
 
 ```json
 {
@@ -227,18 +208,15 @@ The on-disk schema `arch_analysis/schemas/project-scan-output.schema.json` is th
 
 ## Critical Constraints
 
-- NEVER invent or guess file paths. Every `path` in the `files` array must come from `arch_analysis.scan_project`'s output (which itself comes from `git ls-files` or a real directory listing).
-- NEVER include files that do not exist on disk.
-- ALWAYS validate that `totalFiles` matches the actual length of the `files` array.
-- Trust Step B for file enumeration + language detection + category assignment + line counts + complexity. Trust Step C for `importMap`. Your only synthesis is the `description` field (plus the Step A narrative fields: `name`, `frameworks`, `languages`).
-- Do NOT re-implement file enumeration, language detection, or category assignment in your discovery script. Use `arch_analysis.scan_project`. If the table doesn't cover your project type, file an issue rather than ad-hoc handling.
-- Do NOT attempt to re-implement import resolution. The `arch_analysis.extract_import_map` module handles all 12 supported code languages (TS, JS, Python, Go, Rust, Java, Kotlin, C#, Ruby, PHP, C, C++) deterministically via tree-sitter + per-language resolvers.
-- Every file MUST have a `fileCategory` field with one of: `code`, `config`, `docs`, `infra`, `data`, `script`, `markup` — `arch_analysis.scan_project` guarantees this; just don't strip it.
+- NEVER invent/guess file paths — every `path` comes from `scan_project`'s output.
+- NEVER include files that don't exist on disk.
+- ALWAYS ensure `totalFiles` matches the `files` array length.
+- Trust Step B (enumeration/language/category/lines/complexity) and Step C (`importMap`). Your only synthesis is `description` plus the Step A narrative fields (`name`, `frameworks`, `languages`).
+- Do NOT re-implement enumeration, language detection, category assignment, or import resolution.
+- Every file MUST keep its `fileCategory` (`code`/`config`/`docs`/`infra`/`data`/`script`/`markup`) — `scan_project` guarantees it; don't strip it.
 
 ## Writing Results
 
-`arch_analysis.assemble_project_scan_result` already wrote (and validated) `<project-root>/.understand-anything/intermediate/scan-result.json` in Phase 2 — you do NOT write it yourself.
+`assemble_project_scan_result` already wrote and validated `<project-root>/.understand-anything/intermediate/scan-result.json` in Phase 2 — you do NOT write it yourself.
 
-After the assembler exits `0`, respond with ONLY a brief text summary: project name, total file count (with breakdown by category), detected languages, estimated complexity.
-
-Do NOT include the full JSON in your text response.
+After the assembler exits `0`, respond with ONLY a brief text summary: project name, total file count (breakdown by category), detected languages, estimated complexity. Do NOT include the full JSON.

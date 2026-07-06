@@ -36,15 +36,15 @@ Framework context:
 {{FRAMEWORK_CONTEXT}}
 ```
 
-Use the directory tree, language context, and framework addenda to inform layer assignments. Directory structure is strong evidence for layer boundaries. Non-code files such as config, docs, infrastructure, data, scripts, and markup should be assigned to appropriate layers.
+Use the directory tree, language context, and framework addenda to inform layer assignments; directory structure is strong evidence for layer boundaries. Assign non-code files (config, docs, infrastructure, data, scripts, markup) to appropriate layers.
 
-Previous layer definitions, for naming consistency during incremental updates:
+Previous layer definitions (for naming consistency during incremental updates):
 
 ```json
 {{PREVIOUS_LAYERS_JSON}}
 ```
 
-Maintain the same layer names and IDs where possible. Only add or remove layers if the file structure has materially changed.
+Keep the same layer names and IDs where possible; only add/remove layers if the file structure has materially changed.
 
 ## Dispatch Prompt
 

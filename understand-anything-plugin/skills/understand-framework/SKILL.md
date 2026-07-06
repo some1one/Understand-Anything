@@ -5,13 +5,13 @@ description: Load the framework-specific prompt addendum used by Understand-Anyt
 
 # /understand-framework
 
-Load a single framework prompt addendum by name. This skill takes exactly one argument: the framework name.
+Load a single framework prompt addendum by name. Takes exactly one argument: the framework name.
 
 ## Instructions
 
 1. Set `SKILL_DIR` to the directory containing this `SKILL.md`.
-2. Run the bundled loader with exactly one framework argument:
+2. Run the loader with exactly one framework argument:
    ```bash
    python "$SKILL_DIR/scripts/load_prompt.py" "$ARGUMENTS"
    ```
-3. Use the markdown printed to stdout as the framework-specific prompt context. If the loader exits non-zero, treat the framework as unsupported and continue without an addendum unless the caller explicitly needs that framework.
+3. Use the markdown printed to stdout as the framework-specific prompt context. On non-zero exit, treat the framework as unsupported and continue without an addendum unless the caller explicitly needs it.

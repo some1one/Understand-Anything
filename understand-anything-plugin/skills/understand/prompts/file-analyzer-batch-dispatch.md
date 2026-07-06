@@ -31,19 +31,19 @@ Analyze these files and produce GraphNode and GraphEdge objects.
 - Skill directory (for bundled scripts): `{{SKILL_DIR}}`
 - Output: write to `{{OUTPUT_PATH}}`
 
-Pre-resolved import data for this batch. Use this directly; do not re-resolve imports from source:
+Pre-resolved import data for this batch. Use directly; do not re-resolve imports from source:
 
 ```json
 {{BATCH_IMPORT_DATA_JSON}}
 ```
 
-Cross-batch neighbors with exported symbols, for cross-batch edge confidence:
+Cross-batch neighbors with exported symbols (for cross-batch edge confidence):
 
 ```json
 {{NEIGHBOR_MAP_JSON}}
 ```
 
-Files to analyze in this batch. Every entry must be passed through to `batchFiles` with all four fields: `path`, `language`, `sizeLines`, and `fileCategory`.
+Files to analyze. Pass every entry through to `batchFiles` with all four fields: `path`, `language`, `sizeLines`, `fileCategory`.
 
 ```text
 {{BATCH_FILES}}

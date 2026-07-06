@@ -20,11 +20,11 @@ Package manifest:
 {{MANIFEST_CONTENT}}
 ```
 
-Use this context to produce a more accurate project name, description, and framework detection. The README and manifest are authoritative; prefer their information over heuristics.
+README and manifest are authoritative for project name, description, and framework detection; prefer them over heuristics.
 
 ## Dispatch Prompt
 
-Scan this project directory to discover all project files, including non-code files like configs, docs, infrastructure, data, scripts, and markup. Detect languages and frameworks.
+Scan this project directory to discover all project files (including non-code: configs, docs, infrastructure, data, scripts, markup). Detect languages and frameworks.
 
 - Project root: `{{PROJECT_ROOT}}`
 - Write output to: `{{PROJECT_ROOT}}/.understand-anything/intermediate/scan-result.json`

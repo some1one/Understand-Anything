@@ -3,10 +3,10 @@
 Deterministic structural-analysis scripts for the **architecture-analyzer**
 agent (`understand-anything-plugin/agents/architecture-analyzer.md`, Phase 1).
 
-The agent's prompt embeds a large, project-agnostic "write and run a script"
-spec: directory grouping, import adjacency, density, pattern matching,
-deployment topology, etc. That logic is deterministic and doesn't belong in a
-per-run prompt — this package implements it once, in a tested, organized form.
+The agent's prompt embeds a project-agnostic "write and run a script" spec
+(directory grouping, import adjacency, density, pattern matching, deployment
+topology, etc.). That deterministic logic doesn't belong in a per-run prompt —
+this package implements it once, tested and organized.
 
 ## Layout
 
@@ -57,10 +57,10 @@ pdm run python -m arch_analysis.validate_layers input.json layers.json
 ## Auto-update (incremental) command flow
 
 The post-commit hook (`understand-anything-plugin/hooks/auto-update-prompt.md`)
-drives an incremental update by chaining these deterministic commands. Each
-writes its output under `.understand-anything/intermediate/` and prints a
-machine-readable JSON summary to stdout. LLM work is limited to the file-analyzer
-and architecture-analyzer dispatches between phases 2a and 3.
+chains these deterministic commands for an incremental update. Each writes output
+under `.understand-anything/intermediate/` and prints a machine-readable JSON
+summary to stdout. LLM work is limited to the file-analyzer and
+architecture-analyzer dispatches between phases 2a and 3.
 
 ```bash
 # Phase 0 — pre-flight. Validates graph/meta, diffs commits, filters source +
@@ -115,16 +115,16 @@ standalone Draft 2020-12 JSON Schema files under `schemas/`:
 - `schemas/graph-fragment.schema.json` — file-analyzer batch/part output (`{nodes, edges}`)
 - `schemas/knowledge-graph.schema.json` / `schemas/domain-graph.schema.json` — full structural and domain graph contracts
 
-`analyze.py` validates the input payload against `input.schema.json` before
-parsing and the result against `output.schema.json` before writing, in addition
-to pydantic's own validation. Regenerate the files after editing the models:
+`analyze.py` validates the input against `input.schema.json` before parsing and
+the result against `output.schema.json` before writing (in addition to pydantic's
+own validation). Regenerate the files after editing the models:
 
 ```bash
 pdm run python -m arch_analysis.schema
 ```
 
-A drift test (`tests/test_schema.py`) fails if the committed schema files no
-longer match the models.
+Drift test `tests/test_schema.py` fails if the committed schema files no longer
+match the models.
 
 ## Dependencies (and why)
 
@@ -146,9 +146,9 @@ pdm run python -m arch_analysis.analyze input.json results.json
 
 Input JSON shape (`fileNodes`, `importEdges`, `allEdges`) and the result schema
 are documented in the agent markdown. The result includes every documented key
-plus a few extra deterministic signals: `commonPathPrefix`,
-`filePatternMatches`, `interGroupMatrix`, `graphMetrics`, and
-`phase2Recommendations` (the automatable Phase 2 signals).
+plus extra deterministic signals: `commonPathPrefix`, `filePatternMatches`,
+`interGroupMatrix`, `graphMetrics`, and `phase2Recommendations` (automatable
+Phase 2 signals).
 
 Exit code `0` on success, `1` on fatal error (message to stderr).
 

@@ -20,7 +20,7 @@ Phase warnings/errors accumulated during analysis:
 {{PHASE_WARNINGS}}
 ```
 
-Scan coverage is cross-checked deterministically. The graph-reviewer runs `validate_graph` with `--scan-result`, which flags any scanned file lacking a node and any node referencing a file absent from the scan inventory. Do not cross-validate coverage by hand.
+Scan coverage is cross-checked deterministically: `validate_graph --scan-result` flags any scanned file lacking a node and any node referencing a file absent from the scan inventory. Do not cross-validate coverage by hand.
 
 ## Dispatch Prompt
 
