@@ -8,9 +8,9 @@
 - **Properties (get/set)**: First-class property syntax with backing fields, auto-properties, and init-only
 - **Delegates and Events**: Type-safe function pointers; events provide publisher-subscriber pattern
 - **Attributes**: Metadata annotations (`[HttpGet]`, `[Authorize]`) for declarative configuration
-- **Nullable Reference Types**: Compiler-enforced null safety with `?` annotations (C# 8+)
+- **Nullable Reference Types**: Static nullability analysis and warnings with `?` annotations; not a runtime non-null guarantee
 - **Pattern Matching**: `is`, `switch` expressions with type, property, and relational patterns
-- **Records and Init-Only Setters**: Immutable reference types with value equality semantics (C# 9+)
+- **Records and Init-Only Setters**: Value equality and initialization-only setters; referenced objects may still be mutable
 - **Dependency Injection (Built-in)**: First-class DI container in ASP.NET Core (`IServiceCollection`)
 
 ## Import Patterns
@@ -39,7 +39,7 @@
 ## Example Language Notes
 
 > Uses LINQ method syntax `.Where().Select()` to compose a query pipeline over the
-> collection. LINQ operations are lazily evaluated — the query only executes when
+> collection. The `Where` and `Select` operations are lazily evaluated — the query only executes when
 > results are enumerated, allowing efficient composition without intermediate allocations.
 >
 > The built-in DI container in ASP.NET Core registers services in `Program.cs` and

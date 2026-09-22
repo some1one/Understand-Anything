@@ -1,0 +1,35 @@
+{
+  "status": "passed",
+  "sourceFilesCopied": 470,
+  "filesScanned": 464,
+  "batches": 38,
+  "functionsExtracted": 1635,
+  "importEdges": 335,
+  "graphNodes": 2097,
+  "graphEdges": 3416,
+  "subprocesses": 231,
+  "commandContracts": 33,
+  "structuralUpdate": "passed",
+  "emptyRuntimePath": true,
+  "offline": true,
+  "sourceUnchanged": true,
+  "workspace": "/tmp/ua-rust-smoke-b_fc66a5",
+  "recordedAt": "2026-09-22T21:03:11.496101+00:00",
+  "platform": "Linux x86_64",
+  "binarySha256": "d21cb9352afa252dd206684fcad99389254f688478a7474882dc4a1eca3ea27c",
+  "harnessSha256": "c31c94d9c4d40ddc6ac89fd32f0c738cac08b5cdda41c05dcc9d0ac92bd33740",
+  "checks": {
+    "formatting": "passed",
+    "clippy": "passed",
+    "differentialGroups": 17,
+    "runtimeTests": 17,
+    "parserDownload": "13 pinned grammars fetched successfully",
+    "parserOffline": "all 13 grammars passed with unreachable proxies",
+    "embeddingHttp": "passed with a local fixture"
+  },
+  "fixes": [
+    "Restored missing parser cache in ignored target/smoke-parsers.",
+    "Ran the local HTTP fixture with permission to bind its loopback socket."
+  ],
+  "rustCodeChangesRequired": false
+}

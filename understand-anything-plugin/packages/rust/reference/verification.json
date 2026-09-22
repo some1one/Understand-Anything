@@ -1,0 +1,53 @@
+{
+  "recordedAt": "2026-09-21T20:53:08.113393+00:00",
+  "host": "x86_64-unknown-linux-gnu",
+  "rust": "1.98.1",
+  "python": "3.14.4",
+  "referenceFilesUnchanged": 86,
+  "productionModules": 68,
+  "commandContractsExercised": 33,
+  "capturedCases": 3511,
+  "fixtures": {
+    "additional_commands.json": 22,
+    "analytics.json": 24,
+    "commands.json": 4,
+    "imports.json": 49,
+    "merging.json": 233,
+    "models.json": 1959,
+    "parser_edges.json": 29,
+    "pipeline.json": 143,
+    "pipeline_commands.json": 4,
+    "reference.json": 355,
+    "review_batches.json": 99,
+    "review_commands.json": 3,
+    "skills.json": 9,
+    "statuses.json": 37,
+    "strict_schemas.json": 176,
+    "structure.json": 17,
+    "updates.json": 28,
+    "validation.json": 320
+  },
+  "checks": {
+    "formatting": "passed",
+    "clippyAllTargetsWarningsDenied": "passed",
+    "differentialGroupsIncludingParserTests": 17,
+    "runtimeOrdinaryTests": 15,
+    "parserIntegration": "13 grammars; cold download, warm offline and corrupt/incompatible cache cases passed",
+    "embeddingHttp": "local HTTP fixture passed; no hosted embedding service used",
+    "release": "passed; empty PATH and unreachable proxies; version, parser list, scan, schema export and cached Rust extraction",
+    "pythonCoreTests": 634,
+    "pythonIntegrationTests": 27
+  },
+  "platforms": {
+    "x86_64-unknown-linux-gnu": "verified locally",
+    "aarch64-unknown-linux-gnu": "CI configured; not executed",
+    "x86_64-apple-darwin": "CI configured; not executed",
+    "aarch64-apple-darwin": "CI configured; not executed"
+  },
+  "acceptanceComplete": false,
+  "limitations": [
+    "The four-platform acceptance gate remains open.",
+    "Captured scenarios provide regression evidence, not exhaustive equivalence for all possible inputs.",
+    "Grammar versions differ from the reference: Rust 1.20.0 versus Python 1.12.1."
+  ]
+}

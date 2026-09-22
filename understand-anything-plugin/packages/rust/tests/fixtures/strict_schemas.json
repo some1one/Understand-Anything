@@ -1,0 +1,1847 @@
+[
+  {
+    "schema": "input.schema.json",
+    "input": null,
+    "expected": "<root>: None is not of type 'object'"
+  },
+  {
+    "schema": "input.schema.json",
+    "input": {},
+    "expected": "<root>: 'fileNodes' is a required property"
+  },
+  {
+    "schema": "input.schema.json",
+    "input": [],
+    "expected": "<root>: [] is not of type 'object'"
+  },
+  {
+    "schema": "input.schema.json",
+    "input": {
+      "unexpected": true
+    },
+    "expected": "<root>: 'fileNodes' is a required property"
+  },
+  {
+    "schema": "input.schema.json",
+    "input": {
+      "fileNodes": null,
+      "importEdges": null,
+      "allEdges": null
+    },
+    "expected": "allEdges: None is not of type 'array'; fileNodes: None is not of type 'array'; importEdges: None is not of type 'array'"
+  },
+  {
+    "schema": "input.schema.json",
+    "input": {
+      "fileNodes": false,
+      "importEdges": false,
+      "allEdges": false
+    },
+    "expected": "allEdges: False is not of type 'array'; fileNodes: False is not of type 'array'; importEdges: False is not of type 'array'"
+  },
+  {
+    "schema": "input.schema.json",
+    "input": {
+      "fileNodes": 0,
+      "importEdges": 0,
+      "allEdges": 0
+    },
+    "expected": "allEdges: 0 is not of type 'array'; fileNodes: 0 is not of type 'array'; importEdges: 0 is not of type 'array'"
+  },
+  {
+    "schema": "input.schema.json",
+    "input": {
+      "fileNodes": "",
+      "importEdges": "",
+      "allEdges": ""
+    },
+    "expected": "allEdges: '' is not of type 'array'; fileNodes: '' is not of type 'array'; importEdges: '' is not of type 'array'"
+  },
+  {
+    "schema": "input.schema.json",
+    "input": {
+      "fileNodes": [],
+      "importEdges": [],
+      "allEdges": []
+    },
+    "expected": null
+  },
+  {
+    "schema": "input.schema.json",
+    "input": {
+      "fileNodes": {},
+      "importEdges": {},
+      "allEdges": {}
+    },
+    "expected": "allEdges: {} is not of type 'array'; fileNodes: {} is not of type 'array'; importEdges: {} is not of type 'array'"
+  },
+  {
+    "schema": "input.schema.json",
+    "input": {
+      "fileNodes": [
+        "bad"
+      ],
+      "importEdges": [
+        "bad"
+      ],
+      "allEdges": [
+        "bad"
+      ]
+    },
+    "expected": "allEdges/0: 'bad' is not of type 'object'; fileNodes/0: 'bad' is not of type 'object'; importEdges/0: 'bad' is not of type 'object'"
+  },
+  {
+    "schema": "output.schema.json",
+    "input": null,
+    "expected": "<root>: None is not of type 'object'"
+  },
+  {
+    "schema": "output.schema.json",
+    "input": {},
+    "expected": "<root>: 'scriptCompleted' is a required property; <root>: 'directoryGroups' is a required property; <root>: 'nodeTypeGroups' is a required property; <root>: 'crossCategoryEdges' is a required property; <root>: 'interGroupImports' is a required property; <root>: 'intraGroupDensity' is a required property; <root>: 'patternMatches' is a required property; <root>: 'deploymentTopology' is a required property; <root>: 'dataPipeline' is a required property; <root>: 'docCoverage' is a required property; <root>: 'dependencyDirection' is a required property; <root>: 'fileStats' is a required property; <root>: 'fileFanIn' is a required property; <root>: 'fileFanOut' is a required property"
+  },
+  {
+    "schema": "output.schema.json",
+    "input": [],
+    "expected": "<root>: [] is not of type 'object'"
+  },
+  {
+    "schema": "output.schema.json",
+    "input": {
+      "unexpected": true
+    },
+    "expected": "<root>: 'scriptCompleted' is a required property; <root>: 'directoryGroups' is a required property; <root>: 'nodeTypeGroups' is a required property; <root>: 'crossCategoryEdges' is a required property; <root>: 'interGroupImports' is a required property; <root>: 'intraGroupDensity' is a required property; <root>: 'patternMatches' is a required property; <root>: 'deploymentTopology' is a required property; <root>: 'dataPipeline' is a required property; <root>: 'docCoverage' is a required property; <root>: 'dependencyDirection' is a required property; <root>: 'fileStats' is a required property; <root>: 'fileFanIn' is a required property; <root>: 'fileFanOut' is a required property"
+  },
+  {
+    "schema": "output.schema.json",
+    "input": {
+      "scriptCompleted": null,
+      "directoryGroups": null,
+      "nodeTypeGroups": null,
+      "crossCategoryEdges": null,
+      "interGroupImports": null,
+      "intraGroupDensity": null,
+      "patternMatches": null,
+      "deploymentTopology": null,
+      "dataPipeline": null,
+      "docCoverage": null,
+      "dependencyDirection": null,
+      "fileStats": null,
+      "fileFanIn": null,
+      "fileFanOut": null
+    },
+    "expected": "crossCategoryEdges: None is not of type 'array'; dataPipeline: None is not of type 'object'; dependencyDirection: None is not of type 'array'; deploymentTopology: None is not of type 'object'; directoryGroups: None is not of type 'object'; docCoverage: None is not of type 'object'; fileFanIn: None is not of type 'object'; fileFanOut: None is not of type 'object'; fileStats: None is not of type 'object'; interGroupImports: None is not of type 'array'; intraGroupDensity: None is not of type 'object'; nodeTypeGroups: None is not of type 'object'; patternMatches: None is not of type 'object'; scriptCompleted: None is not of type 'boolean'"
+  },
+  {
+    "schema": "output.schema.json",
+    "input": {
+      "scriptCompleted": false,
+      "directoryGroups": false,
+      "nodeTypeGroups": false,
+      "crossCategoryEdges": false,
+      "interGroupImports": false,
+      "intraGroupDensity": false,
+      "patternMatches": false,
+      "deploymentTopology": false,
+      "dataPipeline": false,
+      "docCoverage": false,
+      "dependencyDirection": false,
+      "fileStats": false,
+      "fileFanIn": false,
+      "fileFanOut": false
+    },
+    "expected": "crossCategoryEdges: False is not of type 'array'; dataPipeline: False is not of type 'object'; dependencyDirection: False is not of type 'array'; deploymentTopology: False is not of type 'object'; directoryGroups: False is not of type 'object'; docCoverage: False is not of type 'object'; fileFanIn: False is not of type 'object'; fileFanOut: False is not of type 'object'; fileStats: False is not of type 'object'; interGroupImports: False is not of type 'array'; intraGroupDensity: False is not of type 'object'; nodeTypeGroups: False is not of type 'object'; patternMatches: False is not of type 'object'"
+  },
+  {
+    "schema": "output.schema.json",
+    "input": {
+      "scriptCompleted": 0,
+      "directoryGroups": 0,
+      "nodeTypeGroups": 0,
+      "crossCategoryEdges": 0,
+      "interGroupImports": 0,
+      "intraGroupDensity": 0,
+      "patternMatches": 0,
+      "deploymentTopology": 0,
+      "dataPipeline": 0,
+      "docCoverage": 0,
+      "dependencyDirection": 0,
+      "fileStats": 0,
+      "fileFanIn": 0,
+      "fileFanOut": 0
+    },
+    "expected": "crossCategoryEdges: 0 is not of type 'array'; dataPipeline: 0 is not of type 'object'; dependencyDirection: 0 is not of type 'array'; deploymentTopology: 0 is not of type 'object'; directoryGroups: 0 is not of type 'object'; docCoverage: 0 is not of type 'object'; fileFanIn: 0 is not of type 'object'; fileFanOut: 0 is not of type 'object'; fileStats: 0 is not of type 'object'; interGroupImports: 0 is not of type 'array'; intraGroupDensity: 0 is not of type 'object'; nodeTypeGroups: 0 is not of type 'object'; patternMatches: 0 is not of type 'object'; scriptCompleted: 0 is not of type 'boolean'"
+  },
+  {
+    "schema": "output.schema.json",
+    "input": {
+      "scriptCompleted": "",
+      "directoryGroups": "",
+      "nodeTypeGroups": "",
+      "crossCategoryEdges": "",
+      "interGroupImports": "",
+      "intraGroupDensity": "",
+      "patternMatches": "",
+      "deploymentTopology": "",
+      "dataPipeline": "",
+      "docCoverage": "",
+      "dependencyDirection": "",
+      "fileStats": "",
+      "fileFanIn": "",
+      "fileFanOut": ""
+    },
+    "expected": "crossCategoryEdges: '' is not of type 'array'; dataPipeline: '' is not of type 'object'; dependencyDirection: '' is not of type 'array'; deploymentTopology: '' is not of type 'object'; directoryGroups: '' is not of type 'object'; docCoverage: '' is not of type 'object'; fileFanIn: '' is not of type 'object'; fileFanOut: '' is not of type 'object'; fileStats: '' is not of type 'object'; interGroupImports: '' is not of type 'array'; intraGroupDensity: '' is not of type 'object'; nodeTypeGroups: '' is not of type 'object'; patternMatches: '' is not of type 'object'; scriptCompleted: '' is not of type 'boolean'"
+  },
+  {
+    "schema": "output.schema.json",
+    "input": {
+      "scriptCompleted": [],
+      "directoryGroups": [],
+      "nodeTypeGroups": [],
+      "crossCategoryEdges": [],
+      "interGroupImports": [],
+      "intraGroupDensity": [],
+      "patternMatches": [],
+      "deploymentTopology": [],
+      "dataPipeline": [],
+      "docCoverage": [],
+      "dependencyDirection": [],
+      "fileStats": [],
+      "fileFanIn": [],
+      "fileFanOut": []
+    },
+    "expected": "dataPipeline: [] is not of type 'object'; deploymentTopology: [] is not of type 'object'; directoryGroups: [] is not of type 'object'; docCoverage: [] is not of type 'object'; fileFanIn: [] is not of type 'object'; fileFanOut: [] is not of type 'object'; fileStats: [] is not of type 'object'; intraGroupDensity: [] is not of type 'object'; nodeTypeGroups: [] is not of type 'object'; patternMatches: [] is not of type 'object'; scriptCompleted: [] is not of type 'boolean'"
+  },
+  {
+    "schema": "output.schema.json",
+    "input": {
+      "scriptCompleted": {},
+      "directoryGroups": {},
+      "nodeTypeGroups": {},
+      "crossCategoryEdges": {},
+      "interGroupImports": {},
+      "intraGroupDensity": {},
+      "patternMatches": {},
+      "deploymentTopology": {},
+      "dataPipeline": {},
+      "docCoverage": {},
+      "dependencyDirection": {},
+      "fileStats": {},
+      "fileFanIn": {},
+      "fileFanOut": {}
+    },
+    "expected": "crossCategoryEdges: {} is not of type 'array'; dependencyDirection: {} is not of type 'array'; interGroupImports: {} is not of type 'array'; scriptCompleted: {} is not of type 'boolean'"
+  },
+  {
+    "schema": "output.schema.json",
+    "input": {
+      "scriptCompleted": [
+        "bad"
+      ],
+      "directoryGroups": [
+        "bad"
+      ],
+      "nodeTypeGroups": [
+        "bad"
+      ],
+      "crossCategoryEdges": [
+        "bad"
+      ],
+      "interGroupImports": [
+        "bad"
+      ],
+      "intraGroupDensity": [
+        "bad"
+      ],
+      "patternMatches": [
+        "bad"
+      ],
+      "deploymentTopology": [
+        "bad"
+      ],
+      "dataPipeline": [
+        "bad"
+      ],
+      "docCoverage": [
+        "bad"
+      ],
+      "dependencyDirection": [
+        "bad"
+      ],
+      "fileStats": [
+        "bad"
+      ],
+      "fileFanIn": [
+        "bad"
+      ],
+      "fileFanOut": [
+        "bad"
+      ]
+    },
+    "expected": "crossCategoryEdges/0: 'bad' is not of type 'object'; dataPipeline: ['bad'] is not of type 'object'; dependencyDirection/0: 'bad' is not of type 'object'; deploymentTopology: ['bad'] is not of type 'object'; directoryGroups: ['bad'] is not of type 'object'; docCoverage: ['bad'] is not of type 'object'; fileFanIn: ['bad'] is not of type 'object'; fileFanOut: ['bad'] is not of type 'object'; fileStats: ['bad'] is not of type 'object'; interGroupImports/0: 'bad' is not of type 'object'; intraGroupDensity: ['bad'] is not of type 'object'; nodeTypeGroups: ['bad'] is not of type 'object'; patternMatches: ['bad'] is not of type 'object'; scriptCompleted: ['bad'] is not of type 'boolean'"
+  },
+  {
+    "schema": "layers.schema.json",
+    "input": null,
+    "expected": "<root>: None is not of type 'array'"
+  },
+  {
+    "schema": "layers.schema.json",
+    "input": {},
+    "expected": "<root>: {} is not of type 'array'"
+  },
+  {
+    "schema": "layers.schema.json",
+    "input": [],
+    "expected": null
+  },
+  {
+    "schema": "layers.schema.json",
+    "input": {
+      "unexpected": true
+    },
+    "expected": "<root>: {'unexpected': True} is not of type 'array'"
+  },
+  {
+    "schema": "layers.schema.json",
+    "input": {},
+    "expected": "<root>: {} is not of type 'array'"
+  },
+  {
+    "schema": "layers.schema.json",
+    "input": {},
+    "expected": "<root>: {} is not of type 'array'"
+  },
+  {
+    "schema": "layers.schema.json",
+    "input": {},
+    "expected": "<root>: {} is not of type 'array'"
+  },
+  {
+    "schema": "layers.schema.json",
+    "input": {},
+    "expected": "<root>: {} is not of type 'array'"
+  },
+  {
+    "schema": "layers.schema.json",
+    "input": {},
+    "expected": "<root>: {} is not of type 'array'"
+  },
+  {
+    "schema": "layers.schema.json",
+    "input": {},
+    "expected": "<root>: {} is not of type 'array'"
+  },
+  {
+    "schema": "layers.schema.json",
+    "input": {},
+    "expected": "<root>: {} is not of type 'array'"
+  },
+  {
+    "schema": "scan-result.schema.json",
+    "input": null,
+    "expected": "<root>: None is not of type 'object'"
+  },
+  {
+    "schema": "scan-result.schema.json",
+    "input": {},
+    "expected": "<root>: 'scriptCompleted' is a required property; <root>: 'files' is a required property; <root>: 'totalFiles' is a required property; <root>: 'filteredByIgnore' is a required property; <root>: 'estimatedComplexity' is a required property; <root>: 'stats' is a required property"
+  },
+  {
+    "schema": "scan-result.schema.json",
+    "input": [],
+    "expected": "<root>: [] is not of type 'object'"
+  },
+  {
+    "schema": "scan-result.schema.json",
+    "input": {
+      "unexpected": true
+    },
+    "expected": "<root>: Additional properties are not allowed ('unexpected' was unexpected); <root>: 'scriptCompleted' is a required property; <root>: 'files' is a required property; <root>: 'totalFiles' is a required property; <root>: 'filteredByIgnore' is a required property; <root>: 'estimatedComplexity' is a required property; <root>: 'stats' is a required property"
+  },
+  {
+    "schema": "scan-result.schema.json",
+    "input": {
+      "scriptCompleted": null,
+      "files": null,
+      "totalFiles": null,
+      "filteredByIgnore": null,
+      "estimatedComplexity": null,
+      "stats": null
+    },
+    "expected": "estimatedComplexity: None is not of type 'string'; files: None is not of type 'array'; filteredByIgnore: None is not of type 'integer'; scriptCompleted: None is not of type 'boolean'; stats: None is not of type 'object'; totalFiles: None is not of type 'integer'"
+  },
+  {
+    "schema": "scan-result.schema.json",
+    "input": {
+      "scriptCompleted": false,
+      "files": false,
+      "totalFiles": false,
+      "filteredByIgnore": false,
+      "estimatedComplexity": false,
+      "stats": false
+    },
+    "expected": "estimatedComplexity: False is not of type 'string'; files: False is not of type 'array'; filteredByIgnore: False is not of type 'integer'; stats: False is not of type 'object'; totalFiles: False is not of type 'integer'"
+  },
+  {
+    "schema": "scan-result.schema.json",
+    "input": {
+      "scriptCompleted": 0,
+      "files": 0,
+      "totalFiles": 0,
+      "filteredByIgnore": 0,
+      "estimatedComplexity": 0,
+      "stats": 0
+    },
+    "expected": "estimatedComplexity: 0 is not of type 'string'; files: 0 is not of type 'array'; scriptCompleted: 0 is not of type 'boolean'; stats: 0 is not of type 'object'"
+  },
+  {
+    "schema": "scan-result.schema.json",
+    "input": {
+      "scriptCompleted": "",
+      "files": "",
+      "totalFiles": "",
+      "filteredByIgnore": "",
+      "estimatedComplexity": "",
+      "stats": ""
+    },
+    "expected": "files: '' is not of type 'array'; filteredByIgnore: '' is not of type 'integer'; scriptCompleted: '' is not of type 'boolean'; stats: '' is not of type 'object'; totalFiles: '' is not of type 'integer'"
+  },
+  {
+    "schema": "scan-result.schema.json",
+    "input": {
+      "scriptCompleted": [],
+      "files": [],
+      "totalFiles": [],
+      "filteredByIgnore": [],
+      "estimatedComplexity": [],
+      "stats": []
+    },
+    "expected": "estimatedComplexity: [] is not of type 'string'; filteredByIgnore: [] is not of type 'integer'; scriptCompleted: [] is not of type 'boolean'; stats: [] is not of type 'object'; totalFiles: [] is not of type 'integer'"
+  },
+  {
+    "schema": "scan-result.schema.json",
+    "input": {
+      "scriptCompleted": {},
+      "files": {},
+      "totalFiles": {},
+      "filteredByIgnore": {},
+      "estimatedComplexity": {},
+      "stats": {}
+    },
+    "expected": "estimatedComplexity: {} is not of type 'string'; files: {} is not of type 'array'; filteredByIgnore: {} is not of type 'integer'; scriptCompleted: {} is not of type 'boolean'; stats: 'filesScanned' is a required property; stats: 'byCategory' is a required property; stats: 'byLanguage' is a required property; totalFiles: {} is not of type 'integer'"
+  },
+  {
+    "schema": "scan-result.schema.json",
+    "input": {
+      "scriptCompleted": [
+        "bad"
+      ],
+      "files": [
+        "bad"
+      ],
+      "totalFiles": [
+        "bad"
+      ],
+      "filteredByIgnore": [
+        "bad"
+      ],
+      "estimatedComplexity": [
+        "bad"
+      ],
+      "stats": [
+        "bad"
+      ]
+    },
+    "expected": "estimatedComplexity: ['bad'] is not of type 'string'; files/0: 'bad' is not of type 'object'; filteredByIgnore: ['bad'] is not of type 'integer'; scriptCompleted: ['bad'] is not of type 'boolean'; stats: ['bad'] is not of type 'object'; totalFiles: ['bad'] is not of type 'integer'"
+  },
+  {
+    "schema": "import-map-input.schema.json",
+    "input": null,
+    "expected": "<root>: None is not of type 'object'"
+  },
+  {
+    "schema": "import-map-input.schema.json",
+    "input": {},
+    "expected": "<root>: 'projectRoot' is a required property"
+  },
+  {
+    "schema": "import-map-input.schema.json",
+    "input": [],
+    "expected": "<root>: [] is not of type 'object'"
+  },
+  {
+    "schema": "import-map-input.schema.json",
+    "input": {
+      "unexpected": true
+    },
+    "expected": "<root>: 'projectRoot' is a required property"
+  },
+  {
+    "schema": "import-map-input.schema.json",
+    "input": {
+      "projectRoot": null,
+      "files": null
+    },
+    "expected": "files: None is not of type 'array'; projectRoot: None is not of type 'string'"
+  },
+  {
+    "schema": "import-map-input.schema.json",
+    "input": {
+      "projectRoot": false,
+      "files": false
+    },
+    "expected": "files: False is not of type 'array'; projectRoot: False is not of type 'string'"
+  },
+  {
+    "schema": "import-map-input.schema.json",
+    "input": {
+      "projectRoot": 0,
+      "files": 0
+    },
+    "expected": "files: 0 is not of type 'array'; projectRoot: 0 is not of type 'string'"
+  },
+  {
+    "schema": "import-map-input.schema.json",
+    "input": {
+      "projectRoot": "",
+      "files": ""
+    },
+    "expected": "files: '' is not of type 'array'"
+  },
+  {
+    "schema": "import-map-input.schema.json",
+    "input": {
+      "projectRoot": [],
+      "files": []
+    },
+    "expected": "projectRoot: [] is not of type 'string'"
+  },
+  {
+    "schema": "import-map-input.schema.json",
+    "input": {
+      "projectRoot": {},
+      "files": {}
+    },
+    "expected": "files: {} is not of type 'array'; projectRoot: {} is not of type 'string'"
+  },
+  {
+    "schema": "import-map-input.schema.json",
+    "input": {
+      "projectRoot": [
+        "bad"
+      ],
+      "files": [
+        "bad"
+      ]
+    },
+    "expected": "files/0: 'bad' is not of type 'object'; projectRoot: ['bad'] is not of type 'string'"
+  },
+  {
+    "schema": "import-map-output.schema.json",
+    "input": null,
+    "expected": "<root>: None is not of type 'object'"
+  },
+  {
+    "schema": "import-map-output.schema.json",
+    "input": {},
+    "expected": "<root>: 'scriptCompleted' is a required property; <root>: 'stats' is a required property; <root>: 'importMap' is a required property"
+  },
+  {
+    "schema": "import-map-output.schema.json",
+    "input": [],
+    "expected": "<root>: [] is not of type 'object'"
+  },
+  {
+    "schema": "import-map-output.schema.json",
+    "input": {
+      "unexpected": true
+    },
+    "expected": "<root>: Additional properties are not allowed ('unexpected' was unexpected); <root>: 'scriptCompleted' is a required property; <root>: 'stats' is a required property; <root>: 'importMap' is a required property"
+  },
+  {
+    "schema": "import-map-output.schema.json",
+    "input": {
+      "scriptCompleted": null,
+      "stats": null,
+      "importMap": null
+    },
+    "expected": "importMap: None is not of type 'object'; scriptCompleted: None is not of type 'boolean'; stats: None is not of type 'object'"
+  },
+  {
+    "schema": "import-map-output.schema.json",
+    "input": {
+      "scriptCompleted": false,
+      "stats": false,
+      "importMap": false
+    },
+    "expected": "importMap: False is not of type 'object'; stats: False is not of type 'object'"
+  },
+  {
+    "schema": "import-map-output.schema.json",
+    "input": {
+      "scriptCompleted": 0,
+      "stats": 0,
+      "importMap": 0
+    },
+    "expected": "importMap: 0 is not of type 'object'; scriptCompleted: 0 is not of type 'boolean'; stats: 0 is not of type 'object'"
+  },
+  {
+    "schema": "import-map-output.schema.json",
+    "input": {
+      "scriptCompleted": "",
+      "stats": "",
+      "importMap": ""
+    },
+    "expected": "importMap: '' is not of type 'object'; scriptCompleted: '' is not of type 'boolean'; stats: '' is not of type 'object'"
+  },
+  {
+    "schema": "import-map-output.schema.json",
+    "input": {
+      "scriptCompleted": [],
+      "stats": [],
+      "importMap": []
+    },
+    "expected": "importMap: [] is not of type 'object'; scriptCompleted: [] is not of type 'boolean'; stats: [] is not of type 'object'"
+  },
+  {
+    "schema": "import-map-output.schema.json",
+    "input": {
+      "scriptCompleted": {},
+      "stats": {},
+      "importMap": {}
+    },
+    "expected": "scriptCompleted: {} is not of type 'boolean'; stats: 'filesScanned' is a required property; stats: 'filesWithImports' is a required property; stats: 'totalEdges' is a required property"
+  },
+  {
+    "schema": "import-map-output.schema.json",
+    "input": {
+      "scriptCompleted": [
+        "bad"
+      ],
+      "stats": [
+        "bad"
+      ],
+      "importMap": [
+        "bad"
+      ]
+    },
+    "expected": "importMap: ['bad'] is not of type 'object'; scriptCompleted: ['bad'] is not of type 'boolean'; stats: ['bad'] is not of type 'object'"
+  },
+  {
+    "schema": "structure-input.schema.json",
+    "input": null,
+    "expected": "<root>: None is not of type 'object'"
+  },
+  {
+    "schema": "structure-input.schema.json",
+    "input": {},
+    "expected": "<root>: 'projectRoot' is a required property; <root>: 'batchFiles' is a required property"
+  },
+  {
+    "schema": "structure-input.schema.json",
+    "input": [],
+    "expected": "<root>: [] is not of type 'object'"
+  },
+  {
+    "schema": "structure-input.schema.json",
+    "input": {
+      "unexpected": true
+    },
+    "expected": "<root>: 'projectRoot' is a required property; <root>: 'batchFiles' is a required property"
+  },
+  {
+    "schema": "structure-input.schema.json",
+    "input": {
+      "projectRoot": null,
+      "batchFiles": null,
+      "batchImportData": null
+    },
+    "expected": "batchFiles: None is not of type 'array'; batchImportData: None is not of type 'object'; projectRoot: None is not of type 'string'"
+  },
+  {
+    "schema": "structure-input.schema.json",
+    "input": {
+      "projectRoot": false,
+      "batchFiles": false,
+      "batchImportData": false
+    },
+    "expected": "batchFiles: False is not of type 'array'; batchImportData: False is not of type 'object'; projectRoot: False is not of type 'string'"
+  },
+  {
+    "schema": "structure-input.schema.json",
+    "input": {
+      "projectRoot": 0,
+      "batchFiles": 0,
+      "batchImportData": 0
+    },
+    "expected": "batchFiles: 0 is not of type 'array'; batchImportData: 0 is not of type 'object'; projectRoot: 0 is not of type 'string'"
+  },
+  {
+    "schema": "structure-input.schema.json",
+    "input": {
+      "projectRoot": "",
+      "batchFiles": "",
+      "batchImportData": ""
+    },
+    "expected": "batchFiles: '' is not of type 'array'; batchImportData: '' is not of type 'object'"
+  },
+  {
+    "schema": "structure-input.schema.json",
+    "input": {
+      "projectRoot": [],
+      "batchFiles": [],
+      "batchImportData": []
+    },
+    "expected": "batchImportData: [] is not of type 'object'; projectRoot: [] is not of type 'string'"
+  },
+  {
+    "schema": "structure-input.schema.json",
+    "input": {
+      "projectRoot": {},
+      "batchFiles": {},
+      "batchImportData": {}
+    },
+    "expected": "batchFiles: {} is not of type 'array'; projectRoot: {} is not of type 'string'"
+  },
+  {
+    "schema": "structure-input.schema.json",
+    "input": {
+      "projectRoot": [
+        "bad"
+      ],
+      "batchFiles": [
+        "bad"
+      ],
+      "batchImportData": [
+        "bad"
+      ]
+    },
+    "expected": "batchFiles/0: 'bad' is not of type 'object'; batchImportData: ['bad'] is not of type 'object'; projectRoot: ['bad'] is not of type 'string'"
+  },
+  {
+    "schema": "structure-output.schema.json",
+    "input": null,
+    "expected": "<root>: None is not of type 'object'"
+  },
+  {
+    "schema": "structure-output.schema.json",
+    "input": {},
+    "expected": "<root>: 'scriptCompleted' is a required property; <root>: 'filesAnalyzed' is a required property"
+  },
+  {
+    "schema": "structure-output.schema.json",
+    "input": [],
+    "expected": "<root>: [] is not of type 'object'"
+  },
+  {
+    "schema": "structure-output.schema.json",
+    "input": {
+      "unexpected": true
+    },
+    "expected": "<root>: 'scriptCompleted' is a required property; <root>: 'filesAnalyzed' is a required property"
+  },
+  {
+    "schema": "structure-output.schema.json",
+    "input": {
+      "scriptCompleted": null,
+      "filesAnalyzed": null,
+      "filesSkipped": null,
+      "results": null
+    },
+    "expected": "filesAnalyzed: None is not of type 'integer'; filesSkipped: None is not of type 'array'; results: None is not of type 'array'; scriptCompleted: None is not of type 'boolean'"
+  },
+  {
+    "schema": "structure-output.schema.json",
+    "input": {
+      "scriptCompleted": false,
+      "filesAnalyzed": false,
+      "filesSkipped": false,
+      "results": false
+    },
+    "expected": "filesAnalyzed: False is not of type 'integer'; filesSkipped: False is not of type 'array'; results: False is not of type 'array'"
+  },
+  {
+    "schema": "structure-output.schema.json",
+    "input": {
+      "scriptCompleted": 0,
+      "filesAnalyzed": 0,
+      "filesSkipped": 0,
+      "results": 0
+    },
+    "expected": "filesSkipped: 0 is not of type 'array'; results: 0 is not of type 'array'; scriptCompleted: 0 is not of type 'boolean'"
+  },
+  {
+    "schema": "structure-output.schema.json",
+    "input": {
+      "scriptCompleted": "",
+      "filesAnalyzed": "",
+      "filesSkipped": "",
+      "results": ""
+    },
+    "expected": "filesAnalyzed: '' is not of type 'integer'; filesSkipped: '' is not of type 'array'; results: '' is not of type 'array'; scriptCompleted: '' is not of type 'boolean'"
+  },
+  {
+    "schema": "structure-output.schema.json",
+    "input": {
+      "scriptCompleted": [],
+      "filesAnalyzed": [],
+      "filesSkipped": [],
+      "results": []
+    },
+    "expected": "filesAnalyzed: [] is not of type 'integer'; scriptCompleted: [] is not of type 'boolean'"
+  },
+  {
+    "schema": "structure-output.schema.json",
+    "input": {
+      "scriptCompleted": {},
+      "filesAnalyzed": {},
+      "filesSkipped": {},
+      "results": {}
+    },
+    "expected": "filesAnalyzed: {} is not of type 'integer'; filesSkipped: {} is not of type 'array'; results: {} is not of type 'array'; scriptCompleted: {} is not of type 'boolean'"
+  },
+  {
+    "schema": "structure-output.schema.json",
+    "input": {
+      "scriptCompleted": [
+        "bad"
+      ],
+      "filesAnalyzed": [
+        "bad"
+      ],
+      "filesSkipped": [
+        "bad"
+      ],
+      "results": [
+        "bad"
+      ]
+    },
+    "expected": "filesAnalyzed: ['bad'] is not of type 'integer'; results/0: 'bad' is not of type 'object'; scriptCompleted: ['bad'] is not of type 'boolean'"
+  },
+  {
+    "schema": "project-scan-output.schema.json",
+    "input": null,
+    "expected": "<root>: None is not of type 'object'"
+  },
+  {
+    "schema": "project-scan-output.schema.json",
+    "input": {},
+    "expected": "<root>: 'name' is a required property; <root>: 'description' is a required property; <root>: 'files' is a required property; <root>: 'totalFiles' is a required property; <root>: 'filteredByIgnore' is a required property; <root>: 'estimatedComplexity' is a required property"
+  },
+  {
+    "schema": "project-scan-output.schema.json",
+    "input": [],
+    "expected": "<root>: [] is not of type 'object'"
+  },
+  {
+    "schema": "project-scan-output.schema.json",
+    "input": {
+      "unexpected": true
+    },
+    "expected": "<root>: Additional properties are not allowed ('unexpected' was unexpected); <root>: 'name' is a required property; <root>: 'description' is a required property; <root>: 'files' is a required property; <root>: 'totalFiles' is a required property; <root>: 'filteredByIgnore' is a required property; <root>: 'estimatedComplexity' is a required property"
+  },
+  {
+    "schema": "project-scan-output.schema.json",
+    "input": {
+      "name": null,
+      "description": null,
+      "languages": null,
+      "frameworks": null,
+      "files": null,
+      "totalFiles": null,
+      "filteredByIgnore": null,
+      "estimatedComplexity": null,
+      "importMap": null
+    },
+    "expected": "description: None is not of type 'string'; estimatedComplexity: None is not of type 'string'; files: None is not of type 'array'; filteredByIgnore: None is not of type 'integer'; frameworks: None is not of type 'array'; importMap: None is not of type 'object'; languages: None is not of type 'array'; name: None is not of type 'string'; totalFiles: None is not of type 'integer'"
+  },
+  {
+    "schema": "project-scan-output.schema.json",
+    "input": {
+      "name": false,
+      "description": false,
+      "languages": false,
+      "frameworks": false,
+      "files": false,
+      "totalFiles": false,
+      "filteredByIgnore": false,
+      "estimatedComplexity": false,
+      "importMap": false
+    },
+    "expected": "description: False is not of type 'string'; estimatedComplexity: False is not of type 'string'; files: False is not of type 'array'; filteredByIgnore: False is not of type 'integer'; frameworks: False is not of type 'array'; importMap: False is not of type 'object'; languages: False is not of type 'array'; name: False is not of type 'string'; totalFiles: False is not of type 'integer'"
+  },
+  {
+    "schema": "project-scan-output.schema.json",
+    "input": {
+      "name": 0,
+      "description": 0,
+      "languages": 0,
+      "frameworks": 0,
+      "files": 0,
+      "totalFiles": 0,
+      "filteredByIgnore": 0,
+      "estimatedComplexity": 0,
+      "importMap": 0
+    },
+    "expected": "description: 0 is not of type 'string'; estimatedComplexity: 0 is not of type 'string'; files: 0 is not of type 'array'; frameworks: 0 is not of type 'array'; importMap: 0 is not of type 'object'; languages: 0 is not of type 'array'; name: 0 is not of type 'string'"
+  },
+  {
+    "schema": "project-scan-output.schema.json",
+    "input": {
+      "name": "",
+      "description": "",
+      "languages": "",
+      "frameworks": "",
+      "files": "",
+      "totalFiles": "",
+      "filteredByIgnore": "",
+      "estimatedComplexity": "",
+      "importMap": ""
+    },
+    "expected": "files: '' is not of type 'array'; filteredByIgnore: '' is not of type 'integer'; frameworks: '' is not of type 'array'; importMap: '' is not of type 'object'; languages: '' is not of type 'array'; totalFiles: '' is not of type 'integer'"
+  },
+  {
+    "schema": "project-scan-output.schema.json",
+    "input": {
+      "name": [],
+      "description": [],
+      "languages": [],
+      "frameworks": [],
+      "files": [],
+      "totalFiles": [],
+      "filteredByIgnore": [],
+      "estimatedComplexity": [],
+      "importMap": []
+    },
+    "expected": "description: [] is not of type 'string'; estimatedComplexity: [] is not of type 'string'; filteredByIgnore: [] is not of type 'integer'; importMap: [] is not of type 'object'; name: [] is not of type 'string'; totalFiles: [] is not of type 'integer'"
+  },
+  {
+    "schema": "project-scan-output.schema.json",
+    "input": {
+      "name": {},
+      "description": {},
+      "languages": {},
+      "frameworks": {},
+      "files": {},
+      "totalFiles": {},
+      "filteredByIgnore": {},
+      "estimatedComplexity": {},
+      "importMap": {}
+    },
+    "expected": "description: {} is not of type 'string'; estimatedComplexity: {} is not of type 'string'; files: {} is not of type 'array'; filteredByIgnore: {} is not of type 'integer'; frameworks: {} is not of type 'array'; languages: {} is not of type 'array'; name: {} is not of type 'string'; totalFiles: {} is not of type 'integer'"
+  },
+  {
+    "schema": "project-scan-output.schema.json",
+    "input": {
+      "name": [
+        "bad"
+      ],
+      "description": [
+        "bad"
+      ],
+      "languages": [
+        "bad"
+      ],
+      "frameworks": [
+        "bad"
+      ],
+      "files": [
+        "bad"
+      ],
+      "totalFiles": [
+        "bad"
+      ],
+      "filteredByIgnore": [
+        "bad"
+      ],
+      "estimatedComplexity": [
+        "bad"
+      ],
+      "importMap": [
+        "bad"
+      ]
+    },
+    "expected": "description: ['bad'] is not of type 'string'; estimatedComplexity: ['bad'] is not of type 'string'; files/0: 'bad' is not of type 'object'; filteredByIgnore: ['bad'] is not of type 'integer'; importMap: ['bad'] is not of type 'object'; name: ['bad'] is not of type 'string'; totalFiles: ['bad'] is not of type 'integer'"
+  },
+  {
+    "schema": "knowledge-graph.schema.json",
+    "input": null,
+    "expected": "<root>: None is not of type 'object'"
+  },
+  {
+    "schema": "knowledge-graph.schema.json",
+    "input": {},
+    "expected": "<root>: 'version' is a required property; <root>: 'project' is a required property; <root>: 'nodes' is a required property; <root>: 'edges' is a required property"
+  },
+  {
+    "schema": "knowledge-graph.schema.json",
+    "input": [],
+    "expected": "<root>: [] is not of type 'object'"
+  },
+  {
+    "schema": "knowledge-graph.schema.json",
+    "input": {
+      "unexpected": true
+    },
+    "expected": "<root>: 'version' is a required property; <root>: 'project' is a required property; <root>: 'nodes' is a required property; <root>: 'edges' is a required property"
+  },
+  {
+    "schema": "knowledge-graph.schema.json",
+    "input": {
+      "version": null,
+      "project": null,
+      "nodes": null,
+      "edges": null,
+      "layers": null
+    },
+    "expected": "edges: None is not of type 'array'; layers: None is not of type 'array'; nodes: None is not of type 'array'; project: None is not of type 'object'; version: None is not of type 'string'"
+  },
+  {
+    "schema": "knowledge-graph.schema.json",
+    "input": {
+      "version": false,
+      "project": false,
+      "nodes": false,
+      "edges": false,
+      "layers": false
+    },
+    "expected": "edges: False is not of type 'array'; layers: False is not of type 'array'; nodes: False is not of type 'array'; project: False is not of type 'object'; version: False is not of type 'string'"
+  },
+  {
+    "schema": "knowledge-graph.schema.json",
+    "input": {
+      "version": 0,
+      "project": 0,
+      "nodes": 0,
+      "edges": 0,
+      "layers": 0
+    },
+    "expected": "edges: 0 is not of type 'array'; layers: 0 is not of type 'array'; nodes: 0 is not of type 'array'; project: 0 is not of type 'object'; version: 0 is not of type 'string'"
+  },
+  {
+    "schema": "knowledge-graph.schema.json",
+    "input": {
+      "version": "",
+      "project": "",
+      "nodes": "",
+      "edges": "",
+      "layers": ""
+    },
+    "expected": "edges: '' is not of type 'array'; layers: '' is not of type 'array'; nodes: '' is not of type 'array'; project: '' is not of type 'object'"
+  },
+  {
+    "schema": "knowledge-graph.schema.json",
+    "input": {
+      "version": [],
+      "project": [],
+      "nodes": [],
+      "edges": [],
+      "layers": []
+    },
+    "expected": "project: [] is not of type 'object'; version: [] is not of type 'string'"
+  },
+  {
+    "schema": "knowledge-graph.schema.json",
+    "input": {
+      "version": {},
+      "project": {},
+      "nodes": {},
+      "edges": {},
+      "layers": {}
+    },
+    "expected": "edges: {} is not of type 'array'; layers: {} is not of type 'array'; nodes: {} is not of type 'array'; project: 'name' is a required property; project: 'description' is a required property; project: 'analyzedAt' is a required property; project: 'gitCommitHash' is a required property; version: {} is not of type 'string'"
+  },
+  {
+    "schema": "knowledge-graph.schema.json",
+    "input": {
+      "version": [
+        "bad"
+      ],
+      "project": [
+        "bad"
+      ],
+      "nodes": [
+        "bad"
+      ],
+      "edges": [
+        "bad"
+      ],
+      "layers": [
+        "bad"
+      ]
+    },
+    "expected": "edges/0: 'bad' is not of type 'object'; layers/0: 'bad' is not of type 'object'; nodes/0: 'bad' is not of type 'object'; project: ['bad'] is not of type 'object'; version: ['bad'] is not of type 'string'"
+  },
+  {
+    "schema": "domain-graph.schema.json",
+    "input": null,
+    "expected": "<root>: None is not of type 'object'"
+  },
+  {
+    "schema": "domain-graph.schema.json",
+    "input": {},
+    "expected": "<root>: 'version' is a required property; <root>: 'project' is a required property; <root>: 'nodes' is a required property; <root>: 'edges' is a required property"
+  },
+  {
+    "schema": "domain-graph.schema.json",
+    "input": [],
+    "expected": "<root>: [] is not of type 'object'"
+  },
+  {
+    "schema": "domain-graph.schema.json",
+    "input": {
+      "unexpected": true
+    },
+    "expected": "<root>: 'version' is a required property; <root>: 'project' is a required property; <root>: 'nodes' is a required property; <root>: 'edges' is a required property"
+  },
+  {
+    "schema": "domain-graph.schema.json",
+    "input": {
+      "version": null,
+      "project": null,
+      "nodes": null,
+      "edges": null,
+      "layers": null
+    },
+    "expected": "edges: None is not of type 'array'; layers: None is not of type 'array'; nodes: None is not of type 'array'; project: None is not of type 'object'; version: None is not of type 'string'"
+  },
+  {
+    "schema": "domain-graph.schema.json",
+    "input": {
+      "version": false,
+      "project": false,
+      "nodes": false,
+      "edges": false,
+      "layers": false
+    },
+    "expected": "edges: False is not of type 'array'; layers: False is not of type 'array'; nodes: False is not of type 'array'; project: False is not of type 'object'; version: False is not of type 'string'"
+  },
+  {
+    "schema": "domain-graph.schema.json",
+    "input": {
+      "version": 0,
+      "project": 0,
+      "nodes": 0,
+      "edges": 0,
+      "layers": 0
+    },
+    "expected": "edges: 0 is not of type 'array'; layers: 0 is not of type 'array'; nodes: 0 is not of type 'array'; project: 0 is not of type 'object'; version: 0 is not of type 'string'"
+  },
+  {
+    "schema": "domain-graph.schema.json",
+    "input": {
+      "version": "",
+      "project": "",
+      "nodes": "",
+      "edges": "",
+      "layers": ""
+    },
+    "expected": "edges: '' is not of type 'array'; layers: '' is not of type 'array'; nodes: '' is not of type 'array'; project: '' is not of type 'object'"
+  },
+  {
+    "schema": "domain-graph.schema.json",
+    "input": {
+      "version": [],
+      "project": [],
+      "nodes": [],
+      "edges": [],
+      "layers": []
+    },
+    "expected": "project: [] is not of type 'object'; version: [] is not of type 'string'"
+  },
+  {
+    "schema": "domain-graph.schema.json",
+    "input": {
+      "version": {},
+      "project": {},
+      "nodes": {},
+      "edges": {},
+      "layers": {}
+    },
+    "expected": "edges: {} is not of type 'array'; layers: {} is not of type 'array'; nodes: {} is not of type 'array'; project: 'name' is a required property; project: 'description' is a required property; project: 'analyzedAt' is a required property; project: 'gitCommitHash' is a required property; version: {} is not of type 'string'"
+  },
+  {
+    "schema": "domain-graph.schema.json",
+    "input": {
+      "version": [
+        "bad"
+      ],
+      "project": [
+        "bad"
+      ],
+      "nodes": [
+        "bad"
+      ],
+      "edges": [
+        "bad"
+      ],
+      "layers": [
+        "bad"
+      ]
+    },
+    "expected": "edges/0: 'bad' is not of type 'object'; layers/0: 'bad' is not of type 'object'; nodes/0: 'bad' is not of type 'object'; project: ['bad'] is not of type 'object'; version: ['bad'] is not of type 'string'"
+  },
+  {
+    "schema": "graph-fragment.schema.json",
+    "input": null,
+    "expected": "<root>: None is not of type 'object'"
+  },
+  {
+    "schema": "graph-fragment.schema.json",
+    "input": {},
+    "expected": null
+  },
+  {
+    "schema": "graph-fragment.schema.json",
+    "input": [],
+    "expected": "<root>: [] is not of type 'object'"
+  },
+  {
+    "schema": "graph-fragment.schema.json",
+    "input": {
+      "unexpected": true
+    },
+    "expected": "<root>: Additional properties are not allowed ('unexpected' was unexpected)"
+  },
+  {
+    "schema": "graph-fragment.schema.json",
+    "input": {
+      "nodes": null,
+      "edges": null
+    },
+    "expected": "edges: None is not of type 'array'; nodes: None is not of type 'array'"
+  },
+  {
+    "schema": "graph-fragment.schema.json",
+    "input": {
+      "nodes": false,
+      "edges": false
+    },
+    "expected": "edges: False is not of type 'array'; nodes: False is not of type 'array'"
+  },
+  {
+    "schema": "graph-fragment.schema.json",
+    "input": {
+      "nodes": 0,
+      "edges": 0
+    },
+    "expected": "edges: 0 is not of type 'array'; nodes: 0 is not of type 'array'"
+  },
+  {
+    "schema": "graph-fragment.schema.json",
+    "input": {
+      "nodes": "",
+      "edges": ""
+    },
+    "expected": "edges: '' is not of type 'array'; nodes: '' is not of type 'array'"
+  },
+  {
+    "schema": "graph-fragment.schema.json",
+    "input": {
+      "nodes": [],
+      "edges": []
+    },
+    "expected": null
+  },
+  {
+    "schema": "graph-fragment.schema.json",
+    "input": {
+      "nodes": {},
+      "edges": {}
+    },
+    "expected": "edges: {} is not of type 'array'; nodes: {} is not of type 'array'"
+  },
+  {
+    "schema": "graph-fragment.schema.json",
+    "input": {
+      "nodes": [
+        "bad"
+      ],
+      "edges": [
+        "bad"
+      ]
+    },
+    "expected": "edges/0: 'bad' is not of type 'object'; nodes/0: 'bad' is not of type 'object'"
+  },
+  {
+    "schema": "file-analysis-context.schema.json",
+    "input": null,
+    "expected": "<root>: None is not of type 'object'"
+  },
+  {
+    "schema": "file-analysis-context.schema.json",
+    "input": {},
+    "expected": "<root>: 'projectRoot' is a required property; <root>: 'batchIndex' is a required property"
+  },
+  {
+    "schema": "file-analysis-context.schema.json",
+    "input": [],
+    "expected": "<root>: [] is not of type 'object'"
+  },
+  {
+    "schema": "file-analysis-context.schema.json",
+    "input": {
+      "unexpected": true
+    },
+    "expected": "<root>: Additional properties are not allowed ('unexpected' was unexpected); <root>: 'projectRoot' is a required property; <root>: 'batchIndex' is a required property"
+  },
+  {
+    "schema": "file-analysis-context.schema.json",
+    "input": {
+      "projectRoot": null,
+      "batchIndex": null,
+      "batchFiles": null,
+      "batchImportData": null,
+      "neighborMap": null
+    },
+    "expected": "batchFiles: None is not of type 'array'; batchImportData: None is not of type 'object'; batchIndex: None is not of type 'integer'; neighborMap: None is not of type 'object'; projectRoot: None is not of type 'string'"
+  },
+  {
+    "schema": "file-analysis-context.schema.json",
+    "input": {
+      "projectRoot": false,
+      "batchIndex": false,
+      "batchFiles": false,
+      "batchImportData": false,
+      "neighborMap": false
+    },
+    "expected": "batchFiles: False is not of type 'array'; batchImportData: False is not of type 'object'; batchIndex: False is not of type 'integer'; neighborMap: False is not of type 'object'; projectRoot: False is not of type 'string'"
+  },
+  {
+    "schema": "file-analysis-context.schema.json",
+    "input": {
+      "projectRoot": 0,
+      "batchIndex": 0,
+      "batchFiles": 0,
+      "batchImportData": 0,
+      "neighborMap": 0
+    },
+    "expected": "batchFiles: 0 is not of type 'array'; batchImportData: 0 is not of type 'object'; neighborMap: 0 is not of type 'object'; projectRoot: 0 is not of type 'string'"
+  },
+  {
+    "schema": "file-analysis-context.schema.json",
+    "input": {
+      "projectRoot": "",
+      "batchIndex": "",
+      "batchFiles": "",
+      "batchImportData": "",
+      "neighborMap": ""
+    },
+    "expected": "batchFiles: '' is not of type 'array'; batchImportData: '' is not of type 'object'; batchIndex: '' is not of type 'integer'; neighborMap: '' is not of type 'object'"
+  },
+  {
+    "schema": "file-analysis-context.schema.json",
+    "input": {
+      "projectRoot": [],
+      "batchIndex": [],
+      "batchFiles": [],
+      "batchImportData": [],
+      "neighborMap": []
+    },
+    "expected": "batchImportData: [] is not of type 'object'; batchIndex: [] is not of type 'integer'; neighborMap: [] is not of type 'object'; projectRoot: [] is not of type 'string'"
+  },
+  {
+    "schema": "file-analysis-context.schema.json",
+    "input": {
+      "projectRoot": {},
+      "batchIndex": {},
+      "batchFiles": {},
+      "batchImportData": {},
+      "neighborMap": {}
+    },
+    "expected": "batchFiles: {} is not of type 'array'; batchIndex: {} is not of type 'integer'; projectRoot: {} is not of type 'string'"
+  },
+  {
+    "schema": "file-analysis-context.schema.json",
+    "input": {
+      "projectRoot": [
+        "bad"
+      ],
+      "batchIndex": [
+        "bad"
+      ],
+      "batchFiles": [
+        "bad"
+      ],
+      "batchImportData": [
+        "bad"
+      ],
+      "neighborMap": [
+        "bad"
+      ]
+    },
+    "expected": "batchFiles/0: 'bad' is not of type 'object'; batchImportData: ['bad'] is not of type 'object'; batchIndex: ['bad'] is not of type 'integer'; neighborMap: ['bad'] is not of type 'object'; projectRoot: ['bad'] is not of type 'string'"
+  },
+  {
+    "schema": "auto-update-state.schema.json",
+    "input": null,
+    "expected": "<root>: None is not of type 'object'"
+  },
+  {
+    "schema": "auto-update-state.schema.json",
+    "input": {},
+    "expected": "<root>: 'status' is a required property; <root>: 'action' is a required property; <root>: 'reason' is a required property; <root>: 'projectRoot' is a required property"
+  },
+  {
+    "schema": "auto-update-state.schema.json",
+    "input": [],
+    "expected": "<root>: [] is not of type 'object'"
+  },
+  {
+    "schema": "auto-update-state.schema.json",
+    "input": {
+      "unexpected": true
+    },
+    "expected": "<root>: Additional properties are not allowed ('unexpected' was unexpected); <root>: 'status' is a required property; <root>: 'action' is a required property; <root>: 'reason' is a required property; <root>: 'projectRoot' is a required property"
+  },
+  {
+    "schema": "auto-update-state.schema.json",
+    "input": {
+      "status": null,
+      "action": null,
+      "reason": null,
+      "projectRoot": null,
+      "previousCommit": null,
+      "currentCommit": null,
+      "changedSourceFiles": null,
+      "metadataUpdated": null
+    },
+    "expected": "action: None is not one of ['PROCEED', 'NO_GRAPH', 'NO_META', 'UP_TO_DATE', 'NO_CHANGES', 'NO_SOURCE_CHANGES', 'ALL_IGNORED']; action: None is not of type 'string'; changedSourceFiles: None is not of type 'array'; metadataUpdated: None is not of type 'boolean'; projectRoot: None is not of type 'string'; reason: None is not of type 'string'; status: None is not one of ['CONTINUE', 'STOP']; status: None is not of type 'string'"
+  },
+  {
+    "schema": "auto-update-state.schema.json",
+    "input": {
+      "status": false,
+      "action": false,
+      "reason": false,
+      "projectRoot": false,
+      "previousCommit": false,
+      "currentCommit": false,
+      "changedSourceFiles": false,
+      "metadataUpdated": false
+    },
+    "expected": "action: False is not one of ['PROCEED', 'NO_GRAPH', 'NO_META', 'UP_TO_DATE', 'NO_CHANGES', 'NO_SOURCE_CHANGES', 'ALL_IGNORED']; action: False is not of type 'string'; changedSourceFiles: False is not of type 'array'; currentCommit: False is not valid under any of the given schemas; previousCommit: False is not valid under any of the given schemas; projectRoot: False is not of type 'string'; reason: False is not of type 'string'; status: False is not one of ['CONTINUE', 'STOP']; status: False is not of type 'string'"
+  },
+  {
+    "schema": "auto-update-state.schema.json",
+    "input": {
+      "status": 0,
+      "action": 0,
+      "reason": 0,
+      "projectRoot": 0,
+      "previousCommit": 0,
+      "currentCommit": 0,
+      "changedSourceFiles": 0,
+      "metadataUpdated": 0
+    },
+    "expected": "action: 0 is not one of ['PROCEED', 'NO_GRAPH', 'NO_META', 'UP_TO_DATE', 'NO_CHANGES', 'NO_SOURCE_CHANGES', 'ALL_IGNORED']; action: 0 is not of type 'string'; changedSourceFiles: 0 is not of type 'array'; currentCommit: 0 is not valid under any of the given schemas; metadataUpdated: 0 is not of type 'boolean'; previousCommit: 0 is not valid under any of the given schemas; projectRoot: 0 is not of type 'string'; reason: 0 is not of type 'string'; status: 0 is not one of ['CONTINUE', 'STOP']; status: 0 is not of type 'string'"
+  },
+  {
+    "schema": "auto-update-state.schema.json",
+    "input": {
+      "status": "",
+      "action": "",
+      "reason": "",
+      "projectRoot": "",
+      "previousCommit": "",
+      "currentCommit": "",
+      "changedSourceFiles": "",
+      "metadataUpdated": ""
+    },
+    "expected": "action: '' is not one of ['PROCEED', 'NO_GRAPH', 'NO_META', 'UP_TO_DATE', 'NO_CHANGES', 'NO_SOURCE_CHANGES', 'ALL_IGNORED']; changedSourceFiles: '' is not of type 'array'; metadataUpdated: '' is not of type 'boolean'; status: '' is not one of ['CONTINUE', 'STOP']"
+  },
+  {
+    "schema": "auto-update-state.schema.json",
+    "input": {
+      "status": [],
+      "action": [],
+      "reason": [],
+      "projectRoot": [],
+      "previousCommit": [],
+      "currentCommit": [],
+      "changedSourceFiles": [],
+      "metadataUpdated": []
+    },
+    "expected": "action: [] is not one of ['PROCEED', 'NO_GRAPH', 'NO_META', 'UP_TO_DATE', 'NO_CHANGES', 'NO_SOURCE_CHANGES', 'ALL_IGNORED']; action: [] is not of type 'string'; currentCommit: [] is not valid under any of the given schemas; metadataUpdated: [] is not of type 'boolean'; previousCommit: [] is not valid under any of the given schemas; projectRoot: [] is not of type 'string'; reason: [] is not of type 'string'; status: [] is not one of ['CONTINUE', 'STOP']; status: [] is not of type 'string'"
+  },
+  {
+    "schema": "auto-update-state.schema.json",
+    "input": {
+      "status": {},
+      "action": {},
+      "reason": {},
+      "projectRoot": {},
+      "previousCommit": {},
+      "currentCommit": {},
+      "changedSourceFiles": {},
+      "metadataUpdated": {}
+    },
+    "expected": "action: {} is not one of ['PROCEED', 'NO_GRAPH', 'NO_META', 'UP_TO_DATE', 'NO_CHANGES', 'NO_SOURCE_CHANGES', 'ALL_IGNORED']; action: {} is not of type 'string'; changedSourceFiles: {} is not of type 'array'; currentCommit: {} is not valid under any of the given schemas; metadataUpdated: {} is not of type 'boolean'; previousCommit: {} is not valid under any of the given schemas; projectRoot: {} is not of type 'string'; reason: {} is not of type 'string'; status: {} is not one of ['CONTINUE', 'STOP']; status: {} is not of type 'string'"
+  },
+  {
+    "schema": "auto-update-state.schema.json",
+    "input": {
+      "status": [
+        "bad"
+      ],
+      "action": [
+        "bad"
+      ],
+      "reason": [
+        "bad"
+      ],
+      "projectRoot": [
+        "bad"
+      ],
+      "previousCommit": [
+        "bad"
+      ],
+      "currentCommit": [
+        "bad"
+      ],
+      "changedSourceFiles": [
+        "bad"
+      ],
+      "metadataUpdated": [
+        "bad"
+      ]
+    },
+    "expected": "action: ['bad'] is not one of ['PROCEED', 'NO_GRAPH', 'NO_META', 'UP_TO_DATE', 'NO_CHANGES', 'NO_SOURCE_CHANGES', 'ALL_IGNORED']; action: ['bad'] is not of type 'string'; currentCommit: ['bad'] is not valid under any of the given schemas; metadataUpdated: ['bad'] is not of type 'boolean'; previousCommit: ['bad'] is not valid under any of the given schemas; projectRoot: ['bad'] is not of type 'string'; reason: ['bad'] is not of type 'string'; status: ['bad'] is not one of ['CONTINUE', 'STOP']; status: ['bad'] is not of type 'string'"
+  },
+  {
+    "schema": "change-analysis.schema.json",
+    "input": null,
+    "expected": "<root>: None is not of type 'object'"
+  },
+  {
+    "schema": "change-analysis.schema.json",
+    "input": {},
+    "expected": "<root>: 'action' is a required property; <root>: 'rerunArchitecture' is a required property; <root>: 'reason' is a required property"
+  },
+  {
+    "schema": "change-analysis.schema.json",
+    "input": [],
+    "expected": "<root>: [] is not of type 'object'"
+  },
+  {
+    "schema": "change-analysis.schema.json",
+    "input": {
+      "unexpected": true
+    },
+    "expected": "<root>: Additional properties are not allowed ('unexpected' was unexpected); <root>: 'action' is a required property; <root>: 'rerunArchitecture' is a required property; <root>: 'reason' is a required property"
+  },
+  {
+    "schema": "change-analysis.schema.json",
+    "input": {
+      "action": null,
+      "rerunArchitecture": null,
+      "reason": null,
+      "filesToReanalyze": null,
+      "newFiles": null,
+      "deletedFiles": null,
+      "cosmeticOnlyFiles": null,
+      "unchangedFiles": null,
+      "fileChanges": null,
+      "metadataUpdated": null
+    },
+    "expected": "action: None is not one of ['SKIP', 'PARTIAL_UPDATE', 'ARCHITECTURE_UPDATE', 'FULL_UPDATE']; action: None is not of type 'string'; cosmeticOnlyFiles: None is not of type 'array'; deletedFiles: None is not of type 'array'; fileChanges: None is not of type 'array'; filesToReanalyze: None is not of type 'array'; metadataUpdated: None is not of type 'boolean'; newFiles: None is not of type 'array'; reason: None is not of type 'string'; rerunArchitecture: None is not of type 'boolean'; unchangedFiles: None is not of type 'array'"
+  },
+  {
+    "schema": "change-analysis.schema.json",
+    "input": {
+      "action": false,
+      "rerunArchitecture": false,
+      "reason": false,
+      "filesToReanalyze": false,
+      "newFiles": false,
+      "deletedFiles": false,
+      "cosmeticOnlyFiles": false,
+      "unchangedFiles": false,
+      "fileChanges": false,
+      "metadataUpdated": false
+    },
+    "expected": "action: False is not one of ['SKIP', 'PARTIAL_UPDATE', 'ARCHITECTURE_UPDATE', 'FULL_UPDATE']; action: False is not of type 'string'; cosmeticOnlyFiles: False is not of type 'array'; deletedFiles: False is not of type 'array'; fileChanges: False is not of type 'array'; filesToReanalyze: False is not of type 'array'; newFiles: False is not of type 'array'; reason: False is not of type 'string'; unchangedFiles: False is not of type 'array'"
+  },
+  {
+    "schema": "change-analysis.schema.json",
+    "input": {
+      "action": 0,
+      "rerunArchitecture": 0,
+      "reason": 0,
+      "filesToReanalyze": 0,
+      "newFiles": 0,
+      "deletedFiles": 0,
+      "cosmeticOnlyFiles": 0,
+      "unchangedFiles": 0,
+      "fileChanges": 0,
+      "metadataUpdated": 0
+    },
+    "expected": "action: 0 is not one of ['SKIP', 'PARTIAL_UPDATE', 'ARCHITECTURE_UPDATE', 'FULL_UPDATE']; action: 0 is not of type 'string'; cosmeticOnlyFiles: 0 is not of type 'array'; deletedFiles: 0 is not of type 'array'; fileChanges: 0 is not of type 'array'; filesToReanalyze: 0 is not of type 'array'; metadataUpdated: 0 is not of type 'boolean'; newFiles: 0 is not of type 'array'; reason: 0 is not of type 'string'; rerunArchitecture: 0 is not of type 'boolean'; unchangedFiles: 0 is not of type 'array'"
+  },
+  {
+    "schema": "change-analysis.schema.json",
+    "input": {
+      "action": "",
+      "rerunArchitecture": "",
+      "reason": "",
+      "filesToReanalyze": "",
+      "newFiles": "",
+      "deletedFiles": "",
+      "cosmeticOnlyFiles": "",
+      "unchangedFiles": "",
+      "fileChanges": "",
+      "metadataUpdated": ""
+    },
+    "expected": "action: '' is not one of ['SKIP', 'PARTIAL_UPDATE', 'ARCHITECTURE_UPDATE', 'FULL_UPDATE']; cosmeticOnlyFiles: '' is not of type 'array'; deletedFiles: '' is not of type 'array'; fileChanges: '' is not of type 'array'; filesToReanalyze: '' is not of type 'array'; metadataUpdated: '' is not of type 'boolean'; newFiles: '' is not of type 'array'; rerunArchitecture: '' is not of type 'boolean'; unchangedFiles: '' is not of type 'array'"
+  },
+  {
+    "schema": "change-analysis.schema.json",
+    "input": {
+      "action": [],
+      "rerunArchitecture": [],
+      "reason": [],
+      "filesToReanalyze": [],
+      "newFiles": [],
+      "deletedFiles": [],
+      "cosmeticOnlyFiles": [],
+      "unchangedFiles": [],
+      "fileChanges": [],
+      "metadataUpdated": []
+    },
+    "expected": "action: [] is not one of ['SKIP', 'PARTIAL_UPDATE', 'ARCHITECTURE_UPDATE', 'FULL_UPDATE']; action: [] is not of type 'string'; metadataUpdated: [] is not of type 'boolean'; reason: [] is not of type 'string'; rerunArchitecture: [] is not of type 'boolean'"
+  },
+  {
+    "schema": "change-analysis.schema.json",
+    "input": {
+      "action": {},
+      "rerunArchitecture": {},
+      "reason": {},
+      "filesToReanalyze": {},
+      "newFiles": {},
+      "deletedFiles": {},
+      "cosmeticOnlyFiles": {},
+      "unchangedFiles": {},
+      "fileChanges": {},
+      "metadataUpdated": {}
+    },
+    "expected": "action: {} is not one of ['SKIP', 'PARTIAL_UPDATE', 'ARCHITECTURE_UPDATE', 'FULL_UPDATE']; action: {} is not of type 'string'; cosmeticOnlyFiles: {} is not of type 'array'; deletedFiles: {} is not of type 'array'; fileChanges: {} is not of type 'array'; filesToReanalyze: {} is not of type 'array'; metadataUpdated: {} is not of type 'boolean'; newFiles: {} is not of type 'array'; reason: {} is not of type 'string'; rerunArchitecture: {} is not of type 'boolean'; unchangedFiles: {} is not of type 'array'"
+  },
+  {
+    "schema": "change-analysis.schema.json",
+    "input": {
+      "action": [
+        "bad"
+      ],
+      "rerunArchitecture": [
+        "bad"
+      ],
+      "reason": [
+        "bad"
+      ],
+      "filesToReanalyze": [
+        "bad"
+      ],
+      "newFiles": [
+        "bad"
+      ],
+      "deletedFiles": [
+        "bad"
+      ],
+      "cosmeticOnlyFiles": [
+        "bad"
+      ],
+      "unchangedFiles": [
+        "bad"
+      ],
+      "fileChanges": [
+        "bad"
+      ],
+      "metadataUpdated": [
+        "bad"
+      ]
+    },
+    "expected": "action: ['bad'] is not one of ['SKIP', 'PARTIAL_UPDATE', 'ARCHITECTURE_UPDATE', 'FULL_UPDATE']; action: ['bad'] is not of type 'string'; fileChanges/0: 'bad' is not of type 'object'; metadataUpdated: ['bad'] is not of type 'boolean'; reason: ['bad'] is not of type 'string'; rerunArchitecture: ['bad'] is not of type 'boolean'"
+  },
+  {
+    "schema": "auto-update-summary.schema.json",
+    "input": null,
+    "expected": "<root>: None is not of type 'object'"
+  },
+  {
+    "schema": "auto-update-summary.schema.json",
+    "input": {},
+    "expected": "<root>: 'status' is a required property; <root>: 'action' is a required property; <root>: 'reason' is a required property"
+  },
+  {
+    "schema": "auto-update-summary.schema.json",
+    "input": [],
+    "expected": "<root>: [] is not of type 'object'"
+  },
+  {
+    "schema": "auto-update-summary.schema.json",
+    "input": {
+      "unexpected": true
+    },
+    "expected": "<root>: Additional properties are not allowed ('unexpected' was unexpected); <root>: 'status' is a required property; <root>: 'action' is a required property; <root>: 'reason' is a required property"
+  },
+  {
+    "schema": "auto-update-summary.schema.json",
+    "input": {
+      "status": null,
+      "action": null,
+      "reason": null,
+      "filesChecked": null,
+      "structuralChanges": null,
+      "cosmeticOnly": null,
+      "newFiles": null,
+      "deletedFiles": null,
+      "nodesUpdated": null,
+      "totalNodes": null,
+      "totalEdges": null,
+      "metadataUpdated": null,
+      "outputPath": null
+    },
+    "expected": "action: None is not of type 'string'; cosmeticOnly: None is not of type 'integer'; deletedFiles: None is not of type 'integer'; filesChecked: None is not of type 'integer'; metadataUpdated: None is not of type 'boolean'; newFiles: None is not of type 'integer'; nodesUpdated: None is not of type 'integer'; reason: None is not of type 'string'; status: None is not one of ['UPDATED', 'SKIPPED', 'STOPPED']; status: None is not of type 'string'; structuralChanges: None is not of type 'integer'; totalEdges: None is not of type 'integer'; totalNodes: None is not of type 'integer'"
+  },
+  {
+    "schema": "auto-update-summary.schema.json",
+    "input": {
+      "status": false,
+      "action": false,
+      "reason": false,
+      "filesChecked": false,
+      "structuralChanges": false,
+      "cosmeticOnly": false,
+      "newFiles": false,
+      "deletedFiles": false,
+      "nodesUpdated": false,
+      "totalNodes": false,
+      "totalEdges": false,
+      "metadataUpdated": false,
+      "outputPath": false
+    },
+    "expected": "action: False is not of type 'string'; cosmeticOnly: False is not of type 'integer'; deletedFiles: False is not of type 'integer'; filesChecked: False is not of type 'integer'; newFiles: False is not of type 'integer'; nodesUpdated: False is not of type 'integer'; outputPath: False is not valid under any of the given schemas; reason: False is not of type 'string'; status: False is not one of ['UPDATED', 'SKIPPED', 'STOPPED']; status: False is not of type 'string'; structuralChanges: False is not of type 'integer'; totalEdges: False is not of type 'integer'; totalNodes: False is not of type 'integer'"
+  },
+  {
+    "schema": "auto-update-summary.schema.json",
+    "input": {
+      "status": 0,
+      "action": 0,
+      "reason": 0,
+      "filesChecked": 0,
+      "structuralChanges": 0,
+      "cosmeticOnly": 0,
+      "newFiles": 0,
+      "deletedFiles": 0,
+      "nodesUpdated": 0,
+      "totalNodes": 0,
+      "totalEdges": 0,
+      "metadataUpdated": 0,
+      "outputPath": 0
+    },
+    "expected": "action: 0 is not of type 'string'; metadataUpdated: 0 is not of type 'boolean'; outputPath: 0 is not valid under any of the given schemas; reason: 0 is not of type 'string'; status: 0 is not one of ['UPDATED', 'SKIPPED', 'STOPPED']; status: 0 is not of type 'string'"
+  },
+  {
+    "schema": "auto-update-summary.schema.json",
+    "input": {
+      "status": "",
+      "action": "",
+      "reason": "",
+      "filesChecked": "",
+      "structuralChanges": "",
+      "cosmeticOnly": "",
+      "newFiles": "",
+      "deletedFiles": "",
+      "nodesUpdated": "",
+      "totalNodes": "",
+      "totalEdges": "",
+      "metadataUpdated": "",
+      "outputPath": ""
+    },
+    "expected": "cosmeticOnly: '' is not of type 'integer'; deletedFiles: '' is not of type 'integer'; filesChecked: '' is not of type 'integer'; metadataUpdated: '' is not of type 'boolean'; newFiles: '' is not of type 'integer'; nodesUpdated: '' is not of type 'integer'; status: '' is not one of ['UPDATED', 'SKIPPED', 'STOPPED']; structuralChanges: '' is not of type 'integer'; totalEdges: '' is not of type 'integer'; totalNodes: '' is not of type 'integer'"
+  },
+  {
+    "schema": "auto-update-summary.schema.json",
+    "input": {
+      "status": [],
+      "action": [],
+      "reason": [],
+      "filesChecked": [],
+      "structuralChanges": [],
+      "cosmeticOnly": [],
+      "newFiles": [],
+      "deletedFiles": [],
+      "nodesUpdated": [],
+      "totalNodes": [],
+      "totalEdges": [],
+      "metadataUpdated": [],
+      "outputPath": []
+    },
+    "expected": "action: [] is not of type 'string'; cosmeticOnly: [] is not of type 'integer'; deletedFiles: [] is not of type 'integer'; filesChecked: [] is not of type 'integer'; metadataUpdated: [] is not of type 'boolean'; newFiles: [] is not of type 'integer'; nodesUpdated: [] is not of type 'integer'; outputPath: [] is not valid under any of the given schemas; reason: [] is not of type 'string'; status: [] is not one of ['UPDATED', 'SKIPPED', 'STOPPED']; status: [] is not of type 'string'; structuralChanges: [] is not of type 'integer'; totalEdges: [] is not of type 'integer'; totalNodes: [] is not of type 'integer'"
+  },
+  {
+    "schema": "auto-update-summary.schema.json",
+    "input": {
+      "status": {},
+      "action": {},
+      "reason": {},
+      "filesChecked": {},
+      "structuralChanges": {},
+      "cosmeticOnly": {},
+      "newFiles": {},
+      "deletedFiles": {},
+      "nodesUpdated": {},
+      "totalNodes": {},
+      "totalEdges": {},
+      "metadataUpdated": {},
+      "outputPath": {}
+    },
+    "expected": "action: {} is not of type 'string'; cosmeticOnly: {} is not of type 'integer'; deletedFiles: {} is not of type 'integer'; filesChecked: {} is not of type 'integer'; metadataUpdated: {} is not of type 'boolean'; newFiles: {} is not of type 'integer'; nodesUpdated: {} is not of type 'integer'; outputPath: {} is not valid under any of the given schemas; reason: {} is not of type 'string'; status: {} is not one of ['UPDATED', 'SKIPPED', 'STOPPED']; status: {} is not of type 'string'; structuralChanges: {} is not of type 'integer'; totalEdges: {} is not of type 'integer'; totalNodes: {} is not of type 'integer'"
+  },
+  {
+    "schema": "auto-update-summary.schema.json",
+    "input": {
+      "status": [
+        "bad"
+      ],
+      "action": [
+        "bad"
+      ],
+      "reason": [
+        "bad"
+      ],
+      "filesChecked": [
+        "bad"
+      ],
+      "structuralChanges": [
+        "bad"
+      ],
+      "cosmeticOnly": [
+        "bad"
+      ],
+      "newFiles": [
+        "bad"
+      ],
+      "deletedFiles": [
+        "bad"
+      ],
+      "nodesUpdated": [
+        "bad"
+      ],
+      "totalNodes": [
+        "bad"
+      ],
+      "totalEdges": [
+        "bad"
+      ],
+      "metadataUpdated": [
+        "bad"
+      ],
+      "outputPath": [
+        "bad"
+      ]
+    },
+    "expected": "action: ['bad'] is not of type 'string'; cosmeticOnly: ['bad'] is not of type 'integer'; deletedFiles: ['bad'] is not of type 'integer'; filesChecked: ['bad'] is not of type 'integer'; metadataUpdated: ['bad'] is not of type 'boolean'; newFiles: ['bad'] is not of type 'integer'; nodesUpdated: ['bad'] is not of type 'integer'; outputPath: ['bad'] is not valid under any of the given schemas; reason: ['bad'] is not of type 'string'; status: ['bad'] is not one of ['UPDATED', 'SKIPPED', 'STOPPED']; status: ['bad'] is not of type 'string'; structuralChanges: ['bad'] is not of type 'integer'; totalEdges: ['bad'] is not of type 'integer'; totalNodes: ['bad'] is not of type 'integer'"
+  }
+]

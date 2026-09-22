@@ -2,7 +2,7 @@
 
 There is no standalone ``types.test.ts`` in the TS source (graph types are
 exercised via schema/persistence tests), so this verifies the Python contract:
-the arch_analysis re-exports are present and the TS-only models round-trip with
+the understand_core re-exports are present and the TS-only models round-trip with
 their camelCase JSON wire keys.
 """
 
@@ -11,11 +11,11 @@ from __future__ import annotations
 from understand_core import types as t
 
 
-def test_reexports_graph_models_from_arch_analysis():
-    # These are aliased from arch_analysis.models per the conversion contract.
+def test_reexports_graph_models_from_understand_core():
+    # These are aliased from understand_core.models per the conversion contract.
     for name in ("GraphNode", "GraphEdge", "KnowledgeGraph", "Layer", "ProjectMeta", "GraphProject"):
         assert hasattr(t, name)
-    # ProjectMeta is the TS alias for arch_analysis's GraphProject.
+    # ProjectMeta is the TS alias for understand_core's GraphProject.
     assert t.ProjectMeta is t.GraphProject
 
 

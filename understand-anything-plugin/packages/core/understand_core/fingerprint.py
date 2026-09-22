@@ -1,20 +1,20 @@
 """Fingerprint wire shapes — typed views over ``fingerprints.json``.
 
 The structural-fingerprint *logic* (extraction, comparison, store build, and
-update classification) lives in :mod:`arch_analysis.fingerprints`, which the
+update classification) lives in :mod:`understand_core.fingerprints`, which the
 deterministic pipeline drives via ``build_fingerprints`` / ``auto_update_*``.
 This module only carries the camelCase ``TypedDict`` shapes for the on-disk
 ``fingerprints.json`` store (used as type annotations by
 :mod:`understand_core.persistence`) and re-exports
-:func:`arch_analysis.fingerprints.content_hash`.
+:func:`understand_core.fingerprints.content_hash`.
 """
 
 from __future__ import annotations
 
 from typing import Literal, TypedDict
 
-# The SHA-256 content hash is owned by arch_analysis (identical hex digest).
-from arch_analysis.fingerprints import content_hash
+# The SHA-256 content hash is owned by understand_core (identical hex digest).
+from understand_core.fingerprints import content_hash
 
 ChangeLevel = Literal["NONE", "COSMETIC", "STRUCTURAL"]
 

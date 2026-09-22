@@ -3,7 +3,7 @@
 ## Key Concepts
 
 - **Selectors**: Element, class (`.name`), ID (`#name`), attribute (`[attr]`), and pseudo-class (`:hover`) targeting
-- **Specificity**: Inline > ID > Class > Element cascade priority determining which rules win
+- **Specificity**: Selector weights break ties after cascade origin, importance, and layer precedence; inline styles also affect priority
 - **Box Model**: `margin`, `border`, `padding`, `content` dimensions controlling element sizing
 - **Flexbox**: `display: flex` with `justify-content`, `align-items` for one-dimensional layouts
 - **Grid**: `display: grid` with `grid-template-columns/rows` for two-dimensional layouts

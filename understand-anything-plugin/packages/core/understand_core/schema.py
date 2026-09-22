@@ -2,7 +2,7 @@
 
 This is the tiered, repair-oriented validator the dashboard uses on graph load
 (sanitize -> normalize aliases -> auto-fix defaults -> per-item validate with
-drop). It is *not* the same as :mod:`arch_analysis.schema`, which renders strict
+drop). It is *not* the same as :mod:`understand_core.json_schema`, which renders strict
 JSON Schemas; that module rejects, this one repairs. We port the TS behaviour
 faithfully and keep the same issue/category strings the tests assert.
 
@@ -20,9 +20,9 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_valida
 # ---------------------------------------------------------------------------
 # Enum value sets
 # ---------------------------------------------------------------------------
-# The canonical type taxonomy lives in arch_analysis.constants (shared with the
-# strict validator arch_analysis.validate_graph) so it is defined once.
-from arch_analysis.constants import (  # noqa: E402
+# The canonical type taxonomy lives in understand_core.constants (shared with the
+# strict validator understand_core.validate_graph) so it is defined once.
+from understand_core.constants import (  # noqa: E402
     VALID_COMPLEXITY as _COMPLEXITIES,
     VALID_DIRECTIONS as _DIRECTIONS,
     VALID_EDGE_TYPES as _EDGE_TYPES,

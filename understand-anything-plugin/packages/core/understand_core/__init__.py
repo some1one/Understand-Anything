@@ -2,10 +2,10 @@
 
 Deterministic structural analysis (tree-sitter parsing, structural extraction,
 language detection, ignore filtering, fingerprints, graph assembly/merging, and
-the graph models/schema) lives in the sibling ``arch_analysis`` package and is
-imported from ``arch_analysis.*`` rather than re-implemented here. This package
+the graph models/schema) lives in the sibling ``understand_core`` package and is
+imported from ``understand_core.*`` rather than re-implemented here. This package
 carries only what sits *on top* of that engine: the graph types (re-exported
-from ``arch_analysis.models``), on-disk persistence, the repair-oriented load
+from ``understand_core.models``), on-disk persistence, the repair-oriented load
 validator, lexical + semantic search, staleness helpers, and the fingerprint
 wire shapes.
 """

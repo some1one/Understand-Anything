@@ -1,0 +1,1505 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "arch_analysis",
+    "languages": [
+      "makefile",
+      "markdown",
+      "python",
+      "shell",
+      "unknown"
+    ],
+    "frameworks": [],
+    "description": "Repository-level installer, packaging, build, and documentation surface for Understand-Anything after generated dot-folder payloads are excluded from analysis.",
+    "analyzedAt": "2026-07-04T05:44:37.206Z",
+    "gitCommitHash": "b0978218ef0fdec003ac8506a0ca5ed12e016403"
+  },
+  "nodes": [
+    {
+      "id": "document:AGENTS.md",
+      "type": "document",
+      "name": "AGENTS.md",
+      "filePath": "AGENTS.md",
+      "tags": [
+        "documentation",
+        "agent-instructions",
+        "project-overview"
+      ],
+      "summary": "Brief repository guidance for Understand-Anything, naming the shipped skills and the deterministic arch_analysis launcher used by the pipeline.",
+      "complexity": "simple"
+    },
+    {
+      "id": "document:CLAUDE.md",
+      "type": "document",
+      "name": "CLAUDE.md",
+      "filePath": "CLAUDE.md",
+      "tags": [
+        "documentation",
+        "developer-guide",
+        "architecture",
+        "pipeline"
+      ],
+      "summary": "Contributor-facing project guide covering architecture, dashboard behavior, agent pipeline phases, build conventions, and local plugin testing.",
+      "complexity": "moderate"
+    },
+    {
+      "id": "service:Makefile",
+      "type": "service",
+      "name": "Makefile",
+      "filePath": "Makefile",
+      "tags": [
+        "infrastructure",
+        "build-system",
+        "developer-tools",
+        "packaging"
+      ],
+      "summary": "Build and maintenance command surface for dependencies, dashboard builds, tests, linting, packaging, installs, and cleanup targets.",
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "tags": [
+        "documentation",
+        "architecture-analysis",
+        "cli-reference",
+        "schema"
+      ],
+      "summary": "Architecture-analysis package documentation describing layout, CLI scripts, incremental auto-update flow, schemas, dependencies, usage, and tests.",
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:install.sh",
+      "type": "file",
+      "name": "install.sh",
+      "filePath": "install.sh",
+      "tags": [
+        "script",
+        "installer",
+        "packaging",
+        "entry-point",
+        "local-install"
+      ],
+      "summary": "Standalone installer for global and project-local Understand-Anything plugin installs, with native CLI support, payload assembly, skill linking, workflows, wrappers, and uninstall paths.",
+      "complexity": "complex",
+      "languageNotes": "Bash installer uses a table-driven platform matrix, process substitution, heredocs, symlink management, and native CLI fallbacks."
+    },
+    {
+      "id": "function:install.sh:platforms_table",
+      "type": "function",
+      "name": "platforms_table",
+      "filePath": "install.sh",
+      "lineRange": [
+        58,
+        70
+      ],
+      "summary": "Emits the supported platform matrix, including global skill directories, project-local directories, local-install policy, and native CLI selection.",
+      "complexity": "simple",
+      "tags": [
+        "installer",
+        "platform-matrix",
+        "configuration"
+      ]
+    },
+    {
+      "id": "function:install.sh:find_assets",
+      "type": "function",
+      "name": "find_assets",
+      "filePath": "install.sh",
+      "lineRange": [
+        78,
+        91
+      ],
+      "summary": "Searches configured and conventional asset directories for plugin, wheelhouse, and dashboard tarballs used for offline assembly.",
+      "complexity": "simple",
+      "tags": [
+        "asset-discovery",
+        "packaging",
+        "installer"
+      ]
+    },
+    {
+      "id": "function:install.sh:assemble_into",
+      "type": "function",
+      "name": "assemble_into",
+      "filePath": "install.sh",
+      "lineRange": [
+        95,
+        110
+      ],
+      "summary": "Expands the plugin payload archive into a target parent directory and overlays optional wheelhouse and dashboard archives.",
+      "complexity": "moderate",
+      "tags": [
+        "payload-assembly",
+        "packaging",
+        "installer"
+      ]
+    },
+    {
+      "id": "function:install.sh:resolve_plugin_home",
+      "type": "function",
+      "name": "resolve_plugin_home",
+      "filePath": "install.sh",
+      "lineRange": [
+        113,
+        134
+      ],
+      "summary": "Chooses the plugin payload source from an in-tree checkout, system install, local archives, or a git fallback checkout.",
+      "complexity": "moderate",
+      "tags": [
+        "payload-resolution",
+        "installer",
+        "fallback"
+      ]
+    },
+    {
+      "id": "function:install.sh:check_prereqs",
+      "type": "function",
+      "name": "check_prereqs",
+      "filePath": "install.sh",
+      "lineRange": [
+        146,
+        155
+      ],
+      "summary": "Checks for Python and Node availability and warns when versions or tools may be insufficient for analysis or dashboard use.",
+      "complexity": "simple",
+      "tags": [
+        "prerequisite-check",
+        "environment",
+        "installer"
+      ]
+    },
+    {
+      "id": "function:install.sh:warm_env",
+      "type": "function",
+      "name": "warm_env",
+      "filePath": "install.sh",
+      "lineRange": [
+        158,
+        168
+      ],
+      "summary": "Prepares the arch_analysis virtual environment when the plugin payload is writable so first analysis runs avoid cold setup.",
+      "complexity": "simple",
+      "tags": [
+        "environment-setup",
+        "virtualenv",
+        "installer"
+      ]
+    },
+    {
+      "id": "function:install.sh:native_install",
+      "type": "function",
+      "name": "native_install",
+      "filePath": "install.sh",
+      "lineRange": [
+        185,
+        216
+      ],
+      "summary": "Attempts native Claude or Codex marketplace installation before falling back to filesystem skill linking.",
+      "complexity": "moderate",
+      "tags": [
+        "native-cli",
+        "installer",
+        "marketplace"
+      ]
+    },
+    {
+      "id": "function:install.sh:native_uninstall",
+      "type": "function",
+      "name": "native_uninstall",
+      "filePath": "install.sh",
+      "lineRange": [
+        218,
+        237
+      ],
+      "summary": "Uses native Claude or Codex commands to remove the plugin when those CLIs can handle the selected target.",
+      "complexity": "simple",
+      "tags": [
+        "native-cli",
+        "uninstall",
+        "marketplace"
+      ]
+    },
+    {
+      "id": "function:install.sh:link_skills_global",
+      "type": "function",
+      "name": "link_skills_global",
+      "filePath": "install.sh",
+      "lineRange": [
+        242,
+        253
+      ],
+      "summary": "Creates global skill symlinks for per-skill or folder-style targets from the resolved plugin payload.",
+      "complexity": "simple",
+      "tags": [
+        "skill-linking",
+        "symlink",
+        "global-install"
+      ]
+    },
+    {
+      "id": "function:install.sh:write_kiro_agent",
+      "type": "function",
+      "name": "write_kiro_agent",
+      "filePath": "install.sh",
+      "lineRange": [
+        264,
+        285
+      ],
+      "summary": "Generates Kiro agent configuration that points at the understand skill and bundled agent resource files.",
+      "complexity": "moderate",
+      "tags": [
+        "kiro",
+        "agent-config",
+        "skill-linking"
+      ]
+    },
+    {
+      "id": "function:install.sh:install_kilo_workflows",
+      "type": "function",
+      "name": "install_kilo_workflows",
+      "filePath": "install.sh",
+      "lineRange": [
+        291,
+        301
+      ],
+      "summary": "Installs Kilo workflow markdown files by replacing the plugin-root placeholder with the concrete installed plugin path.",
+      "complexity": "simple",
+      "tags": [
+        "kilo",
+        "workflow-install",
+        "templating"
+      ]
+    },
+    {
+      "id": "function:install.sh:remove_kilo_workflows",
+      "type": "function",
+      "name": "remove_kilo_workflows",
+      "filePath": "install.sh",
+      "lineRange": [
+        305,
+        314
+      ],
+      "summary": "Removes generated Understand-Anything Kilo workflow files by checking signatures so user-authored workflows are left in place.",
+      "complexity": "simple",
+      "tags": [
+        "kilo",
+        "workflow-cleanup",
+        "uninstall"
+      ]
+    },
+    {
+      "id": "function:install.sh:install_project_tools",
+      "type": "function",
+      "name": "install_project_tools",
+      "filePath": "install.sh",
+      "lineRange": [
+        321,
+        338
+      ],
+      "summary": "Writes project-local command wrappers under .understand-anything/tools that forward to the installed plugin command run scripts.",
+      "complexity": "moderate",
+      "tags": [
+        "local-install",
+        "tool-wrapper",
+        "command-wrapper"
+      ]
+    },
+    {
+      "id": "function:install.sh:_payload_current",
+      "type": "function",
+      "name": "_payload_current",
+      "filePath": "install.sh",
+      "lineRange": [
+        356,
+        369
+      ],
+      "summary": "Determines whether an existing project-local plugin payload is current relative to source archives or checkout files.",
+      "complexity": "moderate",
+      "tags": [
+        "cache-check",
+        "local-install",
+        "payload-sync"
+      ]
+    },
+    {
+      "id": "function:install.sh:copy_payload_to",
+      "type": "function",
+      "name": "copy_payload_to",
+      "filePath": "install.sh",
+      "lineRange": [
+        374,
+        396
+      ],
+      "summary": "Copies or extracts the plugin payload into the project-local hidden plugin root, reusing it when current and excluding development caches.",
+      "complexity": "moderate",
+      "tags": [
+        "payload-copy",
+        "local-install",
+        "packaging"
+      ]
+    },
+    {
+      "id": "function:install.sh:scripted_local_install",
+      "type": "function",
+      "name": "scripted_local_install",
+      "filePath": "install.sh",
+      "lineRange": [
+        398,
+        417
+      ],
+      "summary": "Performs project-local installation by copying the payload, wiring .agents skills and target skill links, installing optional workflows, wrappers, and warming the environment.",
+      "complexity": "complex",
+      "tags": [
+        "local-install",
+        "skill-linking",
+        "workflow-install",
+        "installer"
+      ]
+    },
+    {
+      "id": "function:install.sh:cmd_install",
+      "type": "function",
+      "name": "cmd_install",
+      "filePath": "install.sh",
+      "lineRange": [
+        421,
+        468
+      ],
+      "summary": "Coordinates install behavior for a selected platform, enforcing local-install rules, preferring native CLIs, and falling back to scripted global or project-local linking.",
+      "complexity": "complex",
+      "tags": [
+        "installer",
+        "command-dispatch",
+        "native-cli",
+        "local-install"
+      ]
+    },
+    {
+      "id": "function:install.sh:cmd_uninstall",
+      "type": "function",
+      "name": "cmd_uninstall",
+      "filePath": "install.sh",
+      "lineRange": [
+        473,
+        510
+      ],
+      "summary": "Coordinates uninstall behavior for a selected platform, removing native installs, symlinks, Kilo workflows, project wrappers, Kiro agent config, and plugin root links.",
+      "complexity": "complex",
+      "tags": [
+        "uninstall",
+        "command-dispatch",
+        "cleanup",
+        "skill-linking"
+      ]
+    },
+    {
+      "id": "function:install.sh:prompt_platform",
+      "type": "function",
+      "name": "prompt_platform",
+      "filePath": "install.sh",
+      "lineRange": [
+        518,
+        528
+      ],
+      "summary": "Prompts interactively for a global-install target when no platform argument is supplied.",
+      "complexity": "simple",
+      "tags": [
+        "interactive-prompt",
+        "platform-selection",
+        "installer"
+      ]
+    },
+    {
+      "id": "function:install.sh:usage",
+      "type": "function",
+      "name": "usage",
+      "filePath": "install.sh",
+      "lineRange": [
+        530,
+        550
+      ],
+      "summary": "Prints installer usage, platform list, native CLI behavior, and relevant environment variables.",
+      "complexity": "simple",
+      "tags": [
+        "help-text",
+        "cli-usage",
+        "installer"
+      ]
+    },
+    {
+      "id": "function:install.sh:parse_local",
+      "type": "function",
+      "name": "parse_local",
+      "filePath": "install.sh",
+      "lineRange": [
+        554,
+        563
+      ],
+      "summary": "Parses the optional --local argument and stores the requested project path for install or uninstall commands.",
+      "complexity": "simple",
+      "tags": [
+        "argument-parsing",
+        "local-install",
+        "cli"
+      ]
+    },
+    {
+      "id": "function:install.sh:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "install.sh",
+      "lineRange": [
+        565,
+        578
+      ],
+      "summary": "Dispatches top-level installer commands for help, update, assembly, uninstall, prompted install, and platform-specific install.",
+      "complexity": "moderate",
+      "tags": [
+        "entry-point",
+        "command-dispatch",
+        "installer"
+      ]
+    },
+    {
+      "id": "file:packaging/deb/understand-anything",
+      "type": "file",
+      "name": "understand-anything",
+      "filePath": "packaging/deb/understand-anything",
+      "tags": [
+        "packaging",
+        "distribution",
+        "code"
+      ],
+      "summary": "Debian-installed user command that links the shared plugin payload into supported agent skill locations.",
+      "complexity": "complex"
+    },
+    {
+      "id": "file:scripts/build_dist.py",
+      "type": "file",
+      "name": "build_dist.py",
+      "filePath": "scripts/build_dist.py",
+      "tags": [
+        "packaging",
+        "distribution",
+        "python"
+      ],
+      "summary": "Distribution build script that assembles Python wheels, offline wheelhouses, dashboard bundles, plugin archives, and Debian packages.",
+      "complexity": "complex",
+      "languageNotes": "Build outputs are split between platform-agnostic plugin payloads and platform-specific wheelhouse or Debian artifacts."
+    },
+    {
+      "id": "function:scripts/build_dist.py:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "scripts/build_dist.py",
+      "lineRange": [
+        52,
+        54
+      ],
+      "summary": "runs an external command and fails fast when the command exits unsuccessfully",
+      "complexity": "simple",
+      "tags": [
+        "function",
+        "packaging",
+        "code"
+      ],
+      "languageNotes": "Build outputs are split between platform-agnostic plugin payloads and platform-specific wheelhouse or Debian artifacts."
+    },
+    {
+      "id": "function:scripts/build_dist.py:read_version",
+      "type": "function",
+      "name": "read_version",
+      "filePath": "scripts/build_dist.py",
+      "lineRange": [
+        57,
+        58
+      ],
+      "summary": "read_version reads the plugin version from plugin metadata.",
+      "complexity": "simple",
+      "tags": [
+        "function",
+        "file-io",
+        "packaging"
+      ],
+      "languageNotes": "Build outputs are split between platform-agnostic plugin payloads and platform-specific wheelhouse or Debian artifacts."
+    },
+    {
+      "id": "function:scripts/build_dist.py:find_python",
+      "type": "function",
+      "name": "find_python",
+      "filePath": "scripts/build_dist.py",
+      "lineRange": [
+        61,
+        66
+      ],
+      "summary": "find_python selects the Python interpreter used for packaging commands.",
+      "complexity": "simple",
+      "tags": [
+        "function",
+        "packaging",
+        "code"
+      ],
+      "languageNotes": "Build outputs are split between platform-agnostic plugin payloads and platform-specific wheelhouse or Debian artifacts."
+    },
+    {
+      "id": "function:scripts/build_dist.py:platform_tag",
+      "type": "function",
+      "name": "platform_tag",
+      "filePath": "scripts/build_dist.py",
+      "lineRange": [
+        69,
+        74
+      ],
+      "summary": "platform_tag derives a platform archive tag from the current operating system and CPU.",
+      "complexity": "simple",
+      "tags": [
+        "function",
+        "packaging",
+        "code"
+      ],
+      "languageNotes": "Build outputs are split between platform-agnostic plugin payloads and platform-specific wheelhouse or Debian artifacts."
+    },
+    {
+      "id": "function:scripts/build_dist.py:deb_arch",
+      "type": "function",
+      "name": "deb_arch",
+      "filePath": "scripts/build_dist.py",
+      "lineRange": [
+        77,
+        79
+      ],
+      "summary": "deb_arch maps the current CPU architecture to Debian package architecture names.",
+      "complexity": "simple",
+      "tags": [
+        "function",
+        "packaging",
+        "code"
+      ],
+      "languageNotes": "Build outputs are split between platform-agnostic plugin payloads and platform-specific wheelhouse or Debian artifacts."
+    },
+    {
+      "id": "function:scripts/build_dist.py:build_python",
+      "type": "function",
+      "name": "build_python",
+      "filePath": "scripts/build_dist.py",
+      "lineRange": [
+        86,
+        108
+      ],
+      "summary": "build_python builds Python wheel artifacts for the plugin packages.",
+      "complexity": "simple",
+      "tags": [
+        "function",
+        "pipeline",
+        "packaging"
+      ],
+      "languageNotes": "Build outputs are split between platform-agnostic plugin payloads and platform-specific wheelhouse or Debian artifacts."
+    },
+    {
+      "id": "function:scripts/build_dist.py:build_wheelhouse",
+      "type": "function",
+      "name": "build_wheelhouse",
+      "filePath": "scripts/build_dist.py",
+      "lineRange": [
+        111,
+        121
+      ],
+      "summary": "build_wheelhouse collects the offline wheelhouse used by distributed installs.",
+      "complexity": "simple",
+      "tags": [
+        "function",
+        "pipeline",
+        "packaging"
+      ],
+      "languageNotes": "Build outputs are split between platform-agnostic plugin payloads and platform-specific wheelhouse or Debian artifacts."
+    },
+    {
+      "id": "function:scripts/build_dist.py:build_dashboard",
+      "type": "function",
+      "name": "build_dashboard",
+      "filePath": "scripts/build_dist.py",
+      "lineRange": [
+        124,
+        129
+      ],
+      "summary": "build_dashboard builds the static dashboard bundle for distribution.",
+      "complexity": "simple",
+      "tags": [
+        "function",
+        "pipeline",
+        "packaging"
+      ],
+      "languageNotes": "Build outputs are split between platform-agnostic plugin payloads and platform-specific wheelhouse or Debian artifacts."
+    },
+    {
+      "id": "function:scripts/build_dist.py:_die",
+      "type": "function",
+      "name": "_die",
+      "filePath": "scripts/build_dist.py",
+      "lineRange": [
+        132,
+        133
+      ],
+      "summary": "Function _die implements die behavior for build_dist.py.",
+      "complexity": "simple",
+      "tags": [
+        "function",
+        "packaging",
+        "code"
+      ],
+      "languageNotes": "Build outputs are split between platform-agnostic plugin payloads and platform-specific wheelhouse or Debian artifacts."
+    },
+    {
+      "id": "function:scripts/build_dist.py:export_requirements",
+      "type": "function",
+      "name": "export_requirements",
+      "filePath": "scripts/build_dist.py",
+      "lineRange": [
+        140,
+        150
+      ],
+      "summary": "Function export_requirements implements export requirements behavior for build_dist.py.",
+      "complexity": "simple",
+      "tags": [
+        "function",
+        "packaging",
+        "code"
+      ],
+      "languageNotes": "Build outputs are split between platform-agnostic plugin payloads and platform-specific wheelhouse or Debian artifacts."
+    },
+    {
+      "id": "function:scripts/build_dist.py:assemble_payload",
+      "type": "function",
+      "name": "assemble_payload",
+      "filePath": "scripts/build_dist.py",
+      "lineRange": [
+        153,
+        189
+      ],
+      "summary": "Function assemble_payload implements assemble payload behavior for build_dist.py.",
+      "complexity": "moderate",
+      "tags": [
+        "function",
+        "file-io",
+        "pipeline",
+        "packaging"
+      ],
+      "languageNotes": "Build outputs are split between platform-agnostic plugin payloads and platform-specific wheelhouse or Debian artifacts."
+    },
+    {
+      "id": "function:scripts/build_dist.py:agents_md",
+      "type": "function",
+      "name": "agents_md",
+      "filePath": "scripts/build_dist.py",
+      "lineRange": [
+        192,
+        200
+      ],
+      "summary": "Function agents_md implements agents md behavior for build_dist.py.",
+      "complexity": "simple",
+      "tags": [
+        "function",
+        "packaging",
+        "code"
+      ],
+      "languageNotes": "Build outputs are split between platform-agnostic plugin payloads and platform-specific wheelhouse or Debian artifacts."
+    },
+    {
+      "id": "function:scripts/build_dist.py:tar_dir",
+      "type": "function",
+      "name": "tar_dir",
+      "filePath": "scripts/build_dist.py",
+      "lineRange": [
+        207,
+        210
+      ],
+      "summary": "Function tar_dir implements tar dir behavior for build_dist.py.",
+      "complexity": "simple",
+      "tags": [
+        "function",
+        "packaging",
+        "code"
+      ],
+      "languageNotes": "Build outputs are split between platform-agnostic plugin payloads and platform-specific wheelhouse or Debian artifacts."
+    },
+    {
+      "id": "function:scripts/build_dist.py:make_archives",
+      "type": "function",
+      "name": "make_archives",
+      "filePath": "scripts/build_dist.py",
+      "lineRange": [
+        213,
+        225
+      ],
+      "summary": "Function make_archives implements make archives behavior for build_dist.py.",
+      "complexity": "simple",
+      "tags": [
+        "function",
+        "packaging",
+        "code"
+      ],
+      "languageNotes": "Build outputs are split between platform-agnostic plugin payloads and platform-specific wheelhouse or Debian artifacts."
+    },
+    {
+      "id": "function:scripts/build_dist.py:build_deb",
+      "type": "function",
+      "name": "build_deb",
+      "filePath": "scripts/build_dist.py",
+      "lineRange": [
+        232,
+        315
+      ],
+      "summary": "Function build_deb implements build deb behavior for build_dist.py.",
+      "complexity": "complex",
+      "tags": [
+        "function",
+        "pipeline",
+        "packaging"
+      ],
+      "languageNotes": "Build outputs are split between platform-agnostic plugin payloads and platform-specific wheelhouse or Debian artifacts."
+    },
+    {
+      "id": "function:scripts/build_dist.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "scripts/build_dist.py",
+      "lineRange": [
+        320,
+        366
+      ],
+      "summary": "main implements the command-line entry point and coordinates argument parsing with file IO.",
+      "complexity": "moderate",
+      "tags": [
+        "function",
+        "entry-point",
+        "cli",
+        "packaging"
+      ],
+      "languageNotes": "Build outputs are split between platform-agnostic plugin payloads and platform-specific wheelhouse or Debian artifacts."
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:platforms_table",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:find_assets",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:assemble_into",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:resolve_plugin_home",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:check_prereqs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:warm_env",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:native_install",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:native_uninstall",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:link_skills_global",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:write_kiro_agent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:install_kilo_workflows",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:remove_kilo_workflows",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:install_project_tools",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:_payload_current",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:copy_payload_to",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:scripted_local_install",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:cmd_install",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:cmd_uninstall",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:prompt_platform",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:usage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:parse_local",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:install.sh",
+      "target": "function:install.sh:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "document:AGENTS.md",
+      "target": "file:install.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:install.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "service:Makefile",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:install.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "service:Makefile",
+      "target": "file:install.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:install.sh:resolve_plugin_home",
+      "target": "function:install.sh:find_assets",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:resolve_plugin_home",
+      "target": "function:install.sh:assemble_into",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:warm_env",
+      "target": "function:install.sh:resolve_plugin_home",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:native_install",
+      "target": "function:install.sh:resolve_plugin_home",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:install_kilo_workflows",
+      "target": "function:install.sh:resolve_plugin_home",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:_payload_current",
+      "target": "function:install.sh:find_assets",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:_payload_current",
+      "target": "function:install.sh:resolve_plugin_home",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:copy_payload_to",
+      "target": "function:install.sh:_payload_current",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:copy_payload_to",
+      "target": "function:install.sh:find_assets",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:copy_payload_to",
+      "target": "function:install.sh:resolve_plugin_home",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:scripted_local_install",
+      "target": "function:install.sh:copy_payload_to",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:scripted_local_install",
+      "target": "function:install.sh:write_kiro_agent",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:scripted_local_install",
+      "target": "function:install.sh:install_kilo_workflows",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:scripted_local_install",
+      "target": "function:install.sh:install_project_tools",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:scripted_local_install",
+      "target": "function:install.sh:warm_env",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:cmd_install",
+      "target": "function:install.sh:platforms_table",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:cmd_install",
+      "target": "function:install.sh:check_prereqs",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:cmd_install",
+      "target": "function:install.sh:native_install",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:cmd_install",
+      "target": "function:install.sh:scripted_local_install",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:cmd_install",
+      "target": "function:install.sh:resolve_plugin_home",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:cmd_install",
+      "target": "function:install.sh:link_skills_global",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:cmd_install",
+      "target": "function:install.sh:write_kiro_agent",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:cmd_install",
+      "target": "function:install.sh:install_kilo_workflows",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:cmd_install",
+      "target": "function:install.sh:warm_env",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:cmd_uninstall",
+      "target": "function:install.sh:native_uninstall",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:cmd_uninstall",
+      "target": "function:install.sh:remove_kilo_workflows",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:prompt_platform",
+      "target": "function:install.sh:platforms_table",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:usage",
+      "target": "function:install.sh:platforms_table",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:main",
+      "target": "function:install.sh:usage",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:main",
+      "target": "function:install.sh:cmd_install",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:main",
+      "target": "function:install.sh:cmd_uninstall",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:main",
+      "target": "function:install.sh:parse_local",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:install.sh:main",
+      "target": "function:install.sh:prompt_platform",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:run",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:read_version",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:read_version",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:find_python",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:find_python",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:platform_tag",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:platform_tag",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:deb_arch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:deb_arch",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:build_python",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:build_python",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:build_wheelhouse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:build_wheelhouse",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:build_dashboard",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:build_dashboard",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:_die",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:_die",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:export_requirements",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:export_requirements",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:assemble_payload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:assemble_payload",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:agents_md",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:agents_md",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:tar_dir",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:tar_dir",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:make_archives",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:make_archives",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:build_deb",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:build_deb",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "function:scripts/build_dist.py:main",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/build_dist.py",
+      "target": "file:packaging/deb/understand-anything",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:project-documentation",
+      "name": "Project Documentation",
+      "description": "Repository-level guidance and README files that explain how Understand-Anything is installed, operated, and maintained.",
+      "nodeIds": [
+        "document:AGENTS.md",
+        "document:CLAUDE.md",
+        "document:README.md"
+      ]
+    },
+    {
+      "id": "layer:installation-packaging",
+      "name": "Installation And Packaging",
+      "description": "Installer and Debian packaging entrypoints that assemble payloads, install local tool links, and manage platform-specific setup.",
+      "nodeIds": [
+        "file:install.sh",
+        "function:install.sh:platforms_table",
+        "function:install.sh:find_assets",
+        "function:install.sh:assemble_into",
+        "function:install.sh:resolve_plugin_home",
+        "function:install.sh:check_prereqs",
+        "function:install.sh:warm_env",
+        "function:install.sh:native_install",
+        "function:install.sh:native_uninstall",
+        "function:install.sh:link_skills_global",
+        "function:install.sh:write_kiro_agent",
+        "function:install.sh:install_kilo_workflows",
+        "function:install.sh:remove_kilo_workflows",
+        "function:install.sh:install_project_tools",
+        "function:install.sh:_payload_current",
+        "function:install.sh:copy_payload_to",
+        "function:install.sh:scripted_local_install",
+        "function:install.sh:cmd_install",
+        "function:install.sh:cmd_uninstall",
+        "function:install.sh:prompt_platform",
+        "function:install.sh:usage",
+        "function:install.sh:parse_local",
+        "function:install.sh:main",
+        "file:packaging/deb/understand-anything"
+      ]
+    },
+    {
+      "id": "layer:build-tooling",
+      "name": "Build Tooling",
+      "description": "Build orchestration files and distribution scripts for producing dashboard assets, Python packages, wheelhouses, archives, and Debian artifacts.",
+      "nodeIds": [
+        "service:Makefile",
+        "file:scripts/build_dist.py",
+        "function:scripts/build_dist.py:run",
+        "function:scripts/build_dist.py:read_version",
+        "function:scripts/build_dist.py:find_python",
+        "function:scripts/build_dist.py:platform_tag",
+        "function:scripts/build_dist.py:deb_arch",
+        "function:scripts/build_dist.py:build_python",
+        "function:scripts/build_dist.py:build_wheelhouse",
+        "function:scripts/build_dist.py:build_dashboard",
+        "function:scripts/build_dist.py:_die",
+        "function:scripts/build_dist.py:export_requirements",
+        "function:scripts/build_dist.py:assemble_payload",
+        "function:scripts/build_dist.py:agents_md",
+        "function:scripts/build_dist.py:tar_dir",
+        "function:scripts/build_dist.py:make_archives",
+        "function:scripts/build_dist.py:build_deb",
+        "function:scripts/build_dist.py:main"
+      ]
+    }
+  ]
+}

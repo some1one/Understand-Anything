@@ -3,11 +3,11 @@
 ## Key Concepts
 
 - **Multi-Stage Builds**: Multiple `FROM` statements to separate build and runtime stages, reducing image size
-- **Layer Caching**: Each instruction creates a layer; order instructions from least to most frequently changing for cache efficiency
-- **Base Images**: `FROM image:tag` selects the starting image; prefer slim/alpine variants for smaller images
+- **Layer Caching**: Filesystem-changing instructions create image layers; instruction order and inputs affect cache reuse
+- **Base Images**: `FROM image:tag` or a digest selects the base; identify the actual runtime and libc requirements
 - **COPY vs ADD**: `COPY` for local files (preferred), `ADD` for URLs and tar extraction
 - **Build Arguments**: `ARG` for build-time variables, `ENV` for runtime environment variables
-- **Health Checks**: `HEALTHCHECK` instruction for container orchestrator readiness probes
+- **Health Checks**: `HEALTHCHECK` configures Docker container health; orchestrator readiness/liveness probes are separate configuration
 - **Entry Point vs CMD**: `ENTRYPOINT` sets the executable, `CMD` provides default arguments
 - **User Permissions**: `USER` instruction to run as non-root for security
 - **Ignore Patterns**: `.dockerignore` excludes files from the build context (like `.gitignore`)

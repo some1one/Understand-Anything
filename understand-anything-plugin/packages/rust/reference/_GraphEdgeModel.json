@@ -1,0 +1,53 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "source": {
+      "title": "Source",
+      "type": "string"
+    },
+    "target": {
+      "title": "Target",
+      "type": "string"
+    },
+    "type": {
+      "title": "Type",
+      "type": "string"
+    },
+    "direction": {
+      "enum": [
+        "forward",
+        "backward",
+        "bidirectional"
+      ],
+      "title": "Direction",
+      "type": "string"
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Description"
+    },
+    "weight": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Weight",
+      "type": "number"
+    }
+  },
+  "required": [
+    "source",
+    "target",
+    "type",
+    "direction",
+    "weight"
+  ],
+  "title": "_GraphEdgeModel",
+  "type": "object"
+}

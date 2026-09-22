@@ -1,0 +1,5110 @@
+[
+  {
+    "function": "is_test_path",
+    "args": [
+      "test/bar_test.c"
+    ],
+    "expected": true,
+    "after": [
+      "test/bar_test.c"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "test/test_bar.c"
+    ],
+    "expected": true,
+    "after": [
+      "test/test_bar.c"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "test/bar_test.cpp"
+    ],
+    "expected": true,
+    "after": [
+      "test/bar_test.cpp"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "test/bar_test.cc"
+    ],
+    "expected": true,
+    "after": [
+      "test/bar_test.cc"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "test/test_bar.cpp"
+    ],
+    "expected": true,
+    "after": [
+      "test/test_bar.cpp"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "Foo.Tests/BarTests.cs"
+    ],
+    "expected": true,
+    "after": [
+      "Foo.Tests/BarTests.cs"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "Foo.Tests/BarTest.cs"
+    ],
+    "expected": true,
+    "after": [
+      "Foo.Tests/BarTest.cs"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "internal/bar_test.go"
+    ],
+    "expected": true,
+    "after": [
+      "internal/bar_test.go"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "bar_test.go"
+    ],
+    "expected": true,
+    "after": [
+      "bar_test.go"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/__tests__/helpers.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/__tests__/helpers.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "tests/fixtures/data.json"
+    ],
+    "expected": false,
+    "after": [
+      "tests/fixtures/data.json"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/test/java/com/foo/BarTest.java"
+    ],
+    "expected": true,
+    "after": [
+      "src/test/java/com/foo/BarTest.java"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/test/java/com/foo/BarTests.java"
+    ],
+    "expected": true,
+    "after": [
+      "src/test/java/com/foo/BarTests.java"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/test/java/com/foo/BarIT.java"
+    ],
+    "expected": true,
+    "after": [
+      "src/test/java/com/foo/BarIT.java"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.tsx"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.tsx"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.js"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.js"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.jsx"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.jsx"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.mjs"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.mjs"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.cjs"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.cjs"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/Component.test.vue"
+    ],
+    "expected": true,
+    "after": [
+      "src/Component.test.vue"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.spec.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.spec.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.spec.tsx"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.spec.tsx"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.spec.js"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.spec.js"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/Component.spec.vue"
+    ],
+    "expected": true,
+    "after": [
+      "src/Component.spec.vue"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/test/kotlin/com/foo/BarTest.kt"
+    ],
+    "expected": true,
+    "after": [
+      "src/test/kotlin/com/foo/BarTest.kt"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/test/kotlin/com/foo/BarTests.kt"
+    ],
+    "expected": true,
+    "after": [
+      "src/test/kotlin/com/foo/BarTests.kt"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.tsx"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.tsx"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "internal/bar.go"
+    ],
+    "expected": false,
+    "after": [
+      "internal/bar.go"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/index.tsx"
+    ],
+    "expected": false,
+    "after": [
+      "src/index.tsx"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "README.md"
+    ],
+    "expected": false,
+    "after": [
+      "README.md"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "docs/guide.md"
+    ],
+    "expected": false,
+    "after": [
+      "docs/guide.md"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "main.py"
+    ],
+    "expected": false,
+    "after": [
+      "main.py"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo/bar.js"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo/bar.js"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "Foo.cs"
+    ],
+    "expected": false,
+    "after": [
+      "Foo.cs"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "Bar.kt"
+    ],
+    "expected": false,
+    "after": [
+      "Bar.kt"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "Bar.java"
+    ],
+    "expected": false,
+    "after": [
+      "Bar.java"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "tests/test_bar.py"
+    ],
+    "expected": true,
+    "after": [
+      "tests/test_bar.py"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "bar_test.py"
+    ],
+    "expected": true,
+    "after": [
+      "bar_test.py"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "test_bar.py"
+    ],
+    "expected": true,
+    "after": [
+      "test_bar.py"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "tests/foo/X.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "tests/foo/X.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "test/foo/X.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "test/foo/X.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "spec/foo/X.spec.ts"
+    ],
+    "expected": true,
+    "after": [
+      "spec/foo/X.spec.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/__tests__/foo.test.js"
+    ],
+    "expected": true,
+    "after": [
+      "src/__tests__/foo.test.js"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/__tests__/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/__tests__/foo.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "MyApp.Tests/Foo/BarTests.cs"
+    ],
+    "expected": [
+      "MyApp.Tests/Foo/Bar.cs",
+      "MyApp/Foo/Bar.cs"
+    ],
+    "after": [
+      "MyApp.Tests/Foo/BarTests.cs"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "MyApp.Test/BarTest.cs"
+    ],
+    "expected": [
+      "MyApp.Test/Bar.cs",
+      "MyApp/Bar.cs"
+    ],
+    "after": [
+      "MyApp.Test/BarTest.cs"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/cartservice/tests/CartServiceTests.cs"
+    ],
+    "expected": [
+      "src/cartservice/tests/CartService.cs",
+      "src/cartservice/CartService.cs",
+      "src/cartservice/src/CartService.cs"
+    ],
+    "after": [
+      "src/cartservice/tests/CartServiceTests.cs"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "internal/bar_test.go"
+    ],
+    "expected": [
+      "internal/bar.go"
+    ],
+    "after": [
+      "internal/bar_test.go"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/test/java/com/foo/BarIT.java"
+    ],
+    "expected": [
+      "src/main/java/com/foo/Bar.java",
+      "src/test/java/com/foo/Bar.java"
+    ],
+    "after": [
+      "src/test/java/com/foo/BarIT.java"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/test/java/com/foo/BarTest.java"
+    ],
+    "expected": [
+      "src/main/java/com/foo/Bar.java",
+      "src/test/java/com/foo/Bar.java"
+    ],
+    "after": [
+      "src/test/java/com/foo/BarTest.java"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/test/java/com/foo/BarTests.java"
+    ],
+    "expected": [
+      "src/main/java/com/foo/Bar.java",
+      "src/test/java/com/foo/Bar.java"
+    ],
+    "after": [
+      "src/test/java/com/foo/BarTests.java"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo/X.test.ts"
+    ],
+    "expected": [
+      "src/foo/X.ts",
+      "src/foo/X.tsx",
+      "src/foo/X.js",
+      "src/foo/X.jsx",
+      "src/foo/X.mjs",
+      "src/foo/X.cjs",
+      "src/foo/X.vue"
+    ],
+    "after": [
+      "src/foo/X.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo/X.spec.tsx"
+    ],
+    "expected": [
+      "src/foo/X.tsx",
+      "src/foo/X.ts",
+      "src/foo/X.js",
+      "src/foo/X.jsx",
+      "src/foo/X.mjs",
+      "src/foo/X.cjs",
+      "src/foo/X.vue"
+    ],
+    "after": [
+      "src/foo/X.spec.tsx"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo/test/X.test.ts"
+    ],
+    "expected": [
+      "src/foo/test/X.ts",
+      "src/foo/test/X.tsx",
+      "src/foo/test/X.js",
+      "src/foo/test/X.jsx",
+      "src/foo/test/X.mjs",
+      "src/foo/test/X.cjs",
+      "src/foo/test/X.vue",
+      "src/foo/X.ts",
+      "src/foo/X.tsx",
+      "src/foo/X.js",
+      "src/foo/X.jsx",
+      "src/foo/X.mjs",
+      "src/foo/X.cjs",
+      "src/foo/X.vue"
+    ],
+    "after": [
+      "src/foo/test/X.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo/spec/X.spec.ts"
+    ],
+    "expected": [
+      "src/foo/spec/X.ts",
+      "src/foo/spec/X.tsx",
+      "src/foo/spec/X.js",
+      "src/foo/spec/X.jsx",
+      "src/foo/spec/X.mjs",
+      "src/foo/spec/X.cjs",
+      "src/foo/spec/X.vue",
+      "src/foo/X.ts",
+      "src/foo/X.tsx",
+      "src/foo/X.js",
+      "src/foo/X.jsx",
+      "src/foo/X.mjs",
+      "src/foo/X.cjs",
+      "src/foo/X.vue"
+    ],
+    "after": [
+      "src/foo/spec/X.spec.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/test/kotlin/com/foo/BarTest.kt"
+    ],
+    "expected": [
+      "src/main/kotlin/com/foo/Bar.kt",
+      "src/test/kotlin/com/foo/Bar.kt"
+    ],
+    "after": [
+      "src/test/kotlin/com/foo/BarTest.kt"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "tests/foo/X.test.ts"
+    ],
+    "expected": [
+      "tests/foo/X.ts",
+      "tests/foo/X.tsx",
+      "tests/foo/X.js",
+      "tests/foo/X.jsx",
+      "tests/foo/X.mjs",
+      "tests/foo/X.cjs",
+      "tests/foo/X.vue",
+      "src/foo/X.ts",
+      "src/foo/X.tsx",
+      "src/foo/X.js",
+      "src/foo/X.jsx",
+      "src/foo/X.mjs",
+      "src/foo/X.cjs",
+      "src/foo/X.vue",
+      "app/foo/X.ts",
+      "app/foo/X.tsx",
+      "app/foo/X.js",
+      "app/foo/X.jsx",
+      "app/foo/X.mjs",
+      "app/foo/X.cjs",
+      "app/foo/X.vue",
+      "lib/foo/X.ts",
+      "lib/foo/X.tsx",
+      "lib/foo/X.js",
+      "lib/foo/X.jsx",
+      "lib/foo/X.mjs",
+      "lib/foo/X.cjs",
+      "lib/foo/X.vue",
+      "foo/X.ts",
+      "foo/X.tsx",
+      "foo/X.js",
+      "foo/X.jsx",
+      "foo/X.mjs",
+      "foo/X.cjs",
+      "foo/X.vue"
+    ],
+    "after": [
+      "tests/foo/X.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "tests/foo/X.test.ts"
+    ],
+    "expected": [
+      "tests/foo/X.ts",
+      "tests/foo/X.tsx",
+      "tests/foo/X.js",
+      "tests/foo/X.jsx",
+      "tests/foo/X.mjs",
+      "tests/foo/X.cjs",
+      "tests/foo/X.vue",
+      "src/foo/X.ts",
+      "src/foo/X.tsx",
+      "src/foo/X.js",
+      "src/foo/X.jsx",
+      "src/foo/X.mjs",
+      "src/foo/X.cjs",
+      "src/foo/X.vue",
+      "app/foo/X.ts",
+      "app/foo/X.tsx",
+      "app/foo/X.js",
+      "app/foo/X.jsx",
+      "app/foo/X.mjs",
+      "app/foo/X.cjs",
+      "app/foo/X.vue",
+      "lib/foo/X.ts",
+      "lib/foo/X.tsx",
+      "lib/foo/X.js",
+      "lib/foo/X.jsx",
+      "lib/foo/X.mjs",
+      "lib/foo/X.cjs",
+      "lib/foo/X.vue",
+      "foo/X.ts",
+      "foo/X.tsx",
+      "foo/X.js",
+      "foo/X.jsx",
+      "foo/X.mjs",
+      "foo/X.cjs",
+      "foo/X.vue"
+    ],
+    "after": [
+      "tests/foo/X.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/__tests__/X.test.ts"
+    ],
+    "expected": [
+      "src/__tests__/X.ts",
+      "src/__tests__/X.tsx",
+      "src/__tests__/X.js",
+      "src/__tests__/X.jsx",
+      "src/__tests__/X.mjs",
+      "src/__tests__/X.cjs",
+      "src/__tests__/X.vue",
+      "src/X.ts",
+      "src/X.tsx",
+      "src/X.js",
+      "src/X.jsx",
+      "src/X.mjs",
+      "src/X.cjs",
+      "src/X.vue"
+    ],
+    "after": [
+      "src/__tests__/X.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "mypkg/tests/test_bar.py"
+    ],
+    "expected": [
+      "mypkg/tests/bar.py",
+      "mypkg/bar.py"
+    ],
+    "after": [
+      "mypkg/tests/test_bar.py"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "a/b/test/test_bar.py"
+    ],
+    "expected": [
+      "a/b/test/bar.py",
+      "a/b/bar.py"
+    ],
+    "after": [
+      "a/b/test/test_bar.py"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "tests/test_bar.py"
+    ],
+    "expected": [
+      "tests/bar.py",
+      "bar.py",
+      "src/bar.py",
+      "app/bar.py",
+      "lib/bar.py"
+    ],
+    "after": [
+      "tests/test_bar.py"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "foo/bar_test.py"
+    ],
+    "expected": [
+      "foo/bar.py"
+    ],
+    "after": [
+      "foo/bar_test.py"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo/__tests__/X.test.ts"
+    ],
+    "expected": [
+      "src/foo/__tests__/X.ts",
+      "src/foo/__tests__/X.tsx",
+      "src/foo/__tests__/X.js",
+      "src/foo/__tests__/X.jsx",
+      "src/foo/__tests__/X.mjs",
+      "src/foo/__tests__/X.cjs",
+      "src/foo/__tests__/X.vue",
+      "src/foo/X.ts",
+      "src/foo/X.tsx",
+      "src/foo/X.js",
+      "src/foo/X.jsx",
+      "src/foo/X.mjs",
+      "src/foo/X.cjs",
+      "src/foo/X.vue"
+    ],
+    "after": [
+      "src/foo/__tests__/X.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": [
+      "src/foo.ts",
+      "src/foo.tsx",
+      "src/foo.js",
+      "src/foo.jsx",
+      "src/foo.mjs",
+      "src/foo.cjs",
+      "src/foo.vue"
+    ],
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      []
+    ],
+    "expected": [
+      1,
+      0,
+      1,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Path-based pairing (deterministic)"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "original"
+        }
+      ]
+    ],
+    "expected": [
+      0,
+      0,
+      1,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "original"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/__tests__/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/__tests__/foo.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "internal/bar.go"
+    ],
+    "expected": false,
+    "after": [
+      "internal/bar.go"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "internal/bar_test.go"
+    ],
+    "expected": true,
+    "after": [
+      "internal/bar_test.go"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/main/java/com/foo/Bar.java"
+    ],
+    "expected": false,
+    "after": [
+      "src/main/java/com/foo/Bar.java"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/test/java/com/foo/BarTest.java"
+    ],
+    "expected": true,
+    "after": [
+      "src/test/java/com/foo/BarTest.java"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/__tests__/foo.test.ts"
+    ],
+    "expected": [
+      "src/__tests__/foo.ts",
+      "src/__tests__/foo.tsx",
+      "src/__tests__/foo.js",
+      "src/__tests__/foo.jsx",
+      "src/__tests__/foo.mjs",
+      "src/__tests__/foo.cjs",
+      "src/__tests__/foo.vue",
+      "src/foo.ts",
+      "src/foo.tsx",
+      "src/foo.js",
+      "src/foo.jsx",
+      "src/foo.mjs",
+      "src/foo.cjs",
+      "src/foo.vue"
+    ],
+    "after": [
+      "src/__tests__/foo.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "internal/bar_test.go"
+    ],
+    "expected": [
+      "internal/bar.go"
+    ],
+    "after": [
+      "internal/bar_test.go"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "internal/bar.go"
+    ],
+    "expected": false,
+    "after": [
+      "internal/bar.go"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/test/java/com/foo/BarTest.java"
+    ],
+    "expected": [
+      "src/main/java/com/foo/Bar.java",
+      "src/test/java/com/foo/Bar.java"
+    ],
+    "after": [
+      "src/test/java/com/foo/BarTest.java"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/main/java/com/foo/Bar.java"
+    ],
+    "expected": false,
+    "after": [
+      "src/main/java/com/foo/Bar.java"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/__tests__/foo.test.ts": {
+          "id": "file:src/__tests__/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/__tests__/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:internal/bar.go": {
+          "id": "file:internal/bar.go",
+          "type": "file",
+          "name": "bar.go",
+          "filePath": "internal/bar.go",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:internal/bar_test.go": {
+          "id": "file:internal/bar_test.go",
+          "type": "file",
+          "name": "bar_test.go",
+          "filePath": "internal/bar_test.go",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/main/java/com/foo/Bar.java": {
+          "id": "file:src/main/java/com/foo/Bar.java",
+          "type": "file",
+          "name": "Bar.java",
+          "filePath": "src/main/java/com/foo/Bar.java",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/test/java/com/foo/BarTest.java": {
+          "id": "file:src/test/java/com/foo/BarTest.java",
+          "type": "file",
+          "name": "BarTest.java",
+          "filePath": "src/test/java/com/foo/BarTest.java",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      []
+    ],
+    "expected": [
+      3,
+      0,
+      3,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/__tests__/foo.test.ts": {
+          "id": "file:src/__tests__/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/__tests__/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:internal/bar.go": {
+          "id": "file:internal/bar.go",
+          "type": "file",
+          "name": "bar.go",
+          "filePath": "internal/bar.go",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:internal/bar_test.go": {
+          "id": "file:internal/bar_test.go",
+          "type": "file",
+          "name": "bar_test.go",
+          "filePath": "internal/bar_test.go",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/main/java/com/foo/Bar.java": {
+          "id": "file:src/main/java/com/foo/Bar.java",
+          "type": "file",
+          "name": "Bar.java",
+          "filePath": "src/main/java/com/foo/Bar.java",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/test/java/com/foo/BarTest.java": {
+          "id": "file:src/test/java/com/foo/BarTest.java",
+          "type": "file",
+          "name": "BarTest.java",
+          "filePath": "src/test/java/com/foo/BarTest.java",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/__tests__/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Path-based pairing (deterministic)"
+        },
+        {
+          "source": "file:internal/bar.go",
+          "target": "file:internal/bar_test.go",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Path-based pairing (deterministic)"
+        },
+        {
+          "source": "file:src/main/java/com/foo/Bar.java",
+          "target": "file:src/test/java/com/foo/BarTest.java",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Path-based pairing (deterministic)"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/__tests__/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/__tests__/foo.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "internal/bar_test.go"
+    ],
+    "expected": true,
+    "after": [
+      "internal/bar_test.go"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "internal/bar.go"
+    ],
+    "expected": false,
+    "after": [
+      "internal/bar.go"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/test/java/com/foo/BarTest.java"
+    ],
+    "expected": true,
+    "after": [
+      "src/test/java/com/foo/BarTest.java"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/main/java/com/foo/Bar.java"
+    ],
+    "expected": false,
+    "after": [
+      "src/main/java/com/foo/Bar.java"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": [
+      "src/foo.ts",
+      "src/foo.tsx",
+      "src/foo.js",
+      "src/foo.jsx",
+      "src/foo.mjs",
+      "src/foo.cjs",
+      "src/foo.vue"
+    ],
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested",
+            "core"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      []
+    ],
+    "expected": [
+      1,
+      0,
+      0,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested",
+            "core"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Path-based pairing (deterministic)"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.spec.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.spec.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": [
+      "src/foo.ts",
+      "src/foo.tsx",
+      "src/foo.js",
+      "src/foo.jsx",
+      "src/foo.mjs",
+      "src/foo.cjs",
+      "src/foo.vue"
+    ],
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo.spec.ts"
+    ],
+    "expected": [
+      "src/foo.ts",
+      "src/foo.tsx",
+      "src/foo.js",
+      "src/foo.jsx",
+      "src/foo.mjs",
+      "src/foo.cjs",
+      "src/foo.vue"
+    ],
+    "after": [
+      "src/foo.spec.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.spec.ts": {
+          "id": "file:src/foo.spec.ts",
+          "type": "file",
+          "name": "foo.spec.ts",
+          "filePath": "src/foo.spec.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      []
+    ],
+    "expected": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.spec.ts": {
+          "id": "file:src/foo.spec.ts",
+          "type": "file",
+          "name": "foo.spec.ts",
+          "filePath": "src/foo.spec.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      []
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5
+        },
+        {
+          "source": "file:src/foo.test.ts",
+          "target": "file:src/foo.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5
+        }
+      ]
+    ],
+    "expected": [
+      0,
+      1,
+      1,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/missing.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5
+        }
+      ]
+    ],
+    "expected": [
+      0,
+      1,
+      0,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      []
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/bar.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/bar.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": [
+      "src/foo.ts",
+      "src/foo.tsx",
+      "src/foo.js",
+      "src/foo.jsx",
+      "src/foo.mjs",
+      "src/foo.cjs",
+      "src/foo.vue"
+    ],
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/bar.test.ts"
+    ],
+    "expected": [
+      "src/bar.ts",
+      "src/bar.tsx",
+      "src/bar.js",
+      "src/bar.jsx",
+      "src/bar.mjs",
+      "src/bar.cjs",
+      "src/bar.vue"
+    ],
+    "after": [
+      "src/bar.test.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/bar.test.ts": {
+          "id": "file:src/bar.test.ts",
+          "type": "file",
+          "name": "bar.test.ts",
+          "filePath": "src/bar.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.test.ts",
+          "target": "file:src/bar.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5
+        }
+      ]
+    ],
+    "expected": [
+      0,
+      1,
+      0,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/bar.test.ts": {
+          "id": "file:src/bar.test.ts",
+          "type": "file",
+          "name": "bar.test.ts",
+          "filePath": "src/bar.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      []
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.3
+        },
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.9
+        }
+      ]
+    ],
+    "expected": [
+      0,
+      1,
+      1,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.9
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.9
+        },
+        {
+          "source": "file:src/foo.test.ts",
+          "target": "file:src/foo.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.3
+        }
+      ]
+    ],
+    "expected": [
+      0,
+      1,
+      1,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.9
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.3
+        },
+        {
+          "source": "file:src/foo.test.ts",
+          "target": "file:src/foo.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.9
+        }
+      ]
+    ],
+    "expected": [
+      0,
+      1,
+      1,
+      1
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.9,
+          "description": "Direction corrected (was test \u2192 production)"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.test.ts",
+          "target": "file:src/foo.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.3
+        },
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.9
+        }
+      ]
+    ],
+    "expected": [
+      0,
+      1,
+      1,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.9
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.test.ts",
+          "target": "file:src/foo.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.3
+        },
+        {
+          "source": "file:src/foo.test.ts",
+          "target": "file:src/foo.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.9
+        }
+      ]
+    ],
+    "expected": [
+      0,
+      1,
+      1,
+      1
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.9,
+          "description": "Direction corrected (was test \u2192 production)"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {},
+      []
+    ],
+    "expected": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "after": [
+      {},
+      []
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.tsx"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.tsx"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": [
+      "src/foo.ts",
+      "src/foo.tsx",
+      "src/foo.js",
+      "src/foo.jsx",
+      "src/foo.mjs",
+      "src/foo.cjs",
+      "src/foo.vue"
+    ],
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.tsx": {
+          "id": "file:src/foo.tsx",
+          "type": "file",
+          "name": "foo.tsx",
+          "filePath": "src/foo.tsx",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      []
+    ],
+    "expected": [
+      1,
+      0,
+      1,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.tsx": {
+          "id": "file:src/foo.tsx",
+          "type": "file",
+          "name": "foo.tsx",
+          "filePath": "src/foo.tsx",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Path-based pairing (deterministic)"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": [
+      "src/foo.ts",
+      "src/foo.tsx",
+      "src/foo.js",
+      "src/foo.jsx",
+      "src/foo.mjs",
+      "src/foo.cjs",
+      "src/foo.vue"
+    ],
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      []
+    ],
+    "expected": [
+      1,
+      0,
+      1,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Path-based pairing (deterministic)"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Path-based pairing (deterministic)"
+        }
+      ]
+    ],
+    "expected": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Path-based pairing (deterministic)"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.test.ts",
+          "target": "file:src/foo.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "from LLM"
+        }
+      ]
+    ],
+    "expected": [
+      0,
+      0,
+      1,
+      1
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "from LLM [direction corrected]"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": [
+      "src/foo.ts",
+      "src/foo.tsx",
+      "src/foo.js",
+      "src/foo.jsx",
+      "src/foo.mjs",
+      "src/foo.cjs",
+      "src/foo.vue"
+    ],
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "tags": null
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      []
+    ],
+    "expected": [
+      1,
+      0,
+      1,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "tags": [
+            "tested"
+          ]
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Path-based pairing (deterministic)"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": [
+      "src/foo.ts",
+      "src/foo.tsx",
+      "src/foo.js",
+      "src/foo.jsx",
+      "src/foo.mjs",
+      "src/foo.cjs",
+      "src/foo.vue"
+    ],
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "tags": "tested,foo"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      []
+    ],
+    "expected": [
+      1,
+      0,
+      1,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "tags": [
+            "tested"
+          ]
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Path-based pairing (deterministic)"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": [
+      "src/foo.ts",
+      "src/foo.tsx",
+      "src/foo.js",
+      "src/foo.jsx",
+      "src/foo.mjs",
+      "src/foo.cjs",
+      "src/foo.vue"
+    ],
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "tags": "single"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      []
+    ],
+    "expected": [
+      1,
+      0,
+      1,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "tags": [
+            "tested"
+          ]
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Path-based pairing (deterministic)"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": [
+      "src/foo.ts",
+      "src/foo.tsx",
+      "src/foo.js",
+      "src/foo.jsx",
+      "src/foo.mjs",
+      "src/foo.cjs",
+      "src/foo.vue"
+    ],
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "tags": 0
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      []
+    ],
+    "expected": [
+      1,
+      0,
+      1,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "tags": [
+            "tested"
+          ]
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Path-based pairing (deterministic)"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": [
+      "src/foo.ts",
+      "src/foo.tsx",
+      "src/foo.js",
+      "src/foo.jsx",
+      "src/foo.mjs",
+      "src/foo.cjs",
+      "src/foo.vue"
+    ],
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "tags": {
+            "k": "v"
+          }
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      []
+    ],
+    "expected": [
+      1,
+      0,
+      1,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "tags": [
+            "tested"
+          ]
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Path-based pairing (deterministic)"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": [
+      "src/foo.ts",
+      "src/foo.tsx",
+      "src/foo.js",
+      "src/foo.jsx",
+      "src/foo.mjs",
+      "src/foo.cjs",
+      "src/foo.vue"
+    ],
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      []
+    ],
+    "expected": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      []
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": [
+      "src/foo.ts",
+      "src/foo.tsx",
+      "src/foo.js",
+      "src/foo.jsx",
+      "src/foo.mjs",
+      "src/foo.cjs",
+      "src/foo.vue"
+    ],
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "tags": []
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "tags": []
+        }
+      },
+      []
+    ],
+    "expected": [
+      1,
+      0,
+      1,
+      0
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "tags": [
+            "tested"
+          ]
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "tags": []
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Path-based pairing (deterministic)"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/bar.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/bar.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/bar.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/bar.test.ts"
+    ]
+  },
+  {
+    "function": "production_candidates",
+    "args": [
+      "src/bar.test.ts"
+    ],
+    "expected": [
+      "src/bar.ts",
+      "src/bar.tsx",
+      "src/bar.js",
+      "src/bar.jsx",
+      "src/bar.mjs",
+      "src/bar.cjs",
+      "src/bar.vue"
+    ],
+    "after": [
+      "src/bar.test.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/bar.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/bar.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/bar.ts": {
+          "id": "file:src/bar.ts",
+          "type": "file",
+          "name": "bar.ts",
+          "filePath": "src/bar.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/bar.test.ts": {
+          "id": "file:src/bar.test.ts",
+          "type": "file",
+          "name": "bar.test.ts",
+          "filePath": "src/bar.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.test.ts",
+          "target": "file:src/foo.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5
+        }
+      ]
+    ],
+    "expected": [
+      1,
+      0,
+      2,
+      1
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/bar.ts": {
+          "id": "file:src/bar.ts",
+          "type": "file",
+          "name": "bar.ts",
+          "filePath": "src/bar.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/bar.test.ts": {
+          "id": "file:src/bar.test.ts",
+          "type": "file",
+          "name": "bar.test.ts",
+          "filePath": "src/bar.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Direction corrected (was test \u2192 production)"
+        },
+        {
+          "source": "file:src/bar.ts",
+          "target": "file:src/bar.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Path-based pairing (deterministic)"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/shippingservice/main.go"
+    ],
+    "expected": false,
+    "after": [
+      "src/shippingservice/main.go"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/shippingservice/tracker.go"
+    ],
+    "expected": false,
+    "after": [
+      "src/shippingservice/tracker.go"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/shippingservice/quote.go"
+    ],
+    "expected": false,
+    "after": [
+      "src/shippingservice/quote.go"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/shippingservice/shippingservice_test.go"
+    ],
+    "expected": true,
+    "after": [
+      "src/shippingservice/shippingservice_test.go"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/shippingservice/main.go": {
+          "id": "file:src/shippingservice/main.go",
+          "type": "file",
+          "name": "main.go",
+          "filePath": "src/shippingservice/main.go",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/shippingservice/tracker.go": {
+          "id": "file:src/shippingservice/tracker.go",
+          "type": "file",
+          "name": "tracker.go",
+          "filePath": "src/shippingservice/tracker.go",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/shippingservice/quote.go": {
+          "id": "file:src/shippingservice/quote.go",
+          "type": "file",
+          "name": "quote.go",
+          "filePath": "src/shippingservice/quote.go",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/shippingservice/shippingservice_test.go": {
+          "id": "file:src/shippingservice/shippingservice_test.go",
+          "type": "file",
+          "name": "shippingservice_test.go",
+          "filePath": "src/shippingservice/shippingservice_test.go",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/shippingservice/shippingservice_test.go",
+          "target": "file:src/shippingservice/main.go",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5
+        },
+        {
+          "source": "file:src/shippingservice/shippingservice_test.go",
+          "target": "file:src/shippingservice/tracker.go",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5
+        }
+      ]
+    ],
+    "expected": [
+      0,
+      0,
+      2,
+      2
+    ],
+    "after": [
+      {
+        "file:src/shippingservice/main.go": {
+          "id": "file:src/shippingservice/main.go",
+          "type": "file",
+          "name": "main.go",
+          "filePath": "src/shippingservice/main.go",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/shippingservice/tracker.go": {
+          "id": "file:src/shippingservice/tracker.go",
+          "type": "file",
+          "name": "tracker.go",
+          "filePath": "src/shippingservice/tracker.go",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/shippingservice/quote.go": {
+          "id": "file:src/shippingservice/quote.go",
+          "type": "file",
+          "name": "quote.go",
+          "filePath": "src/shippingservice/quote.go",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/shippingservice/shippingservice_test.go": {
+          "id": "file:src/shippingservice/shippingservice_test.go",
+          "type": "file",
+          "name": "shippingservice_test.go",
+          "filePath": "src/shippingservice/shippingservice_test.go",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/shippingservice/main.go",
+          "target": "file:src/shippingservice/shippingservice_test.go",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Direction corrected (was test \u2192 production)"
+        },
+        {
+          "source": "file:src/shippingservice/tracker.go",
+          "target": "file:src/shippingservice/shippingservice_test.go",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Direction corrected (was test \u2192 production)"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.test.ts",
+          "target": "file:src/foo.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5
+        },
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "imports",
+          "direction": "forward",
+          "weight": 0.7
+        }
+      ]
+    ],
+    "expected": [
+      0,
+      0,
+      1,
+      1
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Direction corrected (was test \u2192 production)"
+        },
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "imports",
+          "direction": "forward",
+          "weight": 0.7
+        }
+      ]
+    ]
+  },
+  {
+    "function": "normalize_node_id",
+    "args": [
+      "file:src/foo.ts",
+      {
+        "id": "file:src/foo.ts",
+        "type": "file",
+        "name": "foo.ts",
+        "filePath": "src/foo.ts",
+        "summary": "",
+        "tags": [],
+        "complexity": "simple"
+      }
+    ],
+    "expected": "file:src/foo.ts",
+    "after": [
+      "file:src/foo.ts",
+      {
+        "id": "file:src/foo.ts",
+        "type": "file",
+        "name": "foo.ts",
+        "filePath": "src/foo.ts",
+        "summary": "",
+        "tags": [],
+        "complexity": "simple"
+      }
+    ]
+  },
+  {
+    "function": "normalize_node_id",
+    "args": [
+      "file:src/foo.test.ts",
+      {
+        "id": "file:src/foo.test.ts",
+        "type": "file",
+        "name": "foo.test.ts",
+        "filePath": "src/foo.test.ts",
+        "summary": "",
+        "tags": [],
+        "complexity": "simple"
+      }
+    ],
+    "expected": "file:src/foo.test.ts",
+    "after": [
+      "file:src/foo.test.ts",
+      {
+        "id": "file:src/foo.test.ts",
+        "type": "file",
+        "name": "foo.test.ts",
+        "filePath": "src/foo.test.ts",
+        "summary": "",
+        "tags": [],
+        "complexity": "simple"
+      }
+    ]
+  },
+  {
+    "function": "normalize_complexity",
+    "args": [
+      "simple"
+    ],
+    "expected": [
+      "simple",
+      "valid"
+    ],
+    "after": [
+      "simple"
+    ]
+  },
+  {
+    "function": "normalize_complexity",
+    "args": [
+      "simple"
+    ],
+    "expected": [
+      "simple",
+      "valid"
+    ],
+    "after": [
+      "simple"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/foo.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/foo.test.ts"
+    ],
+    "expected": true,
+    "after": [
+      "src/foo.test.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.test.ts",
+          "target": "file:src/foo.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5
+        }
+      ]
+    ],
+    "expected": [
+      0,
+      0,
+      1,
+      1
+    ],
+    "after": [
+      {
+        "file:src/foo.ts": {
+          "id": "file:src/foo.ts",
+          "type": "file",
+          "name": "foo.ts",
+          "filePath": "src/foo.ts",
+          "summary": "",
+          "tags": [
+            "tested"
+          ],
+          "complexity": "simple"
+        },
+        "file:src/foo.test.ts": {
+          "id": "file:src/foo.test.ts",
+          "type": "file",
+          "name": "foo.test.ts",
+          "filePath": "src/foo.test.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/foo.ts",
+          "target": "file:src/foo.test.ts",
+          "type": "tested_by",
+          "direction": "forward",
+          "weight": 0.5,
+          "description": "Direction corrected (was test \u2192 production)"
+        }
+      ]
+    ]
+  },
+  {
+    "function": "normalize_direction",
+    "args": [
+      "forward"
+    ],
+    "expected": "forward",
+    "after": [
+      "forward"
+    ]
+  },
+  {
+    "function": "merge_and_normalize",
+    "args": [
+      [
+        {
+          "nodes": [
+            {
+              "id": "file:src/foo.ts",
+              "type": "file",
+              "name": "foo.ts",
+              "filePath": "src/foo.ts",
+              "summary": "",
+              "tags": [],
+              "complexity": "simple"
+            },
+            {
+              "id": "file:src/foo.test.ts",
+              "type": "file",
+              "name": "foo.test.ts",
+              "filePath": "src/foo.test.ts",
+              "summary": "",
+              "tags": [],
+              "complexity": "simple"
+            }
+          ],
+          "edges": [
+            {
+              "source": "file:src/foo.test.ts",
+              "target": "file:src/foo.ts",
+              "type": "tested_by",
+              "direction": "forward",
+              "weight": 0.5
+            }
+          ]
+        }
+      ]
+    ],
+    "expected": [
+      {
+        "nodes": [
+          {
+            "id": "file:src/foo.ts",
+            "type": "file",
+            "name": "foo.ts",
+            "filePath": "src/foo.ts",
+            "summary": "",
+            "tags": [
+              "tested"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "file:src/foo.test.ts",
+            "type": "file",
+            "name": "foo.test.ts",
+            "filePath": "src/foo.test.ts",
+            "summary": "",
+            "tags": [],
+            "complexity": "simple"
+          }
+        ],
+        "edges": [
+          {
+            "source": "file:src/foo.ts",
+            "target": "file:src/foo.test.ts",
+            "type": "tested_by",
+            "direction": "forward",
+            "weight": 0.5,
+            "description": "Direction corrected (was test \u2192 production)"
+          }
+        ]
+      },
+      [
+        "Input: 2 nodes, 1 edges",
+        "",
+        "Fixed (1 corrections):",
+        "     1 \u00d7 tested_by edges flipped (test \u2192 production became production \u2192 test)",
+        "",
+        "Tested-by linker:",
+        "     0 \u00d7 tested_by edges produced (path-convention supplement, production \u2192 test)",
+        "     1 \u00d7 production nodes tagged \"tested\"",
+        "",
+        "Output: 2 nodes, 1 edges"
+      ]
+    ],
+    "after": [
+      [
+        {
+          "nodes": [
+            {
+              "id": "file:src/foo.ts",
+              "type": "file",
+              "name": "foo.ts",
+              "filePath": "src/foo.ts",
+              "summary": "",
+              "tags": [
+                "tested"
+              ],
+              "complexity": "simple"
+            },
+            {
+              "id": "file:src/foo.test.ts",
+              "type": "file",
+              "name": "foo.test.ts",
+              "filePath": "src/foo.test.ts",
+              "summary": "",
+              "tags": [],
+              "complexity": "simple"
+            }
+          ],
+          "edges": [
+            {
+              "source": "file:src/foo.ts",
+              "target": "file:src/foo.test.ts",
+              "type": "tested_by",
+              "direction": "forward",
+              "weight": 0.5,
+              "description": "Direction corrected (was test \u2192 production)"
+            }
+          ]
+        }
+      ]
+    ]
+  },
+  {
+    "function": "normalize_direction",
+    "args": [
+      "both"
+    ],
+    "expected": "bidirectional",
+    "after": [
+      "both"
+    ]
+  },
+  {
+    "function": "normalize_direction",
+    "args": [
+      "Mutual"
+    ],
+    "expected": "bidirectional",
+    "after": [
+      "Mutual"
+    ]
+  },
+  {
+    "function": "normalize_direction",
+    "args": [
+      "Forward"
+    ],
+    "expected": "forward",
+    "after": [
+      "Forward"
+    ]
+  },
+  {
+    "function": "normalize_direction",
+    "args": [
+      "BIDIRECTIONAL"
+    ],
+    "expected": "bidirectional",
+    "after": [
+      "BIDIRECTIONAL"
+    ]
+  },
+  {
+    "function": "normalize_direction",
+    "args": [
+      null
+    ],
+    "expected": "forward",
+    "after": [
+      null
+    ]
+  },
+  {
+    "function": "normalize_direction",
+    "args": [
+      ""
+    ],
+    "expected": "forward",
+    "after": [
+      ""
+    ]
+  },
+  {
+    "function": "normalize_direction",
+    "args": [
+      "sideways"
+    ],
+    "expected": "forward",
+    "after": [
+      "sideways"
+    ]
+  },
+  {
+    "function": "normalize_direction",
+    "args": [
+      42
+    ],
+    "expected": "forward",
+    "after": [
+      42
+    ]
+  },
+  {
+    "function": "normalize_direction",
+    "args": [
+      "forward"
+    ],
+    "expected": "forward",
+    "after": [
+      "forward"
+    ]
+  },
+  {
+    "function": "normalize_direction",
+    "args": [
+      "backward"
+    ],
+    "expected": "backward",
+    "after": [
+      "backward"
+    ]
+  },
+  {
+    "function": "normalize_direction",
+    "args": [
+      "bidirectional"
+    ],
+    "expected": "bidirectional",
+    "after": [
+      "bidirectional"
+    ]
+  },
+  {
+    "function": "normalize_node_id",
+    "args": [
+      "file:src/a.ts",
+      {
+        "id": "file:src/a.ts",
+        "type": "file",
+        "name": "a.ts",
+        "filePath": "src/a.ts",
+        "summary": "",
+        "tags": [],
+        "complexity": "simple"
+      }
+    ],
+    "expected": "file:src/a.ts",
+    "after": [
+      "file:src/a.ts",
+      {
+        "id": "file:src/a.ts",
+        "type": "file",
+        "name": "a.ts",
+        "filePath": "src/a.ts",
+        "summary": "",
+        "tags": [],
+        "complexity": "simple"
+      }
+    ]
+  },
+  {
+    "function": "normalize_node_id",
+    "args": [
+      "file:src/b.ts",
+      {
+        "id": "file:src/b.ts",
+        "type": "file",
+        "name": "b.ts",
+        "filePath": "src/b.ts",
+        "summary": "",
+        "tags": [],
+        "complexity": "simple"
+      }
+    ],
+    "expected": "file:src/b.ts",
+    "after": [
+      "file:src/b.ts",
+      {
+        "id": "file:src/b.ts",
+        "type": "file",
+        "name": "b.ts",
+        "filePath": "src/b.ts",
+        "summary": "",
+        "tags": [],
+        "complexity": "simple"
+      }
+    ]
+  },
+  {
+    "function": "normalize_complexity",
+    "args": [
+      "simple"
+    ],
+    "expected": [
+      "simple",
+      "valid"
+    ],
+    "after": [
+      "simple"
+    ]
+  },
+  {
+    "function": "normalize_complexity",
+    "args": [
+      "simple"
+    ],
+    "expected": [
+      "simple",
+      "valid"
+    ],
+    "after": [
+      "simple"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/a.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/a.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/b.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/b.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/a.ts": {
+          "id": "file:src/a.ts",
+          "type": "file",
+          "name": "a.ts",
+          "filePath": "src/a.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/b.ts": {
+          "id": "file:src/b.ts",
+          "type": "file",
+          "name": "b.ts",
+          "filePath": "src/b.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/a.ts",
+          "target": "file:src/b.ts",
+          "type": "depends_on",
+          "direction": "both",
+          "weight": 0.3
+        },
+        {
+          "source": "file:src/a.ts",
+          "target": "file:src/b.ts",
+          "type": "depends_on",
+          "direction": "bidirectional",
+          "weight": 0.9
+        }
+      ]
+    ],
+    "expected": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "after": [
+      {
+        "file:src/a.ts": {
+          "id": "file:src/a.ts",
+          "type": "file",
+          "name": "a.ts",
+          "filePath": "src/a.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/b.ts": {
+          "id": "file:src/b.ts",
+          "type": "file",
+          "name": "b.ts",
+          "filePath": "src/b.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/a.ts",
+          "target": "file:src/b.ts",
+          "type": "depends_on",
+          "direction": "both",
+          "weight": 0.3
+        },
+        {
+          "source": "file:src/a.ts",
+          "target": "file:src/b.ts",
+          "type": "depends_on",
+          "direction": "bidirectional",
+          "weight": 0.9
+        }
+      ]
+    ]
+  },
+  {
+    "function": "normalize_direction",
+    "args": [
+      "both"
+    ],
+    "expected": "bidirectional",
+    "after": [
+      "both"
+    ]
+  },
+  {
+    "function": "normalize_direction",
+    "args": [
+      "bidirectional"
+    ],
+    "expected": "bidirectional",
+    "after": [
+      "bidirectional"
+    ]
+  },
+  {
+    "function": "merge_and_normalize",
+    "args": [
+      [
+        {
+          "nodes": [
+            {
+              "id": "file:src/a.ts",
+              "type": "file",
+              "name": "a.ts",
+              "filePath": "src/a.ts",
+              "summary": "",
+              "tags": [],
+              "complexity": "simple"
+            },
+            {
+              "id": "file:src/b.ts",
+              "type": "file",
+              "name": "b.ts",
+              "filePath": "src/b.ts",
+              "summary": "",
+              "tags": [],
+              "complexity": "simple"
+            }
+          ],
+          "edges": [
+            {
+              "source": "file:src/a.ts",
+              "target": "file:src/b.ts",
+              "type": "depends_on",
+              "direction": "both",
+              "weight": 0.3
+            },
+            {
+              "source": "file:src/a.ts",
+              "target": "file:src/b.ts",
+              "type": "depends_on",
+              "direction": "bidirectional",
+              "weight": 0.9
+            }
+          ]
+        }
+      ]
+    ],
+    "expected": [
+      {
+        "nodes": [
+          {
+            "id": "file:src/a.ts",
+            "type": "file",
+            "name": "a.ts",
+            "filePath": "src/a.ts",
+            "summary": "",
+            "tags": [],
+            "complexity": "simple"
+          },
+          {
+            "id": "file:src/b.ts",
+            "type": "file",
+            "name": "b.ts",
+            "filePath": "src/b.ts",
+            "summary": "",
+            "tags": [],
+            "complexity": "simple"
+          }
+        ],
+        "edges": [
+          {
+            "source": "file:src/a.ts",
+            "target": "file:src/b.ts",
+            "type": "depends_on",
+            "direction": "bidirectional",
+            "weight": 0.9
+          }
+        ]
+      },
+      [
+        "Input: 2 nodes, 2 edges",
+        "",
+        "Output: 2 nodes, 1 edges"
+      ]
+    ],
+    "after": [
+      [
+        {
+          "nodes": [
+            {
+              "id": "file:src/a.ts",
+              "type": "file",
+              "name": "a.ts",
+              "filePath": "src/a.ts",
+              "summary": "",
+              "tags": [],
+              "complexity": "simple"
+            },
+            {
+              "id": "file:src/b.ts",
+              "type": "file",
+              "name": "b.ts",
+              "filePath": "src/b.ts",
+              "summary": "",
+              "tags": [],
+              "complexity": "simple"
+            }
+          ],
+          "edges": [
+            {
+              "source": "file:src/a.ts",
+              "target": "file:src/b.ts",
+              "type": "depends_on",
+              "direction": "bidirectional",
+              "weight": 0.3
+            },
+            {
+              "source": "file:src/a.ts",
+              "target": "file:src/b.ts",
+              "type": "depends_on",
+              "direction": "bidirectional",
+              "weight": 0.9
+            }
+          ]
+        }
+      ]
+    ]
+  },
+  {
+    "function": "normalize_node_id",
+    "args": [
+      "file:src/a.ts",
+      {
+        "id": "file:src/a.ts",
+        "type": "file",
+        "name": "a.ts",
+        "filePath": "src/a.ts",
+        "summary": "",
+        "tags": [],
+        "complexity": "simple"
+      }
+    ],
+    "expected": "file:src/a.ts",
+    "after": [
+      "file:src/a.ts",
+      {
+        "id": "file:src/a.ts",
+        "type": "file",
+        "name": "a.ts",
+        "filePath": "src/a.ts",
+        "summary": "",
+        "tags": [],
+        "complexity": "simple"
+      }
+    ]
+  },
+  {
+    "function": "normalize_node_id",
+    "args": [
+      "file:src/b.ts",
+      {
+        "id": "file:src/b.ts",
+        "type": "file",
+        "name": "b.ts",
+        "filePath": "src/b.ts",
+        "summary": "",
+        "tags": [],
+        "complexity": "simple"
+      }
+    ],
+    "expected": "file:src/b.ts",
+    "after": [
+      "file:src/b.ts",
+      {
+        "id": "file:src/b.ts",
+        "type": "file",
+        "name": "b.ts",
+        "filePath": "src/b.ts",
+        "summary": "",
+        "tags": [],
+        "complexity": "simple"
+      }
+    ]
+  },
+  {
+    "function": "normalize_complexity",
+    "args": [
+      "simple"
+    ],
+    "expected": [
+      "simple",
+      "valid"
+    ],
+    "after": [
+      "simple"
+    ]
+  },
+  {
+    "function": "normalize_complexity",
+    "args": [
+      "simple"
+    ],
+    "expected": [
+      "simple",
+      "valid"
+    ],
+    "after": [
+      "simple"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/a.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/a.ts"
+    ]
+  },
+  {
+    "function": "is_test_path",
+    "args": [
+      "src/b.ts"
+    ],
+    "expected": false,
+    "after": [
+      "src/b.ts"
+    ]
+  },
+  {
+    "function": "link_tests",
+    "args": [
+      {
+        "file:src/a.ts": {
+          "id": "file:src/a.ts",
+          "type": "file",
+          "name": "a.ts",
+          "filePath": "src/a.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/b.ts": {
+          "id": "file:src/b.ts",
+          "type": "file",
+          "name": "b.ts",
+          "filePath": "src/b.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/a.ts",
+          "target": "file:src/b.ts",
+          "type": "depends_on",
+          "weight": 0.5
+        }
+      ]
+    ],
+    "expected": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "after": [
+      {
+        "file:src/a.ts": {
+          "id": "file:src/a.ts",
+          "type": "file",
+          "name": "a.ts",
+          "filePath": "src/a.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        },
+        "file:src/b.ts": {
+          "id": "file:src/b.ts",
+          "type": "file",
+          "name": "b.ts",
+          "filePath": "src/b.ts",
+          "summary": "",
+          "tags": [],
+          "complexity": "simple"
+        }
+      },
+      [
+        {
+          "source": "file:src/a.ts",
+          "target": "file:src/b.ts",
+          "type": "depends_on",
+          "weight": 0.5
+        }
+      ]
+    ]
+  },
+  {
+    "function": "normalize_direction",
+    "args": [
+      null
+    ],
+    "expected": "forward",
+    "after": [
+      null
+    ]
+  },
+  {
+    "function": "merge_and_normalize",
+    "args": [
+      [
+        {
+          "nodes": [
+            {
+              "id": "file:src/a.ts",
+              "type": "file",
+              "name": "a.ts",
+              "filePath": "src/a.ts",
+              "summary": "",
+              "tags": [],
+              "complexity": "simple"
+            },
+            {
+              "id": "file:src/b.ts",
+              "type": "file",
+              "name": "b.ts",
+              "filePath": "src/b.ts",
+              "summary": "",
+              "tags": [],
+              "complexity": "simple"
+            }
+          ],
+          "edges": [
+            {
+              "source": "file:src/a.ts",
+              "target": "file:src/b.ts",
+              "type": "depends_on",
+              "weight": 0.5
+            }
+          ]
+        }
+      ]
+    ],
+    "expected": [
+      {
+        "nodes": [
+          {
+            "id": "file:src/a.ts",
+            "type": "file",
+            "name": "a.ts",
+            "filePath": "src/a.ts",
+            "summary": "",
+            "tags": [],
+            "complexity": "simple"
+          },
+          {
+            "id": "file:src/b.ts",
+            "type": "file",
+            "name": "b.ts",
+            "filePath": "src/b.ts",
+            "summary": "",
+            "tags": [],
+            "complexity": "simple"
+          }
+        ],
+        "edges": [
+          {
+            "source": "file:src/a.ts",
+            "target": "file:src/b.ts",
+            "type": "depends_on",
+            "weight": 0.5,
+            "direction": "forward"
+          }
+        ]
+      },
+      [
+        "Input: 2 nodes, 1 edges",
+        "",
+        "Output: 2 nodes, 1 edges"
+      ]
+    ],
+    "after": [
+      [
+        {
+          "nodes": [
+            {
+              "id": "file:src/a.ts",
+              "type": "file",
+              "name": "a.ts",
+              "filePath": "src/a.ts",
+              "summary": "",
+              "tags": [],
+              "complexity": "simple"
+            },
+            {
+              "id": "file:src/b.ts",
+              "type": "file",
+              "name": "b.ts",
+              "filePath": "src/b.ts",
+              "summary": "",
+              "tags": [],
+              "complexity": "simple"
+            }
+          ],
+          "edges": [
+            {
+              "source": "file:src/a.ts",
+              "target": "file:src/b.ts",
+              "type": "depends_on",
+              "weight": 0.5,
+              "direction": "forward"
+            }
+          ]
+        }
+      ]
+    ]
+  }
+]

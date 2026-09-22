@@ -12,6 +12,6 @@ INTER="$PROJECT_ROOT/.understand-anything/intermediate"
 
 mkdir -p "$TRASH"
 if [ -d "$INTER" ]; then
-  find "$INTER" -mindepth 1 -maxdepth 1 -not -name 'scan-result.json' -exec mv {} "$TRASH/" \; 2>/dev/null || true
+  find "$INTER" -mindepth 1 -maxdepth 1 -not -name 'scan-result.json' -not -name 'save-summary.json' -exec mv {} "$TRASH/" \; 2>/dev/null || true
 fi
 mv "$PROJECT_ROOT/.understand-anything/tmp" "$TRASH/" 2>/dev/null || true

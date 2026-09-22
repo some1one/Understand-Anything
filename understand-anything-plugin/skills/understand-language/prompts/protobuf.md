@@ -3,7 +3,7 @@
 ## Key Concepts
 
 - **Message Types**: `message` blocks defining structured data with typed, numbered fields
-- **Field Numbers**: Permanent identifiers (1-536870911) — never reuse deleted numbers for backward compatibility
+- **Field Numbers**: Stable wire identifiers; preserve reserved numbers and reserve deleted fields instead of reusing them
 - **Scalar Types**: `int32`, `int64`, `string`, `bytes`, `bool`, `float`, `double`, and more
 - **Enums**: Named integer constants for categorical values
 - **Services**: `service` blocks defining RPC (Remote Procedure Call) method signatures
@@ -11,14 +11,14 @@
 - **Repeated Fields**: `repeated` keyword for list/array fields
 - **Maps**: `map<key_type, value_type>` for dictionary/hash fields
 - **Packages and Imports**: Namespace organization and cross-file references
-- **Proto2 vs Proto3**: Proto3 (current) removes required/optional distinction and defaults all fields
+- **Syntax and Presence**: Inspect `syntax` or `edition`. Proto3 supports explicit presence with `optional`; Editions default to explicit presence. See the [field-presence guide](https://protobuf.dev/programming-guides/field_presence/).
 
 ## Notable File Patterns
 
 - `*.proto` — Protocol Buffer definition files
 - `proto/**/*.proto` — Organized proto definitions by service or domain
 - `buf.yaml` / `buf.gen.yaml` — Buf tool configuration for linting and code generation
-- `*_pb2.py` / `*.pb.go` / `*_pb.ts` — Generated code (should be excluded from analysis)
+- `*_pb2.py` / `*.pb.go` / `*_pb.ts` — Generated code (follow the project's configured inclusion/exclusion rules)
 
 ## Edge Patterns
 

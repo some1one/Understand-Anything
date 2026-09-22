@@ -1,0 +1,70 @@
+name: Rust engine
+on:
+  pull_request:
+    paths:
+      - 'understand-anything-plugin/packages/rust/**'
+      - '.github/workflows/rust-engine.yml'
+  push:
+    paths:
+      - 'understand-anything-plugin/packages/rust/**'
+      - '.github/workflows/rust-engine.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+          - runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+          - runner: macos-15-intel
+            target: x86_64-apple-darwin
+          - runner: macos-15
+            target: aarch64-apple-darwin
+    runs-on: ${{ matrix.runner }}
+    defaults:
+      run:
+        working-directory: understand-anything-plugin/packages/rust
+        shell: bash
+    env:
+      CARGO_TERM_COLOR: always
+      TSLP_OFFLINE: '1'
+      UA_TEST_PARSER_CACHE: ${{ runner.temp }}/ua-parsers
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+          targets: ${{ matrix.target }}
+      - run: cargo fmt --check
+      - run: cargo clippy --locked --all-targets --target ${{ matrix.target }} -- -D warnings
+      - run: cargo test --locked --target ${{ matrix.target }}
+      - name: Cold parser cache and local embedding HTTP contract
+        run: cargo test --locked --target ${{ matrix.target }} --test runtime -- --ignored
+      - name: Warm parser cache with unreachable proxy
+        env:
+          HTTP_PROXY: http://127.0.0.1:1
+          HTTPS_PROXY: http://127.0.0.1:1
+          ALL_PROXY: http://127.0.0.1:1
+        run: cargo test --locked --offline --target ${{ matrix.target }} --test runtime all_supported_parsers -- --ignored
+      - name: Parser and update command differential fixtures
+        run: cargo test --locked --offline --target ${{ matrix.target }} --test differential -- --ignored
+      - run: cargo build --locked --release --target ${{ matrix.target }}
+      - name: Standalone executable without runtime tools on PATH
+        run: |
+          binary="$PWD/target/${{ matrix.target }}/release/understand-anything-rs"
+          smoke_dir=$(mktemp -d)
+          printf 'fn main() {}\n' > "$smoke_dir/main.rs"
+          PATH='' "$binary" --version
+          PATH='' "$binary" parsers list
+          PATH='' "$binary" scan_project "$smoke_dir" "$smoke_dir/scan.json"
+          PATH='' "$binary" json_schema --output-dir "$smoke_dir/schemas"
+          printf '{"projectRoot":"%s","batchFiles":[{"path":"main.rs","language":"rust","fileCategory":"code"}],"batchImportData":{}}' "$smoke_dir" > "$smoke_dir/input.json"
+          PATH='' "$binary" --parser-cache-dir "$UA_TEST_PARSER_CACHE" extract_structure "$smoke_dir/input.json" "$smoke_dir/structure.json"
+          test -s "$smoke_dir/structure.json"
+          test -s "$smoke_dir/scan.json"
+          test -s "$smoke_dir/schemas/knowledge-graph.schema.json"

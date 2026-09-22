@@ -9,7 +9,7 @@
 - **Error Handling**: Explicit error return values (`error` interface) instead of exceptions
 - **Defer/Panic/Recover**: Deferred cleanup, unrecoverable errors, and recovery mechanism
 - **Slices vs Arrays**: Arrays are fixed-size values; slices are dynamic views backed by arrays
-- **Pointers**: Explicit pointer types for pass-by-reference semantics (no pointer arithmetic)
+- **Pointers**: Pointer values permit access to shared data; all Go arguments are passed by value
 - **Context Propagation**: `context.Context` carries deadlines, cancellation, and request-scoped values
 - **Init Functions**: Package-level `init()` runs automatically before `main()` for setup
 
@@ -24,7 +24,7 @@
 
 - `*_test.go` — test files in the same package (or `_test` package for black-box tests)
 - `cmd/` — directory containing main packages (binary entry points)
-- `internal/` — packages only importable by parent module (enforced by compiler)
+- `internal/` — packages importable only from within the parent directory's tree (enforced by the toolchain)
 - `pkg/` — public library packages (convention, not enforced)
 - `go.mod` — module definition with dependency versions
 - `go.sum` — cryptographic checksums for dependencies

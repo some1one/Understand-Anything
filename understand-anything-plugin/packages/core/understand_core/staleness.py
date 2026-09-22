@@ -1,6 +1,6 @@
 """Graph staleness + merge — port of ``packages/core/src/staleness.ts``.
 
-The git-diff and graph-merge logic is core-specific (the arch_analysis
+The git-diff and graph-merge logic is core-specific (the understand_core
 auto-update modules drive the same idea through fingerprints, but the merge
 here is the simple file-path-keyed node/edge replacement the dashboard uses).
 Ported faithfully.

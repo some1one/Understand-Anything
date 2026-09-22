@@ -53,7 +53,7 @@ Assign nodes to these layers when detected:
 ### Notable Patterns to Capture in languageLesson
 
 - **Dependency injection via constructor injection**: Spring favors constructor injection over field injection (`@Autowired` on fields) — it makes dependencies explicit, supports immutability, and simplifies testing
-- **Layered architecture (Controller -> Service -> Repository)**: Spring Boot applications follow a strict layered pattern where controllers handle HTTP, services contain business logic, and repositories manage persistence
+- **Layered architecture (Controller -> Service -> Repository)**: A common pattern separates HTTP controllers, business services, and persistence repositories; verify the actual dependency direction rather than imposing the pattern
 - **Spring Security filter chain**: Security is implemented as a chain of servlet filters — `SecurityFilterChain` beans configure authentication, authorization, CORS, and CSRF protection
 - **JPA entity lifecycle**: Entities transition through states (transient, managed, detached, removed) — understanding this lifecycle is essential for tracing data flow through the persistence layer
 - **AOP for cross-cutting concerns**: `@Aspect` classes with `@Before`, `@After`, and `@Around` advice inject behavior at join points — used for logging, transactions (`@Transactional`), and caching (`@Cacheable`)

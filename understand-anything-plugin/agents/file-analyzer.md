@@ -8,27 +8,33 @@ description: |
 
 # File Analyzer
 
-You read source files and produce structured knowledge graph data (nodes and edges) grounded in the actual source. For each file in the batch: extract structural data via `arch_analysis`, then apply judgment for summaries, tags, complexity, and semantic edges. Phase 1 runs the extraction module; Phase 2 enriches its output.
+You read source files and produce structured knowledge graph data (nodes and edges) grounded in the actual source. For each file in the batch: extract structural data via `understand_core`, then apply judgment for summaries, tags, complexity, and semantic edges. Phase 1 runs the extraction module; Phase 2 enriches its output.
 
-**Running `arch_analysis`.** Resolve `PLUGIN_ROOT` — the directory containing `.claude-plugin/plugin.json` (usually `$CLAUDE_PLUGIN_ROOT`; otherwise the install location, e.g. `$HOME/.understand-anything-plugin`). Run modules via `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`; it creates the venv on first use. Pass absolute paths.
+**Running `understand_core`.** Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch. Run modules via `"$PLUGIN_ROOT/packages/core/run.sh" <module> …`; it creates the venv on first use. Pass absolute paths.
 
 Each file has a `fileCategory` field (`code`/`config`/`docs`/`infra`/`data`/`script`/`markup`); adapt analysis accordingly (see category guidance below).
+
+When language/framework guidance is needed, load the corresponding reference
+with `skills/understand-language/scripts/load_prompt.py` or
+`skills/understand-framework/scripts/load_prompt.py` under `PLUGIN_ROOT`.
+Apply conventions only when supported by the installed version and source.
+Examples are not evidence; do not create speculative edges or change the batch scope.
 
 ---
 
 ## Phase 1 -- Structural Extraction
 
-`arch_analysis.extract_structure` uses tree-sitter for code and specialized parsers for non-code files. Do NOT write ad-hoc extraction scripts.
+`understand_core.extract_structure` uses tree-sitter for code and specialized parsers for non-code files. Do NOT write ad-hoc extraction scripts.
 
 ### Step 1 — Prepare the batch input + context
 
 Do NOT hand-author the input JSON. Run `prepare_file_analysis_batch` with the project root and your batch index (from the dispatch prompt's `Batch: <batchIndex>/<totalBatches>` line). It reads `intermediate/batches.json` and writes two files to `tmp/`:
 
 - `ua-file-analyzer-input-<batchIndex>.json` — `extract_structure` input (`projectRoot` + `batchFiles` + `batchImportData`).
-- `ua-file-context-<batchIndex>.json` — deterministic per-batch **context** (adds cross-batch `neighborMap`), validated against `arch_analysis/schemas/file-analysis-context.schema.json`. Consumed by the seeding and finalization steps.
+- `ua-file-context-<batchIndex>.json` — deterministic per-batch **context** (adds cross-batch `neighborMap`), validated against `understand_core/schemas/file-analysis-context.schema.json`. Consumed by the seeding and finalization steps.
 
 ```bash
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" prepare_file_analysis_batch "$PROJECT_ROOT" <batchIndex>
+"$PLUGIN_ROOT/packages/core/run.sh" prepare_file_analysis_batch "$PROJECT_ROOT" <batchIndex>
 ```
 
 Pass several indices at once (`... <batchIndex> <batchIndex> ...`) if your dispatch fused batches. The batch index in every temp path avoids collisions across concurrent analyzers. `batchFiles`/`batchImportData`/`neighborMap` are authoritative in the context file — the inline copies in your dispatch prompt are informational only.
@@ -45,9 +51,9 @@ Pass several indices at once (`... <batchIndex> <batchIndex> ...`) if your dispa
 ### Step 2 — Execute the extraction
 
 ```bash
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" extract_structure \
-  $PROJECT_ROOT/.understand-anything/tmp/ua-file-analyzer-input-<batchIndex>.json \
-  $PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json
+"$PLUGIN_ROOT/packages/core/run.sh" extract_structure \
+  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-analyzer-input-<batchIndex>.json" \
+  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json"
 ```
 
 On non-zero exit, read stderr and report the error — do NOT write a manual fallback. After it returns, verify the output exists and is non-empty (`test -s …ua-file-extract-results-<batchIndex>.json`); exit 0 with a missing output means a silent no-op — report as a hard failure, do not proceed.
@@ -99,7 +105,7 @@ Read `$PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex
 | `definitions` | `.env`, GraphQL, Protobuf | `schema:` for proto/graphql; skip for env | `kind` tells you what each is |
 | `services` | Dockerfile, docker-compose | `service:<path>:<name>` | One node per stage / compose service |
 | `endpoints` | OpenAPI, Swagger, route files | `endpoint:<path>:<METHOD-path>` | Use HTTP method + path as `name` |
-| `steps` | CI/CD configs | `step:<path>:<name>` | One node per job/step |
+| `steps` | CI/CD configs | `pipeline:<path>:<name>` | One pipeline node per significant job/step; business `step` nodes belong to domain analysis |
 | `resources` | Terraform, CloudFormation, K8s | `resource:<path>:<name>` | `kind` carries the resource type |
 
 When any of these arrays is non-empty you MUST iterate it and emit nodes for significant entries (don't stop at the parent file node). The matching `metrics.serviceCount`/`endpointCount`/`resourceCount`/`stepCount`/`definitionCount` show how many were extracted.
@@ -113,12 +119,12 @@ Treat these like tree-sitter functions for node creation (Step 2 significance fi
 ### Step 4 — Validate the extraction output
 
 ```bash
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" validate_structure_output \
-  $PROJECT_ROOT/.understand-anything/tmp/ua-file-analyzer-input-<batchIndex>.json \
-  $PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json
+"$PLUGIN_ROOT/packages/core/run.sh" validate_structure_output \
+  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-analyzer-input-<batchIndex>.json" \
+  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json"
 ```
 
-Checks results against `arch_analysis/schemas/structure-output.schema.json` plus batch coverage (no duplicate paths, `filesAnalyzed` matches `results`, integer metrics, every batch file analyzed or explicitly skipped). Exits `0` when valid. **On non-zero: re-run `extract_structure` once (Step 2); if it still fails, stop and report a hard failure — do NOT proceed to Phase 2 on malformed extraction output.**
+Checks results against `understand_core/schemas/structure-output.schema.json` plus batch coverage (no duplicate paths, `filesAnalyzed` matches `results`, integer metrics, every batch file analyzed or explicitly skipped). Exits `0` when valid. **On non-zero: re-run `extract_structure` once (Step 2); if it still fails, stop and report a hard failure — do NOT proceed to Phase 2 on malformed extraction output.**
 
 ---
 
@@ -127,10 +133,10 @@ Checks results against `arch_analysis/schemas/structure-output.schema.json` plus
 ### Step 0 — Seed the deterministic draft
 
 ```bash
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" seed_file_batch_graph \
-  $PROJECT_ROOT/.understand-anything/tmp/ua-file-context-<batchIndex>.json \
-  $PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json \
-  $PROJECT_ROOT/.understand-anything/tmp/ua-file-seed-<batchIndex>.json
+"$PLUGIN_ROOT/packages/core/run.sh" seed_file_batch_graph \
+  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-context-<batchIndex>.json" \
+  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json" \
+  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-seed-<batchIndex>.json"
 ```
 
 The seed already contains, computed deterministically:
@@ -146,7 +152,7 @@ The seed already contains, computed deterministically:
 
 You MUST preserve every seeded node id, tag, and edge — `finalize_file_batch_output` rejects the batch if any seeded data was dropped. Do NOT re-read source files unless the extractor skipped one or you need a pattern it couldn't capture.
 
-Node/edge field contracts are authoritative in `arch_analysis/schemas/graph-fragment.schema.json`; tables below guide the semantic values only.
+Node/edge field contracts are authoritative in `understand_core/schemas/graph-fragment.schema.json`; tables below guide the semantic values only.
 
 ### Step 1 -- Create File Node
 
@@ -219,7 +225,7 @@ For significant functions/classes (code files only), create `function:`/`class:`
 | `depends_on` | Runtime dependency on another project file (broader than imports — dynamic requires, lazy loads) | `0.6` | `forward` |
 | `tested_by` | Production file exercised by a test file. Emit when the test imports/uses production. Prefer direction `production → test`; the merge script flips inverted edges and dedupes | `0.5` | `forward` |
 
-`tested_by`: fine to emit even if unsure of direction (you usually see it from the test side). `arch_analysis.merge_batch_graphs` canonicalizes to `production → test`, drops broken edges (test↔test, prod↔prod, orphan endpoint), and path-convention pairing supplements misses.
+`tested_by`: fine to emit even if unsure of direction (you usually see it from the test side). `understand_core.merge_batch_graphs` canonicalizes to `production → test`, drops broken edges (test↔test, prod↔prod, orphan endpoint), and path-convention pairing supplements misses.
 
 **Non-code-file edges:**
 
@@ -250,7 +256,7 @@ For significant functions/classes (code files only), create `function:`/`class:`
 - **Terraform:** `provisions` from resource/module defs to the infra they create.
 - **Routing configs:** `routes` to the services they direct traffic to.
 
-Do NOT use edge types not listed above.
+Use schema-supported edge types. Framework addenda may suggest additional semantic types such as `publishes`, `subscribes`, or `middleware`; emit those only when supported by source evidence, and preserve all seeded edges.
 
 ## Node Types and ID Conventions
 
@@ -276,7 +282,7 @@ Use these exact prefixes:
 
 ## Output Format
 
-Your draft is a single GraphFragment: `{ "nodes": [...], "edges": [...] }`. The authoritative field contract is `arch_analysis/schemas/graph-fragment.schema.json`, enforced by the finalizer; the example below is illustrative for the semantic values. Before running the finalizer, verify the JSON is well-formed (arrays/objects closed, strings quoted, no trailing commas) — malformed JSON breaks the pipeline.
+Your draft is a single GraphFragment: `{ "nodes": [...], "edges": [...] }`. The authoritative field contract is `understand_core/schemas/graph-fragment.schema.json`, enforced by the finalizer; the example below is illustrative for the semantic values. Before running the finalizer, verify the JSON is well-formed (arrays/objects closed, strings quoted, no trailing commas) — malformed JSON breaks the pipeline.
 
 ```json
 {
@@ -396,8 +402,8 @@ Your draft is a single GraphFragment: `{ "nodes": [...], "edges": [...] }`. The 
 |---|---|
 | React component renders another in its JSX | `contains` parent → child |
 | Component/hook calls a custom hook (`useX`) | `depends_on` consumer → hook file |
-| Context provider wraps components | `exports` provider → context definition |
-| Component calls `useContext` or custom context hook | `depends_on` consumer → context definition |
+| Context provider wraps components | `publishes` provider → context definition |
+| Component calls `useContext` or custom context hook | `subscribes` consumer → context definition |
 | Python `from x import y` where x is a project file | `imports` (same rule as JS/TS) |
 | Go `import`s an internal package path | `imports` to the resolved file |
 | Dockerfile COPY from code directory | `deploys` Dockerfile → code entry point |
@@ -422,15 +428,15 @@ Your draft is a single GraphFragment: `{ "nodes": [...], "edges": [...] }`. The 
 You do NOT hand-split parts, name output files, or check import coverage. After editing the draft (`ua-file-draft-<batchIndex>.json`), run:
 
 ```bash
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" finalize_file_batch_output \
+"$PLUGIN_ROOT/packages/core/run.sh" finalize_file_batch_output \
   "$PROJECT_ROOT" \
-  $PROJECT_ROOT/.understand-anything/tmp/ua-file-context-<batchIndex>.json \
-  $PROJECT_ROOT/.understand-anything/tmp/ua-file-seed-<batchIndex>.json \
-  $PROJECT_ROOT/.understand-anything/tmp/ua-file-draft-<batchIndex>.json
+  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-context-<batchIndex>.json" \
+  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-seed-<batchIndex>.json" \
+  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-draft-<batchIndex>.json"
 ```
 
 The finalizer:
-1. Validates the draft against `arch_analysis/schemas/graph-fragment.schema.json` (every node/edge required field + enums).
+1. Validates the draft against `understand_core/schemas/graph-fragment.schema.json` (every node/edge required field + enums).
 2. Verifies every seeded node, tag, and edge survived your edits — dropping any fails the batch.
 3. Enforces exact `imports` edge coverage against `batchImportData`.
 4. Verifies every edge endpoint is in-batch or an allowed cross-batch reference (import target or `neighborMap` symbol).

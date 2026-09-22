@@ -1,0 +1,4 @@
+# Parser binaries are fetched at runtime. Do not download grammar sources
+# as a build-script side effect when building this standalone package.
+[env]
+TSLP_OFFLINE = "1"

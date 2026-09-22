@@ -54,6 +54,6 @@ Assign nodes to these layers when detected:
 - **Handler functions with gin.Context**: Every Gin handler receives a `*gin.Context` parameter — it provides request parsing (`c.Bind`, `c.Param`, `c.Query`), response writing (`c.JSON`, `c.HTML`), and control flow (`c.Abort`, `c.Next`)
 - **Middleware chain with c.Next()**: Middleware calls `c.Next()` to pass control to the next handler in the chain — code before `c.Next()` runs pre-handler, code after runs post-handler
 - **Route grouping for modular APIs**: `r.Group("/v1")` creates modular sub-routers that can have their own middleware stack — enables versioning and access control at the group level
-- **Dependency injection via constructors (no framework DI)**: Go has no DI framework — dependencies are passed as constructor parameters (e.g., `NewUserHandler(userService)`) and stored as struct fields
+- **Dependency injection via constructors (no framework DI)**: Gin does not require a DI container; projects often pass dependencies as constructor parameters (e.g., `NewUserHandler(userService)`) and stored as struct fields
 - **Interface-driven design for testability**: Services and repositories are defined as interfaces — handlers depend on the interface, enabling mock implementations in tests
 - **Error handling with gin.Error**: Gin collects errors via `c.Error(err)` — middleware can inspect `c.Errors` after handler execution to implement centralized error logging and response formatting

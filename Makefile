@@ -1,8 +1,7 @@
 # Understand Anything — root orchestrator.
 #
-# Three buildable/runnable subprojects, each owning its own config:
-#   packages/arch_analysis  — Python (PDM)   deterministic analysis engine
-#   packages/core           — Python (PDM)   ported @understand-anything/core + skill builders
+# Two buildable/runnable subprojects, each owning its own config:
+#   packages/core           — Python (PDM)   analysis engine + view-model + skill builders
 #   packages/dashboard      — TypeScript (pnpm + Vite) React dashboard
 #
 # Common targets:
@@ -17,7 +16,6 @@
 # Per-project variants exist too, e.g. `make test-core`, `make build-dashboard`.
 
 PKGS := understand-anything-plugin/packages
-ARCH := $(PKGS)/arch_analysis
 CORE := $(PKGS)/core
 DASH := $(PKGS)/dashboard
 
@@ -40,7 +38,6 @@ PYTEST := pdm run python -m pytest
 STAMPDIR := build/.make
 
 # Inputs that invalidate each dependency install.
-ARCH_DEPS_SRC := $(ARCH)/pyproject.toml $(wildcard $(ARCH)/pdm.lock)
 CORE_DEPS_SRC := $(CORE)/pyproject.toml $(wildcard $(CORE)/pdm.lock)
 DASH_DEPS_SRC := $(DASH)/package.json $(wildcard $(DASH)/pnpm-lock.yaml)
 
@@ -51,7 +48,7 @@ DASH_BUILD_SRC := $(shell find $(DASH)/src -type f 2>/dev/null) \
 
 # Python sources that invalidate packaging (tests excluded — not shipped in the
 # wheels).
-PY_SRC := $(shell find $(ARCH) $(CORE) -name '*.py' \
+PY_SRC := $(shell find $(CORE) -name '*.py' \
             -not -path '*/.venv/*' -not -path '*/__pycache__/*' \
             -not -path '*/tests/*' 2>/dev/null)
 
@@ -75,9 +72,9 @@ INSTALL_PLATFORMS := claude codex opencode agents vscode jetbrains kilo kiro cur
 INSTALL_TARGETS   := $(addprefix install-,$(INSTALL_PLATFORMS))
 UNINSTALL_TARGETS := $(addprefix uninstall-,$(INSTALL_PLATFORMS))
 
-.PHONY: help deps deps-arch deps-core deps-dashboard \
+.PHONY: help deps deps-core deps-dashboard \
         $(INSTALL_TARGETS) $(UNINSTALL_TARGETS) \
-        build build-dashboard test test-arch test-core test-dashboard \
+        build build-dashboard test test-core test-dashboard \
         lint lint-dashboard dev dev-dashboard preview package deb package-python \
         clean clean-stamps
 
@@ -110,18 +107,13 @@ endef
 $(foreach p,$(INSTALL_PLATFORMS),$(eval $(call _ua_install_rule,$(p))))
 
 ## ---- dependencies --------------------------------------------------------
-deps: deps-arch deps-core deps-dashboard ## Install every subproject's deps
+deps: deps-core deps-dashboard ## Install every subproject's deps
 
-deps-arch: $(STAMPDIR)/deps-arch ## Install arch_analysis deps (Python/PDM)
 deps-core: $(STAMPDIR)/deps-core ## Install core deps (Python/PDM)
 deps-dashboard: $(STAMPDIR)/deps-dashboard ## Install dashboard deps (pnpm)
 
 $(STAMPDIR):
 	@mkdir -p $(STAMPDIR)
-
-$(STAMPDIR)/deps-arch: $(ARCH_DEPS_SRC) | $(STAMPDIR)
-	cd $(ARCH) && pdm install
-	@touch $@
 
 $(STAMPDIR)/deps-core: $(CORE_DEPS_SRC) | $(STAMPDIR)
 	cd $(CORE) && pdm install
@@ -142,12 +134,9 @@ $(STAMPDIR)/dashboard: $(DASH_BUILD_SRC) $(STAMPDIR)/deps-dashboard | $(STAMPDIR
 	@touch $@
 
 ## ---- test ----------------------------------------------------------------
-test: test-arch test-core test-dashboard ## Run all test suites
+test: test-core test-dashboard ## Run all test suites
 
-test-arch: ## Run arch_analysis tests
-	cd $(ARCH) && $(PYTEST)
-
-test-core: ## Run core tests
+test-core: ## Run core (Python) tests
 	cd $(CORE) && $(PYTEST)
 
 test-dashboard: ## Run dashboard tests
@@ -183,13 +172,13 @@ $(STAMPDIR)/deb: $(STAMPDIR)/dashboard $(PY_SRC) $(PKG_ASSETS) $(DEB_SRC) script
 	python3 scripts/build_dist.py --deb
 	@touch $@
 
-$(STAMPDIR)/package-python: $(PY_SRC) $(ARCH_DEPS_SRC) $(CORE_DEPS_SRC) scripts/build_dist.py | $(STAMPDIR)
+$(STAMPDIR)/package-python: $(PY_SRC) $(CORE_DEPS_SRC) scripts/build_dist.py | $(STAMPDIR)
 	python3 scripts/build_dist.py --python-only
 	@touch $@
 
 ## ---- clean ---------------------------------------------------------------
 clean: ## Remove venvs, node_modules, build output, caches, stamps, and dist/
-	rm -rf $(ARCH)/.venv $(CORE)/.venv
+	rm -rf $(CORE)/.venv
 	rm -rf $(DASH)/node_modules $(DASH)/dist
 	rm -rf build dist
 	find $(PKGS) -type d -name __pycache__ -prune -exec rm -rf {} +

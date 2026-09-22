@@ -1,7 +1,7 @@
 ---
 name: understand-explain
 description: Use when you need a deep-dive explanation of a specific file, function, or module in the codebase
-argument-hint: [file-path]
+argument-hint: "[file-path]"
 ---
 
 # /understand-explain
@@ -19,13 +19,15 @@ Provide a thorough, in-depth explanation of a specific code component.
 - `edges[]` — {source, target, type, direction, weight}. Types: imports, contains, calls, depends_on, configures, documents, deploys, triggers, contains_flow, flow_step, related, cites
 - `layers[]` — {id, name, description, nodeIds[]}
 
+Read [host integration](../../HOSTS.md) for invocation, argument handling, and agent dispatch.
+
 ## Instructions
 
 1. Set `SKILL_DIR` to the directory containing this `SKILL.md`.
 
 2. Run the helper (finds the target node, connected edges, neighboring nodes, layer membership, and a source excerpt):
    ```bash
-   python "$SKILL_DIR/scripts/component_context.py" "$PWD" "$ARGUMENTS"
+   python3 "$SKILL_DIR/scripts/component_context.py" "$PWD" "$ARGUMENTS"
    ```
 
 3. Explain the component in context:

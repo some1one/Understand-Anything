@@ -99,7 +99,7 @@ assemble_into() {
   info "Assembling plugin payload → $plugin"
   tar -xzf "$CORE_TGZ" -C "$parent"
   if [ -n "$WHEELHOUSE_TGZ" ]; then
-    tar -xzf "$WHEELHOUSE_TGZ" -C "$plugin/packages/arch_analysis"
+    tar -xzf "$WHEELHOUSE_TGZ" -C "$plugin/packages/core"
     ok "wheelhouse (offline Python deps)"
   fi
   if [ -n "$DASH_TGZ" ]; then
@@ -133,13 +133,11 @@ resolve_plugin_home() {
   printf '%s\n' "$repo/understand-anything-plugin"
 }
 
-# Directory holding a .claude-plugin/marketplace.json (for `claude plugin marketplace add`).
+# Generate host-specific catalogs around the resolved source or assembled payload.
 marketplace_source() {
-  local d
-  for d in "$SCRIPT_DIR" "$UA_HOME" "/usr/share/understand-anything" "$PWD"; do
-    [ -n "$d" ] && [ -f "$d/.claude-plugin/marketplace.json" ] && { printf '%s\n' "$d"; return 0; }
-  done
-  return 1
+  local plugin
+  plugin="$(resolve_plugin_home)" || return 1
+  python3 "$plugin/scripts/create_marketplace.py" "$UA_HOME/marketplace" "$plugin"
 }
 
 # --- prerequisites ----------------------------------------------------------
@@ -154,16 +152,16 @@ check_prereqs() {
   command -v node >/dev/null 2>&1 || warn "node not found — /understand-dashboard needs Node.js >= 22."
 }
 
-# Warm the arch_analysis venv so the first /understand run isn't a cold install.
+# Warm the understand_core venv so the first /understand run isn't a cold install.
 warm_env() {
-  local plugin="$1" runsh="$1/packages/arch_analysis/run.sh"
+  local plugin="$1" runsh="$1/packages/core/run.sh"
   [ -f "$runsh" ] || return 0
-  if [ ! -w "$1/packages/arch_analysis" ]; then
+  if [ ! -w "$1/packages/core" ]; then
     info "Plugin payload is read-only (system install); skipping env warm-up."
     return 0
   fi
   info "Preparing the Python environment (first-run setup)…"
-  "$runsh" --ensure >/dev/null 2>&1 && ok "arch_analysis venv ready" || \
+  "$runsh" --ensure >/dev/null 2>&1 && ok "understand_core venv ready" || \
     warn "Could not pre-build the venv now; it will be created on first /understand run."
 }
 
@@ -175,8 +173,8 @@ native_available() {
   local native="$1" project="${2:-}"
   [ -z "${UA_NO_NATIVE:-}" ] || return 1
   case "$native" in
-    claude) command -v claude >/dev/null 2>&1 && marketplace_source >/dev/null 2>&1 ;;
-    codex)  [ -z "$project" ] && command -v codex >/dev/null 2>&1 && marketplace_source >/dev/null 2>&1 ;;
+    claude) command -v claude >/dev/null 2>&1 ;;
+    codex)  [ -z "$project" ] && command -v codex >/dev/null 2>&1 ;;
     *) return 1 ;;
   esac
 }
@@ -189,15 +187,13 @@ native_install() {
       src="$(marketplace_source)" || return 1
       info "Using native Claude Code CLI (claude plugin …)"
       claude plugin marketplace add "$src" >/dev/null 2>&1 \
-        || claude plugin marketplace update "$MARKETPLACE" >/dev/null 2>&1 || true
+        || claude plugin marketplace update "$MARKETPLACE" >/dev/null 2>&1 || return 1
       if [ -n "$project" ]; then
         scope=project
-        ( cd "$project" && claude plugin install "$PLUGIN_NAME@$MARKETPLACE" --scope project >/dev/null 2>&1 ) || true
-        ( cd "$project" && claude plugin list 2>/dev/null | grep -qi "$PLUGIN_NAME" ) || return 1
+        ( cd "$project" && claude plugin install "$PLUGIN_NAME@$MARKETPLACE" --scope project ) || return 1
       else
         scope=user
-        claude plugin install "$PLUGIN_NAME@$MARKETPLACE" --scope user >/dev/null 2>&1 || true
-        claude plugin list 2>/dev/null | grep -qi "$PLUGIN_NAME" || return 1
+        claude plugin install "$PLUGIN_NAME@$MARKETPLACE" --scope user || return 1
       fi
       ok "claude plugin install $PLUGIN_NAME@$MARKETPLACE --scope $scope"
       return 0 ;;
@@ -206,9 +202,8 @@ native_install() {
       src="$(marketplace_source)" || return 1
       info "Using native Codex CLI (codex plugin …)"
       codex plugin marketplace add "$src" >/dev/null 2>&1 \
-        || codex plugin marketplace upgrade >/dev/null 2>&1 || true
-      codex plugin add "$PLUGIN_NAME@$MARKETPLACE" >/dev/null 2>&1 || true
-      codex plugin list 2>/dev/null | grep -qi "$PLUGIN_NAME" || return 1
+        || return 1
+      codex plugin add "$PLUGIN_NAME@$MARKETPLACE" || return 1
       ok "codex plugin add $PLUGIN_NAME@$MARKETPLACE"
       return 0 ;;
   esac
@@ -221,15 +216,16 @@ native_uninstall() {
     claude)
       command -v claude >/dev/null 2>&1 || return 1
       if [ -n "$project" ]; then
-        ( cd "$project" && claude plugin uninstall "$PLUGIN_NAME" >/dev/null 2>&1 ) || return 1
+        ( cd "$project" && claude plugin uninstall "$PLUGIN_NAME@$MARKETPLACE" --scope project ) || return 1
       else
-        claude plugin uninstall "$PLUGIN_NAME" >/dev/null 2>&1 || return 1
+        claude plugin uninstall "$PLUGIN_NAME@$MARKETPLACE" --scope user || return 1
       fi
       ok "claude plugin uninstall $PLUGIN_NAME"
       return 0 ;;
     codex)
       command -v codex >/dev/null 2>&1 || return 1
-      codex plugin remove "$PLUGIN_NAME" >/dev/null 2>&1 || return 1
+      [ -z "$project" ] || return 1
+      codex plugin remove "$PLUGIN_NAME@$MARKETPLACE" || return 1
       ok "codex plugin remove $PLUGIN_NAME"
       return 0 ;;
   esac
@@ -383,7 +379,7 @@ copy_payload_to() {
     local tmp; tmp="$(mktemp -d)"
     tar -xzf "$CORE_TGZ" -C "$tmp"
     cp -R "$tmp/understand-anything-plugin/." "$dest/"
-    [ -n "$WHEELHOUSE_TGZ" ] && tar -xzf "$WHEELHOUSE_TGZ" -C "$dest/packages/arch_analysis"
+    [ -n "$WHEELHOUSE_TGZ" ] && tar -xzf "$WHEELHOUSE_TGZ" -C "$dest/packages/core"
     [ -n "$DASH_TGZ" ] && tar -xzf "$DASH_TGZ" -C "$dest/packages/dashboard"
     rm -rf "$tmp"
   else
@@ -440,13 +436,14 @@ cmd_install() {
   if native_available "$native" "$project"; then
     if native_install "$native" "$project"; then
       printf '\n✓ Installed Understand-Anything for %s (native CLI).\n' "$id"
-      printf '  Restart your CLI/IDE to pick up the plugin.\n'
+      printf '  Start a new session to pick up the plugin. Review and trust its hooks in Codex before enabling auto-update.\n'
       return 0
     fi
     warn "native install did not complete; falling back to the scripted installer"
   fi
 
   # 2) Scripted fallback (symlinks).
+  info "Skills-only installation: native hooks are not registered; run understand explicitly to refresh graphs."
   if [ -n "$project" ]; then
     scripted_local_install "$id" "$local_dir" "$project"
     printf '\n✓ Installed project-local Understand-Anything into %s\n' "$project"

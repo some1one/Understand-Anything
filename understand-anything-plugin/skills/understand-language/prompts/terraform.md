@@ -22,7 +22,7 @@
 - `backend.tf` — Remote state backend configuration (S3, GCS, etc.)
 - `modules/**/*.tf` — Reusable infrastructure modules
 - `*.tfvars` — Variable value files for different environments
-- `terraform.lock.hcl` — Provider version lock file
+- `.terraform.lock.hcl` — Provider version lock file
 
 ## Edge Patterns
 

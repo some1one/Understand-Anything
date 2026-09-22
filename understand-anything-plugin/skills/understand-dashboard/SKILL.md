@@ -1,12 +1,14 @@
 ---
 name: understand-dashboard
 description: Launch the interactive web dashboard to visualize a codebase's knowledge graph
-argument-hint: [project-path]
+argument-hint: "[project-path]"
 ---
 
 # /understand-dashboard
 
 Launch the Understand Anything dashboard to visualize the current project's knowledge graph.
+
+Read [host integration](../../HOSTS.md) for invocation, argument handling, and agent dispatch.
 
 ## Instructions
 
@@ -36,6 +38,6 @@ Launch the Understand Anything dashboard to visualize the current project's know
 
 ## Notes
 
-- Auto-opens in the default browser via `--open`
-- If port 5173 is in use, Vite picks the next available port
+- The launcher prints a URL; open it in your browser.
+- The launcher reports the actual selected port; do not assume port 5173 is available.
 - `GRAPH_DIR` tells the dashboard where to find the knowledge graph

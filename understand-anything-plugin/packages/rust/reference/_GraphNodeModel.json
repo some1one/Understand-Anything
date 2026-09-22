@@ -1,0 +1,133 @@
+{
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "type": {
+      "enum": [
+        "file",
+        "function",
+        "class",
+        "module",
+        "concept",
+        "config",
+        "document",
+        "service",
+        "table",
+        "endpoint",
+        "pipeline",
+        "schema",
+        "resource",
+        "domain",
+        "flow",
+        "step",
+        "article",
+        "entity",
+        "topic",
+        "claim",
+        "source"
+      ],
+      "title": "Type",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "filePath": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Filepath"
+    },
+    "lineRange": {
+      "anyOf": [
+        {
+          "items": {},
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Linerange"
+    },
+    "summary": {
+      "title": "Summary",
+      "type": "string"
+    },
+    "tags": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Tags",
+      "type": "array"
+    },
+    "complexity": {
+      "enum": [
+        "simple",
+        "moderate",
+        "complex"
+      ],
+      "title": "Complexity",
+      "type": "string"
+    },
+    "languageNotes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Languagenotes"
+    },
+    "domainMeta": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Domainmeta"
+    },
+    "knowledgeMeta": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Knowledgemeta"
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "name",
+    "summary",
+    "tags",
+    "complexity"
+  ],
+  "title": "_GraphNodeModel",
+  "type": "object"
+}

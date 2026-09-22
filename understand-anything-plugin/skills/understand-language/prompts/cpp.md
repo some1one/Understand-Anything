@@ -33,7 +33,7 @@
 
 - **Qt** — Cross-platform application framework with signal/slot mechanism
 - **Boost** — Extensive collection of peer-reviewed portable libraries
-- **Catch2** — Header-only testing framework with BDD-style syntax
+- **Catch2** — C++ testing framework with BDD-style syntax; packaging depends on the installed version
 - **Google Test** — Testing framework with fixtures, assertions, and mocking
 - **gRPC** — High-performance RPC framework for service communication
 

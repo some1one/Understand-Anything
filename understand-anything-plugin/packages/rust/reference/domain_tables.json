@@ -1,0 +1,149 @@
+{
+  "SOURCE_EXTENSIONS": [
+    ".R",
+    ".c",
+    ".cjs",
+    ".cpp",
+    ".cs",
+    ".ex",
+    ".exs",
+    ".go",
+    ".h",
+    ".hpp",
+    ".hs",
+    ".java",
+    ".js",
+    ".jsx",
+    ".kt",
+    ".lua",
+    ".mjs",
+    ".php",
+    ".py",
+    ".pyi",
+    ".r",
+    ".rb",
+    ".rs",
+    ".scala",
+    ".swift",
+    ".ts",
+    ".tsx"
+  ],
+  "SKIP_DIRS": [
+    ".env",
+    ".git",
+    ".gradle",
+    ".hg",
+    ".idea",
+    ".mypy_cache",
+    ".next",
+    ".nuxt",
+    ".pytest_cache",
+    ".svn",
+    ".tox",
+    ".understand-anything",
+    ".venv",
+    ".vscode",
+    "DerivedData",
+    "Pods",
+    "__pycache__",
+    "bin",
+    "build",
+    "coverage",
+    "dist",
+    "env",
+    "node_modules",
+    "obj",
+    "out",
+    "target",
+    "vendor",
+    "venv"
+  ],
+  "METADATA_FILES": [
+    "package.json",
+    "Cargo.toml",
+    "go.mod",
+    "pyproject.toml",
+    "setup.py",
+    "setup.cfg",
+    "pom.xml",
+    "build.gradle",
+    "Gemfile",
+    "composer.json",
+    "mix.exs",
+    "Makefile",
+    "docker-compose.yml",
+    "docker-compose.yaml",
+    "README.md",
+    "README.rst",
+    "README.txt",
+    "README"
+  ],
+  "patterns": [
+    {
+      "type": "http",
+      "description": "Express/Koa route",
+      "regex": "(?:app|router|server)\\s*\\.\\s*(?:get|post|put|patch|delete|all|use)\\s*\\(\\s*['\"](/[^'\"]*?)['\"]",
+      "flags": 34
+    },
+    {
+      "type": "http",
+      "description": "Decorator route (Flask/FastAPI/NestJS)",
+      "regex": "@(?:app\\.)?(?:route|get|post|put|patch|delete|api_view|RequestMapping|GetMapping|PostMapping)\\s*\\(\\s*['\"](/[^'\"]*?)['\"]",
+      "flags": 34
+    },
+    {
+      "type": "http",
+      "description": "Next.js/Remix route handler",
+      "regex": "export\\s+(?:async\\s+)?function\\s+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\\b",
+      "flags": 32
+    },
+    {
+      "type": "cli",
+      "description": "CLI command",
+      "regex": "\\.command\\s*\\(\\s*['\"]([\\w\\-:]+)['\"]",
+      "flags": 32
+    },
+    {
+      "type": "cli",
+      "description": "argparse subparser",
+      "regex": "add_parser\\s*\\(\\s*['\"]([\\w\\-]+)['\"]",
+      "flags": 32
+    },
+    {
+      "type": "event",
+      "description": "Event listener",
+      "regex": "\\.on\\s*\\(\\s*['\"]([\\w\\-:.]+)['\"]",
+      "flags": 32
+    },
+    {
+      "type": "event",
+      "description": "Event subscriber decorator",
+      "regex": "@(?:EventHandler|Subscribe|Listener|on_event)\\s*\\(\\s*['\"]([\\w\\-:.]+)['\"]",
+      "flags": 32
+    },
+    {
+      "type": "cron",
+      "description": "Cron schedule",
+      "regex": "@?(?:Cron|Schedule|Scheduled|crontab)\\s*\\(\\s*['\"]([^'\"]+)['\"]",
+      "flags": 34
+    },
+    {
+      "type": "http",
+      "description": "GraphQL resolver",
+      "regex": "@(?:Query|Mutation|Subscription|Resolver)\\s*\\(",
+      "flags": 32
+    },
+    {
+      "type": "http",
+      "description": "gRPC service",
+      "regex": "^service\\s+(\\w+)\\s*\\{",
+      "flags": 40
+    },
+    {
+      "type": "manual",
+      "description": "Exported handler",
+      "regex": "export\\s+(?:async\\s+)?function\\s+(handle\\w+|process\\w+|on\\w+)\\b",
+      "flags": 32
+    }
+  ]
+}

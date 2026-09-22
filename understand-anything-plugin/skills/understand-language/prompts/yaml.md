@@ -4,12 +4,12 @@
 
 - **Indentation-Based Nesting**: Whitespace-sensitive structure (spaces only, no tabs) defining hierarchy
 - **Anchors and Aliases**: `&anchor` defines a reusable block, `*anchor` references it to avoid duplication
-- **Merge Keys**: `<<: *anchor` merges anchor contents into the current mapping
+- **Merge Keys**: `<<: *anchor` merges mappings in parsers that support this extension; support varies
 - **Multi-Line Strings**: Literal block (`|`) preserves newlines, folded block (`>`) joins lines
 - **Document Separators**: `---` starts a new document, `...` ends one (multi-document streams)
 - **Tags and Types**: `!!str`, `!!int`, `!!bool` for explicit typing; custom tags for application-specific types
 - **Flow Style**: Inline JSON-like syntax `{key: value}` and `[item1, item2]` for compact notation
-- **Environment Variable Substitution**: `${VAR}` patterns used in docker-compose and CI configs
+- **Application Interpolation**: `${VAR}` and similar patterns are interpreted by consuming tools such as Compose, not by YAML itself
 
 ## Notable File Patterns
 

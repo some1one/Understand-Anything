@@ -1,0 +1,1362 @@
+[
+  {
+    "function": "explain",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "Demo",
+          "description": "Demo project",
+          "languages": [
+            "Python"
+          ],
+          "frameworks": [
+            "FastAPI"
+          ],
+          "analyzedAt": "2026-01-01",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "a",
+            "name": "a",
+            "filePath": "a.py",
+            "type": "file",
+            "summary": "Summary a",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "b",
+            "name": "b",
+            "filePath": "b.py",
+            "type": "file",
+            "summary": "Summary b",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "run",
+            "name": "run",
+            "filePath": "a.py",
+            "type": "function",
+            "summary": "Summary run",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple",
+            "lineRange": [
+              1,
+              3
+            ]
+          },
+          {
+            "id": "concept",
+            "name": "concept",
+            "filePath": null,
+            "type": "concept",
+            "summary": "Summary concept",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          }
+        ],
+        "edges": [
+          {
+            "source": "a",
+            "target": "run",
+            "type": "contains",
+            "direction": "forward",
+            "weight": 1
+          },
+          {
+            "source": "b",
+            "target": "a",
+            "type": "imports",
+            "direction": "forward",
+            "weight": 0.8
+          }
+        ],
+        "layers": [
+          {
+            "id": "layer:core",
+            "name": "Core",
+            "description": "Shared core",
+            "nodeIds": [
+              "a",
+              "run"
+            ]
+          },
+          {
+            "id": "layer:app",
+            "name": "App",
+            "description": "Application",
+            "nodeIds": [
+              "b"
+            ]
+          }
+        ]
+      },
+      "path": "a.py"
+    },
+    "context": {
+      "projectName": "Demo",
+      "path": "a.py",
+      "targetNode": {
+        "id": "a",
+        "type": "file",
+        "name": "a",
+        "summary": "Summary a",
+        "tags": [
+          "alpha"
+        ],
+        "complexity": "simple",
+        "filePath": "a.py"
+      },
+      "childNodes": [
+        {
+          "id": "run",
+          "type": "function",
+          "name": "run",
+          "summary": "Summary run",
+          "tags": [
+            "alpha"
+          ],
+          "complexity": "simple",
+          "filePath": "a.py",
+          "lineRange": [
+            1,
+            3
+          ]
+        }
+      ],
+      "connectedNodes": [
+        {
+          "id": "b",
+          "type": "file",
+          "name": "b",
+          "summary": "Summary b",
+          "tags": [
+            "alpha"
+          ],
+          "complexity": "simple",
+          "filePath": "b.py"
+        }
+      ],
+      "relevantEdges": [
+        {
+          "source": "a",
+          "target": "run",
+          "type": "contains",
+          "direction": "forward",
+          "weight": 1.0
+        },
+        {
+          "source": "b",
+          "target": "a",
+          "type": "imports",
+          "direction": "forward",
+          "weight": 0.8
+        }
+      ],
+      "layer": {
+        "id": "layer:core",
+        "name": "Core",
+        "description": "Shared core",
+        "nodeIds": [
+          "a",
+          "run"
+        ]
+      }
+    },
+    "prompt": "# Deep Dive: a\n\n**Type:** file | **Complexity:** simple\n**File:** `a.py`\n\n**Summary:** Summary a\n\n## Architectural Layer: Core\nShared core\n\n## Internal Components\n- **run** (function): Summary run\n\n## Connected Components\n- **b** (file): Summary b\n\n## Relationships\n- b --[imports]--> a\n\n## Instructions\nProvide a thorough explanation of this component:\n1. What it does and why it exists in the project\n2. How data flows through it (inputs, processing, outputs)\n3. How it interacts with connected components\n4. Any patterns, idioms, or design decisions worth noting\n5. Potential gotchas or areas of complexity\n"
+  },
+  {
+    "function": "explain",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "Demo",
+          "description": "Demo project",
+          "languages": [
+            "Python"
+          ],
+          "frameworks": [
+            "FastAPI"
+          ],
+          "analyzedAt": "2026-01-01",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "a",
+            "name": "a",
+            "filePath": "a.py",
+            "type": "file",
+            "summary": "Summary a",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "b",
+            "name": "b",
+            "filePath": "b.py",
+            "type": "file",
+            "summary": "Summary b",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "run",
+            "name": "run",
+            "filePath": "a.py",
+            "type": "function",
+            "summary": "Summary run",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple",
+            "lineRange": [
+              1,
+              3
+            ]
+          },
+          {
+            "id": "concept",
+            "name": "concept",
+            "filePath": null,
+            "type": "concept",
+            "summary": "Summary concept",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          }
+        ],
+        "edges": [
+          {
+            "source": "a",
+            "target": "run",
+            "type": "contains",
+            "direction": "forward",
+            "weight": 1
+          },
+          {
+            "source": "b",
+            "target": "a",
+            "type": "imports",
+            "direction": "forward",
+            "weight": 0.8
+          }
+        ],
+        "layers": [
+          {
+            "id": "layer:core",
+            "name": "Core",
+            "description": "Shared core",
+            "nodeIds": [
+              "a",
+              "run"
+            ]
+          },
+          {
+            "id": "layer:app",
+            "name": "App",
+            "description": "Application",
+            "nodeIds": [
+              "b"
+            ]
+          }
+        ]
+      },
+      "path": "a.py:run"
+    },
+    "context": {
+      "projectName": "Demo",
+      "path": "a.py:run",
+      "targetNode": {
+        "id": "run",
+        "type": "function",
+        "name": "run",
+        "summary": "Summary run",
+        "tags": [
+          "alpha"
+        ],
+        "complexity": "simple",
+        "filePath": "a.py",
+        "lineRange": [
+          1,
+          3
+        ]
+      },
+      "childNodes": [],
+      "connectedNodes": [
+        {
+          "id": "a",
+          "type": "file",
+          "name": "a",
+          "summary": "Summary a",
+          "tags": [
+            "alpha"
+          ],
+          "complexity": "simple",
+          "filePath": "a.py"
+        }
+      ],
+      "relevantEdges": [
+        {
+          "source": "a",
+          "target": "run",
+          "type": "contains",
+          "direction": "forward",
+          "weight": 1.0
+        }
+      ],
+      "layer": {
+        "id": "layer:core",
+        "name": "Core",
+        "description": "Shared core",
+        "nodeIds": [
+          "a",
+          "run"
+        ]
+      }
+    },
+    "prompt": "# Deep Dive: run\n\n**Type:** function | **Complexity:** simple\n**File:** `a.py`\n**Lines:** 1-3\n\n**Summary:** Summary run\n\n## Architectural Layer: Core\nShared core\n\n## Connected Components\n- **a** (file): Summary a\n\n## Relationships\n\n## Instructions\nProvide a thorough explanation of this component:\n1. What it does and why it exists in the project\n2. How data flows through it (inputs, processing, outputs)\n3. How it interacts with connected components\n4. Any patterns, idioms, or design decisions worth noting\n5. Potential gotchas or areas of complexity\n"
+  },
+  {
+    "function": "explain",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "Demo",
+          "description": "Demo project",
+          "languages": [
+            "Python"
+          ],
+          "frameworks": [
+            "FastAPI"
+          ],
+          "analyzedAt": "2026-01-01",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "a",
+            "name": "a",
+            "filePath": "a.py",
+            "type": "file",
+            "summary": "Summary a",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "b",
+            "name": "b",
+            "filePath": "b.py",
+            "type": "file",
+            "summary": "Summary b",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "run",
+            "name": "run",
+            "filePath": "a.py",
+            "type": "function",
+            "summary": "Summary run",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple",
+            "lineRange": [
+              1,
+              3
+            ]
+          },
+          {
+            "id": "concept",
+            "name": "concept",
+            "filePath": null,
+            "type": "concept",
+            "summary": "Summary concept",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          }
+        ],
+        "edges": [
+          {
+            "source": "a",
+            "target": "run",
+            "type": "contains",
+            "direction": "forward",
+            "weight": 1
+          },
+          {
+            "source": "b",
+            "target": "a",
+            "type": "imports",
+            "direction": "forward",
+            "weight": 0.8
+          }
+        ],
+        "layers": [
+          {
+            "id": "layer:core",
+            "name": "Core",
+            "description": "Shared core",
+            "nodeIds": [
+              "a",
+              "run"
+            ]
+          },
+          {
+            "id": "layer:app",
+            "name": "App",
+            "description": "Application",
+            "nodeIds": [
+              "b"
+            ]
+          }
+        ]
+      },
+      "path": "missing.py"
+    },
+    "context": {
+      "projectName": "Demo",
+      "path": "missing.py",
+      "childNodes": [],
+      "connectedNodes": [],
+      "relevantEdges": []
+    },
+    "prompt": "# Component Not Found\n\nThe path \"missing.py\" was not found in the knowledge graph for Demo.\n\nPossible reasons:\n- The file hasn't been analyzed yet \u2014 try running /understand first\n- The path may be different in the graph \u2014 check the exact file path\n- The file may have been deleted or renamed since the last analysis"
+  },
+  {
+    "function": "diff",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "Demo",
+          "description": "Demo project",
+          "languages": [
+            "Python"
+          ],
+          "frameworks": [
+            "FastAPI"
+          ],
+          "analyzedAt": "2026-01-01",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "a",
+            "name": "a",
+            "filePath": "a.py",
+            "type": "file",
+            "summary": "Summary a",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "b",
+            "name": "b",
+            "filePath": "b.py",
+            "type": "file",
+            "summary": "Summary b",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "run",
+            "name": "run",
+            "filePath": "a.py",
+            "type": "function",
+            "summary": "Summary run",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple",
+            "lineRange": [
+              1,
+              3
+            ]
+          },
+          {
+            "id": "concept",
+            "name": "concept",
+            "filePath": null,
+            "type": "concept",
+            "summary": "Summary concept",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          }
+        ],
+        "edges": [
+          {
+            "source": "a",
+            "target": "run",
+            "type": "contains",
+            "direction": "forward",
+            "weight": 1
+          },
+          {
+            "source": "b",
+            "target": "a",
+            "type": "imports",
+            "direction": "forward",
+            "weight": 0.8
+          }
+        ],
+        "layers": [
+          {
+            "id": "layer:core",
+            "name": "Core",
+            "description": "Shared core",
+            "nodeIds": [
+              "a",
+              "run"
+            ]
+          },
+          {
+            "id": "layer:app",
+            "name": "App",
+            "description": "Application",
+            "nodeIds": [
+              "b"
+            ]
+          }
+        ]
+      },
+      "changed": []
+    },
+    "context": {
+      "projectName": "Demo",
+      "changedFiles": [],
+      "changedNodes": [],
+      "affectedNodes": [],
+      "impactedEdges": [],
+      "affectedLayers": [],
+      "unmappedFiles": []
+    },
+    "prompt": "# Diff Analysis: Demo\n\n## Changed Components\n\nNo mapped components found for changed files.\n\n## Affected Components\n\nNo downstream impact detected.\n\n## Affected Layers\n\nNo layers affected.\n\n## Risk Assessment\n\n- **Low risk**: Changes are localized with limited downstream impact.\n"
+  },
+  {
+    "function": "diff",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "Demo",
+          "description": "Demo project",
+          "languages": [
+            "Python"
+          ],
+          "frameworks": [
+            "FastAPI"
+          ],
+          "analyzedAt": "2026-01-01",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "a",
+            "name": "a",
+            "filePath": "a.py",
+            "type": "file",
+            "summary": "Summary a",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "b",
+            "name": "b",
+            "filePath": "b.py",
+            "type": "file",
+            "summary": "Summary b",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "run",
+            "name": "run",
+            "filePath": "a.py",
+            "type": "function",
+            "summary": "Summary run",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple",
+            "lineRange": [
+              1,
+              3
+            ]
+          },
+          {
+            "id": "concept",
+            "name": "concept",
+            "filePath": null,
+            "type": "concept",
+            "summary": "Summary concept",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          }
+        ],
+        "edges": [
+          {
+            "source": "a",
+            "target": "run",
+            "type": "contains",
+            "direction": "forward",
+            "weight": 1
+          },
+          {
+            "source": "b",
+            "target": "a",
+            "type": "imports",
+            "direction": "forward",
+            "weight": 0.8
+          }
+        ],
+        "layers": [
+          {
+            "id": "layer:core",
+            "name": "Core",
+            "description": "Shared core",
+            "nodeIds": [
+              "a",
+              "run"
+            ]
+          },
+          {
+            "id": "layer:app",
+            "name": "App",
+            "description": "Application",
+            "nodeIds": [
+              "b"
+            ]
+          }
+        ]
+      },
+      "changed": [
+        "a.py"
+      ]
+    },
+    "context": {
+      "projectName": "Demo",
+      "changedFiles": [
+        "a.py"
+      ],
+      "changedNodes": [
+        {
+          "id": "a",
+          "type": "file",
+          "name": "a",
+          "summary": "Summary a",
+          "tags": [
+            "alpha"
+          ],
+          "complexity": "simple",
+          "filePath": "a.py"
+        },
+        {
+          "id": "run",
+          "type": "function",
+          "name": "run",
+          "summary": "Summary run",
+          "tags": [
+            "alpha"
+          ],
+          "complexity": "simple",
+          "filePath": "a.py",
+          "lineRange": [
+            1,
+            3
+          ]
+        }
+      ],
+      "affectedNodes": [
+        {
+          "id": "b",
+          "type": "file",
+          "name": "b",
+          "summary": "Summary b",
+          "tags": [
+            "alpha"
+          ],
+          "complexity": "simple",
+          "filePath": "b.py"
+        }
+      ],
+      "impactedEdges": [
+        {
+          "source": "a",
+          "target": "run",
+          "type": "contains",
+          "direction": "forward",
+          "weight": 1.0
+        },
+        {
+          "source": "b",
+          "target": "a",
+          "type": "imports",
+          "direction": "forward",
+          "weight": 0.8
+        }
+      ],
+      "affectedLayers": [
+        {
+          "id": "layer:core",
+          "name": "Core",
+          "description": "Shared core",
+          "nodeIds": [
+            "a",
+            "run"
+          ]
+        },
+        {
+          "id": "layer:app",
+          "name": "App",
+          "description": "Application",
+          "nodeIds": [
+            "b"
+          ]
+        }
+      ],
+      "unmappedFiles": []
+    },
+    "prompt": "# Diff Analysis: Demo\n\n## Changed Components\n\n- **a** (file) \u2014 Summary a\n  - File: `a.py`\n  - Complexity: simple\n- **run** (function) \u2014 Summary run\n  - File: `a.py`\n  - Complexity: simple\n\n## Affected Components\n\nThese components are connected to changed code and may need attention:\n\n- **b** (file) \u2014 Summary b\n\n## Affected Layers\n\n- **Core**: Shared core\n- **App**: Application\n\n## Impacted Relationships\n\n- a --[contains]--> run\n- b --[imports]--> a\n\n## Risk Assessment\n\n- **Cross-layer impact**: Changes span 2 architectural layers\n"
+  },
+  {
+    "function": "diff",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "Demo",
+          "description": "Demo project",
+          "languages": [
+            "Python"
+          ],
+          "frameworks": [
+            "FastAPI"
+          ],
+          "analyzedAt": "2026-01-01",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "a",
+            "name": "a",
+            "filePath": "a.py",
+            "type": "file",
+            "summary": "Summary a",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "b",
+            "name": "b",
+            "filePath": "b.py",
+            "type": "file",
+            "summary": "Summary b",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "run",
+            "name": "run",
+            "filePath": "a.py",
+            "type": "function",
+            "summary": "Summary run",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple",
+            "lineRange": [
+              1,
+              3
+            ]
+          },
+          {
+            "id": "concept",
+            "name": "concept",
+            "filePath": null,
+            "type": "concept",
+            "summary": "Summary concept",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          }
+        ],
+        "edges": [
+          {
+            "source": "a",
+            "target": "run",
+            "type": "contains",
+            "direction": "forward",
+            "weight": 1
+          },
+          {
+            "source": "b",
+            "target": "a",
+            "type": "imports",
+            "direction": "forward",
+            "weight": 0.8
+          }
+        ],
+        "layers": [
+          {
+            "id": "layer:core",
+            "name": "Core",
+            "description": "Shared core",
+            "nodeIds": [
+              "a",
+              "run"
+            ]
+          },
+          {
+            "id": "layer:app",
+            "name": "App",
+            "description": "Application",
+            "nodeIds": [
+              "b"
+            ]
+          }
+        ]
+      },
+      "changed": [
+        "b.py",
+        "new.py"
+      ]
+    },
+    "context": {
+      "projectName": "Demo",
+      "changedFiles": [
+        "b.py",
+        "new.py"
+      ],
+      "changedNodes": [
+        {
+          "id": "b",
+          "type": "file",
+          "name": "b",
+          "summary": "Summary b",
+          "tags": [
+            "alpha"
+          ],
+          "complexity": "simple",
+          "filePath": "b.py"
+        }
+      ],
+      "affectedNodes": [
+        {
+          "id": "a",
+          "type": "file",
+          "name": "a",
+          "summary": "Summary a",
+          "tags": [
+            "alpha"
+          ],
+          "complexity": "simple",
+          "filePath": "a.py"
+        }
+      ],
+      "impactedEdges": [
+        {
+          "source": "b",
+          "target": "a",
+          "type": "imports",
+          "direction": "forward",
+          "weight": 0.8
+        }
+      ],
+      "affectedLayers": [
+        {
+          "id": "layer:core",
+          "name": "Core",
+          "description": "Shared core",
+          "nodeIds": [
+            "a",
+            "run"
+          ]
+        },
+        {
+          "id": "layer:app",
+          "name": "App",
+          "description": "Application",
+          "nodeIds": [
+            "b"
+          ]
+        }
+      ],
+      "unmappedFiles": [
+        "new.py"
+      ]
+    },
+    "prompt": "# Diff Analysis: Demo\n\n## Changed Components\n\n- **b** (file) \u2014 Summary b\n  - File: `b.py`\n  - Complexity: simple\n\n## Affected Components\n\nThese components are connected to changed code and may need attention:\n\n- **a** (file) \u2014 Summary a\n\n## Affected Layers\n\n- **Core**: Shared core\n- **App**: Application\n\n## Impacted Relationships\n\n- b --[imports]--> a\n\n## Unmapped Files\n\nThese changed files are not yet in the knowledge graph:\n\n- `new.py`\n\n## Risk Assessment\n\n- **Cross-layer impact**: Changes span 2 architectural layers\n- **New/unmapped files**: 1 files not in the knowledge graph (may need re-analysis)\n"
+  },
+  {
+    "function": "onboard",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "Demo",
+          "description": "Demo project",
+          "languages": [
+            "Python"
+          ],
+          "frameworks": [
+            "FastAPI"
+          ],
+          "analyzedAt": "2026-01-01",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "a",
+            "name": "a",
+            "filePath": "a.py",
+            "type": "file",
+            "summary": "Summary a",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "b",
+            "name": "b",
+            "filePath": "b.py",
+            "type": "file",
+            "summary": "Summary b",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "run",
+            "name": "run",
+            "filePath": "a.py",
+            "type": "function",
+            "summary": "Summary run",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple",
+            "lineRange": [
+              1,
+              3
+            ]
+          },
+          {
+            "id": "concept",
+            "name": "concept",
+            "filePath": null,
+            "type": "concept",
+            "summary": "Summary concept",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          }
+        ],
+        "edges": [
+          {
+            "source": "a",
+            "target": "run",
+            "type": "contains",
+            "direction": "forward",
+            "weight": 1
+          },
+          {
+            "source": "b",
+            "target": "a",
+            "type": "imports",
+            "direction": "forward",
+            "weight": 0.8
+          }
+        ],
+        "layers": [
+          {
+            "id": "layer:core",
+            "name": "Core",
+            "description": "Shared core",
+            "nodeIds": [
+              "a",
+              "run"
+            ]
+          },
+          {
+            "id": "layer:app",
+            "name": "App",
+            "description": "Application",
+            "nodeIds": [
+              "b"
+            ]
+          }
+        ]
+      }
+    },
+    "prompt": "# Demo\n\n> Demo project\n\n| | |\n|---|---|\n| **Languages** | Python |\n| **Frameworks** | FastAPI |\n| **Components** | 4 nodes, 2 relationships |\n| **Last Analyzed** | 2026-01-01 |\n\n## Architecture\n\nThe project is organized into the following layers:\n\n### Core\n\nShared core\n\nKey components: a, run\n\n### App\n\nApplication\n\nKey components: b\n\n## Key Concepts\n\nImportant architectural and domain concepts to understand:\n\n### concept\n\nSummary concept\n\n## Getting Started\n\nStart with the most depended-on files \u2014 these are the foundations the rest of the code builds on:\n\n- `a.py` \u2014 Summary a _(referenced by 1 component)_\n\nThen explore the codebase layer by layer, in the order listed under **Architecture** above.\n\n## File Map\n\n| File | Purpose | Complexity |\n|------|---------|------------|\n| `a.py` | Summary a | simple |\n| `b.py` | Summary b | simple |\n\n---\n\n*Generated from knowledge graph v1.0.0*\n"
+  },
+  {
+    "function": "chat",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "Demo",
+          "description": "Demo project",
+          "languages": [
+            "Python"
+          ],
+          "frameworks": [
+            "FastAPI"
+          ],
+          "analyzedAt": "2026-01-01",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "a",
+            "name": "a",
+            "filePath": "a.py",
+            "type": "file",
+            "summary": "Summary a",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "b",
+            "name": "b",
+            "filePath": "b.py",
+            "type": "file",
+            "summary": "Summary b",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "run",
+            "name": "run",
+            "filePath": "a.py",
+            "type": "function",
+            "summary": "Summary run",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple",
+            "lineRange": [
+              1,
+              3
+            ]
+          },
+          {
+            "id": "concept",
+            "name": "concept",
+            "filePath": null,
+            "type": "concept",
+            "summary": "Summary concept",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          }
+        ],
+        "edges": [
+          {
+            "source": "a",
+            "target": "run",
+            "type": "contains",
+            "direction": "forward",
+            "weight": 1
+          },
+          {
+            "source": "b",
+            "target": "a",
+            "type": "imports",
+            "direction": "forward",
+            "weight": 0.8
+          }
+        ],
+        "layers": [
+          {
+            "id": "layer:core",
+            "name": "Core",
+            "description": "Shared core",
+            "nodeIds": [
+              "a",
+              "run"
+            ]
+          },
+          {
+            "id": "layer:app",
+            "name": "App",
+            "description": "Application",
+            "nodeIds": [
+              "b"
+            ]
+          }
+        ]
+      },
+      "query": "alpha"
+    },
+    "context": {
+      "projectName": "Demo",
+      "projectDescription": "Demo project",
+      "languages": [
+        "Python"
+      ],
+      "frameworks": [
+        "FastAPI"
+      ],
+      "relevantNodes": [
+        {
+          "id": "b",
+          "type": "file",
+          "name": "b",
+          "summary": "Summary b",
+          "tags": [
+            "alpha"
+          ],
+          "complexity": "simple",
+          "filePath": "b.py"
+        },
+        {
+          "id": "concept",
+          "type": "concept",
+          "name": "concept",
+          "summary": "Summary concept",
+          "tags": [
+            "alpha"
+          ],
+          "complexity": "simple"
+        },
+        {
+          "id": "a",
+          "type": "file",
+          "name": "a",
+          "summary": "Summary a",
+          "tags": [
+            "alpha"
+          ],
+          "complexity": "simple",
+          "filePath": "a.py"
+        },
+        {
+          "id": "run",
+          "type": "function",
+          "name": "run",
+          "summary": "Summary run",
+          "tags": [
+            "alpha"
+          ],
+          "complexity": "simple",
+          "filePath": "a.py",
+          "lineRange": [
+            1,
+            3
+          ]
+        }
+      ],
+      "relevantEdges": [
+        {
+          "source": "a",
+          "target": "run",
+          "type": "contains",
+          "direction": "forward",
+          "weight": 1.0
+        },
+        {
+          "source": "b",
+          "target": "a",
+          "type": "imports",
+          "direction": "forward",
+          "weight": 0.8
+        }
+      ],
+      "relevantLayers": [
+        {
+          "id": "layer:core",
+          "name": "Core",
+          "description": "Shared core",
+          "nodeIds": [
+            "a",
+            "run"
+          ]
+        },
+        {
+          "id": "layer:app",
+          "name": "App",
+          "description": "Application",
+          "nodeIds": [
+            "b"
+          ]
+        }
+      ],
+      "query": "alpha"
+    },
+    "prompt": "# Project: Demo\n\nDemo project\n\n**Languages:** Python\n**Frameworks:** FastAPI\n\n## Relevant Layers\n\n### Core\nShared core\n\n### App\nApplication\n\n## Code Components\n\n### b (file)\n- **File:** b.py\n- **Complexity:** simple\n- **Summary:** Summary b\n- **Tags:** alpha\n\n### concept (concept)\n- **Complexity:** simple\n- **Summary:** Summary concept\n- **Tags:** alpha\n\n### a (file)\n- **File:** a.py\n- **Complexity:** simple\n- **Summary:** Summary a\n- **Tags:** alpha\n\n### run (function)\n- **File:** a.py\n- **Complexity:** simple\n- **Summary:** Summary run\n- **Tags:** alpha\n\n## Relationships\n\n- a --[contains]--> run\n- b --[imports]--> a\n"
+  },
+  {
+    "function": "chat",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "Demo",
+          "description": "Demo project",
+          "languages": [
+            "Python"
+          ],
+          "frameworks": [
+            "FastAPI"
+          ],
+          "analyzedAt": "2026-01-01",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "a",
+            "name": "a",
+            "filePath": "a.py",
+            "type": "file",
+            "summary": "Summary a",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "b",
+            "name": "b",
+            "filePath": "b.py",
+            "type": "file",
+            "summary": "Summary b",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          },
+          {
+            "id": "run",
+            "name": "run",
+            "filePath": "a.py",
+            "type": "function",
+            "summary": "Summary run",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple",
+            "lineRange": [
+              1,
+              3
+            ]
+          },
+          {
+            "id": "concept",
+            "name": "concept",
+            "filePath": null,
+            "type": "concept",
+            "summary": "Summary concept",
+            "tags": [
+              "alpha"
+            ],
+            "complexity": "simple"
+          }
+        ],
+        "edges": [
+          {
+            "source": "a",
+            "target": "run",
+            "type": "contains",
+            "direction": "forward",
+            "weight": 1
+          },
+          {
+            "source": "b",
+            "target": "a",
+            "type": "imports",
+            "direction": "forward",
+            "weight": 0.8
+          }
+        ],
+        "layers": [
+          {
+            "id": "layer:core",
+            "name": "Core",
+            "description": "Shared core",
+            "nodeIds": [
+              "a",
+              "run"
+            ]
+          },
+          {
+            "id": "layer:app",
+            "name": "App",
+            "description": "Application",
+            "nodeIds": [
+              "b"
+            ]
+          }
+        ]
+      },
+      "query": "zzzz"
+    },
+    "context": {
+      "projectName": "Demo",
+      "projectDescription": "Demo project",
+      "languages": [
+        "Python"
+      ],
+      "frameworks": [
+        "FastAPI"
+      ],
+      "relevantNodes": [],
+      "relevantEdges": [],
+      "relevantLayers": [],
+      "query": "zzzz"
+    },
+    "prompt": "# Project: Demo\n\nDemo project\n\n**Languages:** Python\n**Frameworks:** FastAPI\n"
+  }
+]

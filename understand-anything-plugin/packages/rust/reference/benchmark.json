@@ -1,0 +1,37 @@
+{
+  "platform": "linux",
+  "machine": "x86_64",
+  "python": "3.14.4",
+  "rustStartup": {
+    "wallSeconds": 0.009506716043688357,
+    "peakRssKiB": 17388.0
+  },
+  "pythonStartup": {
+    "wallSeconds": 0.40442782698664814,
+    "peakRssKiB": 51092.0
+  },
+  "rustParsing": {
+    "wallSeconds": 0.1623555039986968,
+    "peakRssKiB": 17516.0,
+    "result": {
+      "firstParseSeconds": 0.001726468,
+      "warmParseSeconds": 0.158895156,
+      "iterations": 100
+    }
+  },
+  "pythonParsing": {
+    "wallSeconds": 0.5401129099773243,
+    "peakRssKiB": 55316.0,
+    "result": {
+      "firstParseSeconds": 0.030776589992456138,
+      "warmParseSeconds": 0.1444654860533774,
+      "iterations": 100
+    }
+  },
+  "notes": [
+    "Single run, informational; no performance acceptance threshold.",
+    "First parse uses predownloaded grammars; cold network download is tested separately.",
+    "Parses a repeated 300-line synthetic Python source; excludes structural extraction.",
+    "Warm loop includes parser lookup/construction according to each public API."
+  ]
+}

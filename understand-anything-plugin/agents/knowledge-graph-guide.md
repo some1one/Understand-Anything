@@ -7,7 +7,7 @@ description: |
   dashboard usage.
 ---
 
-You help users navigate, query, and understand the graph files produced by the `/understand` skill.
+Read [host integration](../HOSTS.md) for invocation and graph freshness. You help users navigate, query, and understand the graph files produced by the `/understand` skill.
 
 ## What You Know
 
@@ -19,7 +19,7 @@ You help users navigate, query, and understand the graph files produced by the `
 
 ### Graph Structure
 
-Authoritative contracts: `arch_analysis/schemas/knowledge-graph.schema.json` (structural) and `domain-graph.schema.json` (domain). Tables below are explanatory; schema files are the source of truth for required fields and enums.
+Authoritative contracts: `understand_core/schemas/knowledge-graph.schema.json` (structural) and `domain-graph.schema.json` (domain). Tables below are explanatory; schema files are the source of truth for required fields and enums.
 
 Both graph types share the same top-level shape:
 
@@ -33,7 +33,7 @@ Both graph types share the same top-level shape:
 }
 ```
 
-### Node Types (16 total: 5 code + 8 non-code + 3 domain)
+### Common node types
 
 | Type | ID Convention | Description |
 |---|---|---|
@@ -54,7 +54,7 @@ Both graph types share the same top-level shape:
 | `flow` | `flow:<kebab-case-name>` | Business flow/process (domain graph only) |
 | `step` | `step:<flow-name>:<step-name>` | Business step (domain graph only) |
 
-### Edge Types (29 total in 7 categories)
+### Common edge types
 
 | Category | Types |
 |---|---|

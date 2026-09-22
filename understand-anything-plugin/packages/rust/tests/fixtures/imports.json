@@ -1,0 +1,2174 @@
+[
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/index.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/config.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "README.md",
+          "language": "markdown",
+          "fileCategory": "docs"
+        }
+      ]
+    },
+    "files": {
+      "README.md": "# project\n",
+      "src/config.ts": "export default { debug: true };\n",
+      "src/utils.ts": "export function foo(x: unknown) { return x; }\n",
+      "src/index.ts": "import { foo } from './utils';\nimport cfg from './config';\nfoo(cfg);\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 4,
+        "filesWithImports": 1,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "src/index.ts": [
+          "src/config.ts",
+          "src/utils.ts"
+        ],
+        "src/utils.ts": [],
+        "src/config.ts": [],
+        "README.md": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "tsconfig.json",
+          "language": "json",
+          "fileCategory": "config"
+        },
+        {
+          "path": "src/index.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/greet.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/lib/math.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "tsconfig.json": "{\"compilerOptions\": {\"baseUrl\": \".\", \"paths\": {\"@/*\": [\"src/*\"], \"~lib/*\": [\"src/lib/*\"]}}}",
+      "src/index.ts": "import { greet } from '@/utils/greet';\nimport { add } from '~lib/math';\n",
+      "src/lib/math.ts": "export const add = (a: number, b: number) => a + b;\n",
+      "src/utils/greet.ts": "export function greet(name: string) { return 'hi ' + name; }\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 4,
+        "filesWithImports": 1,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "tsconfig.json": [],
+        "src/index.ts": [
+          "src/lib/math.ts",
+          "src/utils/greet.ts"
+        ],
+        "src/utils/greet.ts": [],
+        "src/lib/math.ts": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/index.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stuff/index.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/index.ts": "import { thing } from './stuff';\n",
+      "src/stuff/index.ts": "export const thing = 1;\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 2,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "src/index.ts": [
+          "src/stuff/index.ts"
+        ],
+        "src/stuff/index.ts": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/index.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/local.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/local.ts": "export const foo = 1;\n",
+      "src/index.ts": "import express from 'express';\nimport { z } from 'zod';\nimport { foo } from './local';\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 2,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "src/index.ts": [
+          "src/local.ts"
+        ],
+        "src/local.ts": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/index.js",
+          "language": "javascript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/config.js",
+          "language": "javascript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "shared/utils.js",
+          "language": "javascript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "shared/utils.js": "module.exports = { y: 2 };\n",
+      "src/config.js": "module.exports = { x: 1 };\n",
+      "src/index.js": "const cfg = require('./config');\nconst utils = require('../shared/utils');\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "src/index.js": [
+          "shared/utils.js",
+          "src/config.js"
+        ],
+        "src/config.js": [],
+        "shared/utils.js": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "packages/foo/tsconfig.json",
+          "language": "json",
+          "fileCategory": "config"
+        },
+        {
+          "path": "packages/foo/src/x.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "packages/foo/src/y.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "packages/bar/tsconfig.json",
+          "language": "json",
+          "fileCategory": "config"
+        },
+        {
+          "path": "packages/bar/src/x.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "packages/bar/src/y.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "packages/bar/tsconfig.json": "{\"compilerOptions\": {\"baseUrl\": \".\", \"paths\": {\"@bar/*\": [\"src/*\"]}}}",
+      "packages/foo/tsconfig.json": "{\"compilerOptions\": {\"baseUrl\": \".\", \"paths\": {\"@foo/*\": [\"src/*\"]}}}",
+      "packages/foo/src/y.ts": "export const y = 1;\n",
+      "packages/foo/src/x.ts": "import { y } from '@foo/y';\nexport const x = y;\n",
+      "packages/bar/src/y.ts": "export const y = 2;\n",
+      "packages/bar/src/x.ts": "import { y } from '@bar/y';\nimport { fy } from '@foo/y';\nexport const x = y;\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 6,
+        "filesWithImports": 2,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "packages/foo/tsconfig.json": [],
+        "packages/foo/src/x.ts": [
+          "packages/foo/src/y.ts"
+        ],
+        "packages/foo/src/y.ts": [],
+        "packages/bar/tsconfig.json": [],
+        "packages/bar/src/x.ts": [
+          "packages/bar/src/y.ts"
+        ],
+        "packages/bar/src/y.ts": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "tsconfig.json",
+          "language": "json",
+          "fileCategory": "config"
+        },
+        {
+          "path": "src/app.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "lib/thing.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "tsconfig.json": "{\"compilerOptions\": {\"paths\": {\"@/*\": [\"./*\"]}}}",
+      "lib/thing.ts": "export const x = 1;\n",
+      "src/app.ts": "import { x } from '@/lib/thing';\nconst _ = x;\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "tsconfig.json": [],
+        "src/app.ts": [
+          "lib/thing.ts"
+        ],
+        "lib/thing.ts": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "tsconfig.json",
+          "language": "json",
+          "fileCategory": "config"
+        },
+        {
+          "path": "src/app.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "lib/thing.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "tsconfig.json": "{\"compilerOptions\": {\"baseUrl\": \".\", \"paths\": {\"@/*\": [\"./*\"]}}}",
+      "lib/thing.ts": "export const x = 1;\n",
+      "src/app.ts": "import { x } from '@/lib/thing';\nconst _ = x;\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "tsconfig.json": [],
+        "src/app.ts": [
+          "lib/thing.ts"
+        ],
+        "lib/thing.ts": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "tsconfig.json",
+          "language": "json",
+          "fileCategory": "config"
+        },
+        {
+          "path": "src/app.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/thing.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "tsconfig.json": "{\"compilerOptions\": {\"baseUrl\": \"src\", \"paths\": {\"@/*\": [\"./*\"]}}}",
+      "src/thing.ts": "export const x = 1;\n",
+      "src/app.ts": "import { x } from '@/thing';\nconst _ = x;\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "tsconfig.json": [],
+        "src/app.ts": [
+          "src/thing.ts"
+        ],
+        "src/thing.ts": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "tsconfig.json",
+          "language": "json",
+          "fileCategory": "config"
+        },
+        {
+          "path": "src/app.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "lib/thing.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "tsconfig.json": "{\"compilerOptions\": {\"paths\": {\"@/*\": [\"*\"]}}}",
+      "lib/thing.ts": "export const x = 1;\n",
+      "src/app.ts": "import { x } from '@/lib/thing';\nconst _ = x;\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "tsconfig.json": [],
+        "src/app.ts": [
+          "lib/thing.ts"
+        ],
+        "lib/thing.ts": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/index.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/llm-backend-selector.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/config.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/config.ts": "export function loadConfig() {}\n",
+      "src/llm-backend-selector.ts": "export function resolveBackend() {}\n",
+      "src/index.ts": "import { resolveBackend } from './llm-backend-selector.js';\nimport { loadConfig } from './config.js';\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "src/index.ts": [
+          "src/config.ts",
+          "src/llm-backend-selector.ts"
+        ],
+        "src/llm-backend-selector.ts": [],
+        "src/config.ts": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/index.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/Comp.tsx",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/worker.mts",
+          "language": "typescript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/worker.mts": "export function fn() {}\n",
+      "src/Comp.tsx": "export default function Comp() {}\n",
+      "src/index.ts": "import Comp from './Comp.jsx';\nimport { fn } from './worker.mjs';\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "src/index.ts": [
+          "src/Comp.tsx",
+          "src/worker.mts"
+        ],
+        "src/Comp.tsx": [],
+        "src/worker.mts": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/index.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/config.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/config.js",
+          "language": "javascript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/config.js": "export const x = 1;\n",
+      "src/config.ts": "export const x = 1;\n",
+      "src/index.ts": "import { x } from './config.js';\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "src/index.ts": [
+          "src/config.js"
+        ],
+        "src/config.ts": [],
+        "src/config.js": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/index.js",
+          "language": "javascript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/util.js",
+          "language": "javascript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/util.js": "export const x = 1;\n",
+      "src/index.js": "import { x } from './util.js';\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 2,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "src/index.js": [
+          "src/util.js"
+        ],
+        "src/util.js": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/index.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/utils.ts": "export function foo() {}\n",
+      "src/index.ts": "import { foo } from './utils';\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 2,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "src/index.ts": [
+          "src/utils.ts"
+        ],
+        "src/utils.ts": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/index.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/index.ts": "import './completely-missing.js';\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 1,
+        "filesWithImports": 0,
+        "totalEdges": 0
+      },
+      "importMap": {
+        "src/index.ts": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/app.py",
+          "language": "python",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/helpers.py",
+          "language": "python",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils.py",
+          "language": "python",
+          "fileCategory": "code"
+        },
+        {
+          "path": "core.py",
+          "language": "python",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "core.py": "def boot(): pass\n",
+      "src/utils.py": "def shout(): pass\n",
+      "src/helpers.py": "def help(): pass\n",
+      "src/app.py": "from . import helpers\nfrom .utils import shout\nfrom ..core import boot\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 4,
+        "filesWithImports": 1,
+        "totalEdges": 3
+      },
+      "importMap": {
+        "src/app.py": [
+          "core.py",
+          "src/helpers.py",
+          "src/utils.py"
+        ],
+        "src/helpers.py": [],
+        "src/utils.py": [],
+        "core.py": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/svc/main.py",
+          "language": "python",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/svc/helpers.py",
+          "language": "python",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/svc/util.py",
+          "language": "python",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/svc/nested/__init__.py",
+          "language": "python",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/svc/util.py": "def u(): pass\n",
+      "src/svc/helpers.py": "def help(): pass\n",
+      "src/svc/main.py": "from . import helpers, util\nfrom . import nested\n",
+      "src/svc/nested/__init__.py": "# package\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 4,
+        "filesWithImports": 1,
+        "totalEdges": 3
+      },
+      "importMap": {
+        "src/svc/main.py": [
+          "src/svc/helpers.py",
+          "src/svc/nested/__init__.py",
+          "src/svc/util.py"
+        ],
+        "src/svc/helpers.py": [],
+        "src/svc/util.py": [],
+        "src/svc/nested/__init__.py": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "main.py",
+          "language": "python",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/__init__.py",
+          "language": "python",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/__init__.py",
+          "language": "python",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/formatter.py",
+          "language": "python",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/config.py",
+          "language": "python",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "main.py": "import src.utils.formatter\nfrom src.utils import formatter\nfrom src import config\n",
+      "src/config.py": "DEBUG = True\n",
+      "src/__init__.py": "",
+      "src/utils/formatter.py": "def fmt(): pass\n",
+      "src/utils/__init__.py": ""
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 5,
+        "filesWithImports": 1,
+        "totalEdges": 4
+      },
+      "importMap": {
+        "main.py": [
+          "src/__init__.py",
+          "src/config.py",
+          "src/utils/__init__.py",
+          "src/utils/formatter.py"
+        ],
+        "src/__init__.py": [],
+        "src/utils/__init__.py": [],
+        "src/utils/formatter.py": [],
+        "src/config.py": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "app.py",
+          "language": "python",
+          "fileCategory": "code"
+        },
+        {
+          "path": "local.py",
+          "language": "python",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "local.py": "thing = 1\n",
+      "app.py": "import os\nimport sys\nimport requests\nfrom datetime import datetime\nfrom .local import thing\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 2,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "app.py": [
+          "local.py"
+        ],
+        "local.py": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/svc_a/main.py",
+          "language": "python",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/svc_a/helpers.py",
+          "language": "python",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/svc_b/main.py",
+          "language": "python",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/svc_b/helpers.py",
+          "language": "python",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/svc_b/helpers.py": "def shout(): pass\n",
+      "src/svc_b/main.py": "import helpers\nfrom helpers import shout\n",
+      "src/svc_a/helpers.py": "def shout(): pass\n",
+      "src/svc_a/main.py": "import helpers\nfrom helpers import shout\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 4,
+        "filesWithImports": 2,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "src/svc_a/main.py": [
+          "src/svc_a/helpers.py"
+        ],
+        "src/svc_a/helpers.py": [],
+        "src/svc_b/main.py": [
+          "src/svc_b/helpers.py"
+        ],
+        "src/svc_b/helpers.py": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "go.mod",
+          "language": "config",
+          "fileCategory": "config"
+        },
+        {
+          "path": "main.go",
+          "language": "go",
+          "fileCategory": "code"
+        },
+        {
+          "path": "util/hello.go",
+          "language": "go",
+          "fileCategory": "code"
+        },
+        {
+          "path": "util/world.go",
+          "language": "go",
+          "fileCategory": "code"
+        },
+        {
+          "path": "db/db.go",
+          "language": "go",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "main.go": "package main\n\nimport (\n\t\"fmt\"\n\t\"github.com/foo/bar/util\"\n\t\"github.com/foo/bar/db\"\n)\n\nfunc main() {\n\tfmt.Println(util.Hi())\n\tdb.Connect()\n}\n",
+      "go.mod": "module github.com/foo/bar\n\ngo 1.21\n",
+      "db/db.go": "package db\n\nfunc Connect() {}\n",
+      "util/world.go": "package util\n\nfunc World() string { return \"world\" }\n",
+      "util/hello.go": "package util\n\nfunc Hi() string { return \"hi\" }\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 5,
+        "filesWithImports": 1,
+        "totalEdges": 3
+      },
+      "importMap": {
+        "go.mod": [],
+        "main.go": [
+          "db/db.go",
+          "util/hello.go",
+          "util/world.go"
+        ],
+        "util/hello.go": [],
+        "util/world.go": [],
+        "db/db.go": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/a/go.mod",
+          "language": "config",
+          "fileCategory": "config"
+        },
+        {
+          "path": "src/a/main.go",
+          "language": "go",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/a/sub/sub.go",
+          "language": "go",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/b/go.mod",
+          "language": "config",
+          "fileCategory": "config"
+        },
+        {
+          "path": "src/b/main.go",
+          "language": "go",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/b/sub/sub.go",
+          "language": "go",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/b/main.go": "package main\n\nimport (\n\t\"github.com/org/b/sub\"\n)\n\nfunc main() { sub.Y() }\n",
+      "src/b/go.mod": "module github.com/org/b\n\ngo 1.21\n",
+      "src/a/main.go": "package main\n\nimport (\n\t\"github.com/org/a/sub\"\n\t\"github.com/org/b/sub\"\n)\n\nfunc main() { sub.X() }\n",
+      "src/a/go.mod": "module github.com/org/a\n\ngo 1.21\n",
+      "src/a/sub/sub.go": "package sub\n\nfunc X() {}\n",
+      "src/b/sub/sub.go": "package sub\n\nfunc Y() {}\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 6,
+        "filesWithImports": 2,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "src/a/go.mod": [],
+        "src/a/main.go": [
+          "src/a/sub/sub.go"
+        ],
+        "src/a/sub/sub.go": [],
+        "src/b/go.mod": [],
+        "src/b/main.go": [
+          "src/b/sub/sub.go"
+        ],
+        "src/b/sub/sub.go": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "orphan/main.go",
+          "language": "go",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "orphan/main.go": "package main\n\nimport (\n\t\"github.com/foo/bar/util\"\n\t\"github.com/foo/bar/db\"\n)\n\nfunc main() {}\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 1,
+        "filesWithImports": 0,
+        "totalEdges": 0
+      },
+      "importMap": {
+        "orphan/main.go": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/main/java/com/example/App.java",
+          "language": "java",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/main/java/com/example/foo/Bar.java",
+          "language": "java",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/main/java/com/example/util/Helper.java",
+          "language": "java",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/main/java/com/example/App.java": "package com.example;\n\nimport com.example.foo.Bar;\nimport com.example.util.Helper;\n\npublic class App { }\n",
+      "src/main/java/com/example/util/Helper.java": "package com.example.util;\n\npublic class Helper { }\n",
+      "src/main/java/com/example/foo/Bar.java": "package com.example.foo;\n\npublic class Bar { }\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "src/main/java/com/example/App.java": [
+          "src/main/java/com/example/foo/Bar.java",
+          "src/main/java/com/example/util/Helper.java"
+        ],
+        "src/main/java/com/example/foo/Bar.java": [],
+        "src/main/java/com/example/util/Helper.java": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/x/App.java",
+          "language": "java",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/x/Local.java",
+          "language": "java",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/x/Local.java": "package x;\npublic class Local { }\n",
+      "src/x/App.java": "package x;\nimport java.util.List;\nimport java.io.IOException;\nimport x.Local;\npublic class App { }\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 2,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "src/x/App.java": [
+          "src/x/Local.java"
+        ],
+        "src/x/Local.java": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/main/kotlin/com/example/Main.kt",
+          "language": "kotlin",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/main/kotlin/com/example/foo/Bar.kt",
+          "language": "kotlin",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/main/kotlin/com/example/util/Helper.kt",
+          "language": "kotlin",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/main/kotlin/com/example/Main.kt": "package com.example\n\nimport com.example.foo.Bar\nimport com.example.util.Helper\n\nfun main() { }\n",
+      "src/main/kotlin/com/example/util/Helper.kt": "package com.example.util\n\nobject Helper\n",
+      "src/main/kotlin/com/example/foo/Bar.kt": "package com.example.foo\n\nclass Bar\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "src/main/kotlin/com/example/Main.kt": [
+          "src/main/kotlin/com/example/foo/Bar.kt",
+          "src/main/kotlin/com/example/util/Helper.kt"
+        ],
+        "src/main/kotlin/com/example/foo/Bar.kt": [],
+        "src/main/kotlin/com/example/util/Helper.kt": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/Main.kt",
+          "language": "kotlin",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/com/example/real/Bar.kt",
+          "language": "kotlin",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/Main.kt": "package com.example\n\nimport ...\nimport .foo\nimport com.example.real.Bar\n",
+      "src/com/example/real/Bar.kt": "package com.example.real\nclass Bar\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 2,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "src/Main.kt": [
+          "src/com/example/real/Bar.kt"
+        ],
+        "src/com/example/real/Bar.kt": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "Program.cs",
+          "language": "csharp",
+          "fileCategory": "code"
+        },
+        {
+          "path": "MyApp/Util/Helper.cs",
+          "language": "csharp",
+          "fileCategory": "code"
+        },
+        {
+          "path": "MyApp/Models/User.cs",
+          "language": "csharp",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "Program.cs": "using System;\nusing MyApp.Util.Helper;\nusing MyApp.Models.User;\n\nnamespace MyApp { class Program { } }\n",
+      "MyApp/Models/User.cs": "namespace MyApp.Models { public class User { } }\n",
+      "MyApp/Util/Helper.cs": "namespace MyApp.Util { public class Helper { } }\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "Program.cs": [
+          "MyApp/Models/User.cs",
+          "MyApp/Util/Helper.cs"
+        ],
+        "MyApp/Util/Helper.cs": [],
+        "MyApp/Models/User.cs": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "app/controllers/users_controller.rb",
+          "language": "ruby",
+          "fileCategory": "code"
+        },
+        {
+          "path": "app/helpers/auth.rb",
+          "language": "ruby",
+          "fileCategory": "code"
+        },
+        {
+          "path": "lib/shared/logger.rb",
+          "language": "ruby",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "app/helpers/auth.rb": "module Auth\nend\n",
+      "app/controllers/users_controller.rb": "require_relative '../helpers/auth'\nrequire 'shared/logger'\nrequire 'json'\n\nclass UsersController\nend\n",
+      "lib/shared/logger.rb": "module Shared\n  module Logger\n  end\nend\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "app/controllers/users_controller.rb": [
+          "app/helpers/auth.rb",
+          "lib/shared/logger.rb"
+        ],
+        "app/helpers/auth.rb": [],
+        "lib/shared/logger.rb": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "composer.json",
+          "language": "json",
+          "fileCategory": "config"
+        },
+        {
+          "path": "src/Http/Controller.php",
+          "language": "php",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/Models/User.php",
+          "language": "php",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/Util/Logger.php",
+          "language": "php",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "composer.json": "{\"autoload\": {\"psr-4\": {\"App\\\\\": \"src/\", \"App\\\\Tests\\\\\": \"tests/\"}}}",
+      "src/Util/Logger.php": "<?php\nnamespace App\\Util;\nclass Logger { }\n",
+      "src/Models/User.php": "<?php\nnamespace App\\Models;\nclass User { }\n",
+      "src/Http/Controller.php": "<?php\nnamespace App\\Http;\n\nuse App\\Models\\User;\nuse App\\Util\\Logger;\nuse Symfony\\Component\\HttpFoundation\\Request;\n\nclass Controller { }\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 4,
+        "filesWithImports": 1,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "composer.json": [],
+        "src/Http/Controller.php": [
+          "src/Models/User.php",
+          "src/Util/Logger.php"
+        ],
+        "src/Models/User.php": [],
+        "src/Util/Logger.php": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "packages/foo/composer.json",
+          "language": "json",
+          "fileCategory": "config"
+        },
+        {
+          "path": "packages/foo/src/X.php",
+          "language": "php",
+          "fileCategory": "code"
+        },
+        {
+          "path": "packages/foo/src/Y.php",
+          "language": "php",
+          "fileCategory": "code"
+        },
+        {
+          "path": "packages/bar/composer.json",
+          "language": "json",
+          "fileCategory": "config"
+        },
+        {
+          "path": "packages/bar/src/Z.php",
+          "language": "php",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "packages/bar/composer.json": "{\"autoload\": {\"psr-4\": {\"App\\\\Bar\\\\\": \"src/\"}}}",
+      "packages/foo/composer.json": "{\"autoload\": {\"psr-4\": {\"App\\\\Foo\\\\\": \"src/\"}}}",
+      "packages/foo/src/Y.php": "<?php\nnamespace App\\Foo;\nclass Y { }\n",
+      "packages/foo/src/X.php": "<?php\nnamespace App\\Foo;\n\nuse App\\Foo\\Y;\nuse App\\Bar\\Z;\nclass X { }\n",
+      "packages/bar/src/Z.php": "<?php\nnamespace App\\Bar;\nclass Z { }\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 5,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "packages/foo/composer.json": [],
+        "packages/foo/src/X.php": [
+          "packages/foo/src/Y.php"
+        ],
+        "packages/foo/src/Y.php": [],
+        "packages/bar/composer.json": [],
+        "packages/bar/src/Z.php": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "composer.json",
+          "language": "json",
+          "fileCategory": "config"
+        },
+        {
+          "path": "src/Foo/Bar.php",
+          "language": "php",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/Foo/Baz.php",
+          "language": "php",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "composer.json": "{\"autoload\": {\"psr-4\": {\"\": \"src/\"}}}",
+      "src/Foo/Baz.php": "<?php\nnamespace Foo;\nclass Baz { }\n",
+      "src/Foo/Bar.php": "<?php\nnamespace Foo;\n\nuse Foo\\Baz;\n\nclass Bar { }\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "composer.json": [],
+        "src/Foo/Bar.php": [
+          "src/Foo/Baz.php"
+        ],
+        "src/Foo/Baz.php": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "Cargo.toml",
+          "language": "toml",
+          "fileCategory": "config"
+        },
+        {
+          "path": "src/lib.rs",
+          "language": "rust",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/auth.rs",
+          "language": "rust",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/db.rs",
+          "language": "rust",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "Cargo.toml": "[package]\nname = \"demo\"\nversion = \"0.1.0\"\nedition = \"2021\"\n",
+      "src/db.rs": "pub fn query() { }\n",
+      "src/auth.rs": "pub fn login() { }\n",
+      "src/lib.rs": "pub mod auth;\npub mod db;\n\nuse crate::auth::login;\nuse crate::db::query;\n\nfn boot() { login(); query(); }\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 4,
+        "filesWithImports": 1,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "Cargo.toml": [],
+        "src/lib.rs": [
+          "src/auth.rs",
+          "src/db.rs"
+        ],
+        "src/auth.rs": [],
+        "src/db.rs": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "Cargo.toml",
+          "language": "toml",
+          "fileCategory": "config"
+        },
+        {
+          "path": "src/lib.rs",
+          "language": "rust",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/sibling.rs",
+          "language": "rust",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/inner/mod.rs",
+          "language": "rust",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "Cargo.toml": "[package]\nname = \"demo\"\nversion = \"0.1.0\"\n",
+      "src/sibling.rs": "pub fn hi() { }\n",
+      "src/lib.rs": "pub mod inner;\npub mod sibling;\n",
+      "src/inner/mod.rs": "use super::sibling::hi;\nfn boot() { hi(); }\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 4,
+        "filesWithImports": 2,
+        "totalEdges": 3
+      },
+      "importMap": {
+        "Cargo.toml": [],
+        "src/lib.rs": [
+          "src/inner/mod.rs",
+          "src/sibling.rs"
+        ],
+        "src/sibling.rs": [],
+        "src/inner/mod.rs": [
+          "src/sibling.rs"
+        ]
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/main.cpp",
+          "language": "cpp",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/util.h",
+          "language": "cpp",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/helpers/log.h",
+          "language": "cpp",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/util.h": "#ifndef UTIL_H\n#define UTIL_H\nvoid util();\n#endif\n",
+      "src/main.cpp": "#include <iostream>\n#include \"util.h\"\n#include \"helpers/log.h\"\n\nint main() { return 0; }\n",
+      "src/helpers/log.h": "#pragma once\nvoid log_msg(const char*);\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "src/main.cpp": [
+          "src/helpers/log.h",
+          "src/util.h"
+        ],
+        "src/util.h": [],
+        "src/helpers/log.h": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/app.c",
+          "language": "c",
+          "fileCategory": "code"
+        },
+        {
+          "path": "include/config.h",
+          "language": "c",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/shared.h",
+          "language": "c",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "include/config.h": "#pragma once\n",
+      "src/shared.h": "#pragma once\n",
+      "src/app.c": "#include \"config.h\"\n#include \"shared.h\"\n\nint main() { return 0; }\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "src/app.c": [
+          "include/config.h",
+          "src/shared.h"
+        ],
+        "include/config.h": [],
+        "src/shared.h": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/real.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/other.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/missing.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/other.ts": "export const thing = 1;\n",
+      "src/real.ts": "import { thing } from './other';\nexport const x = 1;\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "src/real.ts": [
+          "src/other.ts"
+        ],
+        "src/other.ts": [],
+        "src/missing.ts": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "a.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "README.md",
+          "language": "markdown",
+          "fileCategory": "docs"
+        },
+        {
+          "path": "Dockerfile",
+          "language": "dockerfile",
+          "fileCategory": "infra"
+        },
+        {
+          "path": "package.json",
+          "language": "json",
+          "fileCategory": "config"
+        }
+      ]
+    },
+    "files": {
+      "package.json": "{}\n",
+      "Dockerfile": "FROM node:22\n",
+      "README.md": "# x\n",
+      "a.ts": "// no imports\nexport const a = 1;\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 4,
+        "filesWithImports": 0,
+        "totalEdges": 0
+      },
+      "importMap": {
+        "a.ts": [],
+        "README.md": [],
+        "Dockerfile": [],
+        "package.json": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/a.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/b.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/c.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/c.ts": "export const c = 2;\n",
+      "src/b.ts": "export const b = 1;\n",
+      "src/a.ts": "import { b } from './b';\nimport { c } from './c';\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "src/a.ts": [
+          "src/b.ts",
+          "src/c.ts"
+        ],
+        "src/b.ts": [],
+        "src/c.ts": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/a.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/b.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/c.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/c.ts": "export const c = 2;\n",
+      "src/b.ts": "export const b = 1;\n",
+      "src/a.ts": "import { b } from './b';\nimport { c } from './c';\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "src/a.ts": [
+          "src/b.ts",
+          "src/c.ts"
+        ],
+        "src/b.ts": [],
+        "src/c.ts": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/index.js",
+          "language": "javascript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/real.js",
+          "language": "javascript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/fake.js",
+          "language": "javascript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/alsofake.js",
+          "language": "javascript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/alsofake.js": "module.exports = { fake: true };\n",
+      "src/fake.js": "module.exports = { fake: true };\n",
+      "src/real.js": "module.exports = { x: 1 };\n",
+      "src/index.js": "// require('./fake');  <- commented out, must be ignored\n/* require('./alsofake'); also commented */\nconst real = require('./real');\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 4,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "src/index.js": [
+          "src/real.js"
+        ],
+        "src/real.js": [],
+        "src/fake.js": [],
+        "src/alsofake.js": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "app.rb",
+          "language": "ruby",
+          "fileCategory": "code"
+        },
+        {
+          "path": "lib/real.rb",
+          "language": "ruby",
+          "fileCategory": "code"
+        },
+        {
+          "path": "lib/fake.rb",
+          "language": "ruby",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "app.rb": "# require 'fake'  -- commented out, must be ignored\nrequire 'real'\n",
+      "lib/fake.rb": "module Fake; end\n",
+      "lib/real.rb": "module Real; end\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "app.rb": [
+          "lib/real.rb"
+        ],
+        "lib/real.rb": [],
+        "lib/fake.rb": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "Cargo.toml",
+          "language": "toml",
+          "fileCategory": "config"
+        },
+        {
+          "path": "src/lib.rs",
+          "language": "rust",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/real.rs",
+          "language": "rust",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/fake_line.rs",
+          "language": "rust",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/fake_block.rs",
+          "language": "rust",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "Cargo.toml": "[package]\nname = \"demo\"\nversion = \"0.1.0\"\n",
+      "src/fake_block.rs": "pub fn f() { }\n",
+      "src/fake_line.rs": "pub fn f() { }\n",
+      "src/real.rs": "pub fn r() { }\n",
+      "src/lib.rs": "// mod fake_line;  <- commented out\n/* mod fake_block; */\npub mod real;\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 5,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "Cargo.toml": [],
+        "src/lib.rs": [
+          "src/real.rs"
+        ],
+        "src/real.rs": [],
+        "src/fake_line.rs": [],
+        "src/fake_block.rs": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "src/main/java/com/example/App.java",
+          "language": "java",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/main/java/com/foo/Bar.java",
+          "language": "java",
+          "fileCategory": "code"
+        },
+        {
+          "path": "lib/src/main/java/com/foo/Bar.java",
+          "language": "java",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "src/main/java/com/foo/Bar.java": "package com.foo;\npublic class Bar { }\n",
+      "src/main/java/com/example/App.java": "package com.example;\nimport com.foo.Bar;\npublic class App { }\n",
+      "lib/src/main/java/com/foo/Bar.java": "package com.foo;\npublic class Bar { }\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 2
+      },
+      "importMap": {
+        "src/main/java/com/example/App.java": [
+          "lib/src/main/java/com/foo/Bar.java",
+          "src/main/java/com/foo/Bar.java"
+        ],
+        "src/main/java/com/foo/Bar.java": [],
+        "lib/src/main/java/com/foo/Bar.java": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "composer.json",
+          "language": "json",
+          "fileCategory": "config"
+        },
+        {
+          "path": "src/Http/Controller.php",
+          "language": "php",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/Models/User.php",
+          "language": "php",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "composer.json": "{ \"autoload\": { \"psr-4\": { \"App\\\\\": \"src/\" }, ",
+      "src/Models/User.php": "<?php\nnamespace App\\Models;\nclass User { }\n",
+      "src/Http/Controller.php": "<?php\nnamespace App\\Http;\n\nuse App\\Models\\User;\n\nclass Controller { }\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 0,
+        "totalEdges": 0
+      },
+      "importMap": {
+        "composer.json": [],
+        "src/Http/Controller.php": [],
+        "src/Models/User.php": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "tsconfig.json",
+          "language": "json",
+          "fileCategory": "config"
+        },
+        {
+          "path": "src/index.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/sibling.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "tsconfig.json": "{ \"compilerOptions\": { \"baseUrl\": \".\", ",
+      "src/utils.ts": "export const foo = 1;\n",
+      "src/sibling.ts": "export const bar = 1;\n",
+      "src/index.ts": "import { foo } from '@/utils';\nimport { bar } from './sibling';\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 4,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "tsconfig.json": [],
+        "src/index.ts": [
+          "src/sibling.ts"
+        ],
+        "src/sibling.ts": [],
+        "src/utils.ts": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "tsconfig.json",
+          "language": "json",
+          "fileCategory": "config"
+        },
+        {
+          "path": "src/index.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/foo/bar.ts",
+          "language": "typescript",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"baseUrl\": \".\",\n    \"paths\": {\n      \"@scheme//foo/*\": [\"src/foo/*\"]\n    }\n  }\n}\n",
+      "src/index.ts": "import { x } from '@scheme//foo/bar';\n",
+      "src/foo/bar.ts": "export const x = 1;\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 3,
+        "filesWithImports": 1,
+        "totalEdges": 1
+      },
+      "importMap": {
+        "tsconfig.json": [],
+        "src/index.ts": [
+          "src/foo/bar.ts"
+        ],
+        "src/foo/bar.ts": []
+      }
+    }
+  },
+  {
+    "input": {
+      "projectRoot": "<ROOT>",
+      "files": [
+        {
+          "path": "Cargo.toml",
+          "language": "toml",
+          "fileCategory": "config"
+        },
+        {
+          "path": "app/something.rs",
+          "language": "rust",
+          "fileCategory": "code"
+        }
+      ]
+    },
+    "files": {
+      "Cargo.toml": "[package]\nname = \"demo\"\nversion = \"0.1.0\"\n",
+      "app/something.rs": "use crate::auth::login;\nuse crate::db::query;\nfn boot() { }\n"
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "stats": {
+        "filesScanned": 2,
+        "filesWithImports": 0,
+        "totalEdges": 0
+      },
+      "importMap": {
+        "Cargo.toml": [],
+        "app/something.rs": []
+      }
+    }
+  }
+]

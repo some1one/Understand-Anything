@@ -68,6 +68,17 @@ def main(argv: list[str] | None = None) -> int:
     edges = [e for e in graph.get("edges", []) if isinstance(e, dict)]
     file_nodes = [compact_file_node(n) for n in nodes if n.get("type") in FILE_LEVEL_TYPES]
     import_edges = [e for e in edges if e.get("type") == "imports"]
+    file_ids = {n["id"] for n in file_nodes}
+    architecture_input = {
+        "fileNodes": file_nodes,
+        "importEdges": [e for e in import_edges if e.get("source") in file_ids and e.get("target") in file_ids],
+        "allEdges": [e for e in edges if e.get("source") in file_ids and e.get("target") in file_ids],
+    }
+    temp_dir = project_root / ".understand-anything" / "tmp"
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    (temp_dir / "ua-arch-input.json").write_text(
+        json.dumps(architecture_input, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
 
     payload = {
         "PROJECT_ROOT": str(project_root),

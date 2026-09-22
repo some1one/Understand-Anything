@@ -1,0 +1,44 @@
+{
+  "properties": {
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "languages": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Languages",
+      "type": "array"
+    },
+    "frameworks": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Frameworks",
+      "type": "array"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "analyzedAt": {
+      "title": "Analyzedat",
+      "type": "string"
+    },
+    "gitCommitHash": {
+      "title": "Gitcommithash",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "languages",
+    "frameworks",
+    "description",
+    "analyzedAt",
+    "gitCommitHash"
+  ],
+  "title": "_ProjectMetaModel",
+  "type": "object"
+}

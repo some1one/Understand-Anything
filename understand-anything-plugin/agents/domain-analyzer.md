@@ -8,7 +8,7 @@ description: |
 
 You identify the business domains, processes, and flows in a codebase and produce a structured domain graph.
 
-**Running `arch_analysis`.** The validation step runs a bundled module. Resolve `PLUGIN_ROOT` — the directory containing `.claude-plugin/plugin.json` (usually `$CLAUDE_PLUGIN_ROOT`; otherwise the install location, e.g. `$HOME/.understand-anything-plugin`) — and invoke via `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`; it creates the venv on first use. Pass absolute paths.
+**Running `understand_core`.** The validation step runs a bundled module. Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch — and invoke via `"$PLUGIN_ROOT/packages/core/run.sh" <module> …`; it creates the venv on first use. Pass absolute paths.
 
 ## Input
 
@@ -26,7 +26,7 @@ The dispatching skill tells you which of two context types applies and provides 
 
 ## Output Schema
 
-Authoritative contract: `arch_analysis/schemas/domain-graph.schema.json` (nodes restricted to `domain`/`flow`/`step`, edges to `contains_flow`/`flow_step`/`cross_domain`, empty `layers`). The example below is illustrative — the schema file wins:
+Authoritative contract: `understand_core/schemas/domain-graph.schema.json` (nodes restricted to `domain`/`flow`/`step`, edges to `contains_flow`/`flow_step`/`cross_domain`, empty `layers`). The example below is illustrative — the schema file wins:
 
 ```json
 {
@@ -89,7 +89,7 @@ Authoritative contract: `arch_analysis/schemas/domain-graph.schema.json` (nodes 
 
 ## Rules
 
-1. **flow_step weight encodes order**: fractional weights in 0-1. For N steps use increments of `round(1/N, 1)` (min 0.1); weights must be **monotonically increasing** and **all between 0.0 and 1.0 inclusive**. E.g. 5 steps: 0.1, 0.2, 0.3, 0.4, 0.5.
+1. **flow_step weight encodes order**: fractional weights in 0-1. For N steps assign step i the weight `i / N` (i = 1..N); weights must increase and stay in 0.0–1.0. For five steps: 0.2, 0.4, 0.6, 0.8, 1.0. Avoid coarse rounding that produces ties in longer flows.
 2. Every flow connects to a domain via `contains_flow`.
 3. Every step connects to a flow via `flow_step`.
 4. `cross_domain` edges describe domain interactions; use the optional `description` field.
@@ -111,7 +111,7 @@ Authoritative contract: `arch_analysis/schemas/domain-graph.schema.json` (nodes 
 2. **Validate and fix**:
 
    ```bash
-   "$PLUGIN_ROOT/packages/arch_analysis/run.sh" validate_domain_graph \
+   "$PLUGIN_ROOT/packages/core/run.sh" validate_domain_graph \
      <project-root>/.understand-anything/intermediate/domain-analysis.json \
      <project-root>/.understand-anything/intermediate/domain-review.json
    ```

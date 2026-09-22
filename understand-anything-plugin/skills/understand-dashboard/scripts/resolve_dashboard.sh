@@ -4,18 +4,20 @@ set -euo pipefail
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 SKILL_DIR=$(cd "$SCRIPT_DIR/.." && pwd -P)
 
-SKILL_REAL=$(realpath "$SKILL_DIR" 2>/dev/null || readlink -f "$SKILL_DIR" 2>/dev/null || echo "")
-SELF_RELATIVE=$([ -n "$SKILL_REAL" ] && cd "$SKILL_REAL/../.." 2>/dev/null && pwd -P || echo "")
+# SKILL_DIR is already physical; this also works without GNU realpath/readlink.
+SELF_RELATIVE=$(cd "$SKILL_DIR/../.." 2>/dev/null && pwd -P || echo "")
 AGENTS_SKILL_REAL=$(realpath ~/.agents/skills/understand-dashboard 2>/dev/null || readlink -f ~/.agents/skills/understand-dashboard 2>/dev/null || echo "")
 AGENTS_SELF_RELATIVE=$([ -n "$AGENTS_SKILL_REAL" ] && cd "$AGENTS_SKILL_REAL/../.." 2>/dev/null && pwd -P || echo "")
 COPILOT_SKILL_REAL=$(realpath ~/.copilot/skills/understand-dashboard 2>/dev/null || readlink -f ~/.copilot/skills/understand-dashboard 2>/dev/null || echo "")
 COPILOT_SELF_RELATIVE=$([ -n "$COPILOT_SKILL_REAL" ] && cd "$COPILOT_SKILL_REAL/../.." 2>/dev/null && pwd -P || echo "")
 
+HOST_PLUGIN_ROOT="${PLUGIN_ROOT:-}"
 PLUGIN_ROOT=""
 for candidate in \
+  "$SELF_RELATIVE" \
+  "$HOST_PLUGIN_ROOT" \
   "${CLAUDE_PLUGIN_ROOT:-}" \
   "$HOME/.understand-anything-plugin" \
-  "$SELF_RELATIVE" \
   "$AGENTS_SELF_RELATIVE" \
   "$COPILOT_SELF_RELATIVE" \
   "$HOME/.codex/understand-anything/understand-anything-plugin" \
@@ -34,5 +36,5 @@ if [ -z "$PLUGIN_ROOT" ]; then
   exit 1
 fi
 
-printf 'PLUGIN_ROOT=%s\n' "$PLUGIN_ROOT"
-printf 'DASHBOARD_DIR=%s\n' "$PLUGIN_ROOT/packages/dashboard"
+printf 'PLUGIN_ROOT=%q\n' "$PLUGIN_ROOT"
+printf 'DASHBOARD_DIR=%q\n' "$PLUGIN_ROOT/packages/dashboard"

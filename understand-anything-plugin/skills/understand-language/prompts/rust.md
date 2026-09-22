@@ -10,7 +10,7 @@
 - **Result/Option Error Handling**: `Result<T, E>` for fallible ops; `Option<T>` for nullable values
 - **Macros**: Declarative (`macro_rules!`) and procedural (derive, attribute, function-like) code generation
 - **Async/Await with Tokio**: Zero-cost async using `Future` trait and runtime executors
-- **Unsafe Blocks**: Opt-in blocks for raw pointer dereferencing, FFI, and bypassing borrow checker
+- **Unsafe Blocks**: Permit specific unsafe operations such as raw-pointer dereferencing; the borrow checker still checks references. See [Unsafe Rust](https://doc.rust-lang.org/book/ch20-01-unsafe-rust.html).
 - **Generics with Trait Bounds**: `<T: Clone + Send>` constraining generic parameters
 - **Closures and Fn Traits**: `Fn`, `FnMut`, `FnOnce` determine how closures capture environment
 

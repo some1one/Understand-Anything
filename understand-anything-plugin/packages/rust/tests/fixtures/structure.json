@@ -1,0 +1,2504 @@
+[
+  {
+    "path": "src/foo.py",
+    "source": "import os\nfrom .helpers import thing\nfrom typing import List\n\nGLOBAL = 1\n\ndef top(a, b=2, *args, **kw):\n    return helper(a)\n\nclass Widget:\n    name: str\n    def method(self, x):\n        return self.compute(x)\n",
+    "analysis": {
+      "functions": [
+        {
+          "name": "top",
+          "lineRange": [
+            7,
+            8
+          ],
+          "params": [
+            "a",
+            "b",
+            "*args",
+            "**kw"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Widget",
+          "lineRange": [
+            10,
+            13
+          ],
+          "methods": [
+            "method"
+          ],
+          "properties": [
+            "name"
+          ]
+        }
+      ],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ],
+          "lineNumber": 1
+        },
+        {
+          "source": ".helpers",
+          "specifiers": [
+            "thing"
+          ],
+          "lineNumber": 2
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "List"
+          ],
+          "lineNumber": 3
+        }
+      ],
+      "exports": [
+        {
+          "name": "top",
+          "lineNumber": 7
+        },
+        {
+          "name": "Widget",
+          "lineNumber": 10
+        }
+      ],
+      "sections": null,
+      "definitions": null,
+      "services": null,
+      "endpoints": null,
+      "steps": null,
+      "resources": null
+    },
+    "calls": [
+      {
+        "caller": "top",
+        "callee": "helper",
+        "lineNumber": 8
+      },
+      {
+        "caller": "method",
+        "callee": "self.compute",
+        "lineNumber": 13
+      }
+    ],
+    "result": {
+      "path": "src/foo.py",
+      "language": null,
+      "fileCategory": "code",
+      "totalLines": 13,
+      "nonEmptyLines": 10,
+      "functions": [
+        {
+          "name": "top",
+          "startLine": 7,
+          "endLine": 8,
+          "params": [
+            "a",
+            "b",
+            "*args",
+            "**kw"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Widget",
+          "startLine": 10,
+          "endLine": 13,
+          "methods": [
+            "method"
+          ],
+          "properties": [
+            "name"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "top",
+          "line": 7,
+          "isDefault": false
+        },
+        {
+          "name": "Widget",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "top",
+          "callee": "helper",
+          "lineNumber": 8
+        },
+        {
+          "caller": "method",
+          "callee": "self.compute",
+          "lineNumber": 13
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    }
+  },
+  {
+    "path": "src/x.ts",
+    "source": "import { a } from './a';\nimport x from 'pkg';\nexport function greet(name: string): string {\n  return format(name);\n}\nexport class Service {\n  field = 1;\n  run(): void {}\n}\nexport const value = 42;\n",
+    "analysis": {
+      "functions": [
+        {
+          "name": "greet",
+          "lineRange": [
+            3,
+            5
+          ],
+          "params": [
+            "name"
+          ],
+          "returnType": "string"
+        }
+      ],
+      "classes": [
+        {
+          "name": "Service",
+          "lineRange": [
+            6,
+            9
+          ],
+          "methods": [
+            "run"
+          ],
+          "properties": [
+            "field"
+          ]
+        }
+      ],
+      "imports": [
+        {
+          "source": "./a",
+          "specifiers": [
+            "a"
+          ],
+          "lineNumber": 1
+        },
+        {
+          "source": "pkg",
+          "specifiers": [
+            "x"
+          ],
+          "lineNumber": 2
+        }
+      ],
+      "exports": [
+        {
+          "name": "greet",
+          "lineNumber": 3,
+          "isDefault": false
+        },
+        {
+          "name": "Service",
+          "lineNumber": 6,
+          "isDefault": false
+        },
+        {
+          "name": "value",
+          "lineNumber": 10
+        }
+      ],
+      "sections": null,
+      "definitions": null,
+      "services": null,
+      "endpoints": null,
+      "steps": null,
+      "resources": null
+    },
+    "calls": [
+      {
+        "caller": "greet",
+        "callee": "format",
+        "lineNumber": 4
+      }
+    ],
+    "result": {
+      "path": "src/x.ts",
+      "language": null,
+      "fileCategory": "code",
+      "totalLines": 10,
+      "nonEmptyLines": 10,
+      "functions": [
+        {
+          "name": "greet",
+          "startLine": 3,
+          "endLine": 5,
+          "params": [
+            "name"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Service",
+          "startLine": 6,
+          "endLine": 9,
+          "methods": [
+            "run"
+          ],
+          "properties": [
+            "field"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "greet",
+          "line": 3,
+          "isDefault": false
+        },
+        {
+          "name": "Service",
+          "line": 6,
+          "isDefault": false
+        },
+        {
+          "name": "value",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "greet",
+          "callee": "format",
+          "lineNumber": 4
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    }
+  },
+  {
+    "path": "main.go",
+    "source": "package main\n\nimport \"fmt\"\n\ntype Server struct {\n    Host string\n}\n\nfunc (s *Server) Start() error {\n    return run()\n}\n\nfunc main() {\n    fmt.Println(\"hi\")\n}\n",
+    "analysis": {
+      "functions": [
+        {
+          "name": "Start",
+          "lineRange": [
+            9,
+            11
+          ],
+          "params": [],
+          "returnType": "error"
+        },
+        {
+          "name": "main",
+          "lineRange": [
+            13,
+            15
+          ],
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "Server",
+          "lineRange": [
+            5,
+            7
+          ],
+          "methods": [
+            "Start"
+          ],
+          "properties": [
+            "Host"
+          ]
+        }
+      ],
+      "imports": [
+        {
+          "source": "fmt",
+          "specifiers": [
+            "fmt"
+          ],
+          "lineNumber": 3
+        }
+      ],
+      "exports": [
+        {
+          "name": "Server",
+          "lineNumber": 5
+        },
+        {
+          "name": "Start",
+          "lineNumber": 9
+        }
+      ],
+      "sections": null,
+      "definitions": null,
+      "services": null,
+      "endpoints": null,
+      "steps": null,
+      "resources": null
+    },
+    "calls": [
+      {
+        "caller": "Start",
+        "callee": "run",
+        "lineNumber": 10
+      },
+      {
+        "caller": "main",
+        "callee": "fmt.Println",
+        "lineNumber": 14
+      }
+    ],
+    "result": {
+      "path": "main.go",
+      "language": null,
+      "fileCategory": "code",
+      "totalLines": 15,
+      "nonEmptyLines": 11,
+      "functions": [
+        {
+          "name": "Start",
+          "startLine": 9,
+          "endLine": 11,
+          "params": []
+        },
+        {
+          "name": "main",
+          "startLine": 13,
+          "endLine": 15,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "Server",
+          "startLine": 5,
+          "endLine": 7,
+          "methods": [
+            "Start"
+          ],
+          "properties": [
+            "Host"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Server",
+          "line": 5,
+          "isDefault": false
+        },
+        {
+          "name": "Start",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Start",
+          "callee": "run",
+          "lineNumber": 10
+        },
+        {
+          "caller": "main",
+          "callee": "fmt.Println",
+          "lineNumber": 14
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    }
+  },
+  {
+    "path": "a.kt",
+    "source": "package x\nimport a.b.C\nprivate fun secret() {}\nclass Widget(val id: Int, name: String) {\n  val title: String = \"\"\n  fun run(): Int { return obj.go() }\n}\nfun top(a: Int): Int = a\n",
+    "analysis": {
+      "functions": [
+        {
+          "name": "secret",
+          "lineRange": [
+            3,
+            3
+          ],
+          "params": []
+        },
+        {
+          "name": "run",
+          "lineRange": [
+            6,
+            6
+          ],
+          "params": [],
+          "returnType": "Int"
+        },
+        {
+          "name": "top",
+          "lineRange": [
+            8,
+            8
+          ],
+          "params": [
+            "a"
+          ],
+          "returnType": "Int"
+        }
+      ],
+      "classes": [
+        {
+          "name": "Widget",
+          "lineRange": [
+            4,
+            7
+          ],
+          "methods": [
+            "run"
+          ],
+          "properties": [
+            "id",
+            "title"
+          ]
+        }
+      ],
+      "imports": [
+        {
+          "source": "a.b.C",
+          "specifiers": [
+            "C"
+          ],
+          "lineNumber": 2
+        }
+      ],
+      "exports": [
+        {
+          "name": "title",
+          "lineNumber": 5
+        },
+        {
+          "name": "run",
+          "lineNumber": 6
+        },
+        {
+          "name": "Widget",
+          "lineNumber": 4
+        },
+        {
+          "name": "top",
+          "lineNumber": 8
+        }
+      ],
+      "sections": null,
+      "definitions": null,
+      "services": null,
+      "endpoints": null,
+      "steps": null,
+      "resources": null
+    },
+    "calls": [
+      {
+        "caller": "run",
+        "callee": "go",
+        "lineNumber": 6
+      }
+    ],
+    "result": {
+      "path": "a.kt",
+      "language": null,
+      "fileCategory": "code",
+      "totalLines": 8,
+      "nonEmptyLines": 8,
+      "functions": [
+        {
+          "name": "secret",
+          "startLine": 3,
+          "endLine": 3,
+          "params": []
+        },
+        {
+          "name": "run",
+          "startLine": 6,
+          "endLine": 6,
+          "params": []
+        },
+        {
+          "name": "top",
+          "startLine": 8,
+          "endLine": 8,
+          "params": [
+            "a"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Widget",
+          "startLine": 4,
+          "endLine": 7,
+          "methods": [
+            "run"
+          ],
+          "properties": [
+            "id",
+            "title"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "title",
+          "line": 5,
+          "isDefault": false
+        },
+        {
+          "name": "run",
+          "line": 6,
+          "isDefault": false
+        },
+        {
+          "name": "Widget",
+          "line": 4,
+          "isDefault": false
+        },
+        {
+          "name": "top",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "run",
+          "callee": "go",
+          "lineNumber": 6
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    }
+  },
+  {
+    "path": "schema.sql",
+    "source": "CREATE TABLE users (\n  id INTEGER PRIMARY KEY,\n  email TEXT,\n  PRIMARY KEY (id)\n);\n\nCREATE VIEW active_users AS SELECT * FROM users;\nCREATE INDEX idx_email ON users(email);\n",
+    "analysis": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": null,
+      "definitions": [
+        {
+          "name": "users",
+          "kind": "table",
+          "lineRange": [
+            1,
+            5
+          ],
+          "fields": [
+            "id",
+            "email"
+          ]
+        },
+        {
+          "name": "active_users",
+          "kind": "view",
+          "lineRange": [
+            7,
+            7
+          ],
+          "fields": []
+        },
+        {
+          "name": "idx_email",
+          "kind": "index",
+          "lineRange": [
+            8,
+            8
+          ],
+          "fields": []
+        }
+      ],
+      "services": null,
+      "endpoints": null,
+      "steps": null,
+      "resources": null
+    },
+    "calls": null,
+    "result": {
+      "path": "schema.sql",
+      "language": null,
+      "fileCategory": "code",
+      "totalLines": 8,
+      "nonEmptyLines": 7,
+      "definitions": [
+        {
+          "name": "users",
+          "kind": "table",
+          "fields": [
+            "id",
+            "email"
+          ],
+          "startLine": 1,
+          "endLine": 5
+        },
+        {
+          "name": "active_users",
+          "kind": "view",
+          "fields": [],
+          "startLine": 7,
+          "endLine": 7
+        },
+        {
+          "name": "idx_email",
+          "kind": "index",
+          "fields": [],
+          "startLine": 8,
+          "endLine": 8
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 3
+      }
+    }
+  },
+  {
+    "path": "README.md",
+    "source": "# Title\n\nIntro text.\n\n## Section A\n\n```\n# not a heading (inside fence)\n```\n\n### Sub\n",
+    "analysis": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "Title",
+          "level": 1,
+          "lineRange": [
+            1,
+            4
+          ]
+        },
+        {
+          "name": "Section A",
+          "level": 2,
+          "lineRange": [
+            5,
+            10
+          ]
+        },
+        {
+          "name": "Sub",
+          "level": 3,
+          "lineRange": [
+            11,
+            12
+          ]
+        }
+      ],
+      "definitions": null,
+      "services": null,
+      "endpoints": null,
+      "steps": null,
+      "resources": null
+    },
+    "calls": null,
+    "result": {
+      "path": "README.md",
+      "language": null,
+      "fileCategory": "code",
+      "totalLines": 11,
+      "nonEmptyLines": 7,
+      "sections": [
+        {
+          "heading": "Title",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Section A",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "Sub",
+          "level": 3,
+          "line": 11
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 3
+      }
+    }
+  },
+  {
+    "path": "a.ts",
+    "source": "import X, {foo as bar} from \"./x\";\nexport default class Widget { value: string; run(x: string): void { bar(x); } }\nexport const fn = (a: number, ...rest: string[]) => X(a);\nexport {fn as alias};\n",
+    "analysis": {
+      "functions": [
+        {
+          "name": "fn",
+          "lineRange": [
+            3,
+            3
+          ],
+          "params": [
+            "a",
+            "...rest"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Widget",
+          "lineRange": [
+            2,
+            2
+          ],
+          "methods": [
+            "run"
+          ],
+          "properties": [
+            "value"
+          ]
+        }
+      ],
+      "imports": [
+        {
+          "source": "./x",
+          "specifiers": [
+            "X",
+            "bar"
+          ],
+          "lineNumber": 1
+        }
+      ],
+      "exports": [
+        {
+          "name": "default",
+          "lineNumber": 2,
+          "isDefault": true
+        },
+        {
+          "name": "fn",
+          "lineNumber": 3
+        },
+        {
+          "name": "alias",
+          "lineNumber": 4
+        }
+      ],
+      "sections": null,
+      "definitions": null,
+      "services": null,
+      "endpoints": null,
+      "steps": null,
+      "resources": null
+    },
+    "calls": [
+      {
+        "caller": "run",
+        "callee": "bar",
+        "lineNumber": 2
+      },
+      {
+        "caller": "fn",
+        "callee": "X",
+        "lineNumber": 3
+      }
+    ],
+    "result": {
+      "path": "a.ts",
+      "language": null,
+      "fileCategory": "code",
+      "totalLines": 4,
+      "nonEmptyLines": 4,
+      "functions": [
+        {
+          "name": "fn",
+          "startLine": 3,
+          "endLine": 3,
+          "params": [
+            "a",
+            "...rest"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Widget",
+          "startLine": 2,
+          "endLine": 2,
+          "methods": [
+            "run"
+          ],
+          "properties": [
+            "value"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "default",
+          "line": 2,
+          "isDefault": true
+        },
+        {
+          "name": "fn",
+          "line": 3,
+          "isDefault": false
+        },
+        {
+          "name": "alias",
+          "line": 4,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "run",
+          "callee": "bar",
+          "lineNumber": 2
+        },
+        {
+          "caller": "fn",
+          "callee": "X",
+          "lineNumber": 3
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 3,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    }
+  },
+  {
+    "path": "a.tsx",
+    "source": "export function App() { return <button onClick={() => clicked()}>Hello</button>; }\n",
+    "analysis": {
+      "functions": [
+        {
+          "name": "App",
+          "lineRange": [
+            1,
+            1
+          ],
+          "params": []
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        {
+          "name": "App",
+          "lineNumber": 1,
+          "isDefault": false
+        }
+      ],
+      "sections": null,
+      "definitions": null,
+      "services": null,
+      "endpoints": null,
+      "steps": null,
+      "resources": null
+    },
+    "calls": [
+      {
+        "caller": "App",
+        "callee": "clicked",
+        "lineNumber": 1
+      }
+    ],
+    "result": {
+      "path": "a.tsx",
+      "language": null,
+      "fileCategory": "code",
+      "totalLines": 1,
+      "nonEmptyLines": 1,
+      "functions": [
+        {
+          "name": "App",
+          "startLine": 1,
+          "endLine": 1,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "App",
+          "line": 1,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "App",
+          "callee": "clicked",
+          "lineNumber": 1
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    }
+  },
+  {
+    "path": "a.js",
+    "source": "import * as utils from './utils';\nexport default function render(a) { return utils.f(a); }\nconst run = function(x) { return render(x); };\n",
+    "analysis": {
+      "functions": [
+        {
+          "name": "render",
+          "lineRange": [
+            2,
+            2
+          ],
+          "params": [
+            "a"
+          ]
+        },
+        {
+          "name": "run",
+          "lineRange": [
+            3,
+            3
+          ],
+          "params": [
+            "x"
+          ]
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./utils",
+          "specifiers": [
+            "* as utils"
+          ],
+          "lineNumber": 1
+        }
+      ],
+      "exports": [
+        {
+          "name": "render",
+          "lineNumber": 2,
+          "isDefault": true
+        }
+      ],
+      "sections": null,
+      "definitions": null,
+      "services": null,
+      "endpoints": null,
+      "steps": null,
+      "resources": null
+    },
+    "calls": [
+      {
+        "caller": "render",
+        "callee": "utils.f",
+        "lineNumber": 2
+      },
+      {
+        "caller": "run",
+        "callee": "render",
+        "lineNumber": 3
+      }
+    ],
+    "result": {
+      "path": "a.js",
+      "language": null,
+      "fileCategory": "code",
+      "totalLines": 3,
+      "nonEmptyLines": 3,
+      "functions": [
+        {
+          "name": "render",
+          "startLine": 2,
+          "endLine": 2,
+          "params": [
+            "a"
+          ]
+        },
+        {
+          "name": "run",
+          "startLine": 3,
+          "endLine": 3,
+          "params": [
+            "x"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "render",
+          "line": 2,
+          "isDefault": true
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "render",
+          "callee": "utils.f",
+          "lineNumber": 2
+        },
+        {
+          "caller": "run",
+          "callee": "render",
+          "lineNumber": 3
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    }
+  },
+  {
+    "path": "a.rs",
+    "source": "use crate::util::{self, help};\npub struct Data { pub value: i32 }\npub enum Color { Red, Blue }\npub trait Act { fn run(&self); fn other(&self) { help(); } }\nimpl Data { pub fn run(&self, x: i32) -> i32 { self.value + helper(x) } }\nfn helper(x: i32) -> i32 { x }\n",
+    "analysis": {
+      "functions": [
+        {
+          "name": "run",
+          "lineRange": [
+            5,
+            5
+          ],
+          "params": [
+            "x"
+          ],
+          "returnType": "i32"
+        },
+        {
+          "name": "helper",
+          "lineRange": [
+            6,
+            6
+          ],
+          "params": [
+            "x"
+          ],
+          "returnType": "i32"
+        }
+      ],
+      "classes": [
+        {
+          "name": "Data",
+          "lineRange": [
+            2,
+            2
+          ],
+          "methods": [
+            "run"
+          ],
+          "properties": [
+            "value"
+          ]
+        },
+        {
+          "name": "Color",
+          "lineRange": [
+            3,
+            3
+          ],
+          "methods": [],
+          "properties": [
+            "Red",
+            "Blue"
+          ]
+        },
+        {
+          "name": "Act",
+          "lineRange": [
+            4,
+            4
+          ],
+          "methods": [
+            "run",
+            "other"
+          ],
+          "properties": []
+        }
+      ],
+      "imports": [
+        {
+          "source": "crate::util",
+          "specifiers": [
+            "self",
+            "help"
+          ],
+          "lineNumber": 1
+        }
+      ],
+      "exports": [
+        {
+          "name": "Data",
+          "lineNumber": 2
+        },
+        {
+          "name": "Color",
+          "lineNumber": 3
+        },
+        {
+          "name": "Act",
+          "lineNumber": 4
+        },
+        {
+          "name": "run",
+          "lineNumber": 5
+        }
+      ],
+      "sections": null,
+      "definitions": null,
+      "services": null,
+      "endpoints": null,
+      "steps": null,
+      "resources": null
+    },
+    "calls": [
+      {
+        "caller": "other",
+        "callee": "help",
+        "lineNumber": 4
+      },
+      {
+        "caller": "run",
+        "callee": "helper",
+        "lineNumber": 5
+      }
+    ],
+    "result": {
+      "path": "a.rs",
+      "language": null,
+      "fileCategory": "code",
+      "totalLines": 6,
+      "nonEmptyLines": 6,
+      "functions": [
+        {
+          "name": "run",
+          "startLine": 5,
+          "endLine": 5,
+          "params": [
+            "x"
+          ]
+        },
+        {
+          "name": "helper",
+          "startLine": 6,
+          "endLine": 6,
+          "params": [
+            "x"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Data",
+          "startLine": 2,
+          "endLine": 2,
+          "methods": [
+            "run"
+          ],
+          "properties": [
+            "value"
+          ]
+        },
+        {
+          "name": "Color",
+          "startLine": 3,
+          "endLine": 3,
+          "methods": [],
+          "properties": [
+            "Red",
+            "Blue"
+          ]
+        },
+        {
+          "name": "Act",
+          "startLine": 4,
+          "endLine": 4,
+          "methods": [
+            "run",
+            "other"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "Data",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "Color",
+          "line": 3,
+          "isDefault": false
+        },
+        {
+          "name": "Act",
+          "line": 4,
+          "isDefault": false
+        },
+        {
+          "name": "run",
+          "line": 5,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "other",
+          "callee": "help",
+          "lineNumber": 4
+        },
+        {
+          "caller": "run",
+          "callee": "helper",
+          "lineNumber": 5
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 2,
+        "classCount": 3
+      }
+    }
+  },
+  {
+    "path": "a.java",
+    "source": "import java.util.List;\npublic class App { public int value; public App(int x) { value = x; } public String run(String s) { return helper(s); } }\npublic interface Act { void run(); int X = 1; }\n",
+    "analysis": {
+      "functions": [
+        {
+          "name": "App",
+          "lineRange": [
+            2,
+            2
+          ],
+          "params": [
+            "x"
+          ]
+        },
+        {
+          "name": "run",
+          "lineRange": [
+            2,
+            2
+          ],
+          "params": [
+            "s"
+          ],
+          "returnType": "String"
+        }
+      ],
+      "classes": [
+        {
+          "name": "App",
+          "lineRange": [
+            2,
+            2
+          ],
+          "methods": [
+            "App",
+            "run"
+          ],
+          "properties": [
+            "value"
+          ]
+        },
+        {
+          "name": "Act",
+          "lineRange": [
+            3,
+            3
+          ],
+          "methods": [
+            "run"
+          ],
+          "properties": [
+            "X"
+          ]
+        }
+      ],
+      "imports": [
+        {
+          "source": "java.util.List",
+          "specifiers": [
+            "List"
+          ],
+          "lineNumber": 1
+        }
+      ],
+      "exports": [
+        {
+          "name": "value",
+          "lineNumber": 2
+        },
+        {
+          "name": "App",
+          "lineNumber": 2
+        },
+        {
+          "name": "run",
+          "lineNumber": 2
+        },
+        {
+          "name": "App",
+          "lineNumber": 2
+        },
+        {
+          "name": "Act",
+          "lineNumber": 3
+        }
+      ],
+      "sections": null,
+      "definitions": null,
+      "services": null,
+      "endpoints": null,
+      "steps": null,
+      "resources": null
+    },
+    "calls": [
+      {
+        "caller": "run",
+        "callee": "helper",
+        "lineNumber": 2
+      }
+    ],
+    "result": {
+      "path": "a.java",
+      "language": null,
+      "fileCategory": "code",
+      "totalLines": 3,
+      "nonEmptyLines": 3,
+      "functions": [
+        {
+          "name": "App",
+          "startLine": 2,
+          "endLine": 2,
+          "params": [
+            "x"
+          ]
+        },
+        {
+          "name": "run",
+          "startLine": 2,
+          "endLine": 2,
+          "params": [
+            "s"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "App",
+          "startLine": 2,
+          "endLine": 2,
+          "methods": [
+            "App",
+            "run"
+          ],
+          "properties": [
+            "value"
+          ]
+        },
+        {
+          "name": "Act",
+          "startLine": 3,
+          "endLine": 3,
+          "methods": [
+            "run"
+          ],
+          "properties": [
+            "X"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "value",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "App",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "run",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "App",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "Act",
+          "line": 3,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "run",
+          "callee": "helper",
+          "lineNumber": 2
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 5,
+        "functionCount": 2,
+        "classCount": 2
+      }
+    }
+  },
+  {
+    "path": "a.kt",
+    "source": "import example.util.help as helper\nclass App(val value: String) { fun run(x: Int): String { return helper(x) } val size = 1 }\nprivate fun hidden() { println(\"hi\") }\nobject Util { fun help() { other() } }\n",
+    "analysis": {
+      "functions": [
+        {
+          "name": "hidden",
+          "lineRange": [
+            3,
+            3
+          ],
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "App",
+          "lineRange": [
+            2,
+            2
+          ],
+          "methods": [],
+          "properties": [
+            "value"
+          ]
+        }
+      ],
+      "imports": [
+        {
+          "source": "example.util.help",
+          "specifiers": [
+            "helper"
+          ],
+          "lineNumber": 1
+        }
+      ],
+      "exports": [
+        {
+          "name": "App",
+          "lineNumber": 2
+        }
+      ],
+      "sections": null,
+      "definitions": null,
+      "services": null,
+      "endpoints": null,
+      "steps": null,
+      "resources": null
+    },
+    "calls": [
+      {
+        "caller": "run",
+        "callee": "helper",
+        "lineNumber": 2
+      },
+      {
+        "caller": "hidden",
+        "callee": "println",
+        "lineNumber": 3
+      },
+      {
+        "caller": "help",
+        "callee": "other",
+        "lineNumber": 4
+      }
+    ],
+    "result": {
+      "path": "a.kt",
+      "language": null,
+      "fileCategory": "code",
+      "totalLines": 4,
+      "nonEmptyLines": 4,
+      "functions": [
+        {
+          "name": "hidden",
+          "startLine": 3,
+          "endLine": 3,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "App",
+          "startLine": 2,
+          "endLine": 2,
+          "methods": [],
+          "properties": [
+            "value"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "App",
+          "line": 2,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "run",
+          "callee": "helper",
+          "lineNumber": 2
+        },
+        {
+          "caller": "hidden",
+          "callee": "println",
+          "lineNumber": 3
+        },
+        {
+          "caller": "help",
+          "callee": "other",
+          "lineNumber": 4
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    }
+  },
+  {
+    "path": "a.cs",
+    "source": "using System.Text;\nnamespace Example { public class App { public int value; public string Name { get; set; } public App() { var x = new App(); } public void Run(int x) { Helper(x); } } public interface IAct { void Run(); int Value { get; } } }\n",
+    "analysis": {
+      "functions": [
+        {
+          "name": "App",
+          "lineRange": [
+            2,
+            2
+          ],
+          "params": []
+        },
+        {
+          "name": "Run",
+          "lineRange": [
+            2,
+            2
+          ],
+          "params": [
+            "x"
+          ],
+          "returnType": "void"
+        }
+      ],
+      "classes": [
+        {
+          "name": "App",
+          "lineRange": [
+            2,
+            2
+          ],
+          "methods": [
+            "App",
+            "Run"
+          ],
+          "properties": [
+            "value",
+            "Name"
+          ]
+        },
+        {
+          "name": "IAct",
+          "lineRange": [
+            2,
+            2
+          ],
+          "methods": [
+            "Run"
+          ],
+          "properties": [
+            "Value"
+          ]
+        }
+      ],
+      "imports": [
+        {
+          "source": "System.Text",
+          "specifiers": [
+            "Text"
+          ],
+          "lineNumber": 1
+        }
+      ],
+      "exports": [
+        {
+          "name": "value",
+          "lineNumber": 2
+        },
+        {
+          "name": "Name",
+          "lineNumber": 2
+        },
+        {
+          "name": "App",
+          "lineNumber": 2
+        },
+        {
+          "name": "Run",
+          "lineNumber": 2
+        },
+        {
+          "name": "App",
+          "lineNumber": 2
+        },
+        {
+          "name": "IAct",
+          "lineNumber": 2
+        }
+      ],
+      "sections": null,
+      "definitions": null,
+      "services": null,
+      "endpoints": null,
+      "steps": null,
+      "resources": null
+    },
+    "calls": [
+      {
+        "caller": "App",
+        "callee": "new App",
+        "lineNumber": 2
+      },
+      {
+        "caller": "Run",
+        "callee": "Helper",
+        "lineNumber": 2
+      }
+    ],
+    "result": {
+      "path": "a.cs",
+      "language": null,
+      "fileCategory": "code",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "functions": [
+        {
+          "name": "App",
+          "startLine": 2,
+          "endLine": 2,
+          "params": []
+        },
+        {
+          "name": "Run",
+          "startLine": 2,
+          "endLine": 2,
+          "params": [
+            "x"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "App",
+          "startLine": 2,
+          "endLine": 2,
+          "methods": [
+            "App",
+            "Run"
+          ],
+          "properties": [
+            "value",
+            "Name"
+          ]
+        },
+        {
+          "name": "IAct",
+          "startLine": 2,
+          "endLine": 2,
+          "methods": [
+            "Run"
+          ],
+          "properties": [
+            "Value"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "value",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "Name",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "App",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "Run",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "App",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "IAct",
+          "line": 2,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "App",
+          "callee": "new App",
+          "lineNumber": 2
+        },
+        {
+          "caller": "Run",
+          "callee": "Helper",
+          "lineNumber": 2
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 6,
+        "functionCount": 2,
+        "classCount": 2
+      }
+    }
+  },
+  {
+    "path": "a.php",
+    "source": "<?php\nnamespace Example { use Lib\\Thing; function top($x): string { return helper($x); } class App { public $value; function run($x) { $this->help($x); Thing::call(); } } interface Act { function run(); } }\n",
+    "analysis": {
+      "functions": [
+        {
+          "name": "top",
+          "lineRange": [
+            2,
+            2
+          ],
+          "params": [
+            "$x"
+          ],
+          "returnType": "string"
+        },
+        {
+          "name": "run",
+          "lineRange": [
+            2,
+            2
+          ],
+          "params": [
+            "$x"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "App",
+          "lineRange": [
+            2,
+            2
+          ],
+          "methods": [
+            "run"
+          ],
+          "properties": [
+            "value"
+          ]
+        },
+        {
+          "name": "Act",
+          "lineRange": [
+            2,
+            2
+          ],
+          "methods": [
+            "run"
+          ],
+          "properties": []
+        }
+      ],
+      "imports": [
+        {
+          "source": "Lib\\Thing",
+          "specifiers": [
+            "Thing"
+          ],
+          "lineNumber": 2
+        }
+      ],
+      "exports": [
+        {
+          "name": "top",
+          "lineNumber": 2
+        },
+        {
+          "name": "App",
+          "lineNumber": 2
+        },
+        {
+          "name": "Act",
+          "lineNumber": 2
+        }
+      ],
+      "sections": null,
+      "definitions": null,
+      "services": null,
+      "endpoints": null,
+      "steps": null,
+      "resources": null
+    },
+    "calls": [
+      {
+        "caller": "top",
+        "callee": "helper",
+        "lineNumber": 2
+      },
+      {
+        "caller": "run",
+        "callee": "$this->help",
+        "lineNumber": 2
+      },
+      {
+        "caller": "run",
+        "callee": "Thing::call",
+        "lineNumber": 2
+      }
+    ],
+    "result": {
+      "path": "a.php",
+      "language": null,
+      "fileCategory": "code",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "functions": [
+        {
+          "name": "top",
+          "startLine": 2,
+          "endLine": 2,
+          "params": [
+            "$x"
+          ]
+        },
+        {
+          "name": "run",
+          "startLine": 2,
+          "endLine": 2,
+          "params": [
+            "$x"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "App",
+          "startLine": 2,
+          "endLine": 2,
+          "methods": [
+            "run"
+          ],
+          "properties": [
+            "value"
+          ]
+        },
+        {
+          "name": "Act",
+          "startLine": 2,
+          "endLine": 2,
+          "methods": [
+            "run"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "top",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "App",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "Act",
+          "line": 2,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "top",
+          "callee": "helper",
+          "lineNumber": 2
+        },
+        {
+          "caller": "run",
+          "callee": "$this->help",
+          "lineNumber": 2
+        },
+        {
+          "caller": "run",
+          "callee": "Thing::call",
+          "lineNumber": 2
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 2
+      }
+    }
+  },
+  {
+    "path": "a.rb",
+    "source": "require_relative \"helper\"\ndef top(x, *args, **kw, &block)\n  helper(x)\nend\nclass App\n  attr_accessor :value\n  def run(x)\n    self.help(x)\n  end\n  def self.build\n    new\n  end\nend\n",
+    "analysis": {
+      "functions": [
+        {
+          "name": "top",
+          "lineRange": [
+            2,
+            4
+          ],
+          "params": [
+            "x",
+            "*args",
+            "**kw",
+            "&block"
+          ]
+        },
+        {
+          "name": "run",
+          "lineRange": [
+            7,
+            9
+          ],
+          "params": [
+            "x"
+          ]
+        },
+        {
+          "name": "self.build",
+          "lineRange": [
+            10,
+            12
+          ],
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "App",
+          "lineRange": [
+            5,
+            13
+          ],
+          "methods": [
+            "run",
+            "self.build"
+          ],
+          "properties": [
+            "value"
+          ]
+        }
+      ],
+      "imports": [
+        {
+          "source": "helper",
+          "specifiers": [
+            "helper"
+          ],
+          "lineNumber": 1
+        }
+      ],
+      "exports": [
+        {
+          "name": "top",
+          "lineNumber": 2
+        },
+        {
+          "name": "App",
+          "lineNumber": 5
+        }
+      ],
+      "sections": null,
+      "definitions": null,
+      "services": null,
+      "endpoints": null,
+      "steps": null,
+      "resources": null
+    },
+    "calls": [
+      {
+        "caller": "top",
+        "callee": "helper",
+        "lineNumber": 3
+      },
+      {
+        "caller": "run",
+        "callee": "self.help",
+        "lineNumber": 8
+      },
+      {
+        "caller": "self.build",
+        "callee": "new",
+        "lineNumber": 11
+      }
+    ],
+    "result": {
+      "path": "a.rb",
+      "language": null,
+      "fileCategory": "code",
+      "totalLines": 13,
+      "nonEmptyLines": 13,
+      "functions": [
+        {
+          "name": "top",
+          "startLine": 2,
+          "endLine": 4,
+          "params": [
+            "x",
+            "*args",
+            "**kw",
+            "&block"
+          ]
+        },
+        {
+          "name": "run",
+          "startLine": 7,
+          "endLine": 9,
+          "params": [
+            "x"
+          ]
+        },
+        {
+          "name": "self.build",
+          "startLine": 10,
+          "endLine": 12,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "App",
+          "startLine": 5,
+          "endLine": 13,
+          "methods": [
+            "run",
+            "self.build"
+          ],
+          "properties": [
+            "value"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "top",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "App",
+          "line": 5,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "top",
+          "callee": "helper",
+          "lineNumber": 3
+        },
+        {
+          "caller": "run",
+          "callee": "self.help",
+          "lineNumber": 8
+        },
+        {
+          "caller": "self.build",
+          "callee": "new",
+          "lineNumber": 11
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    }
+  },
+  {
+    "path": "a.c",
+    "source": "#include \"helpers.h\"\nstruct Data { int value; };\nstatic int hidden(int x) { return helper(x); }\nint run(int *value) { return hidden(*value); }\n",
+    "analysis": {
+      "functions": [
+        {
+          "name": "hidden",
+          "lineRange": [
+            3,
+            3
+          ],
+          "params": [
+            "x"
+          ],
+          "returnType": "int"
+        },
+        {
+          "name": "run",
+          "lineRange": [
+            4,
+            4
+          ],
+          "params": [
+            "value"
+          ],
+          "returnType": "int"
+        }
+      ],
+      "classes": [
+        {
+          "name": "Data",
+          "lineRange": [
+            2,
+            2
+          ],
+          "methods": [],
+          "properties": [
+            "value"
+          ]
+        }
+      ],
+      "imports": [
+        {
+          "source": "helpers.h",
+          "specifiers": [
+            "helpers.h"
+          ],
+          "lineNumber": 1
+        }
+      ],
+      "exports": [
+        {
+          "name": "Data",
+          "lineNumber": 2
+        },
+        {
+          "name": "run",
+          "lineNumber": 4
+        }
+      ],
+      "sections": null,
+      "definitions": null,
+      "services": null,
+      "endpoints": null,
+      "steps": null,
+      "resources": null
+    },
+    "calls": [
+      {
+        "caller": "hidden",
+        "callee": "helper",
+        "lineNumber": 3
+      },
+      {
+        "caller": "run",
+        "callee": "hidden",
+        "lineNumber": 4
+      }
+    ],
+    "result": {
+      "path": "a.c",
+      "language": null,
+      "fileCategory": "code",
+      "totalLines": 4,
+      "nonEmptyLines": 4,
+      "functions": [
+        {
+          "name": "hidden",
+          "startLine": 3,
+          "endLine": 3,
+          "params": [
+            "x"
+          ]
+        },
+        {
+          "name": "run",
+          "startLine": 4,
+          "endLine": 4,
+          "params": [
+            "value"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Data",
+          "startLine": 2,
+          "endLine": 2,
+          "methods": [],
+          "properties": [
+            "value"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Data",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "run",
+          "line": 4,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "hidden",
+          "callee": "helper",
+          "lineNumber": 3
+        },
+        {
+          "caller": "run",
+          "callee": "hidden",
+          "lineNumber": 4
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    }
+  },
+  {
+    "path": "a.cpp",
+    "source": "#include <vector>\nnamespace app { class App { public: int value; int run(int x) { return helper(x); } }; int App::helper(int x) { return other(x); } }\n",
+    "analysis": {
+      "functions": [
+        {
+          "name": "run",
+          "lineRange": [
+            2,
+            2
+          ],
+          "params": [
+            "x"
+          ],
+          "returnType": "int"
+        },
+        {
+          "name": "helper",
+          "lineRange": [
+            2,
+            2
+          ],
+          "params": [
+            "x"
+          ],
+          "returnType": "int"
+        }
+      ],
+      "classes": [
+        {
+          "name": "App",
+          "lineRange": [
+            2,
+            2
+          ],
+          "methods": [
+            "run",
+            "helper"
+          ],
+          "properties": [
+            "value"
+          ]
+        }
+      ],
+      "imports": [
+        {
+          "source": "vector",
+          "specifiers": [
+            "vector"
+          ],
+          "lineNumber": 1
+        }
+      ],
+      "exports": [
+        {
+          "name": "run",
+          "lineNumber": 2
+        },
+        {
+          "name": "App",
+          "lineNumber": 2
+        },
+        {
+          "name": "helper",
+          "lineNumber": 2
+        }
+      ],
+      "sections": null,
+      "definitions": null,
+      "services": null,
+      "endpoints": null,
+      "steps": null,
+      "resources": null
+    },
+    "calls": [
+      {
+        "caller": "run",
+        "callee": "helper",
+        "lineNumber": 2
+      },
+      {
+        "caller": "helper",
+        "callee": "other",
+        "lineNumber": 2
+      }
+    ],
+    "result": {
+      "path": "a.cpp",
+      "language": null,
+      "fileCategory": "code",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "functions": [
+        {
+          "name": "run",
+          "startLine": 2,
+          "endLine": 2,
+          "params": [
+            "x"
+          ]
+        },
+        {
+          "name": "helper",
+          "startLine": 2,
+          "endLine": 2,
+          "params": [
+            "x"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "App",
+          "startLine": 2,
+          "endLine": 2,
+          "methods": [
+            "run",
+            "helper"
+          ],
+          "properties": [
+            "value"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "run",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "App",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "helper",
+          "line": 2,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "run",
+          "callee": "helper",
+          "lineNumber": 2
+        },
+        {
+          "caller": "helper",
+          "callee": "other",
+          "lineNumber": 2
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    }
+  }
+]

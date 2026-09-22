@@ -18,13 +18,15 @@ Generate a comprehensive onboarding guide from the project's knowledge graph.
 - `edges[]` — {source, target, type, direction, weight}. Types: imports, contains, calls, depends_on, configures, documents, deploys, triggers, contains_flow, flow_step, related, cites
 - `layers[]` — {id, name, description, nodeIds[]}
 
+Read [host integration](../../HOSTS.md) for invocation, argument handling, and agent dispatch.
+
 ## Instructions
 
 1. Set `SKILL_DIR` to the directory containing this `SKILL.md`.
 
 2. Run the helper (loads project metadata, layers, file-level nodes, complexity hotspots):
    ```bash
-   python "$SKILL_DIR/scripts/onboarding_context.py" "$PWD"
+   python3 "$SKILL_DIR/scripts/onboarding_context.py" "$PWD"
    ```
 
 3. Generate the guide with these sections:

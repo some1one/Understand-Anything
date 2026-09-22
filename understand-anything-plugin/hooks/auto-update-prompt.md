@@ -1,145 +1,100 @@
-# Auto-Update Knowledge Graph (Internal — Hook-Triggered)
+# Auto-update knowledge graph
 
-Incrementally update the knowledge graph using deterministic structural fingerprinting. Triggered automatically by the post-commit hook when `autoUpdate` is enabled; NOT a user-facing skill.
+Follow this workflow when a native hook reports a stale graph and the project's
+`config.json` explicitly enables `autoUpdate`. Read [host integration](../HOSTS.md)
+for dispatch and host conventions. Use the absolute project root in the hook
+message; resolve the plugin root from this file's parent directory.
 
-**Key principle:** Spend zero LLM tokens on cosmetic changes (formatting, internal logic). Only invoke LLM agents when structural changes (new/removed functions, classes, imports, exports) are detected.
+An enabled hook authorizes this graph-maintenance workflow within the current
+task's permissions. Honor instructions to stop and wait for an existing analysis
+run to finish before starting another. Do not stage, commit, or modify source files.
 
-**Deterministic by construction.** Every mechanical step (diffing commits, filtering source files, applying `.understandignore`, fingerprint comparison, batching, pruning, merging, layer reconciliation, fingerprint patching, metadata writes) is in the `arch_analysis` package and invoked as a command below. The **only** LLM work is the targeted `file-analyzer` re-analysis (Phase 2) and the optional `architecture-analyzer` layer re-analysis (Phase 3a).
+## Part-based graphs
 
-Each command writes outputs under `$PROJECT_ROOT/.understand-anything/intermediate/` and prints a single machine-readable JSON object to stdout. Read that JSON (or the written file) to drive the next step.
+Read `$PROJECT_ROOT/.understand-anything/config.json`. If it contains
+`includedParts`, read `$PLUGIN_ROOT/skills/understand/SKILL.md` and run its
+incremental path for the supplied project root. Reuse the saved source/depth and
+part selection. Refresh the scan, analyze affected or pending parts, merge, and
+validate before publishing the new baseline.
 
-**Running commands.** Set `PROJECT_ROOT` to the current working directory. Resolve `PLUGIN_ROOT` — the directory containing `.claude-plugin/plugin.json` (usually `$CLAUDE_PLUGIN_ROOT`; else the install location, e.g. `$HOME/.understand-anything-plugin`). Run every deterministic step through `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`, which creates the venv on first use and resolves imports. It preserves the working directory, so pass absolute paths (commands below already use `$PROJECT_ROOT/…`).
+Do not run the legacy file-only flow below on a part-based graph: it would leave
+saved partitions stale, and a later partition merge would undo the update.
 
----
+## Legacy graphs without partition selection
 
-## Phase 0 — Pre-flight (Zero Token Cost)
+The deterministic commands below write JSON under
+`.understand-anything/intermediate/` and print a JSON summary. Inspect each
+result before proceeding. Fingerprinting avoids semantic analysis for unchanged
+structure, but does not prove that internal behavior is unchanged. This workflow
+uses the host's model context; do not claim it consumes zero tokens.
 
-```bash
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" auto_update_preflight "$PROJECT_ROOT"
-# add --force to re-run even when the commit hash is unchanged
-```
-
-Validates that `knowledge-graph.json` and `meta.json` exist, diffs the stored commit against `git rev-parse HEAD`, filters to source files, applies `.understandignore`, creates `intermediate/`, and writes `auto-update-state.json` (also printed to stdout). Handles metadata-only stop cases (bumping `meta.json` where appropriate).
-
-Read `auto-update-state.json` and act on `status` / `action`:
-
-| `status` | `action` | What to do |
-|---|---|---|
-| `STOP` | `NO_GRAPH` | Report: "No existing knowledge graph found. Run `/understand` first to create one." **STOP.** |
-| `STOP` | `NO_META` | Report the `reason` (no baseline / cannot diff). Suggest `/understand` to re-baseline. **STOP.** |
-| `STOP` | `UP_TO_DATE` | Report: "Knowledge graph is already up to date." **STOP.** |
-| `STOP` | `NO_CHANGES` / `NO_SOURCE_CHANGES` / `ALL_IGNORED` | Metadata already updated (`metadataUpdated: true`). Report the `reason`. **STOP.** |
-| `CONTINUE` | `PROCEED` | `changedSourceFiles` holds the files to inspect. Proceed to Phase 1. |
-
----
-
-## Phase 1 — Structural Fingerprint Check (Zero LLM Tokens)
+### 1. Check the baseline
 
 ```bash
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" auto_update_fingerprint_check "$PROJECT_ROOT"
+"$PLUGIN_ROOT/packages/core/run.sh" auto_update_preflight "$PROJECT_ROOT"
 ```
 
-Reads `auto-update-state.json` and `fingerprints.json`, classifies each changed source file as `NONE` / `COSMETIC` / `STRUCTURAL` against its stored fingerprint (new files and files without structural support are `STRUCTURAL`; deleted files recorded as removals), derives the overall decision, and writes `change-analysis.json`. On a `SKIP` decision it bumps `meta.json` to the new commit.
+Read `auto-update-state.json`. On `STOP`, report its reason and stop.
+`NO_GRAPH` or `NO_META` requires a normal analysis run; `UP_TO_DATE`,
+`NO_CHANGES`, `NO_SOURCE_CHANGES`, and `ALL_IGNORED` require no semantic work.
+On `CONTINUE / PROCEED`, continue.
 
-Read `change-analysis.json`: `action`, `rerunArchitecture`, `reason`, `filesToReanalyze`, `newFiles`, `deletedFiles`, `cosmeticOnlyFiles`, `unchangedFiles`, `fileChanges`.
-
-**Decision gate:**
-
-| `action` | What to do |
-|---|---|
-| `SKIP` | `meta.json` already updated (`metadataUpdated: true`). Report: "No structural changes detected. Graph metadata updated. Zero tokens spent." **STOP.** |
-| `FULL_UPDATE` | Report: "Major structural changes detected (`reason`). Recommend running `/understand --full` for a complete rebuild." **STOP.** |
-| `PARTIAL_UPDATE` | Proceed to Phase 2 (`rerunArchitecture` is `false`). |
-| `ARCHITECTURE_UPDATE` | Proceed to Phase 2, then run Phase 3a (`rerunArchitecture` is `true`). |
-
----
-
-## Phase 2 — Targeted Re-Analysis (Minimal Token Cost)
-
-Only files with structural changes are re-analyzed. This is the **only** phase that costs LLM tokens.
-
-### 2a. Prepare batches (deterministic)
+### 2. Compare structural fingerprints
 
 ```bash
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" auto_update_prepare_batches "$PROJECT_ROOT"
+"$PLUGIN_ROOT/packages/core/run.sh" auto_update_fingerprint_check "$PROJECT_ROOT"
 ```
 
-Runs the `/understand` batching machinery (`compute_batches`) on just `filesToReanalyze`, loading the preserved `intermediate/scan-result.json` and scanning new files. Writes:
+Read `change-analysis.json`:
 
-- `intermediate/batches.json` — batch format `file-analyzer` consumes via `arch_analysis.prepare_file_analysis_batch`.
-- `intermediate/dispatch-summary.json` — `projectName`, `projectDescription`, `languages`, `frameworks`, `allProjectFiles`, and a per-batch file list with each batch's `outputPath`.
+- `SKIP`: metadata is already updated; report that semantic analysis was skipped.
+- `FULL_UPDATE`: report the reason and recommend the analysis skill with `--full`.
+- `PARTIAL_UPDATE` or `ARCHITECTURE_UPDATE`: continue; retain `rerunArchitecture`.
 
-### 2b. Dispatch file-analyzer per batch (LLM)
-
-Read `dispatch-summary.json`. For each batch (`batchIndex` 1..`totalBatches`), dispatch a subagent using the **`file-analyzer`** definition (`agents/file-analyzer.md`) exactly as `/understand` Phase 2 does — it reads `intermediate/batches.json`, runs `prepare_file_analysis_batch` / `extract_structure` / `seed_file_batch_graph` / `finalize_file_batch_output`, and writes `intermediate/batch-<batchIndex>.json`.
-
-Append this context to each dispatch:
-
-> **Additional context from main session:**
->
-> Project: `<projectName>` — `<projectDescription>`
-> Frameworks: `<frameworks>`
-> Languages: `<languages>`
-> Batch: `<batchIndex>/<totalBatches>`
->
-> **IMPORTANT:** This is an incremental update. Only the files in this batch have structural changes. Analyze them thoroughly; do not invent nodes for files outside this batch. For cross-batch / cross-project import resolution, the full file inventory is in `dispatch-summary.json#allProjectFiles`.
-
-If a dispatch fails, retry once; if it fails again, continue with the batches that succeeded (apply/finalize still produce a valid partial graph).
-
-### 2c. Prune + merge (deterministic)
+### 3. Analyze changed files
 
 ```bash
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" auto_update_apply_batches "$PROJECT_ROOT"
+"$PLUGIN_ROOT/packages/core/run.sh" auto_update_prepare_batches "$PROJECT_ROOT"
 ```
 
-Prunes old nodes for every changed/deleted file, writes survivors as `intermediate/batch-existing.json`, then runs standard merge normalization over `batch-existing.json` + all `batch-<N>.json` fragments (dedup by id, drop dangling edges, canonicalize edges, `tested_by` linking). Writes `intermediate/merged-graph.json`. When `rerunArchitecture` is `true` it also writes `intermediate/ua-arch-input.json` (the `{fileNodes, importEdges, allEdges}` payload for the architecture-analyzer).
+Read `dispatch-summary.json` and `batches.json`. For each batch, use the bundled
+`agents/file-analyzer.md` and
+`skills/understand/prompts/file-analyzer-batch-dispatch.md`, providing both roots,
+batch index, project context, and required output path. The agent runs the
+prepare/extract/seed/finalize commands and writes the canonical numbered batch
+files (including split `batch-<N>-part-<K>.json` files when needed).
 
----
-
-## Phase 3 — Architecture + Save
-
-### 3a. Architecture re-analysis (only if `rerunArchitecture === true`) (LLM)
-
-Dispatch a subagent using the **`architecture-analyzer`** definition (`agents/architecture-analyzer.md`), pointed at the prepared input rather than generating its own:
-
-> Use `$PROJECT_ROOT/.understand-anything/intermediate/ua-arch-input.json` as the analyzer input (skip `generate_input`). Run `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" analyze $PROJECT_ROOT/.understand-anything/intermediate/ua-arch-input.json $PROJECT_ROOT/.understand-anything/intermediate/results.json`, then assign layers per your normal process and write the layer array to `$PROJECT_ROOT/.understand-anything/intermediate/layers.json`.
->
-> For naming consistency, reuse the previous layer names/IDs from `intermediate/merged-graph.json#layers` wherever the structure still matches; only add/remove layers if the file structure has materially changed.
-
-The deterministic scripts prepare and validate the data, but the architecture-analyzer owns the semantic layer judgment.
-
-If `rerunArchitecture` is `false`, skip to 3b — finalize performs a deterministic lite layer update (new files placed by directory match, deleted files removed).
-
-### 3b. Finalize (deterministic)
+Verify outputs for every requested batch before pruning old nodes. Retry a failed
+dispatch once; if it still fails, stop and retain intermediates. Do not finalize
+an incomplete update or advance its baseline.
 
 ```bash
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" auto_update_finalize "$PROJECT_ROOT"
+"$PLUGIN_ROOT/packages/core/run.sh" auto_update_apply_batches "$PROJECT_ROOT"
 ```
 
-Applies the layers (fresh `layers.json` when present, else a lite update of carried-forward layers), runs lite validation cleanup (drop dangling edges, prune unknown layer ids, ensure every file-level node sits in exactly one layer), writes `knowledge-graph.json`, **patches `fingerprints.json` LOAD-PATCH-SAVE** (only `filesToReanalyze` + `deletedFiles` are touched; all other entries preserved, write refused if the store would be clobbered), bumps `meta.json` (`gitCommitHash`, `lastAnalyzedAt`, `analyzedFiles`), and cleans `intermediate/` while preserving `scan-result.json` (and `auto-update-summary.json`).
+This writes `merged-graph.json` and, when architecture must be refreshed,
+`ua-arch-input.json`.
 
-Read `intermediate/auto-update-summary.json` (also printed to stdout) and report:
+### 4. Refresh layers when required
 
-- Files checked: `filesChecked`
-- Structural changes: `structuralChanges` (new: `newFiles`, deleted: `deletedFiles`)
-- Cosmetic-only (skipped): `cosmeticOnly`
-- Nodes in graph: `totalNodes`, edges: `totalEdges`
-- Action: `action`
-- Output: `outputPath`
+If `rerunArchitecture` is true, dispatch `agents/architecture-analyzer.md` with
+`intermediate/ua-arch-input.json` as its prepared input. Skip inventory generation.
+Use that same input path for analysis and layer validation, write
+`intermediate/layers.json`, and reuse prior names where the structure still fits.
+Retry once on failure, then stop if required layers are still unavailable.
 
----
+Otherwise, finalization performs the deterministic layer adjustment.
 
-## Error Handling
+### 5. Save and report
 
-- If `auto_update_fingerprint_check` cannot read `fingerprints.json`, it treats files with no stored fingerprint as `STRUCTURAL` (conservative) — no special handling needed.
-- If a `file-analyzer` dispatch fails twice, continue; `apply_batches`/`finalize` still produce a valid (partial) graph.
-- `finalize` refuses to overwrite a populated `fingerprints.json` with an empty one (issue #152 guard) and aborts non-zero; if that happens, report the error and recommend `/understand --full` to re-baseline rather than leaving a corrupt store.
-- ALWAYS prefer a saved partial result over no update.
+```bash
+"$PLUGIN_ROOT/packages/core/run.sh" auto_update_finalize "$PROJECT_ROOT"
+```
 
----
+Read `intermediate/auto-update-summary.json`. Report files checked, structural
+changes, skipped cosmetic files, node/edge counts, action, and output path.
+A nonzero exit is a failed update; report the error and preserve diagnostic files.
 
-## Notes
-
-- Reuses the same `file-analyzer` and `architecture-analyzer` agent definitions as `/understand` — no separate agent prompts.
-- Authoritative fingerprints in `fingerprints.json` are generated by `/understand` Phase 7 (`arch_analysis.build_fingerprints`) and patched here by `arch_analysis.auto_update_finalize`; both share the extraction/comparison logic in `arch_analysis.fingerprints`, so baseline and incremental fingerprints are computed identically (tree-sitter precise, not regex).
-- JSON contracts for `auto-update-state.json`, `change-analysis.json`, and `auto-update-summary.json` are defined by the pydantic models in `arch_analysis/models.py` and rendered to `arch_analysis/schemas/`.
+Fingerprints are initially built by the analysis skill's Phase 6. Finalization
+patches that store, preserving unaffected entries. The legacy flow updates the
+structural graph; regenerate a domain view with a normal analysis run if needed.

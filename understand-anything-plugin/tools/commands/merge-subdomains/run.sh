@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # merge-subdomains — merge *-knowledge-graph.json fragments into a single
-# knowledge-graph.json. Wraps: arch_analysis.merge_subdomain_graphs
+# knowledge-graph.json. Wraps: understand_core.merge_subdomain_graphs
 #
 # Usage: run.sh <project-root> [fragment.json ...]
 #   With no fragment args, auto-discovers *knowledge-graph*.json in
@@ -9,7 +9,7 @@ set -euo pipefail
 
 CMD_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 PLUGIN_ROOT=$(cd "$CMD_DIR/../../.." && pwd -P)
-ARCH="$PLUGIN_ROOT/packages/arch_analysis/run.sh"
+ARCH="$PLUGIN_ROOT/packages/core/run.sh"
 
 if [ $# -lt 1 ]; then
   echo "Usage: $(basename "$0") <project-root> [fragment.json ...]" >&2

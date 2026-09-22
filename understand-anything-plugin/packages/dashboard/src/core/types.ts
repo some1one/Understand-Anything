@@ -87,7 +87,7 @@ export interface KnowledgeGraph {
 }
 
 // Companion embeddings file (embeddings.json) — kept out of the graph JSON so
-// it can be lazy-loaded only in semantic search mode. See arch_analysis.embeddings.
+// it can be lazy-loaded only in semantic search mode. See understand_core.embeddings.
 export interface GraphEmbeddings {
   model: string;
   dim: number;

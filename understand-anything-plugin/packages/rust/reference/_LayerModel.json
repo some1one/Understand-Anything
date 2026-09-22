@@ -1,0 +1,32 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "nodeIds": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Nodeids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "description",
+    "nodeIds"
+  ],
+  "title": "_LayerModel",
+  "type": "object"
+}

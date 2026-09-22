@@ -3,7 +3,7 @@
 
 Layout of ``dist/``:
 
-* ``python/`` — wheels + sdists for ``arch_analysis`` and ``core``.
+* ``python/`` — wheel + sdist for the single ``understand-anything-core`` package.
 * ``understand-anything-plugin-<ver>.tar.gz`` — the SINGLE archive of copied /
   source artifacts (the plugin payload: skills, agents, hooks, .claude-plugin,
   Python source + run.sh, dashboard serve.mjs). Platform-agnostic, no build output.
@@ -44,6 +44,7 @@ DEB_SRC = REPO / "packaging" / "deb"
 IGNORE = shutil.ignore_patterns(
     ".venv", "__pycache__", ".pytest_cache", "node_modules", "dist",
     "build_test_dist", "*.pyc", ".DS_Store", "*.tsbuildinfo", "wheelhouse",
+    ".pdm-python", ".pdm-build", ".venv-recovery.*",
 )
 
 MAINTAINER = "Justin Phillips <justin.phillips@trucesoftware.com>"
@@ -59,10 +60,9 @@ def read_version() -> str:
 
 
 def find_python() -> str:
-    for c in (PKGS / "arch_analysis" / ".venv" / "bin" / "python",
-              PKGS / "core" / ".venv" / "bin" / "python"):
-        if c.exists():
-            return str(c)
+    c = PKGS / "core" / ".venv" / "bin" / "python"
+    if c.exists():
+        return str(c)
     return shutil.which("python3") or sys.executable
 
 
@@ -84,32 +84,17 @@ def deb_arch() -> str:
 # --------------------------------------------------------------------------- #
 
 def build_python(out: Path) -> None:
-    print("• Building Python wheels (arch_analysis, core)…")
+    print("• Building the understand-anything-core wheel…")
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True, exist_ok=True)
-    # core builds in place; --no-clean so the arch build (next) doesn't wipe it.
-    run(["pdm", "build", "--no-clean", "--project", str(PKGS / "core"), "--dest", str(out)])
-    # arch_analysis is flat — stage a normalized tree nested under arch_analysis/.
-    stage = BUILD / "arch_build"
-    if stage.exists():
-        shutil.rmtree(stage)
-    (stage / "arch_analysis").mkdir(parents=True)
-    src = PKGS / "arch_analysis"
-    skip = {"tests", ".venv", "__pycache__", ".pytest_cache", "build_test_dist",
-            "run.sh", "pyproject.toml", "pdm.lock", "pdm.toml", ".python-version",
-            "README.md", "wheelhouse"}
-    for item in src.iterdir():
-        if item.name in skip:
-            continue
-        dest = stage / "arch_analysis" / item.name
-        shutil.copytree(item, dest, ignore=IGNORE) if item.is_dir() else shutil.copy2(item, dest)
-    shutil.copy2(src / "pyproject.toml", stage / "pyproject.toml")
-    run(["pdm", "build", "--no-clean", "--project", str(stage), "--dest", str(out)])
+    # `understand_core` is a normal package dir, so a plain in-place build works
+    # (no flat-package staging needed).
+    run(["pdm", "build", "--project", str(PKGS / "core"), "--dest", str(out)])
 
 
 def build_wheelhouse(pywheels: Path, wheelhouse: Path, requirements: Path) -> None:
-    print("• Collecting offline wheelhouse (arch_analysis + core + all deps)…")
+    print("• Collecting offline wheelhouse (understand-anything-core + all deps)…")
     if wheelhouse.exists():
         shutil.rmtree(wheelhouse)
     wheelhouse.mkdir(parents=True)
@@ -117,7 +102,7 @@ def build_wheelhouse(pywheels: Path, wheelhouse: Path, requirements: Path) -> No
     # versions run.sh's `pip install --no-index -r requirements.txt` will ask for.
     run([find_python(), "-m", "pip", "wheel", "--find-links", str(pywheels),
          "-r", str(requirements),
-         "understand-anything-arch-analysis", "understand-anything-core",
+         "understand-anything-core",
          "-w", str(wheelhouse)])
 
 
@@ -138,14 +123,14 @@ def _die(msg: str):
 # --------------------------------------------------------------------------- #
 
 def export_requirements(out: Path) -> Path:
-    """Export arch_analysis's locked prod deps to a PDM-free requirements.txt.
+    """Export core's locked prod deps to a PDM-free requirements.txt.
 
     The wheelhouse is built from this file and it is shipped in the payload, so
     both agree on exact (lock-pinned) versions and the target's offline
     ``pip install --no-index -r requirements.txt`` always resolves.
     """
     out.parent.mkdir(parents=True, exist_ok=True)
-    run(["pdm", "export", "--project", str(PKGS / "arch_analysis"),
+    run(["pdm", "export", "--project", str(PKGS / "core"),
          "-f", "requirements", "--without-hashes", "--prod", "-o", str(out)])
     return out
 
@@ -156,31 +141,27 @@ def assemble_payload(payload: Path, requirements: Path) -> None:
         shutil.rmtree(payload)
     payload.mkdir(parents=True)
     shutil.copytree(PLUGIN / ".claude-plugin", payload / ".claude-plugin")
-    for d in ("agents", "hooks", "skills", "tools"):
+    shutil.copytree(PLUGIN / ".codex-plugin", payload / ".codex-plugin")
+    for d in ("agents", "hooks", "skills", "tools", "scripts"):
         shutil.copytree(PLUGIN / d, payload / d, ignore=IGNORE)
     if (PLUGIN / "README.md").exists():
         shutil.copy2(PLUGIN / "README.md", payload / "README.md")
-    (payload / "AGENTS.md").write_text(agents_md())
+    shutil.copy2(PLUGIN / "HOSTS.md", payload / "HOSTS.md")
+    shutil.copy2(PLUGIN / "AGENTS.md", payload / "AGENTS.md")
 
     pkgs = payload / "packages"
     pkgs.mkdir()
-    # arch_analysis: source + run.sh + pyproject (wheelhouse is a separate archive).
-    arch = pkgs / "arch_analysis"
-    shutil.copytree(PKGS / "arch_analysis", arch, ignore=IGNORE)
-    for junk in ("pdm.lock", "pdm.toml", ".python-version"):
-        (arch / junk).unlink(missing_ok=True)
-    shutil.rmtree(arch / "tests", ignore_errors=True)
-    # Ship the pre-generated, fully-pinned, PDM-free requirements.txt. run.sh
-    # installs from it with plain pip (PDM is only a build-time tool); the
-    # package itself runs from source via PYTHONPATH, so only the third-party
-    # deps need installing.
-    shutil.copy2(requirements, arch / "requirements.txt")
-    # core: source + pyproject.
+    # core: source + run.sh + pyproject (wheelhouse is a separate archive).
     core = pkgs / "core"
     shutil.copytree(PKGS / "core", core, ignore=IGNORE)
     for junk in ("pdm.lock", "pdm.toml", ".python-version", "CONVERSION_GUIDE.md"):
         (core / junk).unlink(missing_ok=True)
     shutil.rmtree(core / "tests", ignore_errors=True)
+    # Ship the pre-generated, fully-pinned, PDM-free requirements.txt. run.sh
+    # installs from it with plain pip (PDM is only a build-time tool); the
+    # package itself runs from source via PYTHONPATH, so only the third-party
+    # deps need installing.
+    shutil.copy2(requirements, core / "requirements.txt")
     # dashboard: standalone server + package.json (dist is a separate archive).
     dash = pkgs / "dashboard"
     dash.mkdir()
@@ -190,14 +171,7 @@ def assemble_payload(payload: Path, requirements: Path) -> None:
 
 
 def agents_md() -> str:
-    return (
-        "# Understand-Anything\n\n"
-        "AI-powered codebase understanding — analyze, visualize, and explain any project.\n\n"
-        "Skills live in `skills/` (`understand`, `understand-dashboard`, `understand-chat`,\n"
-        "`understand-diff`, `understand-explain`, `understand-onboard`,\n"
-        "`understand-language`, `understand-framework`).\n"
-        "The deterministic pipeline runs via `packages/arch_analysis/run.sh <module> …`.\n"
-    )
+    return (PLUGIN / "AGENTS.md").read_text(encoding="utf-8")
 
 
 # --------------------------------------------------------------------------- #
@@ -249,13 +223,7 @@ def build_deb(version: str, archives: list[Path]) -> Path:
     shutil.copy2(DEB_SRC / "understand-anything", stage / "usr/bin/understand-anything")
     (stage / "usr/bin/understand-anything").chmod(0o755)
 
-    # Ship the marketplace manifest so `claude plugin marketplace add
-    # /usr/share/understand-anything` works (source ./understand-anything-plugin
-    # resolves to the payload postinst extracts). Enables the native Claude path.
-    mp = REPO / ".claude-plugin" / "marketplace.json"
-    if mp.exists():
-        (share / ".claude-plugin").mkdir(parents=True, exist_ok=True)
-        shutil.copy2(mp, share / ".claude-plugin" / "marketplace.json")
+    # The per-user linker generates host-specific local catalogs at install time.
 
     (debian / "control").write_text(
         f"""Package: understand-anything
@@ -268,7 +236,7 @@ Recommends: nodejs (>= 22)
 Maintainer: {MAINTAINER}
 Description: AI-powered codebase understanding — analyze, visualize, explain any project.
  Ships the Understand-Anything plugin (skills, agents, hooks), the deterministic
- arch_analysis Python engine with an offline wheelhouse, and a pre-built dashboard.
+ understand_core Python engine with an offline wheelhouse, and a pre-built dashboard.
  After install, run `understand-anything <platform>` to enable it for your user.
 """)
 
@@ -280,14 +248,14 @@ PLUGIN="$SHARE/understand-anything-plugin"
 rm -rf "$PLUGIN"
 tar -xzf "$SHARE"/understand-anything-plugin-*.tar.gz -C "$SHARE"
 if ls "$SHARE"/understand-anything-wheelhouse-*.tar.gz >/dev/null 2>&1; then
-  tar -xzf "$SHARE"/understand-anything-wheelhouse-*.tar.gz -C "$PLUGIN/packages/arch_analysis"
+  tar -xzf "$SHARE"/understand-anything-wheelhouse-*.tar.gz -C "$PLUGIN/packages/core"
 fi
 if ls "$SHARE"/understand-anything-dashboard-*.tar.gz >/dev/null 2>&1; then
   tar -xzf "$SHARE"/understand-anything-dashboard-*.tar.gz -C "$PLUGIN/packages/dashboard"
 fi
-# Warm the arch_analysis venv system-wide (offline, from the wheelhouse).
-if [ -x "$PLUGIN/packages/arch_analysis/run.sh" ]; then
-  "$PLUGIN/packages/arch_analysis/run.sh" --ensure || \
+# Warm the understand_core venv system-wide (offline, from the wheelhouse).
+if [ -x "$PLUGIN/packages/core/run.sh" ]; then
+  "$PLUGIN/packages/core/run.sh" --ensure || \
     echo "understand-anything: venv will be created on first use." >&2
 fi
 echo "Understand-Anything installed. Enable it for your user with:"

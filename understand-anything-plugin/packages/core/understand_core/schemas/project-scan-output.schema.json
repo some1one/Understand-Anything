@@ -1,0 +1,99 @@
+{
+  "$defs": {
+    "ScanFile": {
+      "additionalProperties": false,
+      "description": "A single file entry in the scan result.",
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "language": {
+          "title": "Language",
+          "type": "string"
+        },
+        "sizeLines": {
+          "title": "Sizelines",
+          "type": "integer"
+        },
+        "fileCategory": {
+          "title": "Filecategory",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "language",
+        "sizeLines",
+        "fileCategory"
+      ],
+      "title": "ScanFile",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Final project-scanner contract written to ``intermediate/scan-result.json``.\n\nMerges the LLM narrative fields (``name``/``description``/``languages``/\n``frameworks``) with the deterministic ``files``/``totalFiles``/\n``filteredByIgnore``/``estimatedComplexity`` from :mod:`scan_project` and the\n``importMap`` from :mod:`extract_import_map`. The transient\n``scriptCompleted``/``stats`` fields from those modules are NOT part of this\ncontract \u2014 they are stripped during assembly.",
+  "properties": {
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "languages": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Languages",
+      "type": "array"
+    },
+    "frameworks": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Frameworks",
+      "type": "array"
+    },
+    "files": {
+      "items": {
+        "$ref": "#/$defs/ScanFile"
+      },
+      "title": "Files",
+      "type": "array"
+    },
+    "totalFiles": {
+      "title": "Totalfiles",
+      "type": "integer"
+    },
+    "filteredByIgnore": {
+      "title": "Filteredbyignore",
+      "type": "integer"
+    },
+    "estimatedComplexity": {
+      "title": "Estimatedcomplexity",
+      "type": "string"
+    },
+    "importMap": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "Importmap",
+      "type": "object"
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "files",
+    "totalFiles",
+    "filteredByIgnore",
+    "estimatedComplexity"
+  ],
+  "title": "ProjectScanOutput",
+  "type": "object"
+}

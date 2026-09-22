@@ -9,13 +9,13 @@ description: |
 
 You are a software architect. Given file nodes (paths, summaries, tags, node types) and import edges, identify 3-10 logical architecture layers and assign every file node to exactly one layer, including non-code files (configs, docs, infra, data schemas). Two phases: run the structural-analysis script, then make semantic layer assignments from its output.
 
-**Running `arch_analysis`.** Resolve `PLUGIN_ROOT` — the directory containing `.claude-plugin/plugin.json` (usually `$CLAUDE_PLUGIN_ROOT`; otherwise the install location, e.g. `$HOME/.understand-anything-plugin`). Run modules via `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`; it creates the venv on first use. Pass absolute paths.
+**Running `understand_core`.** Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch. Run modules via `"$PLUGIN_ROOT/packages/core/run.sh" <module> …`; it creates the venv on first use. Pass absolute paths.
 
 ---
 
 ## Phase 1 -- Structural Analysis
 
-The `arch_analysis` package computes every structural signal Phase 2 needs (directory/node-type grouping, import adjacency, cross-category deps, inter-group import frequency, intra-group density, pattern matching, deployment topology, data-pipeline detection, doc coverage, dependency direction). You do NOT write this script — prepare its input, run it, read its output.
+The `understand_core` package computes every structural signal Phase 2 needs (directory/node-type grouping, import adjacency, cross-category deps, inter-group import frequency, intra-group density, pattern matching, deployment topology, data-pipeline detection, doc coverage, dependency direction). You do NOT write this script — prepare its input, run it, read its output.
 
 ### Step 1 -- Prepare the Input
 
@@ -44,12 +44,19 @@ The input JSON has three keys:
 - `importEdges` — the import edges from the prompt.
 - `allEdges` — all file-level edges including non-import types (`configures`, `documents`, `deploys`). Excludes sub-file edges (e.g. file→function `contains`).
 
-Generate the base file inventory (walks the project, obeys `.gitignore`, infers a node type per file — so you never hand-enumerate `fileNodes`):
+The orchestrator's `prepare_architecture_context.py` writes
+`$PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json` from the assembled
+graph. Use that input so selected parts, node IDs, summaries, and ignore choices
+stay consistent. Do not rescan the whole project for part-based analysis.
+If the caller supplies another prepared input, use that path for both analysis
+and layer validation.
+
+Only for a standalone request without an assembled graph, generate a base inventory:
 
 ```bash
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" generate_input \
-  $PROJECT_ROOT \
-  $PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json \
+"$PLUGIN_ROOT/packages/core/run.sh" generate_input \
+  "$PROJECT_ROOT" \
+  "$PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json" \
   --exclude '**/node_modules/**' 'dist/**'
 ```
 
@@ -57,19 +64,19 @@ Generate the base file inventory (walks the project, obeys `.gitignore`, infers 
 - `--exclude <glob> ...` — drop files matching these globs.
 - `--no-gitignore` — disable `.gitignore` filtering (`.git` is always skipped).
 
-The generator writes `fileNodes` (empty `summary`/`tags`) and empty `importEdges`/`allEdges`. Then **edit the same file** to merge in prompt data:
+For that standalone fallback, the generator writes `fileNodes` (empty `summary`/`tags`) and empty `importEdges`/`allEdges`. Then edit the same file to merge in prompt data:
 - Populate `importEdges` and `allEdges` from the prompt's edges.
 - Copy each prompt-provided `summary`/`tags` onto the matching `fileNodes` entry (match by `filePath`) — Phase 2 Step 4 uses these.
 
 ### Step 2 -- Run the Analysis
 
 ```bash
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" analyze \
-  $PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json \
-  $PROJECT_ROOT/.understand-anything/tmp/ua-arch-results.json
+"$PLUGIN_ROOT/packages/core/run.sh" analyze \
+  "$PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json" \
+  "$PROJECT_ROOT/.understand-anything/tmp/ua-arch-results.json"
 ```
 
-Validates input against `arch_analysis/schemas/input.schema.json` and results against `output.schema.json`; exits `0` and writes results to arg 2, or exits `1` printing the cause to stderr. On non-zero, fix the input file (usually malformed JSON — invalid edge references, missing keys, bad node IDs) and re-run — do NOT modify the package. Up to 2 retry attempts.
+Validates input against `understand_core/schemas/input.schema.json` and results against `output.schema.json`; exits `0` and writes results to arg 2, or exits `1` printing the cause to stderr. On non-zero, fix the input file (usually malformed JSON — invalid edge references, missing keys, bad node IDs) and re-run — do NOT modify the package. Up to 2 retry attempts.
 
 ### Results Format
 
@@ -212,8 +219,8 @@ Merge small groups sharing a purpose into larger layers. Prefer fewer, well-defi
 After writing `layers.json`, validate it (do not count by hand):
 
 ```bash
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" validate_layers \
-  $PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json \
+"$PLUGIN_ROOT/packages/core/run.sh" validate_layers \
+  "$PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json" \
   <project-root>/.understand-anything/intermediate/layers.json
 ```
 
@@ -225,7 +232,7 @@ It verifies every input node appears in **exactly one** layer, no invented ids, 
 
 ## Output Format
 
-Authoritative contract: `arch_analysis/schemas/layers.schema.json` (a JSON array of layer objects), enforced by `validate_layers`. Every field shown is **required**.
+Authoritative contract: `understand_core/schemas/layers.schema.json` (a JSON array of layer objects), enforced by `validate_layers`. Every field shown is **required**.
 
 ```json
 [

@@ -1,11 +1,11 @@
 """Graph data types — port of ``packages/core/src/types.ts``.
 
 Per the conversion contract, graph types are canonical here and *re-exported*
-from :mod:`arch_analysis.models` where an equivalent already exists. Only the
-TS-only types that arch_analysis does not carry are defined fresh.
+from :mod:`understand_core.models` where an equivalent already exists. Only the
+TS-only types that understand_core does not carry are defined fresh.
 
 JSON wire keys stay camelCase (``filePath``, ``lineRange``, ``languageNotes``),
-matching arch_analysis pydantic conventions (``populate_by_name`` + aliases).
+matching understand_core pydantic conventions (``populate_by_name`` + aliases).
 """
 
 from __future__ import annotations
@@ -15,13 +15,13 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 # ---------------------------------------------------------------------------
-# Re-export the canonical graph models from arch_analysis.
+# Re-export the canonical graph models from understand_core.
 #
-# arch_analysis.models already defines GraphNode / GraphEdge / KnowledgeGraph /
+# understand_core.models already defines GraphNode / GraphEdge / KnowledgeGraph /
 # Layer / GraphProject and the enum literals. We alias them so the rest of the
 # Python port imports graph types from ``understand_core.types`` (the contract).
 # ---------------------------------------------------------------------------
-from arch_analysis.models import (  # noqa: E402
+from understand_core.models import (  # noqa: E402
     Complexity,
     Direction,
     DomainGraph,
@@ -38,14 +38,14 @@ from arch_analysis.models import (  # noqa: E402
     NodeType,
 )
 
-# arch_analysis names the project-metadata block ``GraphProject``; the TS source
+# understand_core names the project-metadata block ``GraphProject``; the TS source
 # calls it ``ProjectMeta``. Expose both names.
 ProjectMeta = GraphProject
 
 # ---------------------------------------------------------------------------
 # Full NodeType / EdgeType unions (TS schema.ts carries the knowledge-graph
 # variants — article/entity/topic/claim/source and the knowledge edges — that
-# arch_analysis.models omits). These mirror schema.ts exactly.
+# understand_core.models omits). These mirror schema.ts exactly.
 # ---------------------------------------------------------------------------
 
 FullNodeType = Literal[
@@ -100,7 +100,7 @@ class DomainMeta(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Persistence / config types (TS-only, no arch_analysis equivalent)
+# Persistence / config types (TS-only, no understand_core equivalent)
 # ---------------------------------------------------------------------------
 
 
@@ -237,7 +237,7 @@ class ExportInfo(BaseModel):
 
 
 class StructuralAnalysis(BaseModel):
-    """Structural analysis result shape (parity with ``arch_analysis.structure``).
+    """Structural analysis result shape (parity with ``understand_core.structure``).
 
     The deterministic pipeline produces these as plain camelCase dicts; this
     model documents the wire shape for the TS-parity view-model layer.
@@ -274,7 +274,7 @@ class CallGraphEntry(BaseModel):
 
 
 __all__ = [
-    # re-exported from arch_analysis.models
+    # re-exported from understand_core.models
     "Complexity",
     "Direction",
     "DomainGraph",

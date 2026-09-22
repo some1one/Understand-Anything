@@ -4,8 +4,8 @@
 # The .deb already did the heavy lifting via dpkg:
 #   * Depends: (python3 >= 3.14, python3-venv/pip) — prerequisites.
 #   * postinst — assembled the payload into /usr/share/understand-anything,
-#     warmed the arch_analysis virtualenv (offline), and wrote a
-#     .claude-plugin/marketplace.json there so `claude plugin` can install it.
+#     warmed the understand_core virtualenv (offline).
+# This linker generates per-user Claude and Codex marketplace catalogs.
 # This command only wires the system payload into the *current user's* agent
 # skill directories, preferring a target's native CLI (e.g. `claude plugin
 # install`) before the scripted symlink fallback. For assembly/prereqs/env
@@ -48,14 +48,16 @@ row_for()      { platforms_table | awk -F'|' -v id="$1" '$1==id{print;exit}'; }
 field()        { cut -d'|' -f"$2" <<<"$1"; }
 list_skills()  { local d; for d in "$1"/skills/*/; do [ -d "$d" ] && basename "$d"; done; }
 
-marketplace_source() { [ -f "$SHARE/.claude-plugin/marketplace.json" ] && printf '%s\n' "$SHARE"; }
+marketplace_source() {
+  python3 "$PLUGIN/scripts/create_marketplace.py" "${UA_DIR:-$HOME/.understand-anything}/marketplace" "$PLUGIN"
+}
 
 native_available() {
   local native="$1" project="${2:-}"
   [ -z "${UA_NO_NATIVE:-}" ] || return 1
   case "$native" in
-    claude) command -v claude >/dev/null 2>&1 && [ -n "$(marketplace_source)" ] ;;
-    codex)  [ -z "$project" ] && command -v codex >/dev/null 2>&1 && [ -n "$(marketplace_source)" ] ;;
+    claude) command -v claude >/dev/null 2>&1 ;;
+    codex)  [ -z "$project" ] && command -v codex >/dev/null 2>&1 ;;
     *) return 1 ;;
   esac
 }
@@ -65,13 +67,11 @@ native_install() {
     claude)
       src="$(marketplace_source)" || return 1
       claude plugin marketplace add "$src" >/dev/null 2>&1 \
-        || claude plugin marketplace update "$MARKETPLACE" >/dev/null 2>&1 || true
+        || claude plugin marketplace update "$MARKETPLACE" >/dev/null 2>&1 || return 1
       if [ -n "$project" ]; then
-        ( cd "$project" && claude plugin install "$PLUGIN_NAME@$MARKETPLACE" --scope project >/dev/null 2>&1 ) || true
-        ( cd "$project" && claude plugin list 2>/dev/null | grep -qi "$PLUGIN_NAME" ) || return 1
+        ( cd "$project" && claude plugin install "$PLUGIN_NAME@$MARKETPLACE" --scope project ) || return 1
       else
-        claude plugin install "$PLUGIN_NAME@$MARKETPLACE" --scope user >/dev/null 2>&1 || true
-        claude plugin list 2>/dev/null | grep -qi "$PLUGIN_NAME" || return 1
+        claude plugin install "$PLUGIN_NAME@$MARKETPLACE" --scope user || return 1
       fi
       ok "claude plugin install $PLUGIN_NAME@$MARKETPLACE"
       return 0 ;;
@@ -79,20 +79,27 @@ native_install() {
       [ -z "$project" ] || return 1   # codex marketplace install is global-only
       src="$(marketplace_source)" || return 1
       codex plugin marketplace add "$src" >/dev/null 2>&1 \
-        || codex plugin marketplace upgrade >/dev/null 2>&1 || true
-      codex plugin add "$PLUGIN_NAME@$MARKETPLACE" >/dev/null 2>&1 || true
-      codex plugin list 2>/dev/null | grep -qi "$PLUGIN_NAME" || return 1
+        || return 1
+      codex plugin add "$PLUGIN_NAME@$MARKETPLACE" || return 1
       ok "codex plugin add $PLUGIN_NAME@$MARKETPLACE"
       return 0 ;;
   esac
   return 1
 }
 native_uninstall() {
+  local project="${2:-}"
   case "$1" in
     claude) command -v claude >/dev/null 2>&1 || return 1
-      claude plugin uninstall "$PLUGIN_NAME" >/dev/null 2>&1 && ok "claude plugin uninstall $PLUGIN_NAME" && return 0 || return 1 ;;
+      if [ -n "$project" ]; then
+        ( cd "$project" && claude plugin uninstall "$PLUGIN_NAME@$MARKETPLACE" --scope project ) || return 1
+      else
+        claude plugin uninstall "$PLUGIN_NAME@$MARKETPLACE" --scope user || return 1
+      fi
+      return 0 ;;
     codex) command -v codex >/dev/null 2>&1 || return 1
-      codex plugin remove "$PLUGIN_NAME" >/dev/null 2>&1 && ok "codex plugin remove $PLUGIN_NAME" && return 0 || return 1 ;;
+      [ -z "$project" ] || return 1
+      codex plugin remove "$PLUGIN_NAME@$MARKETPLACE" || return 1
+      return 0 ;;
   esac
   return 1
 }
@@ -247,7 +254,7 @@ cmd_uninstall() {
   local_dir="$(field "$row" 4)"; native="$(field "$row" 6)"
   [ -n "$project" ] && project="$(cd "$project" 2>/dev/null && pwd -P || echo "$project")"
 
-  if native_available "$native" "$project" && native_uninstall "$native"; then return 0; fi
+  if native_available "$native" "$project" && native_uninstall "$native" "$project"; then return 0; fi
 
   if [ -n "$project" ]; then target="$project/$local_dir"; else target="$global"; fi
   [ -n "$target" ] || { warn "nothing to remove for $id"; return 0; }

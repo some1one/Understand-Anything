@@ -8,8 +8,8 @@
 - **Conditionals**: `if [[ condition ]]; then ... fi` with `[[ ]]` for extended tests
 - **Loops**: `for item in list`, `while condition`, `until condition` iteration patterns
 - **Pipes and Redirection**: `|` for chaining commands, `>` / `>>` / `2>&1` for output redirection
-- **Exit Codes**: `$?` captures last command status; `set -e` exits on any failure
-- **Strict Mode**: `set -euo pipefail` for robust error handling (exit on error, undefined vars, pipe failures)
+- **Exit Codes**: `$?` captures last command status; `set -e` exits on certain unhandled failures, with exceptions for conditions and command lists
+- **Error Options**: Bash `set -euo pipefail` changes failure handling; inspect conditionals, pipelines, and subshells rather than assuming every failure stops execution
 - **Command Substitution**: `$(command)` captures command output as a string
 - **Here Documents**: `<<EOF ... EOF` for multi-line string input to commands
 

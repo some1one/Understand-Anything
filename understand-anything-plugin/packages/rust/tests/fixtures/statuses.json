@@ -1,0 +1,281 @@
+[
+  {
+    "command": "affected_parts",
+    "args": [],
+    "status": 1,
+    "aliases": []
+  },
+  {
+    "command": "analyze",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "analyze"
+    ]
+  },
+  {
+    "command": "assemble_part_graph",
+    "args": [],
+    "status": 1,
+    "aliases": []
+  },
+  {
+    "command": "assemble_project_scan_result",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "assemble-scan"
+    ]
+  },
+  {
+    "command": "auto_update_apply_batches",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "auto-update-apply-batches"
+    ]
+  },
+  {
+    "command": "auto_update_finalize",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "auto-update-finalize"
+    ]
+  },
+  {
+    "command": "auto_update_fingerprint_check",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "auto-update-fingerprint-check"
+    ]
+  },
+  {
+    "command": "auto_update_preflight",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "auto-update-preflight"
+    ]
+  },
+  {
+    "command": "auto_update_prepare_batches",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "auto-update-prepare-batches"
+    ]
+  },
+  {
+    "command": "build_fingerprints",
+    "args": [],
+    "status": 1,
+    "aliases": []
+  },
+  {
+    "command": "compute_batches",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "batches"
+    ]
+  },
+  {
+    "command": "detect_layout",
+    "args": [],
+    "status": 1,
+    "aliases": []
+  },
+  {
+    "command": "extract_domain_context",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "domain-context"
+    ]
+  },
+  {
+    "command": "extract_import_map",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "import-map"
+    ]
+  },
+  {
+    "command": "extract_structure",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "structure"
+    ]
+  },
+  {
+    "command": "finalize_file_batch_output",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "finalize-file-batch"
+    ]
+  },
+  {
+    "command": "generate_ignore",
+    "args": [],
+    "status": 0,
+    "aliases": []
+  },
+  {
+    "command": "generate_input",
+    "args": [],
+    "status": 2,
+    "aliases": []
+  },
+  {
+    "command": "generate_input",
+    "args": [
+      "--help"
+    ],
+    "status": 0,
+    "aliases": []
+  },
+  {
+    "command": "generate_input",
+    "args": [
+      "--unknown"
+    ],
+    "status": 2,
+    "aliases": []
+  },
+  {
+    "command": "generate_input",
+    "args": [
+      "missing",
+      "out.json"
+    ],
+    "status": 1,
+    "aliases": []
+  },
+  {
+    "command": "generate_input",
+    "args": [
+      "root",
+      "out.json",
+      "--include"
+    ],
+    "status": 2,
+    "aliases": []
+  },
+  {
+    "command": "generate_input",
+    "args": [
+      "root",
+      "out.json",
+      "--exclude"
+    ],
+    "status": 2,
+    "aliases": []
+  },
+  {
+    "command": "merge_batch_graphs",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "merge-batches"
+    ]
+  },
+  {
+    "command": "merge_parts",
+    "args": [],
+    "status": 1,
+    "aliases": []
+  },
+  {
+    "command": "merge_subdomain_graphs",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "merge-subdomains"
+    ]
+  },
+  {
+    "command": "partition_files",
+    "args": [],
+    "status": 1,
+    "aliases": []
+  },
+  {
+    "command": "parts_to_process",
+    "args": [],
+    "status": 1,
+    "aliases": []
+  },
+  {
+    "command": "prepare_file_analysis_batch",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "prepare-batch"
+    ]
+  },
+  {
+    "command": "scan_project",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "scan"
+    ]
+  },
+  {
+    "command": "seed_file_batch_graph",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "seed-file-batch"
+    ]
+  },
+  {
+    "command": "validate_assembled_graph",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "validate-assembled-graph"
+    ]
+  },
+  {
+    "command": "validate_domain_graph",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "validate-domain-graph"
+    ]
+  },
+  {
+    "command": "validate_graph",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "validate-graph"
+    ]
+  },
+  {
+    "command": "validate_layers",
+    "args": [],
+    "status": 1,
+    "aliases": []
+  },
+  {
+    "command": "validate_structure_output",
+    "args": [],
+    "status": 1,
+    "aliases": [
+      "validate-structure-output"
+    ]
+  },
+  {
+    "command": "write_config",
+    "args": [],
+    "status": 1,
+    "aliases": []
+  }
+]

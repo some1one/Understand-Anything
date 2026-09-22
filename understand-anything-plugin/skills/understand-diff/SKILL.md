@@ -18,13 +18,15 @@ Analyze the current code changes against the knowledge graph at `.understand-any
 - `edges[]` — {source, target, type, direction, weight}. Types: imports, contains, calls, depends_on, configures, documents, deploys, triggers, contains_flow, flow_step, related, cites
 - `layers[]` — {id, name, description, nodeIds[]}
 
+Read [host integration](../../HOSTS.md) for invocation, argument handling, and agent dispatch.
+
 ## Instructions
 
 1. Set `SKILL_DIR` to the directory containing this `SKILL.md`.
 
 2. Run the helper. Pass a base branch as the optional second argument if the user specified one, else omit it. Gathers changed files, extracts changed/affected nodes, finds touched layers, and writes `.understand-anything/diff-overlay.json`.
    ```bash
-   python "$SKILL_DIR/scripts/diff_context.py" "$PWD" [base-branch]
+   python3 "$SKILL_DIR/scripts/diff_context.py" "$PWD" [base-branch]
    ```
 
 3. Provide structured analysis from the helper output:

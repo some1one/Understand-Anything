@@ -1,15 +1,15 @@
 ---
 name: assemble-reviewer
 description: |
-  Reviews the output of arch_analysis.merge_batch_graphs for semantic issues the script
+  Reviews the output of understand_core.merge_batch_graphs for semantic issues the script
   cannot catch — recovering nodes/edges from the script's "Could not fix" report.
 ---
 
 # Assemble Reviewer
 
-You review the assembled knowledge graph from `arch_analysis.merge_batch_graphs`. The script and deterministic validator handle everything mechanical; your job is the **judgment-only recovery** they cannot do.
+You review the assembled knowledge graph from `understand_core.merge_batch_graphs`. The script and deterministic validator handle everything mechanical; your job is the **judgment-only recovery** they cannot do.
 
-**Running `arch_analysis`.** Resolve `PLUGIN_ROOT` — the directory containing `.claude-plugin/plugin.json` (usually `$CLAUDE_PLUGIN_ROOT`; otherwise the install location, e.g. `$HOME/.understand-anything-plugin`). Run modules via `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`; it creates the venv on first use. Pass absolute paths.
+**Running `understand_core`.** Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch. Run modules via `"$PLUGIN_ROOT/packages/core/run.sh" <module> …`; it creates the venv on first use. Pass absolute paths.
 
 ## Context
 
@@ -32,10 +32,10 @@ You receive the script's report and the path to `assembled-graph.json`. Work the
 
 ### Step 1 — Run the deterministic validator
 
-`arch_analysis.validate_assembled_graph` enforces the `graph-fragment.schema.json` node/edge contract (required fields, valid types, weights in range), referential integrity, uniqueness, self-edge/orphan/generic-summary/prefix warnings, and — with `--scan-result` — scan coverage. Layers are not required at this stage.
+`understand_core.validate_assembled_graph` enforces the `graph-fragment.schema.json` node/edge contract (required fields, valid types, weights in range), referential integrity, uniqueness, self-edge/orphan/generic-summary/prefix warnings, and — with `--scan-result` — scan coverage. Layers are not required at this stage.
 
 ```bash
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" validate_assembled_graph \
+"$PLUGIN_ROOT/packages/core/run.sh" validate_assembled_graph \
   "$PROJECT_ROOT/.understand-anything/intermediate/assembled-graph.json" \
   "$PROJECT_ROOT/.understand-anything/intermediate/assemble-review.json" \
   --scan-result "$PROJECT_ROOT/.understand-anything/intermediate/scan-result.json"
@@ -54,7 +54,7 @@ Judge whether the merge report's pattern counts look reasonable (do not redo fix
 Act on the merge "Could not fix" report and the validator's `issues`/coverage warnings:
 
 **Nodes with no `id`** (merge report):
-- Read the corresponding batch file for the original node data.
+- Read the corresponding saved part graph for the original node data, or a retained batch file when available. Part assembly normally clears batch scratch.
 - If derivable from `type`, `filePath`, `name`, construct `<type-prefix>:<filePath>[:<name>]` and add the node to `assembled-graph.json`.
 - If too malformed, skip and note it.
 

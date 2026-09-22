@@ -50,6 +50,6 @@ Assign nodes to these layers when detected:
 
 - **Component composition over inheritance**: React favors composing components via props and children rather than class inheritance hierarchies
 - **Custom hooks for reusable logic**: Hooks prefixed with `use` extract stateful logic into shareable modules without changing the component tree
-- **React.memo for performance**: Components wrapped in `React.memo` skip re-renders when props are unchanged — indicates performance-sensitive paths
+- **React.memo for performance**: `React.memo` can skip parent-driven re-renders with unchanged props; state and context updates can still render the component
 - **Controlled vs. uncontrolled components**: Controlled components derive state from props; uncontrolled components manage internal state via refs
 - **Render props pattern**: Components that accept a function as children or a render prop to delegate rendering decisions to the consumer

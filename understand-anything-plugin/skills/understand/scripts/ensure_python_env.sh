@@ -1,34 +1,36 @@
 #!/usr/bin/env bash
-# Locate the installed plugin root and ensure the arch_analysis Python
+# Locate the installed plugin root and ensure the understand_core Python
 # environment is ready. Prints PLUGIN_ROOT on stdout.
 #
-# The deterministic pipeline is Python (`arch_analysis`); this replaces the old
-# Node/pnpm "build @understand-anything/core" step. All arch_analysis modules
-# are then invoked via "$PLUGIN_ROOT/packages/arch_analysis/run.sh <module> …".
+# The deterministic pipeline is Python (`understand_core`); this replaces the old
+# Node/pnpm "build @understand-anything/core" step. All understand_core modules
+# are then invoked via "$PLUGIN_ROOT/packages/core/run.sh <module> …".
 set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 SKILL_DIR=$(cd "$SCRIPT_DIR/.." && pwd -P)
 
-SKILL_REAL=$(realpath "$SKILL_DIR" 2>/dev/null || readlink -f "$SKILL_DIR" 2>/dev/null || echo "")
-SELF_RELATIVE=$([ -n "$SKILL_REAL" ] && cd "$SKILL_REAL/../.." 2>/dev/null && pwd -P || echo "")
+# SKILL_DIR is already physical; this also works without GNU realpath/readlink.
+SELF_RELATIVE=$(cd "$SKILL_DIR/../.." 2>/dev/null && pwd -P || echo "")
 AGENTS_SKILL_REAL=$(realpath ~/.agents/skills/understand 2>/dev/null || readlink -f ~/.agents/skills/understand 2>/dev/null || echo "")
 AGENTS_SELF_RELATIVE=$([ -n "$AGENTS_SKILL_REAL" ] && cd "$AGENTS_SKILL_REAL/../.." 2>/dev/null && pwd -P || echo "")
 COPILOT_SKILL_REAL=$(realpath ~/.copilot/skills/understand 2>/dev/null || readlink -f ~/.copilot/skills/understand 2>/dev/null || echo "")
 COPILOT_SELF_RELATIVE=$([ -n "$COPILOT_SKILL_REAL" ] && cd "$COPILOT_SKILL_REAL/../.." 2>/dev/null && pwd -P || echo "")
 
+HOST_PLUGIN_ROOT="${PLUGIN_ROOT:-}"
 PLUGIN_ROOT=""
 for candidate in \
+  "$SELF_RELATIVE" \
+  "$HOST_PLUGIN_ROOT" \
   "${CLAUDE_PLUGIN_ROOT:-}" \
   "$HOME/.understand-anything-plugin" \
-  "$SELF_RELATIVE" \
   "$AGENTS_SELF_RELATIVE" \
   "$COPILOT_SELF_RELATIVE" \
   "$HOME/.codex/understand-anything/understand-anything-plugin" \
   "$HOME/.opencode/understand-anything/understand-anything-plugin" \
   "$HOME/.pi/understand-anything/understand-anything-plugin" \
   "$HOME/understand-anything/understand-anything-plugin"; do
-  if [ -n "$candidate" ] && [ -f "$candidate/.claude-plugin/plugin.json" ] && [ -d "$candidate/packages/arch_analysis" ]; then
+  if [ -n "$candidate" ] && [ -f "$candidate/.claude-plugin/plugin.json" ] && [ -d "$candidate/packages/core" ]; then
     PLUGIN_ROOT="$candidate"
     break
   fi
@@ -50,11 +52,11 @@ if [ -z "$PLUGIN_ROOT" ]; then
   exit 1
 fi
 
-# Warm the arch_analysis virtualenv (creates it + installs deps on first run).
+# Warm the understand_core virtualenv (creates it + installs deps on first run).
 if ! command -v pdm >/dev/null 2>&1 && ! command -v python3 >/dev/null 2>&1; then
   echo "Install Python >= 3.14 (and ideally PDM), then re-run /understand." >&2
   exit 1
 fi
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" --ensure
+"$PLUGIN_ROOT/packages/core/run.sh" --ensure
 
 printf '%s\n' "$PLUGIN_ROOT"

@@ -1,0 +1,1287 @@
+{
+  "modules": [
+    {
+      "python": "skill_builders/__init__.py",
+      "sha256": "15000fb03dc95d625d2faf2ef99b5f527127bd7f481127531c8ec02c173d9011",
+      "lines": 39,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "skill_builders/context_builder.py",
+      "sha256": "37256fa65f1fa0a12af38590b6de95e193b79a202d1d82ac8ad32b16acaa7abc",
+      "lines": 145,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "ChatContext",
+        "build_chat_context",
+        "format_context_for_prompt"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "skill_builders/diff_analyzer.py",
+      "sha256": "ec417262e7379c3081efd96b995ef0ed8077c2ddcce636e14fddc880c62212a3",
+      "lines": 175,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "DiffContext",
+        "build_diff_context",
+        "format_diff_analysis"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "skill_builders/explain_builder.py",
+      "sha256": "6f43b3898bdf48133e4ed308f81c63466a0309356f69a4fe114d07840528b8c8",
+      "lines": 189,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "ExplainContext",
+        "build_explain_context",
+        "format_explain_prompt"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "skill_builders/onboard_builder.py",
+      "sha256": "1b10dcfea11d59081ab5a463d919c08bc94fa8279e6bf4715e4d5307f3486de3",
+      "lines": 147,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "build_onboarding_guide"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "skill_builders/understand_chat.py",
+      "sha256": "53ce4537113cbd6264d04d2db051def2576a0867cae0469e4da16c9c8d606329",
+      "lines": 33,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "build_chat_prompt"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/__init__.py",
+      "sha256": "5ec21619deca862cd42235c7fddc3522dbfc70637ba0d904fc29bf7bf0577d04",
+      "lines": 107,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/affected_parts.py",
+      "sha256": "5cba610305ce77c46cb7aba3637a923624f6a8bf9e5df922ca0fc93a54b45538",
+      "lines": 68,
+      "command": "affected_parts",
+      "aliases": [],
+      "public_symbols": [
+        "affected_parts",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/analyze.py",
+      "sha256": "8bf6eb6fb9ec98259e0c2b3ce0eae6388f48b7fc38be93a1bdb20ba0a5e229e5",
+      "lines": 149,
+      "command": "analyze",
+      "aliases": [
+        "analyze"
+      ],
+      "public_symbols": [
+        "analyze",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/assemble_part_graph.py",
+      "sha256": "f71ee5b0954ba4b308c9e0fda7fb072e7e99b5d81eee9c114d86b6ddb74e2c4e",
+      "lines": 118,
+      "command": "assemble_part_graph",
+      "aliases": [],
+      "public_symbols": [
+        "build_part_graph",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/assemble_project_scan_result.py",
+      "sha256": "2216777a3ac7a4969ebd9f3c0d3e5b83e20ca0584aea543c4053903c2e6d9ee8",
+      "lines": 183,
+      "command": "assemble_project_scan_result",
+      "aliases": [
+        "assemble-scan"
+      ],
+      "public_symbols": [
+        "AssemblyError",
+        "assemble_scan_result",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/auto_update_apply_batches.py",
+      "sha256": "97ae311bac87caa8e78becc196e753f2b33c741dd37ec357b02c91a096cdf472",
+      "lines": 145,
+      "command": "auto_update_apply_batches",
+      "aliases": [
+        "auto-update-apply-batches"
+      ],
+      "public_symbols": [
+        "run",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/auto_update_common.py",
+      "sha256": "f41b1693e3035329e83addc4c9f5f97f8f74cb658267bc7b23db4b57f6aa4241",
+      "lines": 219,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "ua_dir",
+        "intermediate_dir",
+        "graph_path",
+        "meta_path",
+        "fingerprints_path",
+        "scan_result_path",
+        "state_path",
+        "change_analysis_path",
+        "batches_path",
+        "dispatch_summary_path",
+        "merged_graph_path",
+        "arch_input_path",
+        "layers_path",
+        "summary_path",
+        "read_json",
+        "write_json",
+        "emit",
+        "is_source_file",
+        "git_head",
+        "git_changed_files",
+        "graph_file_paths",
+        "write_meta"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/auto_update_finalize.py",
+      "sha256": "cc324382cdc517798bc9d92fc3dfa8d52037fd8b41c62d34ee67ff70dc4615ca",
+      "lines": 237,
+      "command": "auto_update_finalize",
+      "aliases": [
+        "auto-update-finalize"
+      ],
+      "public_symbols": [
+        "reconcile_layers",
+        "clean_graph",
+        "run",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/auto_update_fingerprint_check.py",
+      "sha256": "6f8433bd66c28e498a988150b5d3e584423686012faf1e8aa419d2cfe50d58ab",
+      "lines": 101,
+      "command": "auto_update_fingerprint_check",
+      "aliases": [
+        "auto-update-fingerprint-check"
+      ],
+      "public_symbols": [
+        "run",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/auto_update_preflight.py",
+      "sha256": "cf8381a6c3d098a62eeb5133d21e558e040c42d1c6b2108acef09347b89bf7e4",
+      "lines": 178,
+      "command": "auto_update_preflight",
+      "aliases": [
+        "auto-update-preflight"
+      ],
+      "public_symbols": [
+        "run",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/auto_update_prepare_batches.py",
+      "sha256": "caf9dbb5004dde70417d03e733a83dd5270d9fc0a149fb1a9c8fb969e640f65a",
+      "lines": 131,
+      "command": "auto_update_prepare_batches",
+      "aliases": [
+        "auto-update-prepare-batches"
+      ],
+      "public_symbols": [
+        "run",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/boundary_stubs.py",
+      "sha256": "608d1336ce9226a4e2f54c3db593862c128b5e8ce6745dad0b7b2b44d55789d3",
+      "lines": 98,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "parse_node_id",
+        "add_boundary_stubs"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/build_fingerprints.py",
+      "sha256": "61cfb8a6b29735e086ea18a9683ab7e0da9aa492259aed4bbea0c6c492a4ea13",
+      "lines": 78,
+      "command": "build_fingerprints",
+      "aliases": [],
+      "public_symbols": [
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/compute_batches.py",
+      "sha256": "354d34ece8ea6c104ce2d7ea7e89b92a36154693b7afaf178f43dc04bd71e99a",
+      "lines": 501,
+      "command": "compute_batches",
+      "aliases": [
+        "batches"
+      ],
+      "public_symbols": [
+        "extract_export_names",
+        "extract_exports",
+        "run_louvain",
+        "count_based_assignment",
+        "build_non_code_batches",
+        "merge_small_batches",
+        "compute_batches",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/constants.py",
+      "sha256": "83ea92b2d7c2e7e97e667cb37828c65ee838add0e3a9d84a33e9e5c44f92db2c",
+      "lines": 341,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/detect_layout.py",
+      "sha256": "d37017b69ecabd6c97245e8fb6a59de8001b9054421056232e1add27c3d22ba9",
+      "lines": 109,
+      "command": "detect_layout",
+      "aliases": [],
+      "public_symbols": [
+        "detect_layout",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/embedding_search.py",
+      "sha256": "b2b02706cf1a0e552beb354cf14b801537d470822248ff72baa248599f58806f",
+      "lines": 95,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "cosine_similarity",
+        "SemanticSearchEngine"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/embeddings.py",
+      "sha256": "3e8e20cc372616ddbfc0c52206138218cd81827a2f77d7bffe2fd8f34e70b26e",
+      "lines": 202,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "EmbeddingClient",
+        "EmbeddingResult",
+        "node_text",
+        "build_embeddings",
+        "save_embeddings",
+        "load_embeddings",
+        "embeddings_enabled",
+        "default_client",
+        "generate_and_save"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/extract_domain_context.py",
+      "sha256": "0443558fe0678437e1137bcf43a88241e846ada2027bd08dd64e7a1cba8808eb",
+      "lines": 451,
+      "command": "extract_domain_context",
+      "aliases": [
+        "domain-context"
+      ],
+      "public_symbols": [
+        "parse_gitignore",
+        "is_ignored",
+        "scan_file_tree",
+        "detect_entry_points",
+        "extract_file_signatures",
+        "extract_metadata",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/extract_import_map.py",
+      "sha256": "2f8d09fa1f501fb6d65e2eee5a467f688ba8ba9875caee79b744f3ea97dbe4a8",
+      "lines": 1414,
+      "command": "extract_import_map",
+      "aliases": [
+        "import-map"
+      ],
+      "public_symbols": [
+        "to_posix",
+        "resolve_relative",
+        "dir_of",
+        "posix_normalize",
+        "posix_join",
+        "parse_tsconfig_text",
+        "load_tsconfigs",
+        "load_go_modules",
+        "parse_composer_autoload_text",
+        "load_php_autoloads",
+        "find_nearest_config_dir",
+        "build_suffix_index",
+        "ResolutionContext",
+        "probe_with_extensions",
+        "match_ts_alias",
+        "apply_ts_alias",
+        "resolve_ts_js_import",
+        "strip_js_like_comments",
+        "extract_require_sources",
+        "extract_kotlin_sources",
+        "resolve_python_import",
+        "resolve_python_probe",
+        "resolve_go_import",
+        "resolve_dotted_fqn",
+        "resolve_java_import",
+        "resolve_kotlin_import",
+        "resolve_csharp_import",
+        "strip_ruby_comments",
+        "parse_ruby_imports",
+        "resolve_ruby_import",
+        "resolve_php_import",
+        "probe_rust_module",
+        "find_rust_crate_src",
+        "resolve_rust_import",
+        "extract_rust_mod_sources",
+        "resolve_cpp_import",
+        "extract_imports",
+        "resolve_import",
+        "extract_extra_import_sources",
+        "extract_import_map",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/extract_structure.py",
+      "sha256": "7fc95a0d89850daa8de5e671479e91b84af0f56fe7047d72ea7538e9e466598d",
+      "lines": 285,
+      "command": "extract_structure",
+      "aliases": [
+        "structure"
+      ],
+      "public_symbols": [
+        "count_lines",
+        "build_result",
+        "run",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/file_graph.py",
+      "sha256": "96c75f2787df535690011df07b6aa112db4863e553044fcf9d7e71d9df9b2780",
+      "lines": 154,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "basename",
+        "file_level_node",
+        "is_test_file",
+        "deterministic_tags"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/finalize_file_batch_output.py",
+      "sha256": "fd8149a212f9cfb1d7bf3da51670b761b801e118c2ceb2bfb87a79a598189d89",
+      "lines": 285,
+      "command": "finalize_file_batch_output",
+      "aliases": [
+        "finalize-file-batch"
+      ],
+      "public_symbols": [
+        "graph_fragment",
+        "validate_draft",
+        "split_into_parts",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/fingerprint.py",
+      "sha256": "27b8035800ffb0aedd298631b97dc9ff1b4e3c1fb37949493385c422885a8722",
+      "lines": 74,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "FunctionFingerprint",
+        "ClassFingerprint",
+        "ImportFingerprint",
+        "FileFingerprint",
+        "FingerprintStore"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/fingerprints.py",
+      "sha256": "b4717a5d23704d3a299c2ea2de7baa3cf7300f5c84a6db81c470960bd86bf86a",
+      "lines": 442,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "content_hash",
+        "extract_file_fingerprint",
+        "fingerprint_for_content",
+        "fingerprint_for_path",
+        "build_fingerprint_store",
+        "compare_fingerprints",
+        "classify_file_change",
+        "classify_update",
+        "load_fingerprint_store",
+        "patch_fingerprint_store",
+        "save_fingerprint_store",
+        "patch_and_save_fingerprints"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/generate_ignore.py",
+      "sha256": "3ea03d2dd7ebf46812f0027ee66a47f694c73772deaf6be395edfa43ccb73341",
+      "lines": 145,
+      "command": "generate_ignore",
+      "aliases": [],
+      "public_symbols": [
+        "generate_starter_ignore_file",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/generate_input.py",
+      "sha256": "f928424fcbb7fc7064b29d223b534ae780d6d49eb37f54b38f5ee2a43e33db8a",
+      "lines": 189,
+      "command": "generate_input",
+      "aliases": [],
+      "public_symbols": [
+        "list_project_files",
+        "build_file_nodes",
+        "generate",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/graph.py",
+      "sha256": "e2f2681c119d9c8367bdec6240e7f5261b50d7f67f89e0b73c591380ef081e3c",
+      "lines": 145,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "build_import_graph",
+        "fan_in_out",
+        "inter_group_imports",
+        "intra_group_density",
+        "dependency_direction",
+        "inter_group_matrix",
+        "graph_metrics"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/grouping.py",
+      "sha256": "d3c1e2bab44ff3ef4f61c31ecebbde9af94fba5b5f125d583410f4304da27b51",
+      "lines": 90,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "common_dir_prefix",
+        "group_by_directory",
+        "group_by_node_type",
+        "node_to_group"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/ignore_filter.py",
+      "sha256": "32ddb2a2d03728470cbf8499fb7b8f9260852ff5970d585a3f2f793a5ae36206",
+      "lines": 17,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/ignore_generator.py",
+      "sha256": "5bf5658b32b4e9c2b4b5456b860dda386c7021bda9993a2d385a499bfc6d156f",
+      "lines": 14,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/json_schema.py",
+      "sha256": "f892db3ae6cea4714459192c79473bc4b4e6bd9f9e4c72b798c05d2cf7ce3ef1",
+      "lines": 195,
+      "command": "json_schema",
+      "aliases": [],
+      "public_symbols": [
+        "SchemaValidationError",
+        "build_schema",
+        "generate_schemas",
+        "load_schema",
+        "validate_input",
+        "validate_output",
+        "validate_layers",
+        "validate_scan_result",
+        "validate_import_map_input",
+        "validate_import_map_output",
+        "validate_structure_input",
+        "validate_structure_output",
+        "validate_project_scan_output",
+        "validate_knowledge_graph",
+        "validate_domain_graph",
+        "validate_graph_fragment",
+        "validate_file_analysis_context",
+        "validate_auto_update_state",
+        "validate_change_analysis",
+        "validate_auto_update_summary"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/languages.py",
+      "sha256": "6de69924fce8b7db98e92a162cc949da95e8d65f499732dee62272287e3fd44d",
+      "lines": 510,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "detect_language",
+        "is_unsupported_file",
+        "detect_category",
+        "estimate_complexity",
+        "IgnoreFilter",
+        "create_ignore_filter",
+        "build_defaults_only_filter",
+        "has_user_ignore_file",
+        "enumerate_via_git",
+        "enumerate_via_walk",
+        "enumerate_files"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/merge_batch_graphs.py",
+      "sha256": "cce4e8e693827a9f5f76cbd7ce42ea507bf65bd2bce2b71927736d7edb66fd05",
+      "lines": 1164,
+      "command": "merge_batch_graphs",
+      "aliases": [
+        "merge-batches"
+      ],
+      "public_symbols": [
+        "normalize_direction",
+        "load_batch",
+        "classify_id_fix",
+        "normalize_node_id",
+        "normalize_complexity",
+        "is_test_path",
+        "production_candidates",
+        "link_tests",
+        "merge_and_normalize",
+        "recover_imports_from_scan",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/merge_parts.py",
+      "sha256": "e0f9b106f1048acf80eaa23816132c0b88bec495f37f7babdfa5029bb10ff1c4",
+      "lines": 60,
+      "command": "merge_parts",
+      "aliases": [],
+      "public_symbols": [
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/merge_subdomain_graphs.py",
+      "sha256": "f50e4c9c0fc80f418e5094caf92700069383f617391f80bbc03880cc5a676cd1",
+      "lines": 360,
+      "command": "merge_subdomain_graphs",
+      "aliases": [
+        "merge-subdomains"
+      ],
+      "public_symbols": [
+        "load_graph",
+        "discover_partition_graphs",
+        "select_partition_graphs",
+        "merge_graphs",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/models.py",
+      "sha256": "0a8619057503ce1c83fe43f433477413beb8e4fdd580f13d698aed31e99c4c3d",
+      "lines": 541,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "FileNode",
+        "Edge",
+        "AnalysisInput",
+        "AnalysisResult",
+        "ScanFile",
+        "ScanStats",
+        "ScanResult",
+        "ImportMapFile",
+        "ImportMapInput",
+        "ImportMapStats",
+        "ImportMapResult",
+        "StructureBatchFile",
+        "StructureInput",
+        "StructureResult",
+        "StructureOutput",
+        "Layer",
+        "LayersOutput",
+        "ProjectScanOutput",
+        "GraphNode",
+        "DomainNode",
+        "GraphEdge",
+        "GraphProject",
+        "KnowledgeGraph",
+        "DomainGraph",
+        "GraphFragment",
+        "NeighborEntry",
+        "FileAnalysisContext",
+        "AutoUpdateState",
+        "FileChangeResult",
+        "ChangeAnalysis",
+        "UpdateDecision",
+        "ProjectConfig",
+        "partition_config_valid",
+        "AutoUpdateSummary"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/partition_files.py",
+      "sha256": "35c28df602a246a57a02dc6d231adaa9dd0da3ff995d84833692fb409b939368",
+      "lines": 217,
+      "command": "partition_files",
+      "aliases": [],
+      "public_symbols": [
+        "partition_files",
+        "part_counts",
+        "part_to_filename",
+        "filename_to_part",
+        "write_part_file_lists",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/parts_to_process.py",
+      "sha256": "191e44fb61658a85431681699041f00205b53f031128a989f823326da6b080ae",
+      "lines": 81,
+      "command": "parts_to_process",
+      "aliases": [],
+      "public_symbols": [
+        "parts_to_process",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/patterns.py",
+      "sha256": "4ab4078361fccae9ee165c85d08faf9b0c570bcd9d00e93e79b506c08fd20603",
+      "lines": 144,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "match_directory_patterns",
+        "classify_file",
+        "classify_all_files",
+        "infer_node_type"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/persistence.py",
+      "sha256": "4eb59dfd89af10d6b760512bc46f0db0f71616c83bf1d676a361937b01b516e2",
+      "lines": 211,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "save_graph",
+        "load_graph",
+        "save_meta",
+        "load_meta",
+        "save_fingerprints",
+        "load_fingerprints",
+        "save_config",
+        "load_config",
+        "save_domain_graph",
+        "load_domain_graph"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/prepare_file_analysis_batch.py",
+      "sha256": "b8499d42538aaa47bf75f09c66764a6e368467394e624f3d46ac22d319eeaad0",
+      "lines": 154,
+      "command": "prepare_file_analysis_batch",
+      "aliases": [
+        "prepare-batch"
+      ],
+      "public_symbols": [
+        "PrepareError",
+        "build_batch_payloads",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/recommendations.py",
+      "sha256": "e9438b4942c5f5337df8493628a30c275e2ae138bce13860860d6de1b1d1c0ce",
+      "lines": 217,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "phase2_recommendations"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/scan_project.py",
+      "sha256": "77a494a97933ac7bc2f8ee10eb3b3bf2fa7cac226a71a77868c04682da464be6",
+      "lines": 159,
+      "command": "scan_project",
+      "aliases": [
+        "scan"
+      ],
+      "public_symbols": [
+        "scan_project",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/schema.py",
+      "sha256": "23d0824b8128097f8dfd42cc8b661c383919257d598033455b7f622c5d48977f",
+      "lines": 685,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "GraphIssue",
+        "ValidationResult",
+        "sanitize_graph",
+        "normalize_graph",
+        "auto_fix_graph",
+        "validate_graph"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/search.py",
+      "sha256": "107c7fb81d2e83d0edf424efe746f95f6bc44fe8cbd75dc0b9f19eb89f343b59",
+      "lines": 136,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "SearchResult",
+        "SearchEngine"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/seed_file_batch_graph.py",
+      "sha256": "f2a227ccc91e2ad48497726ba45a446d0fcab4402848fcf5055d603a05c6d1f5",
+      "lines": 329,
+      "command": "seed_file_batch_graph",
+      "aliases": [
+        "seed-file-batch"
+      ],
+      "public_symbols": [
+        "build_seed",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/staleness.py",
+      "sha256": "6253b40d407ee93849a03c7472b2832f944bbe9451493a65c74606587bb7377a",
+      "lines": 123,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "StalenessResult",
+        "get_changed_files",
+        "is_stale",
+        "merge_graph_update"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/structure/__init__.py",
+      "sha256": "0cd6bae040238702fd8df7060d15b392ddc7e1c3799d56d94d5c149f63dd78ac",
+      "lines": 16,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/structure/base.py",
+      "sha256": "b2617a39fd412456d99e58d19db0af68c328f06a0f2564000a62d345912a4a8c",
+      "lines": 154,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "StructuralAnalysis",
+        "make_function",
+        "make_class",
+        "make_import",
+        "make_export",
+        "txt",
+        "row",
+        "end_row",
+        "traverse",
+        "get_string_value",
+        "find_child",
+        "find_children",
+        "has_child_of_type",
+        "child_field",
+        "find_descendant_child"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/structure/code_extractors.py",
+      "sha256": "411288ccf0edc4b71b76af8cf5e6f31fb49aecd828c804bafa47af720e9663d2",
+      "lines": 2263,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "TypeScriptExtractor",
+        "PythonExtractor",
+        "GoExtractor",
+        "RustExtractor",
+        "JavaExtractor",
+        "KotlinExtractor",
+        "CSharpExtractor",
+        "PhpExtractor",
+        "RubyExtractor",
+        "CppExtractor",
+        "get_extractor"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/structure/parsers.py",
+      "sha256": "a2f549623eee22dc60894898018cfddc785b1b21ffa6ba484e8a2c87efeee59f",
+      "lines": 703,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "MarkdownParser",
+        "YAMLConfigParser",
+        "strip_jsonc_syntax",
+        "JSONConfigParser",
+        "TOMLParser",
+        "EnvParser",
+        "DockerfileParser",
+        "SQLParser",
+        "GraphQLParser",
+        "ProtobufParser",
+        "TerraformParser",
+        "MakefileParser",
+        "ShellParser",
+        "get_parser_for_language"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/structure/registry.py",
+      "sha256": "a4b645aac3e3ccb438d0d3b14b273df65a617b8b239272544c1e39cbf6ba6af5",
+      "lines": 182,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "detect_registry_language",
+        "analyze_file",
+        "extract_call_graph"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/topology.py",
+      "sha256": "93100f3c8035725b6c5a03c4bb9ba3fc6f6e1ecb97e14f09875129f945f4ef35",
+      "lines": 146,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "cross_category_edges",
+        "deployment_topology",
+        "data_pipeline",
+        "doc_coverage"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/treesitter.py",
+      "sha256": "5d902db695e6f01729335177b06f71305aa7b3804cdb73ba64f50f2e40ab84a4",
+      "lines": 79,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "get_parser",
+        "parse",
+        "node_text"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/types.py",
+      "sha256": "fcad04bd3f033eb2444ff506fd618af2d228e7ebce37218147f158db2d1fe33a",
+      "lines": 321,
+      "command": null,
+      "aliases": [],
+      "public_symbols": [
+        "KnowledgeMeta",
+        "DomainMeta",
+        "ThemeConfig",
+        "AnalysisMeta",
+        "ProjectConfig",
+        "SectionInfo",
+        "DefinitionInfo",
+        "ServiceInfo",
+        "EndpointInfo",
+        "StepInfo",
+        "ResourceInfo",
+        "ReferenceResolution",
+        "FunctionInfo",
+        "ClassInfo",
+        "ImportInfo",
+        "ExportInfo",
+        "StructuralAnalysis",
+        "ImportResolution",
+        "CallGraphEntry"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/validate_assembled_graph.py",
+      "sha256": "2eae02fa77eb6c37857c304408252b3f6df9ed44b791ec76c036deaccf65f114",
+      "lines": 96,
+      "command": "validate_assembled_graph",
+      "aliases": [
+        "validate-assembled-graph"
+      ],
+      "public_symbols": [
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/validate_domain_graph.py",
+      "sha256": "6ed18596ba9ef9b3f4e017784e564208541a4842edd162e7c863a60b6f9fcf70",
+      "lines": 169,
+      "command": "validate_domain_graph",
+      "aliases": [
+        "validate-domain-graph"
+      ],
+      "public_symbols": [
+        "review_domain_graph",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/validate_graph.py",
+      "sha256": "9d6c019d5485d3732ad0ae8a3873687caae59afb041f10b65f13e82349dfd19f",
+      "lines": 376,
+      "command": "validate_graph",
+      "aliases": [
+        "validate-graph"
+      ],
+      "public_symbols": [
+        "load_scanned_paths",
+        "add_scan_coverage",
+        "review_graph",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/validate_layers.py",
+      "sha256": "c07657d70b52c4666cdc3c1fe6ed8b8b9e566e6bdbd013112747f1e196e64189",
+      "lines": 118,
+      "command": "validate_layers",
+      "aliases": [],
+      "public_symbols": [
+        "check",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/validate_structure_output.py",
+      "sha256": "3ee831058b5f82266c88c835bf87ef1f9783f6c1b26e5e71e92821f57a1ec384",
+      "lines": 123,
+      "command": "validate_structure_output",
+      "aliases": [
+        "validate-structure-output"
+      ],
+      "public_symbols": [
+        "check_structure_output",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    },
+    {
+      "python": "understand_core/write_config.py",
+      "sha256": "38d3ab50173feeb666176c9779a1cd335b04ba0c6c7edbcd73a8b9746fb34812",
+      "lines": 74,
+      "command": "write_config",
+      "aliases": [],
+      "public_symbols": [
+        "apply_updates",
+        "main"
+      ],
+      "rust": null,
+      "tests": [],
+      "status": "pending"
+    }
+  ],
+  "schemas": {
+    "auto-update-state.schema.json": "9b41c7e3fe6adc33f92a131e6fbe2c04444fbe150ca41c8b518140caed97b79f",
+    "auto-update-summary.schema.json": "4eecd03d07a9b7d216fec7ef50bbe3e46991563d4a256c22a5b9ea2cdec1d2a0",
+    "change-analysis.schema.json": "6eb184dfb019662b8ac3c09c93bfd878e576d73098c3e45ad0f999e6c84cb5b0",
+    "domain-graph.schema.json": "1cb7dd94a4f00140bf35a7a8f178e19bdcfaab4767e91e2b70405276f239a4e0",
+    "file-analysis-context.schema.json": "5a019fab78f89767c4900d44fd7b489d082d3d1d713b6547023f5995b29d4067",
+    "graph-fragment.schema.json": "039c1a035cb5c5b2f7ae783769abe8d48b0762dd7c6a8c7587b86e3f47ddff66",
+    "import-map-input.schema.json": "b402b94dbd6ecc88b3bbba4f3e833f2fb190aeea80bff66f908f4e5460e7e089",
+    "import-map-output.schema.json": "5efbfdc581cb53ddd186a8bfd45f234ac061ab1fff15b1fc18b155200864dd33",
+    "input.schema.json": "527c915995cccb9844829661af3c0b3cce4af2388bc388f6a11cc5e8a4dc93d7",
+    "knowledge-graph.schema.json": "83913ab1efba1a8161eede610e095423dfac71572db8743931ebec9a987e0caf",
+    "layers.schema.json": "6f0674b3ddcd99c0c1bef17d950deb295208955c9aa8c8a9db1afc49ae82e74b",
+    "output.schema.json": "eb1332f25563786096bd7b1d82cf05c15da1e647ef1a2d3ef4712e1da3b556a1",
+    "project-scan-output.schema.json": "d14984ddcf5bdadb74d6e82feb45972be77d47ae167a3d0e7885845a8c55401d",
+    "scan-result.schema.json": "586050d9b0f139d04dc0b5b291f7071b5bef51eca8dcdfe1d23a62838e879efc",
+    "structure-input.schema.json": "4c4bc0deaddcce757230460fa4b04f2bd058399b8d9ef413ba9f5407dd05bce7",
+    "structure-output.schema.json": "1bea91bb510a2f49127f57846c95d37248547f7a9ddf77ef9620d22095b2316e"
+  },
+  "dependencies": {
+    "PyYAML": "6.0.3",
+    "Pygments": "2.20.0",
+    "RapidFuzz": "3.14.5",
+    "annotated-types": "0.7.0",
+    "attrs": "26.1.0",
+    "iniconfig": "2.3.0",
+    "jsonschema": "4.26.0",
+    "jsonschema-specifications": "2025.9.1",
+    "networkx": "3.6",
+    "numpy": "2.5.0",
+    "orjson": "3.11.9",
+    "packaging": "26.2",
+    "pandas": "3.0.3",
+    "pathspec": "1.1.1",
+    "pip": "26.1.2",
+    "pluggy": "1.6.0",
+    "pydantic": "2.13.4",
+    "pydantic_core": "2.46.4",
+    "pytest": "9.1.1",
+    "python-dateutil": "2.9.0.post0",
+    "referencing": "0.37.0",
+    "rpds-py": "2026.6.3",
+    "scipy": "1.18.0",
+    "six": "1.17.0",
+    "tree-sitter": "0.26.0",
+    "tree-sitter-language-pack": "1.12.1",
+    "typing-inspection": "0.4.2",
+    "typing_extensions": "4.15.0",
+    "understand-anything-core": "0.1.0"
+  },
+  "dependency_files": {
+    "pyproject.toml": "6dc1af225384e44ad461185ff2417c449e41545a4cfbf1104ef246e982d7a41c",
+    "pdm.lock": "19b6db288812c5e98320aa9cdd254295862c7ab5f1c5e3c0ebb02a4ff5be70ef"
+  }
+}

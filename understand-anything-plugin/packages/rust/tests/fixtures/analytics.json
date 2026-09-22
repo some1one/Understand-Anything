@@ -1,0 +1,6913 @@
+[
+  {
+    "input": {
+      "fileNodes": [],
+      "importEdges": [],
+      "allEdges": []
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {},
+      "nodeTypeGroups": {},
+      "crossCategoryEdges": [],
+      "interGroupImports": [],
+      "intraGroupDensity": {},
+      "patternMatches": {},
+      "deploymentTopology": {
+        "hasDockerfile": false,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": []
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [],
+        "apiHandlerFiles": []
+      },
+      "docCoverage": {
+        "groupsWithDocs": 0,
+        "totalGroups": 0,
+        "coverageRatio": 0.0,
+        "undocumentedGroups": []
+      },
+      "dependencyDirection": [],
+      "fileStats": {
+        "totalFileNodes": 0,
+        "filesPerGroup": {},
+        "nodeTypeCounts": {}
+      },
+      "fileFanIn": {},
+      "fileFanOut": {},
+      "commonPathPrefix": "",
+      "filePatternMatches": {},
+      "interGroupMatrix": {},
+      "graphMetrics": {
+        "fileCount": 0,
+        "importEdgeCount": 0,
+        "density": 0.0,
+        "weaklyConnectedComponents": 0,
+        "isDag": true
+      },
+      "phase2Recommendations": {
+        "groupRoles": {},
+        "suggestedLayerByGroup": {},
+        "topologicalOrder": [],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": false,
+            "reason": "0 infra node(s); IaC files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "0 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": []
+          }
+        ],
+        "defaultLayerAssignment": {}
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [],
+      "importEdges": [],
+      "allEdges": []
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {},
+      "nodeTypeGroups": {},
+      "crossCategoryEdges": [],
+      "interGroupImports": [],
+      "intraGroupDensity": {},
+      "patternMatches": {},
+      "deploymentTopology": {
+        "hasDockerfile": false,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": []
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [],
+        "apiHandlerFiles": []
+      },
+      "docCoverage": {
+        "groupsWithDocs": 0,
+        "totalGroups": 0,
+        "coverageRatio": 0.0,
+        "undocumentedGroups": []
+      },
+      "dependencyDirection": [],
+      "fileStats": {
+        "totalFileNodes": 0,
+        "filesPerGroup": {},
+        "nodeTypeCounts": {}
+      },
+      "fileFanIn": {},
+      "fileFanOut": {},
+      "commonPathPrefix": "",
+      "filePatternMatches": {},
+      "interGroupMatrix": {},
+      "graphMetrics": {
+        "fileCount": 0,
+        "importEdgeCount": 0,
+        "density": 0.0,
+        "weaklyConnectedComponents": 0,
+        "isDag": true
+      },
+      "phase2Recommendations": {
+        "groupRoles": {},
+        "suggestedLayerByGroup": {},
+        "topologicalOrder": [],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": false,
+            "reason": "0 infra node(s); IaC files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "0 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": []
+          }
+        ],
+        "defaultLayerAssignment": {}
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [],
+      "importEdges": [],
+      "allEdges": []
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {},
+      "nodeTypeGroups": {},
+      "crossCategoryEdges": [],
+      "interGroupImports": [],
+      "intraGroupDensity": {},
+      "patternMatches": {},
+      "deploymentTopology": {
+        "hasDockerfile": false,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": []
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [],
+        "apiHandlerFiles": []
+      },
+      "docCoverage": {
+        "groupsWithDocs": 0,
+        "totalGroups": 0,
+        "coverageRatio": 0.0,
+        "undocumentedGroups": []
+      },
+      "dependencyDirection": [],
+      "fileStats": {
+        "totalFileNodes": 0,
+        "filesPerGroup": {},
+        "nodeTypeCounts": {}
+      },
+      "fileFanIn": {},
+      "fileFanOut": {},
+      "commonPathPrefix": "",
+      "filePatternMatches": {},
+      "interGroupMatrix": {},
+      "graphMetrics": {
+        "fileCount": 0,
+        "importEdgeCount": 0,
+        "density": 0.0,
+        "weaklyConnectedComponents": 0,
+        "isDag": true
+      },
+      "phase2Recommendations": {
+        "groupRoles": {},
+        "suggestedLayerByGroup": {},
+        "topologicalOrder": [],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": false,
+            "reason": "0 infra node(s); IaC files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "0 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": []
+          }
+        ],
+        "defaultLayerAssignment": {}
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [],
+      "importEdges": [],
+      "allEdges": []
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {},
+      "nodeTypeGroups": {},
+      "crossCategoryEdges": [],
+      "interGroupImports": [],
+      "intraGroupDensity": {},
+      "patternMatches": {},
+      "deploymentTopology": {
+        "hasDockerfile": false,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": []
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [],
+        "apiHandlerFiles": []
+      },
+      "docCoverage": {
+        "groupsWithDocs": 0,
+        "totalGroups": 0,
+        "coverageRatio": 0.0,
+        "undocumentedGroups": []
+      },
+      "dependencyDirection": [],
+      "fileStats": {
+        "totalFileNodes": 0,
+        "filesPerGroup": {},
+        "nodeTypeCounts": {}
+      },
+      "fileFanIn": {},
+      "fileFanOut": {},
+      "commonPathPrefix": "",
+      "filePatternMatches": {},
+      "interGroupMatrix": {},
+      "graphMetrics": {
+        "fileCount": 0,
+        "importEdgeCount": 0,
+        "density": 0.0,
+        "weaklyConnectedComponents": 0,
+        "isDag": true
+      },
+      "phase2Recommendations": {
+        "groupRoles": {},
+        "suggestedLayerByGroup": {},
+        "topologicalOrder": [],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": false,
+            "reason": "0 infra node(s); IaC files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "0 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": []
+          }
+        ],
+        "defaultLayerAssignment": {}
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [],
+      "allEdges": []
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "py": [
+          "file:src/api/routes.py"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py"
+        ]
+      },
+      "crossCategoryEdges": [],
+      "interGroupImports": [],
+      "intraGroupDensity": {
+        "py": {
+          "internalEdges": 0,
+          "totalEdges": 0,
+          "density": 0.0
+        }
+      },
+      "patternMatches": {},
+      "deploymentTopology": {
+        "hasDockerfile": false,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": []
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [],
+        "apiHandlerFiles": []
+      },
+      "docCoverage": {
+        "groupsWithDocs": 0,
+        "totalGroups": 1,
+        "coverageRatio": 0.0,
+        "undocumentedGroups": [
+          "py"
+        ]
+      },
+      "dependencyDirection": [],
+      "fileStats": {
+        "totalFileNodes": 1,
+        "filesPerGroup": {
+          "py": 1
+        },
+        "nodeTypeCounts": {
+          "config": 1
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 0
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 0
+      },
+      "commonPathPrefix": "src/api",
+      "filePatternMatches": {},
+      "interGroupMatrix": {},
+      "graphMetrics": {
+        "fileCount": 1,
+        "importEdgeCount": 0,
+        "density": 0.0,
+        "weaklyConnectedComponents": 1,
+        "isDag": true
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "py": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          }
+        },
+        "suggestedLayerByGroup": {},
+        "topologicalOrder": [
+          "py"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": false,
+            "reason": "0 infra node(s); IaC files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "1 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [],
+      "allEdges": []
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "py": [
+          "file:src/api/routes.py"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py"
+        ]
+      },
+      "crossCategoryEdges": [],
+      "interGroupImports": [],
+      "intraGroupDensity": {
+        "py": {
+          "internalEdges": 0,
+          "totalEdges": 0,
+          "density": 0.0
+        }
+      },
+      "patternMatches": {},
+      "deploymentTopology": {
+        "hasDockerfile": false,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": []
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [],
+        "apiHandlerFiles": []
+      },
+      "docCoverage": {
+        "groupsWithDocs": 0,
+        "totalGroups": 1,
+        "coverageRatio": 0.0,
+        "undocumentedGroups": [
+          "py"
+        ]
+      },
+      "dependencyDirection": [],
+      "fileStats": {
+        "totalFileNodes": 1,
+        "filesPerGroup": {
+          "py": 1
+        },
+        "nodeTypeCounts": {
+          "config": 1
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 0
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 0
+      },
+      "commonPathPrefix": "src/api",
+      "filePatternMatches": {},
+      "interGroupMatrix": {},
+      "graphMetrics": {
+        "fileCount": 1,
+        "importEdgeCount": 0,
+        "density": 0.0,
+        "weaklyConnectedComponents": 1,
+        "isDag": true
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "py": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          }
+        },
+        "suggestedLayerByGroup": {},
+        "topologicalOrder": [
+          "py"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": false,
+            "reason": "0 infra node(s); IaC files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "1 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ],
+      "allEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ]
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "py": [
+          "file:src/api/routes.py"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py"
+        ]
+      },
+      "crossCategoryEdges": [],
+      "interGroupImports": [],
+      "intraGroupDensity": {
+        "py": {
+          "internalEdges": 1,
+          "totalEdges": 1,
+          "density": 1.0
+        }
+      },
+      "patternMatches": {},
+      "deploymentTopology": {
+        "hasDockerfile": false,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": []
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [],
+        "apiHandlerFiles": []
+      },
+      "docCoverage": {
+        "groupsWithDocs": 0,
+        "totalGroups": 1,
+        "coverageRatio": 0.0,
+        "undocumentedGroups": [
+          "py"
+        ]
+      },
+      "dependencyDirection": [],
+      "fileStats": {
+        "totalFileNodes": 1,
+        "filesPerGroup": {
+          "py": 1
+        },
+        "nodeTypeCounts": {
+          "config": 1
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 0
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 0
+      },
+      "commonPathPrefix": "src/api",
+      "filePatternMatches": {},
+      "interGroupMatrix": {},
+      "graphMetrics": {
+        "fileCount": 1,
+        "importEdgeCount": 0,
+        "density": 0.0,
+        "weaklyConnectedComponents": 1,
+        "isDag": true
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "py": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          }
+        },
+        "suggestedLayerByGroup": {},
+        "topologicalOrder": [
+          "py"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": false,
+            "reason": "0 infra node(s); IaC files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "1 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [],
+      "allEdges": []
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "py": [
+          "file:src/api/routes.py"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py"
+        ]
+      },
+      "crossCategoryEdges": [],
+      "interGroupImports": [],
+      "intraGroupDensity": {
+        "py": {
+          "internalEdges": 0,
+          "totalEdges": 0,
+          "density": 0.0
+        }
+      },
+      "patternMatches": {},
+      "deploymentTopology": {
+        "hasDockerfile": false,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": []
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [],
+        "apiHandlerFiles": []
+      },
+      "docCoverage": {
+        "groupsWithDocs": 0,
+        "totalGroups": 1,
+        "coverageRatio": 0.0,
+        "undocumentedGroups": [
+          "py"
+        ]
+      },
+      "dependencyDirection": [],
+      "fileStats": {
+        "totalFileNodes": 1,
+        "filesPerGroup": {
+          "py": 1
+        },
+        "nodeTypeCounts": {
+          "config": 1
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 0
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 0
+      },
+      "commonPathPrefix": "src/api",
+      "filePatternMatches": {},
+      "interGroupMatrix": {},
+      "graphMetrics": {
+        "fileCount": 1,
+        "importEdgeCount": 0,
+        "density": 0.0,
+        "weaklyConnectedComponents": 1,
+        "isDag": true
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "py": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          }
+        },
+        "suggestedLayerByGroup": {},
+        "topologicalOrder": [
+          "py"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": false,
+            "reason": "0 infra node(s); IaC files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "1 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/models/user.py",
+          "filePath": "src/models/user.py",
+          "type": "file",
+          "name": "src/models/user.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [],
+      "allEdges": []
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "api": [
+          "file:src/api/routes.py"
+        ],
+        "models": [
+          "file:src/models/user.py"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py"
+        ],
+        "file": [
+          "file:src/models/user.py"
+        ]
+      },
+      "crossCategoryEdges": [],
+      "interGroupImports": [],
+      "intraGroupDensity": {
+        "api": {
+          "internalEdges": 0,
+          "totalEdges": 0,
+          "density": 0.0
+        },
+        "models": {
+          "internalEdges": 0,
+          "totalEdges": 0,
+          "density": 0.0
+        }
+      },
+      "patternMatches": {
+        "api": "api",
+        "models": "data"
+      },
+      "deploymentTopology": {
+        "hasDockerfile": false,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": []
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [
+          "src/models/user.py"
+        ],
+        "apiHandlerFiles": [
+          "src/api/routes.py"
+        ]
+      },
+      "docCoverage": {
+        "groupsWithDocs": 0,
+        "totalGroups": 2,
+        "coverageRatio": 0.0,
+        "undocumentedGroups": [
+          "api",
+          "models"
+        ]
+      },
+      "dependencyDirection": [],
+      "fileStats": {
+        "totalFileNodes": 2,
+        "filesPerGroup": {
+          "api": 1,
+          "models": 1
+        },
+        "nodeTypeCounts": {
+          "config": 1,
+          "file": 1
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 0,
+        "file:src/models/user.py": 0
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 0,
+        "file:src/models/user.py": 0
+      },
+      "commonPathPrefix": "src",
+      "filePatternMatches": {},
+      "interGroupMatrix": {},
+      "graphMetrics": {
+        "fileCount": 2,
+        "importEdgeCount": 0,
+        "density": 0,
+        "weaklyConnectedComponents": 2,
+        "isDag": true
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "api": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          },
+          "models": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          }
+        },
+        "suggestedLayerByGroup": {
+          "api": "layer:api",
+          "models": "layer:data"
+        },
+        "topologicalOrder": [
+          "api",
+          "models"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": false,
+            "reason": "0 infra node(s); IaC files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "1 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config",
+          "file:src/models/user.py": "layer:data"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/models/user.py",
+          "filePath": "src/models/user.py",
+          "type": "file",
+          "name": "src/models/user.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ],
+      "allEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ]
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "api": [
+          "file:src/api/routes.py"
+        ],
+        "models": [
+          "file:src/models/user.py"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py"
+        ],
+        "file": [
+          "file:src/models/user.py"
+        ]
+      },
+      "crossCategoryEdges": [
+        {
+          "fromType": "config",
+          "toType": "file",
+          "edgeType": "imports",
+          "count": 1
+        }
+      ],
+      "interGroupImports": [
+        {
+          "from": "api",
+          "to": "models",
+          "count": 1
+        }
+      ],
+      "intraGroupDensity": {
+        "api": {
+          "internalEdges": 0,
+          "totalEdges": 1,
+          "density": 0.0
+        },
+        "models": {
+          "internalEdges": 0,
+          "totalEdges": 1,
+          "density": 0.0
+        }
+      },
+      "patternMatches": {
+        "api": "api",
+        "models": "data"
+      },
+      "deploymentTopology": {
+        "hasDockerfile": false,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": []
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [
+          "src/models/user.py"
+        ],
+        "apiHandlerFiles": [
+          "src/api/routes.py"
+        ]
+      },
+      "docCoverage": {
+        "groupsWithDocs": 0,
+        "totalGroups": 2,
+        "coverageRatio": 0.0,
+        "undocumentedGroups": [
+          "api",
+          "models"
+        ]
+      },
+      "dependencyDirection": [
+        {
+          "dependent": "api",
+          "dependsOn": "models"
+        }
+      ],
+      "fileStats": {
+        "totalFileNodes": 2,
+        "filesPerGroup": {
+          "api": 1,
+          "models": 1
+        },
+        "nodeTypeCounts": {
+          "config": 1,
+          "file": 1
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 0,
+        "file:src/models/user.py": 1
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 1,
+        "file:src/models/user.py": 0
+      },
+      "commonPathPrefix": "src",
+      "filePatternMatches": {},
+      "interGroupMatrix": {
+        "api": {
+          "models": 1
+        }
+      },
+      "graphMetrics": {
+        "fileCount": 2,
+        "importEdgeCount": 1,
+        "density": 0.5,
+        "weaklyConnectedComponents": 1,
+        "isDag": true
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "api": {
+            "importedBy": 0,
+            "imports": 1,
+            "role": "top"
+          },
+          "models": {
+            "importedBy": 1,
+            "imports": 0,
+            "role": "foundational"
+          }
+        },
+        "suggestedLayerByGroup": {
+          "api": "layer:api",
+          "models": "layer:data"
+        },
+        "topologicalOrder": [
+          "models",
+          "api"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": false,
+            "reason": "0 infra node(s); IaC files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "1 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config",
+          "file:src/models/user.py": "layer:data"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/models/user.py",
+          "filePath": "src/models/user.py",
+          "type": "file",
+          "name": "src/models/user.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ],
+      "allEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ]
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "api": [
+          "file:src/api/routes.py"
+        ],
+        "models": [
+          "file:src/models/user.py"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py"
+        ],
+        "file": [
+          "file:src/models/user.py"
+        ]
+      },
+      "crossCategoryEdges": [
+        {
+          "fromType": "config",
+          "toType": "file",
+          "edgeType": "imports",
+          "count": 1
+        },
+        {
+          "fromType": "file",
+          "toType": "config",
+          "edgeType": "imports",
+          "count": 1
+        }
+      ],
+      "interGroupImports": [
+        {
+          "from": "api",
+          "to": "models",
+          "count": 1
+        },
+        {
+          "from": "models",
+          "to": "api",
+          "count": 1
+        }
+      ],
+      "intraGroupDensity": {
+        "api": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        },
+        "models": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        }
+      },
+      "patternMatches": {
+        "api": "api",
+        "models": "data"
+      },
+      "deploymentTopology": {
+        "hasDockerfile": false,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": []
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [
+          "src/models/user.py"
+        ],
+        "apiHandlerFiles": [
+          "src/api/routes.py"
+        ]
+      },
+      "docCoverage": {
+        "groupsWithDocs": 0,
+        "totalGroups": 2,
+        "coverageRatio": 0.0,
+        "undocumentedGroups": [
+          "api",
+          "models"
+        ]
+      },
+      "dependencyDirection": [],
+      "fileStats": {
+        "totalFileNodes": 2,
+        "filesPerGroup": {
+          "api": 1,
+          "models": 1
+        },
+        "nodeTypeCounts": {
+          "config": 1,
+          "file": 1
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 1,
+        "file:src/models/user.py": 1
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 1,
+        "file:src/models/user.py": 1
+      },
+      "commonPathPrefix": "src",
+      "filePatternMatches": {},
+      "interGroupMatrix": {
+        "api": {
+          "api": 0,
+          "models": 1
+        },
+        "models": {
+          "api": 1,
+          "models": 0
+        }
+      },
+      "graphMetrics": {
+        "fileCount": 2,
+        "importEdgeCount": 2,
+        "density": 1.0,
+        "weaklyConnectedComponents": 1,
+        "isDag": false
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "api": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          },
+          "models": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          }
+        },
+        "suggestedLayerByGroup": {
+          "api": "layer:api",
+          "models": "layer:data"
+        },
+        "topologicalOrder": [
+          "api",
+          "models"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": false,
+            "reason": "0 infra node(s); IaC files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "1 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config",
+          "file:src/models/user.py": "layer:data"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/models/user.py",
+          "filePath": "src/models/user.py",
+          "type": "file",
+          "name": "src/models/user.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ],
+      "allEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ]
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "api": [
+          "file:src/api/routes.py"
+        ],
+        "models": [
+          "file:src/models/user.py"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py"
+        ],
+        "file": [
+          "file:src/models/user.py"
+        ]
+      },
+      "crossCategoryEdges": [
+        {
+          "fromType": "config",
+          "toType": "file",
+          "edgeType": "imports",
+          "count": 1
+        },
+        {
+          "fromType": "file",
+          "toType": "config",
+          "edgeType": "imports",
+          "count": 1
+        }
+      ],
+      "interGroupImports": [
+        {
+          "from": "api",
+          "to": "models",
+          "count": 1
+        },
+        {
+          "from": "models",
+          "to": "api",
+          "count": 1
+        }
+      ],
+      "intraGroupDensity": {
+        "api": {
+          "internalEdges": 1,
+          "totalEdges": 3,
+          "density": 0.3333
+        },
+        "models": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        }
+      },
+      "patternMatches": {
+        "api": "api",
+        "models": "data"
+      },
+      "deploymentTopology": {
+        "hasDockerfile": false,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": []
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [
+          "src/models/user.py"
+        ],
+        "apiHandlerFiles": [
+          "src/api/routes.py"
+        ]
+      },
+      "docCoverage": {
+        "groupsWithDocs": 0,
+        "totalGroups": 2,
+        "coverageRatio": 0.0,
+        "undocumentedGroups": [
+          "api",
+          "models"
+        ]
+      },
+      "dependencyDirection": [],
+      "fileStats": {
+        "totalFileNodes": 2,
+        "filesPerGroup": {
+          "api": 1,
+          "models": 1
+        },
+        "nodeTypeCounts": {
+          "config": 1,
+          "file": 1
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 1,
+        "file:src/models/user.py": 1
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 1,
+        "file:src/models/user.py": 1
+      },
+      "commonPathPrefix": "src",
+      "filePatternMatches": {},
+      "interGroupMatrix": {
+        "api": {
+          "api": 0,
+          "models": 1
+        },
+        "models": {
+          "api": 1,
+          "models": 0
+        }
+      },
+      "graphMetrics": {
+        "fileCount": 2,
+        "importEdgeCount": 2,
+        "density": 1.0,
+        "weaklyConnectedComponents": 1,
+        "isDag": false
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "api": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          },
+          "models": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          }
+        },
+        "suggestedLayerByGroup": {
+          "api": "layer:api",
+          "models": "layer:data"
+        },
+        "topologicalOrder": [
+          "api",
+          "models"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": false,
+            "reason": "0 infra node(s); IaC files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "1 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config",
+          "file:src/models/user.py": "layer:data"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/models/user.py",
+          "filePath": "src/models/user.py",
+          "type": "file",
+          "name": "src/models/user.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/utils/helpers.py",
+          "filePath": "src/utils/helpers.py",
+          "type": "file",
+          "name": "src/utils/helpers.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [],
+      "allEdges": []
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "api": [
+          "file:src/api/routes.py"
+        ],
+        "models": [
+          "file:src/models/user.py"
+        ],
+        "utils": [
+          "file:src/utils/helpers.py"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py"
+        ],
+        "file": [
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py"
+        ]
+      },
+      "crossCategoryEdges": [],
+      "interGroupImports": [],
+      "intraGroupDensity": {
+        "api": {
+          "internalEdges": 0,
+          "totalEdges": 0,
+          "density": 0.0
+        },
+        "models": {
+          "internalEdges": 0,
+          "totalEdges": 0,
+          "density": 0.0
+        },
+        "utils": {
+          "internalEdges": 0,
+          "totalEdges": 0,
+          "density": 0.0
+        }
+      },
+      "patternMatches": {
+        "api": "api",
+        "models": "data",
+        "utils": "utility"
+      },
+      "deploymentTopology": {
+        "hasDockerfile": false,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": []
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [
+          "src/models/user.py"
+        ],
+        "apiHandlerFiles": [
+          "src/api/routes.py"
+        ]
+      },
+      "docCoverage": {
+        "groupsWithDocs": 0,
+        "totalGroups": 3,
+        "coverageRatio": 0.0,
+        "undocumentedGroups": [
+          "api",
+          "models",
+          "utils"
+        ]
+      },
+      "dependencyDirection": [],
+      "fileStats": {
+        "totalFileNodes": 3,
+        "filesPerGroup": {
+          "api": 1,
+          "models": 1,
+          "utils": 1
+        },
+        "nodeTypeCounts": {
+          "config": 1,
+          "file": 2
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 0,
+        "file:src/models/user.py": 0,
+        "file:src/utils/helpers.py": 0
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 0,
+        "file:src/models/user.py": 0,
+        "file:src/utils/helpers.py": 0
+      },
+      "commonPathPrefix": "src",
+      "filePatternMatches": {},
+      "interGroupMatrix": {},
+      "graphMetrics": {
+        "fileCount": 3,
+        "importEdgeCount": 0,
+        "density": 0,
+        "weaklyConnectedComponents": 3,
+        "isDag": true
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "api": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          },
+          "models": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          },
+          "utils": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          }
+        },
+        "suggestedLayerByGroup": {
+          "api": "layer:api",
+          "models": "layer:data",
+          "utils": "layer:utility"
+        },
+        "topologicalOrder": [
+          "api",
+          "models",
+          "utils"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": false,
+            "reason": "0 infra node(s); IaC files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "1 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config",
+          "file:src/models/user.py": "layer:data",
+          "file:src/utils/helpers.py": "layer:utility"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/models/user.py",
+          "filePath": "src/models/user.py",
+          "type": "file",
+          "name": "src/models/user.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/utils/helpers.py",
+          "filePath": "src/utils/helpers.py",
+          "type": "file",
+          "name": "src/utils/helpers.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ],
+      "allEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ]
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "api": [
+          "file:src/api/routes.py"
+        ],
+        "models": [
+          "file:src/models/user.py"
+        ],
+        "utils": [
+          "file:src/utils/helpers.py"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py"
+        ],
+        "file": [
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py"
+        ]
+      },
+      "crossCategoryEdges": [
+        {
+          "fromType": "config",
+          "toType": "file",
+          "edgeType": "imports",
+          "count": 1
+        }
+      ],
+      "interGroupImports": [
+        {
+          "from": "api",
+          "to": "models",
+          "count": 1
+        },
+        {
+          "from": "models",
+          "to": "utils",
+          "count": 1
+        }
+      ],
+      "intraGroupDensity": {
+        "api": {
+          "internalEdges": 0,
+          "totalEdges": 1,
+          "density": 0.0
+        },
+        "models": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        },
+        "utils": {
+          "internalEdges": 0,
+          "totalEdges": 1,
+          "density": 0.0
+        }
+      },
+      "patternMatches": {
+        "api": "api",
+        "models": "data",
+        "utils": "utility"
+      },
+      "deploymentTopology": {
+        "hasDockerfile": false,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": []
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [
+          "src/models/user.py"
+        ],
+        "apiHandlerFiles": [
+          "src/api/routes.py"
+        ]
+      },
+      "docCoverage": {
+        "groupsWithDocs": 0,
+        "totalGroups": 3,
+        "coverageRatio": 0.0,
+        "undocumentedGroups": [
+          "api",
+          "models",
+          "utils"
+        ]
+      },
+      "dependencyDirection": [
+        {
+          "dependent": "api",
+          "dependsOn": "models"
+        },
+        {
+          "dependent": "models",
+          "dependsOn": "utils"
+        }
+      ],
+      "fileStats": {
+        "totalFileNodes": 3,
+        "filesPerGroup": {
+          "api": 1,
+          "models": 1,
+          "utils": 1
+        },
+        "nodeTypeCounts": {
+          "config": 1,
+          "file": 2
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 0,
+        "file:src/models/user.py": 1,
+        "file:src/utils/helpers.py": 1
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 1,
+        "file:src/models/user.py": 1,
+        "file:src/utils/helpers.py": 0
+      },
+      "commonPathPrefix": "src",
+      "filePatternMatches": {},
+      "interGroupMatrix": {
+        "api": {
+          "models": 1,
+          "utils": 0
+        },
+        "models": {
+          "models": 0,
+          "utils": 1
+        }
+      },
+      "graphMetrics": {
+        "fileCount": 3,
+        "importEdgeCount": 2,
+        "density": 0.3333,
+        "weaklyConnectedComponents": 1,
+        "isDag": true,
+        "fanInFanOutSpearman": -0.5,
+        "fanInFanOutPValue": 0.6667
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "api": {
+            "importedBy": 0,
+            "imports": 1,
+            "role": "top"
+          },
+          "models": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          },
+          "utils": {
+            "importedBy": 1,
+            "imports": 0,
+            "role": "foundational"
+          }
+        },
+        "suggestedLayerByGroup": {
+          "api": "layer:api",
+          "models": "layer:data",
+          "utils": "layer:utility"
+        },
+        "topologicalOrder": [
+          "utils",
+          "models",
+          "api"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": false,
+            "reason": "0 infra node(s); IaC files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "1 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config",
+          "file:src/models/user.py": "layer:data",
+          "file:src/utils/helpers.py": "layer:utility"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/models/user.py",
+          "filePath": "src/models/user.py",
+          "type": "file",
+          "name": "src/models/user.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/utils/helpers.py",
+          "filePath": "src/utils/helpers.py",
+          "type": "file",
+          "name": "src/utils/helpers.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ],
+      "allEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ]
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "api": [
+          "file:src/api/routes.py"
+        ],
+        "models": [
+          "file:src/models/user.py"
+        ],
+        "utils": [
+          "file:src/utils/helpers.py"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py"
+        ],
+        "file": [
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py"
+        ]
+      },
+      "crossCategoryEdges": [
+        {
+          "fromType": "config",
+          "toType": "file",
+          "edgeType": "imports",
+          "count": 1
+        },
+        {
+          "fromType": "file",
+          "toType": "config",
+          "edgeType": "imports",
+          "count": 1
+        }
+      ],
+      "interGroupImports": [
+        {
+          "from": "api",
+          "to": "models",
+          "count": 1
+        },
+        {
+          "from": "models",
+          "to": "utils",
+          "count": 1
+        },
+        {
+          "from": "utils",
+          "to": "api",
+          "count": 1
+        }
+      ],
+      "intraGroupDensity": {
+        "api": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        },
+        "models": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        },
+        "utils": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        }
+      },
+      "patternMatches": {
+        "api": "api",
+        "models": "data",
+        "utils": "utility"
+      },
+      "deploymentTopology": {
+        "hasDockerfile": false,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": []
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [
+          "src/models/user.py"
+        ],
+        "apiHandlerFiles": [
+          "src/api/routes.py"
+        ]
+      },
+      "docCoverage": {
+        "groupsWithDocs": 0,
+        "totalGroups": 3,
+        "coverageRatio": 0.0,
+        "undocumentedGroups": [
+          "api",
+          "models",
+          "utils"
+        ]
+      },
+      "dependencyDirection": [
+        {
+          "dependent": "api",
+          "dependsOn": "models"
+        },
+        {
+          "dependent": "models",
+          "dependsOn": "utils"
+        },
+        {
+          "dependent": "utils",
+          "dependsOn": "api"
+        }
+      ],
+      "fileStats": {
+        "totalFileNodes": 3,
+        "filesPerGroup": {
+          "api": 1,
+          "models": 1,
+          "utils": 1
+        },
+        "nodeTypeCounts": {
+          "config": 1,
+          "file": 2
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 1,
+        "file:src/models/user.py": 1,
+        "file:src/utils/helpers.py": 1
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 1,
+        "file:src/models/user.py": 1,
+        "file:src/utils/helpers.py": 1
+      },
+      "commonPathPrefix": "src",
+      "filePatternMatches": {},
+      "interGroupMatrix": {
+        "api": {
+          "api": 0,
+          "models": 1,
+          "utils": 0
+        },
+        "models": {
+          "api": 0,
+          "models": 0,
+          "utils": 1
+        },
+        "utils": {
+          "api": 1,
+          "models": 0,
+          "utils": 0
+        }
+      },
+      "graphMetrics": {
+        "fileCount": 3,
+        "importEdgeCount": 3,
+        "density": 0.5,
+        "weaklyConnectedComponents": 1,
+        "isDag": false
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "api": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          },
+          "models": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          },
+          "utils": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          }
+        },
+        "suggestedLayerByGroup": {
+          "api": "layer:api",
+          "models": "layer:data",
+          "utils": "layer:utility"
+        },
+        "topologicalOrder": [
+          "api",
+          "models",
+          "utils"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": false,
+            "reason": "0 infra node(s); IaC files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "1 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config",
+          "file:src/models/user.py": "layer:data",
+          "file:src/utils/helpers.py": "layer:utility"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/models/user.py",
+          "filePath": "src/models/user.py",
+          "type": "file",
+          "name": "src/models/user.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/utils/helpers.py",
+          "filePath": "src/utils/helpers.py",
+          "type": "file",
+          "name": "src/utils/helpers.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ],
+      "allEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ]
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "api": [
+          "file:src/api/routes.py"
+        ],
+        "models": [
+          "file:src/models/user.py"
+        ],
+        "utils": [
+          "file:src/utils/helpers.py"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py"
+        ],
+        "file": [
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py"
+        ]
+      },
+      "crossCategoryEdges": [
+        {
+          "fromType": "config",
+          "toType": "file",
+          "edgeType": "imports",
+          "count": 1
+        }
+      ],
+      "interGroupImports": [
+        {
+          "from": "api",
+          "to": "utils",
+          "count": 1
+        },
+        {
+          "from": "models",
+          "to": "utils",
+          "count": 1
+        },
+        {
+          "from": "utils",
+          "to": "models",
+          "count": 1
+        }
+      ],
+      "intraGroupDensity": {
+        "api": {
+          "internalEdges": 0,
+          "totalEdges": 1,
+          "density": 0.0
+        },
+        "models": {
+          "internalEdges": 1,
+          "totalEdges": 3,
+          "density": 0.3333
+        },
+        "utils": {
+          "internalEdges": 1,
+          "totalEdges": 4,
+          "density": 0.25
+        }
+      },
+      "patternMatches": {
+        "api": "api",
+        "models": "data",
+        "utils": "utility"
+      },
+      "deploymentTopology": {
+        "hasDockerfile": false,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": []
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [
+          "src/models/user.py"
+        ],
+        "apiHandlerFiles": [
+          "src/api/routes.py"
+        ]
+      },
+      "docCoverage": {
+        "groupsWithDocs": 0,
+        "totalGroups": 3,
+        "coverageRatio": 0.0,
+        "undocumentedGroups": [
+          "api",
+          "models",
+          "utils"
+        ]
+      },
+      "dependencyDirection": [
+        {
+          "dependent": "api",
+          "dependsOn": "utils"
+        }
+      ],
+      "fileStats": {
+        "totalFileNodes": 3,
+        "filesPerGroup": {
+          "api": 1,
+          "models": 1,
+          "utils": 1
+        },
+        "nodeTypeCounts": {
+          "config": 1,
+          "file": 2
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 0,
+        "file:src/models/user.py": 1,
+        "file:src/utils/helpers.py": 2
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 1,
+        "file:src/models/user.py": 1,
+        "file:src/utils/helpers.py": 1
+      },
+      "commonPathPrefix": "src",
+      "filePatternMatches": {},
+      "interGroupMatrix": {
+        "api": {
+          "models": 0,
+          "utils": 1
+        },
+        "models": {
+          "models": 0,
+          "utils": 1
+        },
+        "utils": {
+          "models": 1,
+          "utils": 0
+        }
+      },
+      "graphMetrics": {
+        "fileCount": 3,
+        "importEdgeCount": 3,
+        "density": 0.5,
+        "weaklyConnectedComponents": 1,
+        "isDag": false
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "api": {
+            "importedBy": 0,
+            "imports": 1,
+            "role": "top"
+          },
+          "models": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          },
+          "utils": {
+            "importedBy": 2,
+            "imports": 1,
+            "role": "foundational-leaning"
+          }
+        },
+        "suggestedLayerByGroup": {
+          "api": "layer:api",
+          "models": "layer:data",
+          "utils": "layer:utility"
+        },
+        "topologicalOrder": [
+          "models",
+          "utils",
+          "api"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": false,
+            "reason": "0 infra node(s); IaC files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "1 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config",
+          "file:src/models/user.py": "layer:data",
+          "file:src/utils/helpers.py": "layer:utility"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/models/user.py",
+          "filePath": "src/models/user.py",
+          "type": "file",
+          "name": "src/models/user.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/utils/helpers.py",
+          "filePath": "src/utils/helpers.py",
+          "type": "file",
+          "name": "src/utils/helpers.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:docs/readme.md",
+          "filePath": "docs/readme.md",
+          "type": "config",
+          "name": "docs/readme.md",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:Dockerfile",
+          "filePath": "Dockerfile",
+          "type": "file",
+          "name": "Dockerfile",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [],
+      "allEdges": []
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "src": [
+          "file:src/api/routes.py",
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py"
+        ],
+        "docs": [
+          "file:docs/readme.md"
+        ],
+        "root": [
+          "file:Dockerfile"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py",
+          "file:docs/readme.md"
+        ],
+        "file": [
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py",
+          "file:Dockerfile"
+        ]
+      },
+      "crossCategoryEdges": [],
+      "interGroupImports": [],
+      "intraGroupDensity": {
+        "src": {
+          "internalEdges": 0,
+          "totalEdges": 0,
+          "density": 0.0
+        },
+        "docs": {
+          "internalEdges": 0,
+          "totalEdges": 0,
+          "density": 0.0
+        },
+        "root": {
+          "internalEdges": 0,
+          "totalEdges": 0,
+          "density": 0.0
+        }
+      },
+      "patternMatches": {
+        "docs": "documentation"
+      },
+      "deploymentTopology": {
+        "hasDockerfile": true,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": [
+          "Dockerfile"
+        ]
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [
+          "src/models/user.py"
+        ],
+        "apiHandlerFiles": []
+      },
+      "docCoverage": {
+        "groupsWithDocs": 1,
+        "totalGroups": 3,
+        "coverageRatio": 0.3333,
+        "undocumentedGroups": [
+          "root",
+          "src"
+        ]
+      },
+      "dependencyDirection": [],
+      "fileStats": {
+        "totalFileNodes": 5,
+        "filesPerGroup": {
+          "src": 3,
+          "docs": 1,
+          "root": 1
+        },
+        "nodeTypeCounts": {
+          "config": 2,
+          "file": 3
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 0,
+        "file:src/models/user.py": 0,
+        "file:src/utils/helpers.py": 0,
+        "file:docs/readme.md": 0,
+        "file:Dockerfile": 0
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 0,
+        "file:src/models/user.py": 0,
+        "file:src/utils/helpers.py": 0,
+        "file:docs/readme.md": 0,
+        "file:Dockerfile": 0
+      },
+      "commonPathPrefix": "",
+      "filePatternMatches": {
+        "file:docs/readme.md": "documentation",
+        "file:Dockerfile": "infrastructure"
+      },
+      "interGroupMatrix": {},
+      "graphMetrics": {
+        "fileCount": 5,
+        "importEdgeCount": 0,
+        "density": 0,
+        "weaklyConnectedComponents": 5,
+        "isDag": true
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "src": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          },
+          "docs": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          },
+          "root": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          }
+        },
+        "suggestedLayerByGroup": {
+          "docs": "layer:documentation"
+        },
+        "topologicalOrder": [
+          "src",
+          "docs",
+          "root"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": true,
+            "reason": "0 infra node(s); IaC files detected=True",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "2 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:docs/readme.md",
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config",
+          "file:src/models/user.py": "layer:src",
+          "file:src/utils/helpers.py": "layer:src",
+          "file:docs/readme.md": "layer:config",
+          "file:Dockerfile": "layer:infrastructure"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/models/user.py",
+          "filePath": "src/models/user.py",
+          "type": "file",
+          "name": "src/models/user.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/utils/helpers.py",
+          "filePath": "src/utils/helpers.py",
+          "type": "file",
+          "name": "src/utils/helpers.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:docs/readme.md",
+          "filePath": "docs/readme.md",
+          "type": "config",
+          "name": "docs/readme.md",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:Dockerfile",
+          "filePath": "Dockerfile",
+          "type": "file",
+          "name": "Dockerfile",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:docs/readme.md",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:docs/readme.md",
+          "target": "file:Dockerfile",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ],
+      "allEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:docs/readme.md",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:docs/readme.md",
+          "target": "file:Dockerfile",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ]
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "src": [
+          "file:src/api/routes.py",
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py"
+        ],
+        "docs": [
+          "file:docs/readme.md"
+        ],
+        "root": [
+          "file:Dockerfile"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py",
+          "file:docs/readme.md"
+        ],
+        "file": [
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py",
+          "file:Dockerfile"
+        ]
+      },
+      "crossCategoryEdges": [
+        {
+          "fromType": "config",
+          "toType": "file",
+          "edgeType": "imports",
+          "count": 2
+        },
+        {
+          "fromType": "file",
+          "toType": "config",
+          "edgeType": "imports",
+          "count": 1
+        }
+      ],
+      "interGroupImports": [
+        {
+          "from": "docs",
+          "to": "root",
+          "count": 1
+        },
+        {
+          "from": "src",
+          "to": "docs",
+          "count": 1
+        }
+      ],
+      "intraGroupDensity": {
+        "src": {
+          "internalEdges": 2,
+          "totalEdges": 3,
+          "density": 0.6667
+        },
+        "docs": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        },
+        "root": {
+          "internalEdges": 0,
+          "totalEdges": 1,
+          "density": 0.0
+        }
+      },
+      "patternMatches": {
+        "docs": "documentation"
+      },
+      "deploymentTopology": {
+        "hasDockerfile": true,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": [
+          "Dockerfile"
+        ]
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [
+          "src/models/user.py"
+        ],
+        "apiHandlerFiles": []
+      },
+      "docCoverage": {
+        "groupsWithDocs": 1,
+        "totalGroups": 3,
+        "coverageRatio": 0.3333,
+        "undocumentedGroups": [
+          "root",
+          "src"
+        ]
+      },
+      "dependencyDirection": [
+        {
+          "dependent": "docs",
+          "dependsOn": "root"
+        },
+        {
+          "dependent": "src",
+          "dependsOn": "docs"
+        }
+      ],
+      "fileStats": {
+        "totalFileNodes": 5,
+        "filesPerGroup": {
+          "src": 3,
+          "docs": 1,
+          "root": 1
+        },
+        "nodeTypeCounts": {
+          "config": 2,
+          "file": 3
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 0,
+        "file:src/models/user.py": 1,
+        "file:src/utils/helpers.py": 1,
+        "file:docs/readme.md": 1,
+        "file:Dockerfile": 1
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 1,
+        "file:src/models/user.py": 1,
+        "file:src/utils/helpers.py": 1,
+        "file:docs/readme.md": 1,
+        "file:Dockerfile": 0
+      },
+      "commonPathPrefix": "",
+      "filePatternMatches": {
+        "file:docs/readme.md": "documentation",
+        "file:Dockerfile": "infrastructure"
+      },
+      "interGroupMatrix": {
+        "docs": {
+          "docs": 0,
+          "root": 1
+        },
+        "src": {
+          "docs": 1,
+          "root": 0
+        }
+      },
+      "graphMetrics": {
+        "fileCount": 5,
+        "importEdgeCount": 4,
+        "density": 0.2,
+        "weaklyConnectedComponents": 1,
+        "isDag": true,
+        "fanInFanOutSpearman": -0.25,
+        "fanInFanOutPValue": 0.685
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "src": {
+            "importedBy": 0,
+            "imports": 1,
+            "role": "top"
+          },
+          "docs": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          },
+          "root": {
+            "importedBy": 1,
+            "imports": 0,
+            "role": "foundational"
+          }
+        },
+        "suggestedLayerByGroup": {
+          "docs": "layer:documentation"
+        },
+        "topologicalOrder": [
+          "root",
+          "docs",
+          "src"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": true,
+            "reason": "0 infra node(s); IaC files detected=True",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "2 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:docs/readme.md",
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config",
+          "file:src/models/user.py": "layer:src",
+          "file:src/utils/helpers.py": "layer:src",
+          "file:docs/readme.md": "layer:config",
+          "file:Dockerfile": "layer:infrastructure"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/models/user.py",
+          "filePath": "src/models/user.py",
+          "type": "file",
+          "name": "src/models/user.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/utils/helpers.py",
+          "filePath": "src/utils/helpers.py",
+          "type": "file",
+          "name": "src/utils/helpers.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:docs/readme.md",
+          "filePath": "docs/readme.md",
+          "type": "config",
+          "name": "docs/readme.md",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:Dockerfile",
+          "filePath": "Dockerfile",
+          "type": "file",
+          "name": "Dockerfile",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:docs/readme.md",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:docs/readme.md",
+          "target": "file:Dockerfile",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:Dockerfile",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ],
+      "allEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:docs/readme.md",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:docs/readme.md",
+          "target": "file:Dockerfile",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:Dockerfile",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ]
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "src": [
+          "file:src/api/routes.py",
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py"
+        ],
+        "docs": [
+          "file:docs/readme.md"
+        ],
+        "root": [
+          "file:Dockerfile"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py",
+          "file:docs/readme.md"
+        ],
+        "file": [
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py",
+          "file:Dockerfile"
+        ]
+      },
+      "crossCategoryEdges": [
+        {
+          "fromType": "config",
+          "toType": "file",
+          "edgeType": "imports",
+          "count": 2
+        },
+        {
+          "fromType": "file",
+          "toType": "config",
+          "edgeType": "imports",
+          "count": 2
+        }
+      ],
+      "interGroupImports": [
+        {
+          "from": "docs",
+          "to": "root",
+          "count": 1
+        },
+        {
+          "from": "root",
+          "to": "src",
+          "count": 1
+        },
+        {
+          "from": "src",
+          "to": "docs",
+          "count": 1
+        }
+      ],
+      "intraGroupDensity": {
+        "src": {
+          "internalEdges": 2,
+          "totalEdges": 4,
+          "density": 0.5
+        },
+        "docs": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        },
+        "root": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        }
+      },
+      "patternMatches": {
+        "docs": "documentation"
+      },
+      "deploymentTopology": {
+        "hasDockerfile": true,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": [
+          "Dockerfile"
+        ]
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [
+          "src/models/user.py"
+        ],
+        "apiHandlerFiles": []
+      },
+      "docCoverage": {
+        "groupsWithDocs": 1,
+        "totalGroups": 3,
+        "coverageRatio": 0.3333,
+        "undocumentedGroups": [
+          "root",
+          "src"
+        ]
+      },
+      "dependencyDirection": [
+        {
+          "dependent": "docs",
+          "dependsOn": "root"
+        },
+        {
+          "dependent": "root",
+          "dependsOn": "src"
+        },
+        {
+          "dependent": "src",
+          "dependsOn": "docs"
+        }
+      ],
+      "fileStats": {
+        "totalFileNodes": 5,
+        "filesPerGroup": {
+          "src": 3,
+          "docs": 1,
+          "root": 1
+        },
+        "nodeTypeCounts": {
+          "config": 2,
+          "file": 3
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 1,
+        "file:src/models/user.py": 1,
+        "file:src/utils/helpers.py": 1,
+        "file:docs/readme.md": 1,
+        "file:Dockerfile": 1
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 1,
+        "file:src/models/user.py": 1,
+        "file:src/utils/helpers.py": 1,
+        "file:docs/readme.md": 1,
+        "file:Dockerfile": 1
+      },
+      "commonPathPrefix": "",
+      "filePatternMatches": {
+        "file:docs/readme.md": "documentation",
+        "file:Dockerfile": "infrastructure"
+      },
+      "interGroupMatrix": {
+        "docs": {
+          "docs": 0,
+          "root": 1,
+          "src": 0
+        },
+        "root": {
+          "docs": 0,
+          "root": 0,
+          "src": 1
+        },
+        "src": {
+          "docs": 1,
+          "root": 0,
+          "src": 0
+        }
+      },
+      "graphMetrics": {
+        "fileCount": 5,
+        "importEdgeCount": 5,
+        "density": 0.25,
+        "weaklyConnectedComponents": 1,
+        "isDag": false
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "src": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          },
+          "docs": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          },
+          "root": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          }
+        },
+        "suggestedLayerByGroup": {
+          "docs": "layer:documentation"
+        },
+        "topologicalOrder": [
+          "src",
+          "docs",
+          "root"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": true,
+            "reason": "0 infra node(s); IaC files detected=True",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "2 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:docs/readme.md",
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config",
+          "file:src/models/user.py": "layer:src",
+          "file:src/utils/helpers.py": "layer:src",
+          "file:docs/readme.md": "layer:config",
+          "file:Dockerfile": "layer:infrastructure"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/models/user.py",
+          "filePath": "src/models/user.py",
+          "type": "file",
+          "name": "src/models/user.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/utils/helpers.py",
+          "filePath": "src/utils/helpers.py",
+          "type": "file",
+          "name": "src/utils/helpers.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:docs/readme.md",
+          "filePath": "docs/readme.md",
+          "type": "config",
+          "name": "docs/readme.md",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:Dockerfile",
+          "filePath": "Dockerfile",
+          "type": "file",
+          "name": "Dockerfile",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:Dockerfile",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:docs/readme.md",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ],
+      "allEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:Dockerfile",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:docs/readme.md",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ]
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "src": [
+          "file:src/api/routes.py",
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py"
+        ],
+        "docs": [
+          "file:docs/readme.md"
+        ],
+        "root": [
+          "file:Dockerfile"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py",
+          "file:docs/readme.md"
+        ],
+        "file": [
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py",
+          "file:Dockerfile"
+        ]
+      },
+      "crossCategoryEdges": [
+        {
+          "fromType": "file",
+          "toType": "config",
+          "edgeType": "imports",
+          "count": 2
+        },
+        {
+          "fromType": "config",
+          "toType": "file",
+          "edgeType": "imports",
+          "count": 1
+        }
+      ],
+      "interGroupImports": [
+        {
+          "from": "src",
+          "to": "docs",
+          "count": 1
+        },
+        {
+          "from": "src",
+          "to": "root",
+          "count": 1
+        }
+      ],
+      "intraGroupDensity": {
+        "src": {
+          "internalEdges": 3,
+          "totalEdges": 5,
+          "density": 0.6
+        },
+        "docs": {
+          "internalEdges": 0,
+          "totalEdges": 1,
+          "density": 0.0
+        },
+        "root": {
+          "internalEdges": 0,
+          "totalEdges": 1,
+          "density": 0.0
+        }
+      },
+      "patternMatches": {
+        "docs": "documentation"
+      },
+      "deploymentTopology": {
+        "hasDockerfile": true,
+        "hasCompose": false,
+        "hasK8s": false,
+        "hasTerraform": false,
+        "hasCI": false,
+        "infraFiles": [
+          "Dockerfile"
+        ]
+      },
+      "dataPipeline": {
+        "schemaFiles": [],
+        "migrationFiles": [],
+        "dataModelFiles": [
+          "src/models/user.py"
+        ],
+        "apiHandlerFiles": []
+      },
+      "docCoverage": {
+        "groupsWithDocs": 1,
+        "totalGroups": 3,
+        "coverageRatio": 0.3333,
+        "undocumentedGroups": [
+          "root",
+          "src"
+        ]
+      },
+      "dependencyDirection": [
+        {
+          "dependent": "src",
+          "dependsOn": "docs"
+        },
+        {
+          "dependent": "src",
+          "dependsOn": "root"
+        }
+      ],
+      "fileStats": {
+        "totalFileNodes": 5,
+        "filesPerGroup": {
+          "src": 3,
+          "docs": 1,
+          "root": 1
+        },
+        "nodeTypeCounts": {
+          "config": 2,
+          "file": 3
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 1,
+        "file:src/models/user.py": 0,
+        "file:src/utils/helpers.py": 1,
+        "file:docs/readme.md": 1,
+        "file:Dockerfile": 1
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 1,
+        "file:src/models/user.py": 2,
+        "file:src/utils/helpers.py": 1,
+        "file:docs/readme.md": 0,
+        "file:Dockerfile": 0
+      },
+      "commonPathPrefix": "",
+      "filePatternMatches": {
+        "file:docs/readme.md": "documentation",
+        "file:Dockerfile": "infrastructure"
+      },
+      "interGroupMatrix": {
+        "src": {
+          "docs": 1,
+          "root": 1
+        }
+      },
+      "graphMetrics": {
+        "fileCount": 5,
+        "importEdgeCount": 4,
+        "density": 0.2,
+        "weaklyConnectedComponents": 1,
+        "isDag": true,
+        "fanInFanOutSpearman": -0.7454,
+        "fanInFanOutPValue": 0.1482
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "src": {
+            "importedBy": 0,
+            "imports": 2,
+            "role": "top"
+          },
+          "docs": {
+            "importedBy": 1,
+            "imports": 0,
+            "role": "foundational"
+          },
+          "root": {
+            "importedBy": 1,
+            "imports": 0,
+            "role": "foundational"
+          }
+        },
+        "suggestedLayerByGroup": {
+          "docs": "layer:documentation"
+        },
+        "topologicalOrder": [
+          "docs",
+          "root",
+          "src"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": true,
+            "reason": "0 infra node(s); IaC files detected=True",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": false,
+            "reason": "0 pipeline node(s); CI detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": false,
+            "reason": "0 data node(s); schema files detected=False",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": false,
+            "reason": "2 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:docs/readme.md",
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config",
+          "file:src/models/user.py": "layer:src",
+          "file:src/utils/helpers.py": "layer:src",
+          "file:docs/readme.md": "layer:config",
+          "file:Dockerfile": "layer:infrastructure"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/models/user.py",
+          "filePath": "src/models/user.py",
+          "type": "file",
+          "name": "src/models/user.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/utils/helpers.py",
+          "filePath": "src/utils/helpers.py",
+          "type": "file",
+          "name": "src/utils/helpers.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:docs/readme.md",
+          "filePath": "docs/readme.md",
+          "type": "config",
+          "name": "docs/readme.md",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:Dockerfile",
+          "filePath": "Dockerfile",
+          "type": "file",
+          "name": "Dockerfile",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:k8s/deployment.yaml",
+          "filePath": "k8s/deployment.yaml",
+          "type": "file",
+          "name": "k8s/deployment.yaml",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:.github/workflows/test.yml",
+          "filePath": ".github/workflows/test.yml",
+          "type": "config",
+          "name": ".github/workflows/test.yml",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:tests/test_api.py",
+          "filePath": "tests/test_api.py",
+          "type": "file",
+          "name": "tests/test_api.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:schema.sql",
+          "filePath": "schema.sql",
+          "type": "file",
+          "name": "schema.sql",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:package.json",
+          "filePath": "package.json",
+          "type": "config",
+          "name": "package.json",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [],
+      "allEdges": []
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "src": [
+          "file:src/api/routes.py",
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py"
+        ],
+        "docs": [
+          "file:docs/readme.md"
+        ],
+        "root": [
+          "file:Dockerfile",
+          "file:schema.sql",
+          "file:package.json"
+        ],
+        "k8s": [
+          "file:k8s/deployment.yaml"
+        ],
+        ".github": [
+          "file:.github/workflows/test.yml"
+        ],
+        "tests": [
+          "file:tests/test_api.py"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py",
+          "file:docs/readme.md",
+          "file:.github/workflows/test.yml",
+          "file:package.json"
+        ],
+        "file": [
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py",
+          "file:Dockerfile",
+          "file:k8s/deployment.yaml",
+          "file:tests/test_api.py",
+          "file:schema.sql"
+        ]
+      },
+      "crossCategoryEdges": [],
+      "interGroupImports": [],
+      "intraGroupDensity": {
+        "src": {
+          "internalEdges": 0,
+          "totalEdges": 0,
+          "density": 0.0
+        },
+        "docs": {
+          "internalEdges": 0,
+          "totalEdges": 0,
+          "density": 0.0
+        },
+        "root": {
+          "internalEdges": 0,
+          "totalEdges": 0,
+          "density": 0.0
+        },
+        "k8s": {
+          "internalEdges": 0,
+          "totalEdges": 0,
+          "density": 0.0
+        },
+        ".github": {
+          "internalEdges": 0,
+          "totalEdges": 0,
+          "density": 0.0
+        },
+        "tests": {
+          "internalEdges": 0,
+          "totalEdges": 0,
+          "density": 0.0
+        }
+      },
+      "patternMatches": {
+        "docs": "documentation",
+        "k8s": "infrastructure",
+        ".github": "ci-cd",
+        "tests": "test"
+      },
+      "deploymentTopology": {
+        "hasDockerfile": true,
+        "hasCompose": false,
+        "hasK8s": true,
+        "hasTerraform": false,
+        "hasCI": true,
+        "infraFiles": [
+          ".github/workflows/test.yml",
+          "Dockerfile",
+          "k8s/deployment.yaml"
+        ]
+      },
+      "dataPipeline": {
+        "schemaFiles": [
+          "schema.sql"
+        ],
+        "migrationFiles": [],
+        "dataModelFiles": [
+          "src/models/user.py"
+        ],
+        "apiHandlerFiles": []
+      },
+      "docCoverage": {
+        "groupsWithDocs": 1,
+        "totalGroups": 6,
+        "coverageRatio": 0.1667,
+        "undocumentedGroups": [
+          ".github",
+          "k8s",
+          "root",
+          "src",
+          "tests"
+        ]
+      },
+      "dependencyDirection": [],
+      "fileStats": {
+        "totalFileNodes": 10,
+        "filesPerGroup": {
+          "src": 3,
+          "docs": 1,
+          "root": 3,
+          "k8s": 1,
+          ".github": 1,
+          "tests": 1
+        },
+        "nodeTypeCounts": {
+          "config": 4,
+          "file": 6
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 0,
+        "file:src/models/user.py": 0,
+        "file:src/utils/helpers.py": 0,
+        "file:docs/readme.md": 0,
+        "file:Dockerfile": 0,
+        "file:k8s/deployment.yaml": 0,
+        "file:.github/workflows/test.yml": 0,
+        "file:tests/test_api.py": 0,
+        "file:schema.sql": 0,
+        "file:package.json": 0
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 0,
+        "file:src/models/user.py": 0,
+        "file:src/utils/helpers.py": 0,
+        "file:docs/readme.md": 0,
+        "file:Dockerfile": 0,
+        "file:k8s/deployment.yaml": 0,
+        "file:.github/workflows/test.yml": 0,
+        "file:tests/test_api.py": 0,
+        "file:schema.sql": 0,
+        "file:package.json": 0
+      },
+      "commonPathPrefix": "",
+      "filePatternMatches": {
+        "file:docs/readme.md": "documentation",
+        "file:Dockerfile": "infrastructure",
+        "file:.github/workflows/test.yml": "ci-cd",
+        "file:schema.sql": "data"
+      },
+      "interGroupMatrix": {},
+      "graphMetrics": {
+        "fileCount": 10,
+        "importEdgeCount": 0,
+        "density": 0,
+        "weaklyConnectedComponents": 10,
+        "isDag": true
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "src": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          },
+          "docs": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          },
+          "root": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          },
+          "k8s": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          },
+          ".github": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          },
+          "tests": {
+            "importedBy": 0,
+            "imports": 0,
+            "role": "isolated"
+          }
+        },
+        "suggestedLayerByGroup": {
+          "docs": "layer:documentation",
+          "k8s": "layer:infrastructure",
+          ".github": "layer:ci-cd",
+          "tests": "layer:test"
+        },
+        "topologicalOrder": [
+          "src",
+          "docs",
+          "root",
+          "k8s",
+          ".github",
+          "tests"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": true,
+            "reason": "0 infra node(s); IaC files detected=True",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": true,
+            "reason": "0 pipeline node(s); CI detected=True",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": true,
+            "reason": "0 data node(s); schema files detected=True",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": true,
+            "reason": "3 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:.github/workflows/test.yml",
+              "file:docs/readme.md",
+              "file:package.json",
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config",
+          "file:src/models/user.py": "layer:src",
+          "file:src/utils/helpers.py": "layer:src",
+          "file:docs/readme.md": "layer:config",
+          "file:Dockerfile": "layer:infrastructure",
+          "file:k8s/deployment.yaml": "layer:infrastructure",
+          "file:.github/workflows/test.yml": "layer:config",
+          "file:tests/test_api.py": "layer:test",
+          "file:schema.sql": "layer:data",
+          "file:package.json": "layer:config"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/models/user.py",
+          "filePath": "src/models/user.py",
+          "type": "file",
+          "name": "src/models/user.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/utils/helpers.py",
+          "filePath": "src/utils/helpers.py",
+          "type": "file",
+          "name": "src/utils/helpers.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:docs/readme.md",
+          "filePath": "docs/readme.md",
+          "type": "config",
+          "name": "docs/readme.md",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:Dockerfile",
+          "filePath": "Dockerfile",
+          "type": "file",
+          "name": "Dockerfile",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:k8s/deployment.yaml",
+          "filePath": "k8s/deployment.yaml",
+          "type": "file",
+          "name": "k8s/deployment.yaml",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:.github/workflows/test.yml",
+          "filePath": ".github/workflows/test.yml",
+          "type": "config",
+          "name": ".github/workflows/test.yml",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:tests/test_api.py",
+          "filePath": "tests/test_api.py",
+          "type": "file",
+          "name": "tests/test_api.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:schema.sql",
+          "filePath": "schema.sql",
+          "type": "file",
+          "name": "schema.sql",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:package.json",
+          "filePath": "package.json",
+          "type": "config",
+          "name": "package.json",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:docs/readme.md",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:docs/readme.md",
+          "target": "file:Dockerfile",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:Dockerfile",
+          "target": "file:k8s/deployment.yaml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:k8s/deployment.yaml",
+          "target": "file:.github/workflows/test.yml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:.github/workflows/test.yml",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:tests/test_api.py",
+          "target": "file:schema.sql",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:schema.sql",
+          "target": "file:package.json",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ],
+      "allEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:docs/readme.md",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:docs/readme.md",
+          "target": "file:Dockerfile",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:Dockerfile",
+          "target": "file:k8s/deployment.yaml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:k8s/deployment.yaml",
+          "target": "file:.github/workflows/test.yml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:.github/workflows/test.yml",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:tests/test_api.py",
+          "target": "file:schema.sql",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:schema.sql",
+          "target": "file:package.json",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ]
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "src": [
+          "file:src/api/routes.py",
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py"
+        ],
+        "docs": [
+          "file:docs/readme.md"
+        ],
+        "root": [
+          "file:Dockerfile",
+          "file:schema.sql",
+          "file:package.json"
+        ],
+        "k8s": [
+          "file:k8s/deployment.yaml"
+        ],
+        ".github": [
+          "file:.github/workflows/test.yml"
+        ],
+        "tests": [
+          "file:tests/test_api.py"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py",
+          "file:docs/readme.md",
+          "file:.github/workflows/test.yml",
+          "file:package.json"
+        ],
+        "file": [
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py",
+          "file:Dockerfile",
+          "file:k8s/deployment.yaml",
+          "file:tests/test_api.py",
+          "file:schema.sql"
+        ]
+      },
+      "crossCategoryEdges": [
+        {
+          "fromType": "config",
+          "toType": "file",
+          "edgeType": "imports",
+          "count": 3
+        },
+        {
+          "fromType": "file",
+          "toType": "config",
+          "edgeType": "imports",
+          "count": 3
+        }
+      ],
+      "interGroupImports": [
+        {
+          "from": ".github",
+          "to": "tests",
+          "count": 1
+        },
+        {
+          "from": "docs",
+          "to": "root",
+          "count": 1
+        },
+        {
+          "from": "k8s",
+          "to": ".github",
+          "count": 1
+        },
+        {
+          "from": "root",
+          "to": "k8s",
+          "count": 1
+        },
+        {
+          "from": "src",
+          "to": "docs",
+          "count": 1
+        },
+        {
+          "from": "tests",
+          "to": "root",
+          "count": 1
+        }
+      ],
+      "intraGroupDensity": {
+        "src": {
+          "internalEdges": 2,
+          "totalEdges": 3,
+          "density": 0.6667
+        },
+        "docs": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        },
+        "root": {
+          "internalEdges": 1,
+          "totalEdges": 4,
+          "density": 0.25
+        },
+        "k8s": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        },
+        ".github": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        },
+        "tests": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        }
+      },
+      "patternMatches": {
+        "docs": "documentation",
+        "k8s": "infrastructure",
+        ".github": "ci-cd",
+        "tests": "test"
+      },
+      "deploymentTopology": {
+        "hasDockerfile": true,
+        "hasCompose": false,
+        "hasK8s": true,
+        "hasTerraform": false,
+        "hasCI": true,
+        "infraFiles": [
+          ".github/workflows/test.yml",
+          "Dockerfile",
+          "k8s/deployment.yaml"
+        ]
+      },
+      "dataPipeline": {
+        "schemaFiles": [
+          "schema.sql"
+        ],
+        "migrationFiles": [],
+        "dataModelFiles": [
+          "src/models/user.py"
+        ],
+        "apiHandlerFiles": []
+      },
+      "docCoverage": {
+        "groupsWithDocs": 1,
+        "totalGroups": 6,
+        "coverageRatio": 0.1667,
+        "undocumentedGroups": [
+          ".github",
+          "k8s",
+          "root",
+          "src",
+          "tests"
+        ]
+      },
+      "dependencyDirection": [
+        {
+          "dependent": ".github",
+          "dependsOn": "tests"
+        },
+        {
+          "dependent": "docs",
+          "dependsOn": "root"
+        },
+        {
+          "dependent": "k8s",
+          "dependsOn": ".github"
+        },
+        {
+          "dependent": "root",
+          "dependsOn": "k8s"
+        },
+        {
+          "dependent": "src",
+          "dependsOn": "docs"
+        },
+        {
+          "dependent": "tests",
+          "dependsOn": "root"
+        }
+      ],
+      "fileStats": {
+        "totalFileNodes": 10,
+        "filesPerGroup": {
+          "src": 3,
+          "docs": 1,
+          "root": 3,
+          "k8s": 1,
+          ".github": 1,
+          "tests": 1
+        },
+        "nodeTypeCounts": {
+          "config": 4,
+          "file": 6
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 0,
+        "file:src/models/user.py": 1,
+        "file:src/utils/helpers.py": 1,
+        "file:docs/readme.md": 1,
+        "file:Dockerfile": 1,
+        "file:k8s/deployment.yaml": 1,
+        "file:.github/workflows/test.yml": 1,
+        "file:tests/test_api.py": 1,
+        "file:schema.sql": 1,
+        "file:package.json": 1
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 1,
+        "file:src/models/user.py": 1,
+        "file:src/utils/helpers.py": 1,
+        "file:docs/readme.md": 1,
+        "file:Dockerfile": 1,
+        "file:k8s/deployment.yaml": 1,
+        "file:.github/workflows/test.yml": 1,
+        "file:tests/test_api.py": 1,
+        "file:schema.sql": 1,
+        "file:package.json": 0
+      },
+      "commonPathPrefix": "",
+      "filePatternMatches": {
+        "file:docs/readme.md": "documentation",
+        "file:Dockerfile": "infrastructure",
+        "file:.github/workflows/test.yml": "ci-cd",
+        "file:schema.sql": "data"
+      },
+      "interGroupMatrix": {
+        ".github": {
+          ".github": 0,
+          "docs": 0,
+          "k8s": 0,
+          "root": 0,
+          "tests": 1
+        },
+        "docs": {
+          ".github": 0,
+          "docs": 0,
+          "k8s": 0,
+          "root": 1,
+          "tests": 0
+        },
+        "k8s": {
+          ".github": 1,
+          "docs": 0,
+          "k8s": 0,
+          "root": 0,
+          "tests": 0
+        },
+        "root": {
+          ".github": 0,
+          "docs": 0,
+          "k8s": 1,
+          "root": 0,
+          "tests": 0
+        },
+        "src": {
+          ".github": 0,
+          "docs": 1,
+          "k8s": 0,
+          "root": 0,
+          "tests": 0
+        },
+        "tests": {
+          ".github": 0,
+          "docs": 0,
+          "k8s": 0,
+          "root": 1,
+          "tests": 0
+        }
+      },
+      "graphMetrics": {
+        "fileCount": 10,
+        "importEdgeCount": 9,
+        "density": 0.1,
+        "weaklyConnectedComponents": 1,
+        "isDag": true,
+        "fanInFanOutSpearman": -0.1111,
+        "fanInFanOutPValue": 0.7599
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "src": {
+            "importedBy": 0,
+            "imports": 1,
+            "role": "top"
+          },
+          "docs": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          },
+          "root": {
+            "importedBy": 2,
+            "imports": 1,
+            "role": "foundational-leaning"
+          },
+          "k8s": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          },
+          ".github": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          },
+          "tests": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          }
+        },
+        "suggestedLayerByGroup": {
+          "docs": "layer:documentation",
+          "k8s": "layer:infrastructure",
+          ".github": "layer:ci-cd",
+          "tests": "layer:test"
+        },
+        "topologicalOrder": [
+          "root",
+          "docs",
+          "k8s",
+          ".github",
+          "tests",
+          "src"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": true,
+            "reason": "0 infra node(s); IaC files detected=True",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": true,
+            "reason": "0 pipeline node(s); CI detected=True",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": true,
+            "reason": "0 data node(s); schema files detected=True",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": true,
+            "reason": "3 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:.github/workflows/test.yml",
+              "file:docs/readme.md",
+              "file:package.json",
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config",
+          "file:src/models/user.py": "layer:src",
+          "file:src/utils/helpers.py": "layer:src",
+          "file:docs/readme.md": "layer:config",
+          "file:Dockerfile": "layer:infrastructure",
+          "file:k8s/deployment.yaml": "layer:infrastructure",
+          "file:.github/workflows/test.yml": "layer:config",
+          "file:tests/test_api.py": "layer:test",
+          "file:schema.sql": "layer:data",
+          "file:package.json": "layer:config"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/models/user.py",
+          "filePath": "src/models/user.py",
+          "type": "file",
+          "name": "src/models/user.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/utils/helpers.py",
+          "filePath": "src/utils/helpers.py",
+          "type": "file",
+          "name": "src/utils/helpers.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:docs/readme.md",
+          "filePath": "docs/readme.md",
+          "type": "config",
+          "name": "docs/readme.md",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:Dockerfile",
+          "filePath": "Dockerfile",
+          "type": "file",
+          "name": "Dockerfile",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:k8s/deployment.yaml",
+          "filePath": "k8s/deployment.yaml",
+          "type": "file",
+          "name": "k8s/deployment.yaml",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:.github/workflows/test.yml",
+          "filePath": ".github/workflows/test.yml",
+          "type": "config",
+          "name": ".github/workflows/test.yml",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:tests/test_api.py",
+          "filePath": "tests/test_api.py",
+          "type": "file",
+          "name": "tests/test_api.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:schema.sql",
+          "filePath": "schema.sql",
+          "type": "file",
+          "name": "schema.sql",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:package.json",
+          "filePath": "package.json",
+          "type": "config",
+          "name": "package.json",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:docs/readme.md",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:docs/readme.md",
+          "target": "file:Dockerfile",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:Dockerfile",
+          "target": "file:k8s/deployment.yaml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:k8s/deployment.yaml",
+          "target": "file:.github/workflows/test.yml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:.github/workflows/test.yml",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:tests/test_api.py",
+          "target": "file:schema.sql",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:schema.sql",
+          "target": "file:package.json",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:package.json",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ],
+      "allEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:docs/readme.md",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:docs/readme.md",
+          "target": "file:Dockerfile",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:Dockerfile",
+          "target": "file:k8s/deployment.yaml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:k8s/deployment.yaml",
+          "target": "file:.github/workflows/test.yml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:.github/workflows/test.yml",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:tests/test_api.py",
+          "target": "file:schema.sql",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:schema.sql",
+          "target": "file:package.json",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:package.json",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ]
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "src": [
+          "file:src/api/routes.py",
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py"
+        ],
+        "docs": [
+          "file:docs/readme.md"
+        ],
+        "root": [
+          "file:Dockerfile",
+          "file:schema.sql",
+          "file:package.json"
+        ],
+        "k8s": [
+          "file:k8s/deployment.yaml"
+        ],
+        ".github": [
+          "file:.github/workflows/test.yml"
+        ],
+        "tests": [
+          "file:tests/test_api.py"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py",
+          "file:docs/readme.md",
+          "file:.github/workflows/test.yml",
+          "file:package.json"
+        ],
+        "file": [
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py",
+          "file:Dockerfile",
+          "file:k8s/deployment.yaml",
+          "file:tests/test_api.py",
+          "file:schema.sql"
+        ]
+      },
+      "crossCategoryEdges": [
+        {
+          "fromType": "config",
+          "toType": "file",
+          "edgeType": "imports",
+          "count": 3
+        },
+        {
+          "fromType": "file",
+          "toType": "config",
+          "edgeType": "imports",
+          "count": 3
+        }
+      ],
+      "interGroupImports": [
+        {
+          "from": ".github",
+          "to": "tests",
+          "count": 1
+        },
+        {
+          "from": "docs",
+          "to": "root",
+          "count": 1
+        },
+        {
+          "from": "k8s",
+          "to": ".github",
+          "count": 1
+        },
+        {
+          "from": "root",
+          "to": "k8s",
+          "count": 1
+        },
+        {
+          "from": "root",
+          "to": "src",
+          "count": 1
+        },
+        {
+          "from": "src",
+          "to": "docs",
+          "count": 1
+        },
+        {
+          "from": "tests",
+          "to": "root",
+          "count": 1
+        }
+      ],
+      "intraGroupDensity": {
+        "src": {
+          "internalEdges": 2,
+          "totalEdges": 4,
+          "density": 0.5
+        },
+        "docs": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        },
+        "root": {
+          "internalEdges": 1,
+          "totalEdges": 5,
+          "density": 0.2
+        },
+        "k8s": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        },
+        ".github": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        },
+        "tests": {
+          "internalEdges": 0,
+          "totalEdges": 2,
+          "density": 0.0
+        }
+      },
+      "patternMatches": {
+        "docs": "documentation",
+        "k8s": "infrastructure",
+        ".github": "ci-cd",
+        "tests": "test"
+      },
+      "deploymentTopology": {
+        "hasDockerfile": true,
+        "hasCompose": false,
+        "hasK8s": true,
+        "hasTerraform": false,
+        "hasCI": true,
+        "infraFiles": [
+          ".github/workflows/test.yml",
+          "Dockerfile",
+          "k8s/deployment.yaml"
+        ]
+      },
+      "dataPipeline": {
+        "schemaFiles": [
+          "schema.sql"
+        ],
+        "migrationFiles": [],
+        "dataModelFiles": [
+          "src/models/user.py"
+        ],
+        "apiHandlerFiles": []
+      },
+      "docCoverage": {
+        "groupsWithDocs": 1,
+        "totalGroups": 6,
+        "coverageRatio": 0.1667,
+        "undocumentedGroups": [
+          ".github",
+          "k8s",
+          "root",
+          "src",
+          "tests"
+        ]
+      },
+      "dependencyDirection": [
+        {
+          "dependent": ".github",
+          "dependsOn": "tests"
+        },
+        {
+          "dependent": "docs",
+          "dependsOn": "root"
+        },
+        {
+          "dependent": "k8s",
+          "dependsOn": ".github"
+        },
+        {
+          "dependent": "root",
+          "dependsOn": "k8s"
+        },
+        {
+          "dependent": "root",
+          "dependsOn": "src"
+        },
+        {
+          "dependent": "src",
+          "dependsOn": "docs"
+        },
+        {
+          "dependent": "tests",
+          "dependsOn": "root"
+        }
+      ],
+      "fileStats": {
+        "totalFileNodes": 10,
+        "filesPerGroup": {
+          "src": 3,
+          "docs": 1,
+          "root": 3,
+          "k8s": 1,
+          ".github": 1,
+          "tests": 1
+        },
+        "nodeTypeCounts": {
+          "config": 4,
+          "file": 6
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 1,
+        "file:src/models/user.py": 1,
+        "file:src/utils/helpers.py": 1,
+        "file:docs/readme.md": 1,
+        "file:Dockerfile": 1,
+        "file:k8s/deployment.yaml": 1,
+        "file:.github/workflows/test.yml": 1,
+        "file:tests/test_api.py": 1,
+        "file:schema.sql": 1,
+        "file:package.json": 1
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 1,
+        "file:src/models/user.py": 1,
+        "file:src/utils/helpers.py": 1,
+        "file:docs/readme.md": 1,
+        "file:Dockerfile": 1,
+        "file:k8s/deployment.yaml": 1,
+        "file:.github/workflows/test.yml": 1,
+        "file:tests/test_api.py": 1,
+        "file:schema.sql": 1,
+        "file:package.json": 1
+      },
+      "commonPathPrefix": "",
+      "filePatternMatches": {
+        "file:docs/readme.md": "documentation",
+        "file:Dockerfile": "infrastructure",
+        "file:.github/workflows/test.yml": "ci-cd",
+        "file:schema.sql": "data"
+      },
+      "interGroupMatrix": {
+        ".github": {
+          ".github": 0,
+          "docs": 0,
+          "k8s": 0,
+          "root": 0,
+          "src": 0,
+          "tests": 1
+        },
+        "docs": {
+          ".github": 0,
+          "docs": 0,
+          "k8s": 0,
+          "root": 1,
+          "src": 0,
+          "tests": 0
+        },
+        "k8s": {
+          ".github": 1,
+          "docs": 0,
+          "k8s": 0,
+          "root": 0,
+          "src": 0,
+          "tests": 0
+        },
+        "root": {
+          ".github": 0,
+          "docs": 0,
+          "k8s": 1,
+          "root": 0,
+          "src": 1,
+          "tests": 0
+        },
+        "src": {
+          ".github": 0,
+          "docs": 1,
+          "k8s": 0,
+          "root": 0,
+          "src": 0,
+          "tests": 0
+        },
+        "tests": {
+          ".github": 0,
+          "docs": 0,
+          "k8s": 0,
+          "root": 1,
+          "src": 0,
+          "tests": 0
+        }
+      },
+      "graphMetrics": {
+        "fileCount": 10,
+        "importEdgeCount": 10,
+        "density": 0.1111,
+        "weaklyConnectedComponents": 1,
+        "isDag": false
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "src": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          },
+          "docs": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          },
+          "root": {
+            "importedBy": 2,
+            "imports": 2,
+            "role": "foundational-leaning"
+          },
+          "k8s": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          },
+          ".github": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          },
+          "tests": {
+            "importedBy": 1,
+            "imports": 1,
+            "role": "foundational-leaning"
+          }
+        },
+        "suggestedLayerByGroup": {
+          "docs": "layer:documentation",
+          "k8s": "layer:infrastructure",
+          ".github": "layer:ci-cd",
+          "tests": "layer:test"
+        },
+        "topologicalOrder": [
+          "src",
+          "docs",
+          "root",
+          "k8s",
+          ".github",
+          "tests"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": true,
+            "reason": "0 infra node(s); IaC files detected=True",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": true,
+            "reason": "0 pipeline node(s); CI detected=True",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": true,
+            "reason": "0 data node(s); schema files detected=True",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": true,
+            "reason": "3 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:.github/workflows/test.yml",
+              "file:docs/readme.md",
+              "file:package.json",
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config",
+          "file:src/models/user.py": "layer:src",
+          "file:src/utils/helpers.py": "layer:src",
+          "file:docs/readme.md": "layer:config",
+          "file:Dockerfile": "layer:infrastructure",
+          "file:k8s/deployment.yaml": "layer:infrastructure",
+          "file:.github/workflows/test.yml": "layer:config",
+          "file:tests/test_api.py": "layer:test",
+          "file:schema.sql": "layer:data",
+          "file:package.json": "layer:config"
+        }
+      }
+    }
+  },
+  {
+    "input": {
+      "fileNodes": [
+        {
+          "id": "file:src/api/routes.py",
+          "filePath": "src/api/routes.py",
+          "type": "config",
+          "name": "src/api/routes.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/models/user.py",
+          "filePath": "src/models/user.py",
+          "type": "file",
+          "name": "src/models/user.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:src/utils/helpers.py",
+          "filePath": "src/utils/helpers.py",
+          "type": "file",
+          "name": "src/utils/helpers.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:docs/readme.md",
+          "filePath": "docs/readme.md",
+          "type": "config",
+          "name": "docs/readme.md",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:Dockerfile",
+          "filePath": "Dockerfile",
+          "type": "file",
+          "name": "Dockerfile",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:k8s/deployment.yaml",
+          "filePath": "k8s/deployment.yaml",
+          "type": "file",
+          "name": "k8s/deployment.yaml",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:.github/workflows/test.yml",
+          "filePath": ".github/workflows/test.yml",
+          "type": "config",
+          "name": ".github/workflows/test.yml",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:tests/test_api.py",
+          "filePath": "tests/test_api.py",
+          "type": "file",
+          "name": "tests/test_api.py",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:schema.sql",
+          "filePath": "schema.sql",
+          "type": "file",
+          "name": "schema.sql",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        },
+        {
+          "id": "file:package.json",
+          "filePath": "package.json",
+          "type": "config",
+          "name": "package.json",
+          "tags": [],
+          "summary": "sample",
+          "complexity": "simple"
+        }
+      ],
+      "importEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:docs/readme.md",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:Dockerfile",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:k8s/deployment.yaml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:.github/workflows/test.yml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:schema.sql",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:docs/readme.md",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:package.json",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:schema.sql",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:docs/readme.md",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:docs/readme.md",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:docs/readme.md",
+          "target": "file:package.json",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:Dockerfile",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:Dockerfile",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:Dockerfile",
+          "target": "file:.github/workflows/test.yml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:Dockerfile",
+          "target": "file:package.json",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:k8s/deployment.yaml",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:k8s/deployment.yaml",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:k8s/deployment.yaml",
+          "target": "file:k8s/deployment.yaml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:.github/workflows/test.yml",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:.github/workflows/test.yml",
+          "target": "file:k8s/deployment.yaml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:.github/workflows/test.yml",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:tests/test_api.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:tests/test_api.py",
+          "target": "file:Dockerfile",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:tests/test_api.py",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:schema.sql",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:schema.sql",
+          "target": "file:k8s/deployment.yaml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:schema.sql",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:package.json",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:package.json",
+          "target": "file:k8s/deployment.yaml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:package.json",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ],
+      "allEdges": [
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:docs/readme.md",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:Dockerfile",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:k8s/deployment.yaml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:.github/workflows/test.yml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/api/routes.py",
+          "target": "file:schema.sql",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:docs/readme.md",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/models/user.py",
+          "target": "file:package.json",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:src/utils/helpers.py",
+          "target": "file:schema.sql",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:docs/readme.md",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:docs/readme.md",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:docs/readme.md",
+          "target": "file:package.json",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:Dockerfile",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:Dockerfile",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:Dockerfile",
+          "target": "file:.github/workflows/test.yml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:Dockerfile",
+          "target": "file:package.json",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:k8s/deployment.yaml",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:k8s/deployment.yaml",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:k8s/deployment.yaml",
+          "target": "file:k8s/deployment.yaml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:.github/workflows/test.yml",
+          "target": "file:src/models/user.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:.github/workflows/test.yml",
+          "target": "file:k8s/deployment.yaml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:.github/workflows/test.yml",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:tests/test_api.py",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:tests/test_api.py",
+          "target": "file:Dockerfile",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:tests/test_api.py",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:schema.sql",
+          "target": "file:src/api/routes.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:schema.sql",
+          "target": "file:k8s/deployment.yaml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:schema.sql",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:package.json",
+          "target": "file:src/utils/helpers.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:package.json",
+          "target": "file:k8s/deployment.yaml",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        },
+        {
+          "source": "file:package.json",
+          "target": "file:tests/test_api.py",
+          "type": "imports",
+          "weight": 1,
+          "direction": "forward"
+        }
+      ]
+    },
+    "expected": {
+      "scriptCompleted": true,
+      "directoryGroups": {
+        "src": [
+          "file:src/api/routes.py",
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py"
+        ],
+        "docs": [
+          "file:docs/readme.md"
+        ],
+        "root": [
+          "file:Dockerfile",
+          "file:schema.sql",
+          "file:package.json"
+        ],
+        "k8s": [
+          "file:k8s/deployment.yaml"
+        ],
+        ".github": [
+          "file:.github/workflows/test.yml"
+        ],
+        "tests": [
+          "file:tests/test_api.py"
+        ]
+      },
+      "nodeTypeGroups": {
+        "config": [
+          "file:src/api/routes.py",
+          "file:docs/readme.md",
+          "file:.github/workflows/test.yml",
+          "file:package.json"
+        ],
+        "file": [
+          "file:src/models/user.py",
+          "file:src/utils/helpers.py",
+          "file:Dockerfile",
+          "file:k8s/deployment.yaml",
+          "file:tests/test_api.py",
+          "file:schema.sql"
+        ]
+      },
+      "crossCategoryEdges": [
+        {
+          "fromType": "config",
+          "toType": "file",
+          "edgeType": "imports",
+          "count": 12
+        },
+        {
+          "fromType": "file",
+          "toType": "config",
+          "edgeType": "imports",
+          "count": 7
+        }
+      ],
+      "interGroupImports": [
+        {
+          "from": "root",
+          "to": "src",
+          "count": 4
+        },
+        {
+          "from": "src",
+          "to": "root",
+          "count": 4
+        },
+        {
+          "from": "src",
+          "to": "tests",
+          "count": 3
+        },
+        {
+          "from": "docs",
+          "to": "src",
+          "count": 2
+        },
+        {
+          "from": "k8s",
+          "to": "src",
+          "count": 2
+        },
+        {
+          "from": "root",
+          "to": "k8s",
+          "count": 2
+        },
+        {
+          "from": "root",
+          "to": "tests",
+          "count": 2
+        },
+        {
+          "from": "src",
+          "to": "docs",
+          "count": 2
+        },
+        {
+          "from": ".github",
+          "to": "k8s",
+          "count": 1
+        },
+        {
+          "from": ".github",
+          "to": "src",
+          "count": 1
+        },
+        {
+          "from": ".github",
+          "to": "tests",
+          "count": 1
+        },
+        {
+          "from": "docs",
+          "to": "root",
+          "count": 1
+        },
+        {
+          "from": "root",
+          "to": ".github",
+          "count": 1
+        },
+        {
+          "from": "src",
+          "to": ".github",
+          "count": 1
+        },
+        {
+          "from": "src",
+          "to": "k8s",
+          "count": 1
+        },
+        {
+          "from": "tests",
+          "to": "root",
+          "count": 1
+        },
+        {
+          "from": "tests",
+          "to": "src",
+          "count": 1
+        }
+      ],
+      "intraGroupDensity": {
+        "src": {
+          "internalEdges": 2,
+          "totalEdges": 23,
+          "density": 0.087
+        },
+        "docs": {
+          "internalEdges": 0,
+          "totalEdges": 5,
+          "density": 0.0
+        },
+        "root": {
+          "internalEdges": 1,
+          "totalEdges": 16,
+          "density": 0.0625
+        },
+        "k8s": {
+          "internalEdges": 1,
+          "totalEdges": 7,
+          "density": 0.1429
+        },
+        ".github": {
+          "internalEdges": 0,
+          "totalEdges": 5,
+          "density": 0.0
+        },
+        "tests": {
+          "internalEdges": 1,
+          "totalEdges": 9,
+          "density": 0.1111
+        }
+      },
+      "patternMatches": {
+        "docs": "documentation",
+        "k8s": "infrastructure",
+        ".github": "ci-cd",
+        "tests": "test"
+      },
+      "deploymentTopology": {
+        "hasDockerfile": true,
+        "hasCompose": false,
+        "hasK8s": true,
+        "hasTerraform": false,
+        "hasCI": true,
+        "infraFiles": [
+          ".github/workflows/test.yml",
+          "Dockerfile",
+          "k8s/deployment.yaml"
+        ]
+      },
+      "dataPipeline": {
+        "schemaFiles": [
+          "schema.sql"
+        ],
+        "migrationFiles": [],
+        "dataModelFiles": [
+          "src/models/user.py"
+        ],
+        "apiHandlerFiles": []
+      },
+      "docCoverage": {
+        "groupsWithDocs": 1,
+        "totalGroups": 6,
+        "coverageRatio": 0.1667,
+        "undocumentedGroups": [
+          ".github",
+          "k8s",
+          "root",
+          "src",
+          "tests"
+        ]
+      },
+      "dependencyDirection": [
+        {
+          "dependent": "src",
+          "dependsOn": "tests"
+        },
+        {
+          "dependent": "k8s",
+          "dependsOn": "src"
+        },
+        {
+          "dependent": "root",
+          "dependsOn": "k8s"
+        },
+        {
+          "dependent": "root",
+          "dependsOn": "tests"
+        },
+        {
+          "dependent": ".github",
+          "dependsOn": "k8s"
+        },
+        {
+          "dependent": ".github",
+          "dependsOn": "tests"
+        },
+        {
+          "dependent": "docs",
+          "dependsOn": "root"
+        },
+        {
+          "dependent": "root",
+          "dependsOn": ".github"
+        }
+      ],
+      "fileStats": {
+        "totalFileNodes": 10,
+        "filesPerGroup": {
+          "src": 3,
+          "docs": 1,
+          "root": 3,
+          "k8s": 1,
+          ".github": 1,
+          "tests": 1
+        },
+        "nodeTypeCounts": {
+          "config": 4,
+          "file": 6
+        }
+      },
+      "fileFanIn": {
+        "file:src/api/routes.py": 4,
+        "file:src/models/user.py": 3,
+        "file:src/utils/helpers.py": 5,
+        "file:docs/readme.md": 2,
+        "file:Dockerfile": 2,
+        "file:k8s/deployment.yaml": 4,
+        "file:.github/workflows/test.yml": 2,
+        "file:tests/test_api.py": 6,
+        "file:schema.sql": 2,
+        "file:package.json": 3
+      },
+      "fileFanOut": {
+        "file:src/api/routes.py": 7,
+        "file:src/models/user.py": 4,
+        "file:src/utils/helpers.py": 2,
+        "file:docs/readme.md": 3,
+        "file:Dockerfile": 4,
+        "file:k8s/deployment.yaml": 2,
+        "file:.github/workflows/test.yml": 3,
+        "file:tests/test_api.py": 2,
+        "file:schema.sql": 3,
+        "file:package.json": 3
+      },
+      "commonPathPrefix": "",
+      "filePatternMatches": {
+        "file:docs/readme.md": "documentation",
+        "file:Dockerfile": "infrastructure",
+        "file:.github/workflows/test.yml": "ci-cd",
+        "file:schema.sql": "data"
+      },
+      "interGroupMatrix": {
+        ".github": {
+          ".github": 0,
+          "docs": 0,
+          "k8s": 1,
+          "root": 0,
+          "src": 1,
+          "tests": 1
+        },
+        "docs": {
+          ".github": 0,
+          "docs": 0,
+          "k8s": 0,
+          "root": 1,
+          "src": 2,
+          "tests": 0
+        },
+        "k8s": {
+          ".github": 0,
+          "docs": 0,
+          "k8s": 0,
+          "root": 0,
+          "src": 2,
+          "tests": 0
+        },
+        "root": {
+          ".github": 1,
+          "docs": 0,
+          "k8s": 2,
+          "root": 0,
+          "src": 4,
+          "tests": 2
+        },
+        "src": {
+          ".github": 1,
+          "docs": 2,
+          "k8s": 1,
+          "root": 4,
+          "src": 0,
+          "tests": 3
+        },
+        "tests": {
+          ".github": 0,
+          "docs": 0,
+          "k8s": 0,
+          "root": 1,
+          "src": 1,
+          "tests": 0
+        }
+      },
+      "graphMetrics": {
+        "fileCount": 10,
+        "importEdgeCount": 33,
+        "density": 0.3667,
+        "weaklyConnectedComponents": 1,
+        "isDag": false,
+        "fanInFanOutSpearman": -0.4621,
+        "fanInFanOutPValue": 0.1788
+      },
+      "phase2Recommendations": {
+        "groupRoles": {
+          "src": {
+            "importedBy": 10,
+            "imports": 11,
+            "role": "consumer"
+          },
+          "docs": {
+            "importedBy": 2,
+            "imports": 3,
+            "role": "consumer"
+          },
+          "root": {
+            "importedBy": 6,
+            "imports": 9,
+            "role": "consumer"
+          },
+          "k8s": {
+            "importedBy": 4,
+            "imports": 2,
+            "role": "foundational-leaning"
+          },
+          ".github": {
+            "importedBy": 2,
+            "imports": 3,
+            "role": "consumer"
+          },
+          "tests": {
+            "importedBy": 6,
+            "imports": 2,
+            "role": "foundational-leaning"
+          }
+        },
+        "suggestedLayerByGroup": {
+          "docs": "layer:documentation",
+          "k8s": "layer:infrastructure",
+          ".github": "layer:ci-cd",
+          "tests": "layer:test"
+        },
+        "topologicalOrder": [
+          "tests",
+          "src",
+          "k8s",
+          ".github",
+          "root",
+          "docs"
+        ],
+        "nonCodeLayerSuggestions": [
+          {
+            "layerId": "layer:infrastructure",
+            "recommended": true,
+            "reason": "0 infra node(s); IaC files detected=True",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:ci-cd",
+            "recommended": true,
+            "reason": "0 pipeline node(s); CI detected=True",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:documentation",
+            "recommended": false,
+            "reason": "0 document node(s) (threshold 3)",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:data",
+            "recommended": true,
+            "reason": "0 data node(s); schema files detected=True",
+            "nodeIds": []
+          },
+          {
+            "layerId": "layer:config",
+            "recommended": true,
+            "reason": "3 config node(s) beyond package.json (threshold 3)",
+            "nodeIds": [
+              "file:.github/workflows/test.yml",
+              "file:docs/readme.md",
+              "file:package.json",
+              "file:src/api/routes.py"
+            ]
+          }
+        ],
+        "defaultLayerAssignment": {
+          "file:src/api/routes.py": "layer:config",
+          "file:src/models/user.py": "layer:src",
+          "file:src/utils/helpers.py": "layer:src",
+          "file:docs/readme.md": "layer:config",
+          "file:Dockerfile": "layer:infrastructure",
+          "file:k8s/deployment.yaml": "layer:infrastructure",
+          "file:.github/workflows/test.yml": "layer:config",
+          "file:tests/test_api.py": "layer:test",
+          "file:schema.sql": "layer:data",
+          "file:package.json": "layer:config"
+        }
+      }
+    }
+  }
+]

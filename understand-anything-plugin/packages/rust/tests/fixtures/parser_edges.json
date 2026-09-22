@@ -1,0 +1,671 @@
+[
+  {
+    "function": "noncode",
+    "input": {
+      "language": "yaml",
+      "content": "on: push\ntrue: yes\nfalse: no\nnull: value\n3: foo\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "3",
+          "level": 1,
+          "lineRange": [
+            5,
+            6
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "yaml",
+      "content": "\"on\": x\n\"true\": x\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "on",
+          "level": 1,
+          "lineRange": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "true",
+          "level": 1,
+          "lineRange": [
+            2,
+            3
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "yaml",
+      "content": "- name: yes\n- id: null\n- kind: foo\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "[0]",
+          "level": 1,
+          "lineRange": [
+            1,
+            4
+          ]
+        },
+        {
+          "name": "[1]",
+          "level": 1,
+          "lineRange": [
+            1,
+            4
+          ]
+        },
+        {
+          "name": "foo",
+          "level": 1,
+          "lineRange": [
+            1,
+            4
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "yaml",
+      "content": "a: one\nb: two\na: three\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "a",
+          "level": 1,
+          "lineRange": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "b",
+          "level": 1,
+          "lineRange": [
+            2,
+            4
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "yaml",
+      "content": "a: 1\n---\nb: 2"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "a",
+          "level": 1,
+          "lineRange": [
+            1,
+            2
+          ]
+        },
+        {
+          "name": "b",
+          "level": 1,
+          "lineRange": [
+            3,
+            3
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "yaml",
+      "content": "defaults: &base\n  name: web\n<<: *base\nlast: okay\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "defaults",
+          "level": 1,
+          "lineRange": [
+            1,
+            3
+          ]
+        },
+        {
+          "name": "last",
+          "level": 1,
+          "lineRange": [
+            4,
+            5
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "yaml",
+      "content": "? [a, b]\n: x\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "json",
+      "content": "{\"\u6587\": true, \"a\": 1}"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "a",
+          "level": 1,
+          "lineRange": [
+            1,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "json",
+      "content": "{\"\\u6587\": true, \"a\": 1}"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "\u6587",
+          "level": 1,
+          "lineRange": [
+            1,
+            0
+          ]
+        },
+        {
+          "name": "a",
+          "level": 1,
+          "lineRange": [
+            1,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "json",
+      "content": "{\"a\": 1, \"a\": 2}"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "a",
+          "level": 1,
+          "lineRange": [
+            1,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "json",
+      "content": "{\"a\": NaN}"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "a",
+          "level": 1,
+          "lineRange": [
+            1,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "json",
+      "content": "{\"a\": Infinity}"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "a",
+          "level": 1,
+          "lineRange": [
+            1,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "openapi",
+      "content": "openapi: 3.0.0\npaths:\n  /foo:\n    get: {}\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "openapi",
+      "content": "{\"openapi\":\"3.0.0\",\"paths\":{}}"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "openapi",
+          "level": 1,
+          "lineRange": [
+            1,
+            0
+          ]
+        },
+        {
+          "name": "paths",
+          "level": 1,
+          "lineRange": [
+            1,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "docker-compose",
+      "content": "services:\n  web:\n    image: nginx\n    ports: [\"80:80\"]\nnetworks: {}\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "services",
+          "level": 1,
+          "lineRange": [
+            1,
+            4
+          ]
+        },
+        {
+          "name": "networks",
+          "level": 1,
+          "lineRange": [
+            5,
+            6
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "github-actions",
+      "content": "name: build\non: push\njobs:\n  test:\n    runs-on: ubuntu-latest\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "name",
+          "level": 1,
+          "lineRange": [
+            1,
+            2
+          ]
+        },
+        {
+          "name": "jobs",
+          "level": 1,
+          "lineRange": [
+            3,
+            6
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "kubernetes",
+      "content": "apiVersion: v1\nkind: Deployment\nmetadata:\n  name: app\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "apiVersion",
+          "level": 1,
+          "lineRange": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "kind",
+          "level": 1,
+          "lineRange": [
+            2,
+            2
+          ]
+        },
+        {
+          "name": "metadata",
+          "level": 1,
+          "lineRange": [
+            3,
+            5
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "jenkinsfile",
+      "content": "pipeline {\n stages {\n stage('Build') {\n steps { sh 'make' }\n }\n }\n}\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "markdown",
+      "content": "# \u6587\r\n### A\r\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "\u6587",
+          "level": 1,
+          "lineRange": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "A",
+          "level": 3,
+          "lineRange": [
+            2,
+            3
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "markdown",
+      "content": "## notcode\n````\n# no\n~~~\n# no2\n````\n# yes"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "notcode",
+          "level": 2,
+          "lineRange": [
+            1,
+            6
+          ]
+        },
+        {
+          "name": "yes",
+          "level": 1,
+          "lineRange": [
+            7,
+            7
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "sql",
+      "content": "CREATE TABLE \"\u6587\" (id INT);\nCREATE TABLE `user` (\n id INT,\n -- comment\n name VARCHAR(30),\n CONSTRAINT foo CHECK (id>0)\n);"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "definitions": [
+        {
+          "name": "\u6587",
+          "kind": "table",
+          "lineRange": [
+            1,
+            1
+          ],
+          "fields": [
+            "id"
+          ]
+        },
+        {
+          "name": "user",
+          "kind": "table",
+          "lineRange": [
+            2,
+            7
+          ],
+          "fields": [
+            "id"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "dabbdd acabcaadcbc a dba baa d dc bc d cdabbababdbbbb ddadab dcd",
+      "b": " dbabbb  bdb cbbcbc bb caaaddcab c  addcbdacc  bca  bddadcdcaba   ba  acaddaccb cbcdbb dccabbcbbadb  abdba ccd aacccdd acb baccb"
+    },
+    "expected": [
+      0.609375,
+      0.5193370165745856
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "e\u4f60193a\u597d9\u597d\u4f609c2d1b0\u597de821\u597d\u597d46cf\u597d437b439c\u597dbd46ec\u4f60e45143\u4f60d6e16ff7b2\u597d\u597d",
+      "b": "bde\u4f60990c965\u597d5a8f5\u4f60ccb3e46d5e2\u4f609b1ea75e731ab9\u4f60394ccf\u4f6089\u4f60deb8915c\u4f609\u597d89a7f\u4f60898e8b99e82f8eadf9\u597df51\u597d3\u4f60c\u597dd\u597deb17f4304e6a\u4f6036760b5ff96ff1"
+    },
+    "expected": [
+      0.40625,
+      0.32291666666666674
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cbac d dbcabccdccbc daacdb ddbaabc acdadcbdaddaca cab c d c  ddc ",
+      "b": "c dcbbddcdbabbbcabddacccbc cd dbabd  cdcdbbcabdcacadabcadacabbbdbd baac bdddd aaaadcbddadda  aabd bdaddad da dbcbcb  a d dcd b ccc"
+    },
+    "expected": [
+      0.6153846153846154,
+      0.5483870967741935
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "7e98b9e240a9dd8096ea\u597db6276528bd6f42317f6eecdc37dd27\u597d3fbdeda3e\u597d36c",
+      "b": "929421da\u4f60281b5ac4f\u597dc748e3219\u597df547\u597ddd5cdba24fe6626\u4f60855\u4f60135\u4f608bcf74fc66\u4f6032ba1feb\u597d94\u597d\u597d6ea725\u4f60d452b0f69f6f\u597d832ff\u597d13\u597d531d0757d3\u4f6016c\u597d4ec3"
+    },
+    "expected": [
+      0.3846153846153846,
+      0.33846153846153837
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "ca  ca cdcb  bcb c  bdc c bbc cacbcccbadcbdadd bd  cacc  cccdcdac bdd   bbdd aad",
+      "b": "  dcad cd adbbaccdaa db acbba  dacbcdcb abcbcc b dbcddadc bddbddddd d dbccdabdaac c  b c dba a  d   bdaccddc  aba c ba  bca bca acdd cdacacc abc  adc bbaa cddca"
+    },
+    "expected": [
+      0.6206896551724138,
+      0.5436893203883495
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "8ec4b7dd9fc\u4f60a9cced5aa8efda737283b3\u597da8932\u597db2162\u4f60bb4be53f\u597d324b69576d2e021b150c\u4f60b8b",
+      "b": "b78444fc05796\u597d404d5eb907489\u597d855a\u4f608ed6f0a941c5a7d100674bac56e521e7c1f626a14afdcefa7d06398b9aa\u4f6094461caf858\u4f60b9e431f0fd3c3\u4f600788ecd475d72772\u4f6045595cb1feb3f2b8b9953238"
+    },
+    "expected": [
+      0.3790849673202614,
+      0.34166666666666673
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " c dbcaaa bdcabcccabbcbcddaadbdd  bcab dbc bbd d ddcdcbbab cbaa ad  abdaba d accdbcbdccb c b  cbbc  ",
+      "b": " abd ca  bdb ac bcbaacb ba  ddab dadcaab cdcabbacdca cacbacdbcda acc cbcd badbddddbac adcdd adcbaaa c cbdabd bab d b cc c dad cbadbdcdba b b  adb d addaadbbcdd bdccbdbadcbcbbc b ca c cad bbac  d ddcab"
+    },
+    "expected": [
+      0.64,
+      0.5970149253731344
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "c8a30835bf\u597d6378b\u597d5260985d\u597d1\u4f60acccf60\u4f60\u4f609e53cf33d\u4f60c564948aa54571525f\u597d286fbb12d4f679\u597dc04f2eebf05e9cf4f72",
+      "b": "32fa\u597d3\u597dd0a2952391977014d3b37f\u597d6c\u597d180\u4f607d33acf2243f5c\u597d7f0836f806\u597d4876a2\u597d87464d559c6a\u597dbafc617\u4f6097bcdf53fd\u4f600076564de4e\u597dffd6f0\u4f608ec60\u597d8\u597d8ff601e2d3\u4f606c54e635a16b7a3\u4f601\u4f6092d\u597df5\u4f60b437\u4f60\u4f60d9d\u4f60\u597d12\u4f60\u597d\u4f609a4b\u597df\u597d32\u4f6092dcc2ed7"
+    },
+    "expected": [
+      0.38,
+      0.33333333333333326
+    ]
+  }
+]

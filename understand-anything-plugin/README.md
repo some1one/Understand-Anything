@@ -1,159 +1,106 @@
-# arch_analysis
+# Understand Anything plugin
 
-Deterministic structural-analysis scripts for the **architecture-analyzer**
-agent (`understand-anything-plugin/agents/architecture-analyzer.md`, Phase 1).
+Build a codebase knowledge graph with Claude Code or Codex, then query, explain,
+compare, or visualize it. Both hosts use the same `skills/`, Python engine,
+and graph files.
 
-The agent's prompt embeds a project-agnostic "write and run a script" spec
-(directory grouping, import adjacency, density, pattern matching, deployment
-topology, etc.). That deterministic logic doesn't belong in a per-run prompt —
-this package implements it once, tested and organized.
+## Installation
 
-## Layout
+Use `./install.sh claude` or `./install.sh codex` from the repository root.
+The installer generates the correct marketplace format for each host. Native
+installation loads plugin skills and hooks; standalone skill fallback does not
+load hooks. Start a new session after installing or updating.
 
-| Module | Spec sections | Responsibility |
-|---|---|---|
-| `constants.py` | G, H, Phase 2 | All pattern tables, filename sets, extensions, thresholds |
-| `models.py` | input/output | Pydantic models for input, the output contract, and Phase 2 layers |
-| `grouping.py` | A, B | Directory grouping (common-prefix aware) + node-type grouping |
-| `patterns.py` | G | Directory & file-level pattern matching + node-type inference |
-| `graph.py` | C, E, F, K | Import graph: fan-in/out, inter-group, density, direction, metrics |
-| `topology.py` | D, H, I, J | Cross-category edges, deployment topology, data pipeline, doc coverage |
-| `recommendations.py` | Phase 2 (1-3, 6) | Automatable Phase 2 signals: group roles, suggested layers, non-code layer suggestions, topo order, default assignment |
-| `generate_input.py` | — | Build the input JSON for a whole project, obeying `.gitignore` |
-| `validate_layers.py` | Phase 2 cross-check | Validate `layers.json`: every node in exactly one layer, no invented ids |
-| `schema.py` | I/O | JSON Schema generation + `jsonschema`-based validation |
-| `analyze.py` | — | CLI orchestrator: read → validate → compute → validate → write |
-| `assemble_project_scan_result.py` | scan | Merge narrative + deterministic scan/import outputs → validated `scan-result.json` |
-| `prepare_file_analysis_batch.py` | analyze | From `batches.json`, emit per-batch `extract_structure` input + validated context |
-| `validate_structure_output.py` | analyze | Validate `extract_structure` output: schema + batch coverage |
-| `file_graph.py` | analyze | Shared deterministic file-node typing + tag rules (seed ↔ finalize) |
-| `seed_file_batch_graph.py` | analyze | Deterministic file/function/class nodes, tags, and `imports`/`contains`/`exports` edges |
-| `finalize_file_batch_output.py` | analyze | Validate seed preservation + import coverage + cross-batch refs, split, and write `batch-*.json` |
-| `validate_assembled_graph.py` | assemble | Pre-layer graph validation (`require_layers=False`) + optional scan-coverage cross-check |
-| `validate_domain_graph.py` | domain | Schema + domain-specific review (hierarchy coverage, monotonic flow weights) |
-| `fingerprints.py` | auto-update | Shared content-hash + structural-fingerprint logic, comparison, update classification, and load-patch-save store writes |
-| `auto_update_common.py` | auto-update | Shared `.understand-anything` path layout, JSON IO, git plumbing, source filtering, `meta.json` writes |
-| `auto_update_preflight.py` | auto-update | Phase 0: validate graph/meta, diff commits, filter source + `.understandignore`, handle metadata-only stops |
-| `auto_update_fingerprint_check.py` | auto-update | Phase 1: classify changed files vs. stored fingerprints, derive the SKIP/PARTIAL/ARCHITECTURE/FULL decision |
-| `auto_update_prepare_batches.py` | auto-update | Phase 2a: changed-file batching (reuses `compute_batches`) + dispatch summary |
-| `auto_update_apply_batches.py` | auto-update | Phase 2b: prune changed/deleted-file nodes, merge fresh batches, emit merged graph / arch-rerun input |
-| `auto_update_finalize.py` | auto-update | Phase 3: apply layers, lite validation, save graph, patch fingerprints, bump meta, clean intermediate |
-
-## CLI scripts
+For Claude development without installing, launch from the codebase you want
+to analyze:
 
 ```bash
-# 1. Generate the input file inventory for a project (obeys .gitignore).
-pdm run python -m arch_analysis.generate_input <project_root> input.json \
-    [--include 'src/**/*.py' ...] [--exclude '**/tests/**' ...] [--no-gitignore]
-#    (import/all edges come from the pipeline and are merged into input.json)
-
-# 2. Run the structural analysis.
-pdm run analyze input.json results.json
-
-# 3. After the agent writes layers.json, cross-check it.
-pdm run python -m arch_analysis.validate_layers input.json layers.json
+claude --plugin-dir /absolute/path/to/understand-anything-plugin
 ```
 
-## Auto-update (incremental) command flow
+In Claude native installations, skills use `/understand-anything:<skill-name>`.
+Standalone Claude skills use `/<skill-name>`. In Codex, choose the skill with
+`$<skill-name>` or the skill picker. Use the host's displayed qualified name if
+there is a naming collision.
 
-The post-commit hook (`understand-anything-plugin/hooks/auto-update-prompt.md`)
-chains these deterministic commands for an incremental update. Each writes output
-under `.understand-anything/intermediate/` and prints a machine-readable JSON
-summary to stdout. LLM work is limited to the file-analyzer and
-architecture-analyzer dispatches between phases 2a and 3.
+## Skills
 
-```bash
-# Phase 0 — pre-flight. Validates graph/meta, diffs commits, filters source +
-# .understandignore. STOPs (and bumps meta.json) on no-op cases.
-pdm run auto-update-preflight <project-root> [--force]
-#   → intermediate/auto-update-state.json  {status, action, changedSourceFiles, ...}
+| Skill | Purpose |
+|---|---|
+| `understand` | Analyze the project, selected folder parts, or changed parts |
+| `load-graph` | Load selected part graphs or the full merged graph |
+| `understand-add-part` | Add an excluded or newly discovered folder part |
+| `understand-merge` | Recombine saved partitions without reanalysis |
+| `understand-chat` | Answer questions using graph context and current source |
+| `understand-explain` | Explain a file, function, or module |
+| `understand-diff` | Describe changed and affected components |
+| `understand-onboard` | Draft an onboarding guide |
+| `understand-dashboard` | Launch the dashboard and report its tokenized URL |
+| `understand-language` | Load one language analysis reference |
+| `understand-framework` | Load one framework analysis reference |
 
-# Phase 1 — fingerprint check (zero LLM tokens). Classifies each changed file
-# NONE/COSMETIC/STRUCTURAL and derives the decision. SKIP bumps meta and stops.
-pdm run auto-update-fingerprint-check <project-root>
-#   → intermediate/change-analysis.json    {action, filesToReanalyze, newFiles, ...}
+Analysis supports a target path and `--source=<dir>[,<dir>]`, `--split=<depth>`,
+`--all`, `--full`, `--review`, `--no-domain`, and
+`--auto-update` / `--no-auto-update`. It saves the partition selection in
+`.understand-anything/config.json`. `--all` selects all detected parts; ignore
+review still applies when needed.
 
-# Phase 2a — batch the files to reanalyze (reuses compute_batches).
-pdm run auto-update-prepare-batches <project-root>
-#   → intermediate/batches.json, intermediate/dispatch-summary.json
+## Runtime and artifacts
 
-#   ⇣ LLM: dispatch file-analyzer once per batch → intermediate/batch-<N>.json
+Python 3.14+ is required for the deterministic pipeline. Source installs use PDM;
+packaged installs use a bundled requirements file with pip/venv. Invoke modules
+through `packages/core/run.sh <module> …`, which preserves the caller's working
+directory. Use absolute paths when analyzing another project.
 
-# Phase 2b — prune changed/deleted-file nodes, merge fresh batches.
-pdm run auto-update-apply-batches <project-root>
-#   → intermediate/merged-graph.json (+ ua-arch-input.json when rerunArchitecture)
+Artifacts belong to the requested project or worktree:
 
-#   ⇣ LLM (only when ARCHITECTURE_UPDATE): dispatch architecture-analyzer on
-#     ua-arch-input.json → intermediate/layers.json
+- `knowledge-graph.json`: merged structural graph.
+- `partitions/*.knowledge-graph.json`: saved part graphs.
+- `domain-graph.json`: optional business-domain view.
+- `fingerprints.json` and `meta.json`: incremental-analysis baseline.
+- `intermediate/`: scan, validation reports, and working outputs.
 
-# Phase 3 — apply layers, validate, save, patch fingerprints, clean up.
-pdm run auto-update-finalize <project-root>
-#   → knowledge-graph.json, fingerprints.json (patched), meta.json,
-#     intermediate/auto-update-summary.json
-```
+A graph is a snapshot. Check source when answering questions about current
+behavior. A failed required analysis step keeps intermediate evidence and should
+not advance the saved baseline.
 
-The decision gate in `change-analysis.json`:
+The dashboard requires Node.js 22+. Source mode additionally requires pnpm;
+prebuilt bundles use `packages/dashboard/serve.mjs`. The launcher reports a
+loopback URL with an access token. Open the full URL, including `?token=`.
+Analysis does not launch the dashboard automatically.
 
-| `action` | Trigger | Hook behavior |
-|---|---|---|
-| `SKIP` | no structural changes | bump meta, stop (zero tokens) |
-| `PARTIAL_UPDATE` | ≤10 structural files, known dirs | re-analyze files, lite layer update |
-| `ARCHITECTURE_UPDATE` | new/removed dirs or >10 structural files | re-analyze + re-run architecture |
-| `FULL_UPDATE` | >30 structural files or >50% of graph | recommend `/understand --full`, stop |
+## Optional auto-update
 
-## JSON Schema
+Enable with the analysis skill's `--auto-update` flag. Native hooks compare the
+stored commit with HEAD at session start and after shell tools. The hook reads
+local state and supplies a workflow reminder; the host performs the update.
+In Codex, review and trust the hook definition before expecting it to run.
 
-The pydantic models are the source of truth; `schema.py` renders them to
-standalone Draft 2020-12 JSON Schema files under `schemas/`:
+Part-based graphs refresh affected partitions and merge them again. Legacy
+graphs use the fingerprint workflow in `hooks/auto-update-prompt.md`.
+Standalone skill installs require explicit analysis runs because they do not
+register hooks.
 
-- `schemas/input.schema.json` — the input payload contract
-- `schemas/output.schema.json` — the result contract
-- `schemas/layers.schema.json` — the Phase 2 layer-assignment contract
-- `schemas/scan-result.schema.json` / `schemas/project-scan-output.schema.json` — raw scan result and the final project-scanner contract
-- `schemas/structure-input.schema.json` / `schemas/structure-output.schema.json` — `extract_structure` I/O
-- `schemas/file-analysis-context.schema.json` — deterministic per-batch context for the file-analyzer
-- `schemas/graph-fragment.schema.json` — file-analyzer batch/part output (`{nodes, edges}`)
-- `schemas/knowledge-graph.schema.json` / `schemas/domain-graph.schema.json` — full structural and domain graph contracts
+## Troubleshooting and maintenance
 
-`analyze.py` validates the input against `input.schema.json` before parsing and
-the result against `output.schema.json` before writing (in addition to pydantic's
-own validation). Regenerate the files after editing the models:
+- Missing skill: start a new session and check `claude plugin list` or
+  `codex plugin list --json`; confirm you installed for the intended scope.
+- Missing auto-update: verify native installation, hook trust, and the boolean
+  `autoUpdate` setting.
+- Python startup failure: check Python/PDM or packaged pip/venv requirements.
+  Dependency installation needs a writable plugin environment. Cached source
+  installs create their own environment rather than reuse the original
+  checkout's `.pdm-python` path. Failed environments are retained under
+  `packages/core/.venv-recovery.*` for diagnosis.
+- Dashboard startup failure: use the printed log path and check Node/pnpm.
+- Native installer failure: the installer reports fallback to standalone skills;
+  inspect the preceding host CLI error before assuming native hooks are active.
 
-```bash
-pdm run python -m arch_analysis.schema
-```
+[Core reference](packages/core/README.md) documents the Python package.
+[Command reference](tools/README.md) describes deterministic command wrappers.
+[Host integration](HOSTS.md) documents invocation and agent dispatch conventions.
 
-Drift test `tests/test_schema.py` fails if the committed schema files no longer
-match the models.
-
-## Dependencies (and why)
-
-- **orjson** — fast JSON read/write of the input/result payloads
-- **pydantic** — validated, dataclass-like records for input and the output contract
-- **networkx** — the import graph itself: fan-in/out, components, DAG checks
-- **numpy / scipy** — fan-in/fan-out correlation (`spearmanr`) and array math
-- **pandas** — pivots the inter-group import counts into a dense matrix
-
-## Usage
-
-```bash
-# via the pdm script (preferred)
-pdm run analyze input.json results.json
-
-# or directly
-pdm run python -m arch_analysis.analyze input.json results.json
-```
-
-Input JSON shape (`fileNodes`, `importEdges`, `allEdges`) and the result schema
-are documented in the agent markdown. The result includes every documented key
-plus extra deterministic signals: `commonPathPrefix`, `filePatternMatches`,
-`interGroupMatrix`, `graphMetrics`, and `phase2Recommendations` (automatable
-Phase 2 signals).
-
-Exit code `0` on success, `1` on fatal error (message to stderr).
-
-## Tests
-
-```bash
-pdm run pytest
-```
+The compatibility manifests are `.claude-plugin/plugin.json` and
+`.codex-plugin/plugin.json`. Shared hooks live at `hooks/hooks.json`.
+Validate changes with `claude plugin validate /path/to/plugin` and the repository's
+integration tests. Keep manifest versions aligned when preparing a release.

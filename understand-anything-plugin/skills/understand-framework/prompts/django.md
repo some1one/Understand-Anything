@@ -24,7 +24,7 @@ When analyzing a Django project, apply these additional conventions on top of th
 | `*/middleware.py`, `*/middleware/*.py` | Request/response middleware classes | `middleware` |
 | `*/permissions.py` | DRF permission classes | `middleware`, `validation` |
 | `*/filters.py` | DRF filter backends | `utility` |
-| `*/migrations/*.py` | Auto-generated schema migrations — do not summarize individually | `config` |
+| `*/migrations/*.py` | Schema/data migrations — summarize included files according to the analysis scope | `config` |
 | `*/templates/**/*.html` | Django HTML templates | `ui` |
 | `*/templatetags/*.py` | Custom template filters and tags | `utility` |
 | `*/management/commands/*.py` | Custom management commands (`./manage.py mycommand`) | `config`, `entry-point` |

@@ -27,7 +27,7 @@
 - `__main__.py` — package entry point when run with `python -m package`
 - `conftest.py` — pytest shared fixtures and hooks (auto-discovered)
 - `setup.py` / `pyproject.toml` — project configuration and build metadata
-- `requirements.txt` — pinned dependency list
+- `requirements.txt` — dependency requirements, which may or may not pin exact versions
 
 ## Common Frameworks
 

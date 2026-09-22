@@ -1,0 +1,16 @@
+{
+  "name": "understand-anything",
+  "description": "Analyze, visualize, and explain codebases with a local knowledge graph.",
+  "version": "2.8.1",
+  "author": { "name": "Understand Anything contributors" },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Understand Anything",
+    "shortDescription": "Explore codebase architecture and relationships",
+    "longDescription": "Build and query local knowledge graphs, inspect changes, and explore architecture in a dashboard.",
+    "developerName": "Understand Anything contributors",
+    "category": "Developer Tools",
+    "capabilities": [],
+    "defaultPrompt": ["Analyze this project's architecture."]
+  }
+}

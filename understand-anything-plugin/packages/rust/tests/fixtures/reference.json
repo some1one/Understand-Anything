@@ -1,0 +1,8347 @@
+[
+  {
+    "function": "partition",
+    "input": {
+      "paths": [
+        "src/api/main.ts",
+        "src/api/lib.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml",
+        "./src/élève.py",
+        " src\\api\\foo.rs "
+      ],
+      "sources": [],
+      "depth": 1
+    },
+    "expected": {
+      "_root": [
+        "README.md"
+      ],
+      "apps": [
+        "apps/shop/package.json"
+      ],
+      "packages": [
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "src/élève.py"
+      ]
+    }
+  },
+  {
+    "function": "partition",
+    "input": {
+      "paths": [
+        "src/api/main.ts",
+        "src/api/lib.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml",
+        "./src/élève.py",
+        " src\\api\\foo.rs "
+      ],
+      "sources": [],
+      "depth": 2
+    },
+    "expected": {
+      "_root": [
+        "README.md"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "packages/core": [
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    }
+  },
+  {
+    "function": "partition",
+    "input": {
+      "paths": [
+        "src/api/main.ts",
+        "src/api/lib.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml",
+        "./src/élève.py",
+        " src\\api\\foo.rs "
+      ],
+      "sources": [],
+      "depth": 4
+    },
+    "expected": {
+      "_root": [
+        "README.md"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "packages/core": [
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    }
+  },
+  {
+    "function": "partition",
+    "input": {
+      "paths": [
+        "src/api/main.ts",
+        "src/api/lib.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml",
+        "./src/élève.py",
+        " src\\api\\foo.rs "
+      ],
+      "sources": [
+        "src"
+      ],
+      "depth": null
+    },
+    "expected": {
+      "_root": [
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    }
+  },
+  {
+    "function": "partition",
+    "input": {
+      "paths": [
+        "src/api/main.ts",
+        "src/api/lib.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml",
+        "./src/élève.py",
+        " src\\api\\foo.rs "
+      ],
+      "sources": [
+        "src"
+      ],
+      "depth": 1
+    },
+    "expected": {
+      "_root": [
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    }
+  },
+  {
+    "function": "partition",
+    "input": {
+      "paths": [
+        "src/api/main.ts",
+        "src/api/lib.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml",
+        "./src/élève.py",
+        " src\\api\\foo.rs "
+      ],
+      "sources": [
+        "src"
+      ],
+      "depth": 2
+    },
+    "expected": {
+      "_root": [
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    }
+  },
+  {
+    "function": "partition",
+    "input": {
+      "paths": [
+        "src/api/main.ts",
+        "src/api/lib.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml",
+        "./src/élève.py",
+        " src\\api\\foo.rs "
+      ],
+      "sources": [
+        "src"
+      ],
+      "depth": 4
+    },
+    "expected": {
+      "_root": [
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    }
+  },
+  {
+    "function": "partition",
+    "input": {
+      "paths": [
+        "src/api/main.ts",
+        "src/api/lib.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml",
+        "./src/élève.py",
+        " src\\api\\foo.rs "
+      ],
+      "sources": [
+        "src/",
+        "src/api"
+      ],
+      "depth": null
+    },
+    "expected": {
+      "_root": [
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    }
+  },
+  {
+    "function": "partition",
+    "input": {
+      "paths": [
+        "src/api/main.ts",
+        "src/api/lib.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml",
+        "./src/élève.py",
+        " src\\api\\foo.rs "
+      ],
+      "sources": [
+        "src/",
+        "src/api"
+      ],
+      "depth": 1
+    },
+    "expected": {
+      "_root": [
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    }
+  },
+  {
+    "function": "partition",
+    "input": {
+      "paths": [
+        "src/api/main.ts",
+        "src/api/lib.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml",
+        "./src/élève.py",
+        " src\\api\\foo.rs "
+      ],
+      "sources": [
+        "src/",
+        "src/api"
+      ],
+      "depth": 2
+    },
+    "expected": {
+      "_root": [
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    }
+  },
+  {
+    "function": "partition",
+    "input": {
+      "paths": [
+        "src/api/main.ts",
+        "src/api/lib.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml",
+        "./src/élève.py",
+        " src\\api\\foo.rs "
+      ],
+      "sources": [
+        "src/",
+        "src/api"
+      ],
+      "depth": 4
+    },
+    "expected": {
+      "_root": [
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    }
+  },
+  {
+    "function": "partition",
+    "input": {
+      "paths": [
+        "src/api/main.ts",
+        "src/api/lib.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml",
+        "./src/élève.py",
+        " src\\api\\foo.rs "
+      ],
+      "sources": [
+        "./src",
+        "apps"
+      ],
+      "depth": null
+    },
+    "expected": {
+      "_root": [
+        "README.md",
+        "packages/core/Cargo.toml"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    }
+  },
+  {
+    "function": "partition",
+    "input": {
+      "paths": [
+        "src/api/main.ts",
+        "src/api/lib.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml",
+        "./src/élève.py",
+        " src\\api\\foo.rs "
+      ],
+      "sources": [
+        "./src",
+        "apps"
+      ],
+      "depth": 1
+    },
+    "expected": {
+      "_root": [
+        "README.md",
+        "packages/core/Cargo.toml"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    }
+  },
+  {
+    "function": "partition",
+    "input": {
+      "paths": [
+        "src/api/main.ts",
+        "src/api/lib.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml",
+        "./src/élève.py",
+        " src\\api\\foo.rs "
+      ],
+      "sources": [
+        "./src",
+        "apps"
+      ],
+      "depth": 2
+    },
+    "expected": {
+      "_root": [
+        "README.md",
+        "packages/core/Cargo.toml"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    }
+  },
+  {
+    "function": "partition",
+    "input": {
+      "paths": [
+        "src/api/main.ts",
+        "src/api/lib.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml",
+        "./src/élève.py",
+        " src\\api\\foo.rs "
+      ],
+      "sources": [
+        "./src",
+        "apps"
+      ],
+      "depth": 4
+    },
+    "expected": {
+      "_root": [
+        "README.md",
+        "packages/core/Cargo.toml"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    }
+  },
+  {
+    "function": "layout",
+    "input": {
+      "paths": []
+    },
+    "expected": {
+      "detectedRoots": [],
+      "recommendation": {
+        "sourceFolders": null,
+        "splitDepth": 1
+      }
+    }
+  },
+  {
+    "function": "layout",
+    "input": {
+      "paths": [
+        "src/api/main.ts",
+        "src/api/lib.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml",
+        "./src/élève.py",
+        " src\\api\\foo.rs "
+      ]
+    },
+    "expected": {
+      "detectedRoots": [
+        "apps/shop",
+        "packages/core"
+      ],
+      "recommendation": {
+        "sourceFolders": null,
+        "splitDepth": 2
+      }
+    }
+  },
+  {
+    "function": "layout",
+    "input": {
+      "paths": [
+        "src/foo.py"
+      ]
+    },
+    "expected": {
+      "detectedRoots": [
+        "src"
+      ],
+      "recommendation": {
+        "sourceFolders": [
+          "src"
+        ],
+        "splitDepth": 1
+      }
+    }
+  },
+  {
+    "function": "layout",
+    "input": {
+      "paths": [
+        "lib/a.rb"
+      ]
+    },
+    "expected": {
+      "detectedRoots": [
+        "lib"
+      ],
+      "recommendation": {
+        "sourceFolders": [
+          "lib"
+        ],
+        "splitDepth": 1
+      }
+    }
+  },
+  {
+    "function": "layout",
+    "input": {
+      "paths": [
+        "README.md"
+      ]
+    },
+    "expected": {
+      "detectedRoots": [],
+      "recommendation": {
+        "sourceFolders": null,
+        "splitDepth": 1
+      }
+    }
+  },
+  {
+    "function": "layout",
+    "input": {
+      "paths": [
+        "pnpm-workspace.yaml"
+      ]
+    },
+    "expected": {
+      "detectedRoots": [],
+      "recommendation": {
+        "sourceFolders": null,
+        "splitDepth": 2
+      }
+    }
+  },
+  {
+    "function": "layout",
+    "input": {
+      "paths": [
+        "packages/a/package.json",
+        "packages/b/Cargo.toml"
+      ]
+    },
+    "expected": {
+      "detectedRoots": [
+        "packages/a",
+        "packages/b"
+      ],
+      "recommendation": {
+        "sourceFolders": null,
+        "splitDepth": 2
+      }
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "src/api/main.ts"
+    },
+    "expected": {
+      "language": "typescript",
+      "category": "code",
+      "registry": "typescript"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "src/api/lib.ts"
+    },
+    "expected": {
+      "language": "typescript",
+      "category": "code",
+      "registry": "typescript"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "src/lib/x.ts"
+    },
+    "expected": {
+      "language": "typescript",
+      "category": "code",
+      "registry": "typescript"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "src/root.ts"
+    },
+    "expected": {
+      "language": "typescript",
+      "category": "code",
+      "registry": "typescript"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "README.md"
+    },
+    "expected": {
+      "language": "markdown",
+      "category": "docs",
+      "registry": "markdown"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "apps/shop/package.json"
+    },
+    "expected": {
+      "language": "json",
+      "category": "config",
+      "registry": "json"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "packages/core/Cargo.toml"
+    },
+    "expected": {
+      "language": "toml",
+      "category": "config",
+      "registry": "toml"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "./src/élève.py"
+    },
+    "expected": {
+      "language": "python",
+      "category": "code",
+      "registry": "python"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": " src\\api\\foo.rs "
+    },
+    "expected": {
+      "language": "rs ",
+      "category": "code",
+      "registry": null
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": ".env"
+    },
+    "expected": {
+      "language": "config",
+      "category": "config",
+      "registry": "env"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": ".env.production"
+    },
+    "expected": {
+      "language": "config",
+      "category": "config",
+      "registry": "env"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": ".envrc"
+    },
+    "expected": {
+      "language": "unknown",
+      "category": "code",
+      "registry": null
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "src/.env.local"
+    },
+    "expected": {
+      "language": "config",
+      "category": "config",
+      "registry": "env"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": ".github/workflows/build.yml"
+    },
+    "expected": {
+      "language": "yaml",
+      "category": "infra",
+      "registry": "yaml"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "compose.yaml"
+    },
+    "expected": {
+      "language": "yaml",
+      "category": "infra",
+      "registry": "docker-compose"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "docker-compose.dev.yaml"
+    },
+    "expected": {
+      "language": "yaml",
+      "category": "infra",
+      "registry": "yaml"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "LICENSE"
+    },
+    "expected": {
+      "language": "unknown",
+      "category": "code",
+      "registry": null
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "k8s/service.txt"
+    },
+    "expected": {
+      "language": "txt",
+      "category": "infra",
+      "registry": null
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "deploy/foo.k8s.YML"
+    },
+    "expected": {
+      "language": "yaml",
+      "category": "infra",
+      "registry": "yaml"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "Dockerfile.dev"
+    },
+    "expected": {
+      "language": "dockerfile",
+      "category": "infra",
+      "registry": "dockerfile"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "makefile"
+    },
+    "expected": {
+      "language": "makefile",
+      "category": "infra",
+      "registry": "makefile"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": ".config"
+    },
+    "expected": {
+      "language": "unknown",
+      "category": "code",
+      "registry": null
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "archive.tar.gz"
+    },
+    "expected": {
+      "language": "gz",
+      "category": "code",
+      "registry": null
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "Foo.TSX"
+    },
+    "expected": {
+      "language": "typescript",
+      "category": "code",
+      "registry": "tsx"
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "file"
+    },
+    "expected": {
+      "language": "unknown",
+      "category": "code",
+      "registry": null
+    }
+  },
+  {
+    "function": "detection",
+    "input": {
+      "path": "CMakeLists.txt"
+    },
+    "expected": {
+      "language": "txt",
+      "category": "docs",
+      "registry": null
+    }
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "build/",
+        "!build/keep.ts"
+      ],
+      "path": "build/keep.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "build/",
+        "!build/keep.ts"
+      ],
+      "path": "build/drop.ts"
+    },
+    "expected": true
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "build/",
+        "!build/keep.ts"
+      ],
+      "path": "src/keep.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "build/",
+        "!build/keep.ts"
+      ],
+      "path": "a/b/yes.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "build/",
+        "!build/keep.ts"
+      ],
+      "path": "a/b/no.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "build/",
+        "!build/keep.ts"
+      ],
+      "path": "root.txt"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "build/",
+        "!build/keep.ts"
+      ],
+      "path": "sub/root.txt"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "build/",
+        "!build/keep.ts"
+      ],
+      "path": "important.log"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "build/",
+        "!build/keep.ts"
+      ],
+      "path": "foo/private/a"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "build/",
+        "!build/keep.ts"
+      ],
+      "path": "foo/public/a"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "*.ts",
+        "!src/keep.ts"
+      ],
+      "path": "build/keep.ts"
+    },
+    "expected": true
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "*.ts",
+        "!src/keep.ts"
+      ],
+      "path": "build/drop.ts"
+    },
+    "expected": true
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "*.ts",
+        "!src/keep.ts"
+      ],
+      "path": "src/keep.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "*.ts",
+        "!src/keep.ts"
+      ],
+      "path": "a/b/yes.ts"
+    },
+    "expected": true
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "*.ts",
+        "!src/keep.ts"
+      ],
+      "path": "a/b/no.ts"
+    },
+    "expected": true
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "*.ts",
+        "!src/keep.ts"
+      ],
+      "path": "root.txt"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "*.ts",
+        "!src/keep.ts"
+      ],
+      "path": "sub/root.txt"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "*.ts",
+        "!src/keep.ts"
+      ],
+      "path": "important.log"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "*.ts",
+        "!src/keep.ts"
+      ],
+      "path": "foo/private/a"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "*.ts",
+        "!src/keep.ts"
+      ],
+      "path": "foo/public/a"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "a/**",
+        "!a/b/**",
+        "a/b/no.ts"
+      ],
+      "path": "build/keep.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "a/**",
+        "!a/b/**",
+        "a/b/no.ts"
+      ],
+      "path": "build/drop.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "a/**",
+        "!a/b/**",
+        "a/b/no.ts"
+      ],
+      "path": "src/keep.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "a/**",
+        "!a/b/**",
+        "a/b/no.ts"
+      ],
+      "path": "a/b/yes.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "a/**",
+        "!a/b/**",
+        "a/b/no.ts"
+      ],
+      "path": "a/b/no.ts"
+    },
+    "expected": true
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "a/**",
+        "!a/b/**",
+        "a/b/no.ts"
+      ],
+      "path": "root.txt"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "a/**",
+        "!a/b/**",
+        "a/b/no.ts"
+      ],
+      "path": "sub/root.txt"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "a/**",
+        "!a/b/**",
+        "a/b/no.ts"
+      ],
+      "path": "important.log"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "a/**",
+        "!a/b/**",
+        "a/b/no.ts"
+      ],
+      "path": "foo/private/a"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "a/**",
+        "!a/b/**",
+        "a/b/no.ts"
+      ],
+      "path": "foo/public/a"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "/root.txt",
+        "*.log",
+        "!important.log"
+      ],
+      "path": "build/keep.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "/root.txt",
+        "*.log",
+        "!important.log"
+      ],
+      "path": "build/drop.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "/root.txt",
+        "*.log",
+        "!important.log"
+      ],
+      "path": "src/keep.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "/root.txt",
+        "*.log",
+        "!important.log"
+      ],
+      "path": "a/b/yes.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "/root.txt",
+        "*.log",
+        "!important.log"
+      ],
+      "path": "a/b/no.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "/root.txt",
+        "*.log",
+        "!important.log"
+      ],
+      "path": "root.txt"
+    },
+    "expected": true
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "/root.txt",
+        "*.log",
+        "!important.log"
+      ],
+      "path": "sub/root.txt"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "/root.txt",
+        "*.log",
+        "!important.log"
+      ],
+      "path": "important.log"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "/root.txt",
+        "*.log",
+        "!important.log"
+      ],
+      "path": "foo/private/a"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "/root.txt",
+        "*.log",
+        "!important.log"
+      ],
+      "path": "foo/public/a"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "foo/",
+        "!foo/",
+        "foo/private/"
+      ],
+      "path": "build/keep.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "foo/",
+        "!foo/",
+        "foo/private/"
+      ],
+      "path": "build/drop.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "foo/",
+        "!foo/",
+        "foo/private/"
+      ],
+      "path": "src/keep.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "foo/",
+        "!foo/",
+        "foo/private/"
+      ],
+      "path": "a/b/yes.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "foo/",
+        "!foo/",
+        "foo/private/"
+      ],
+      "path": "a/b/no.ts"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "foo/",
+        "!foo/",
+        "foo/private/"
+      ],
+      "path": "root.txt"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "foo/",
+        "!foo/",
+        "foo/private/"
+      ],
+      "path": "sub/root.txt"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "foo/",
+        "!foo/",
+        "foo/private/"
+      ],
+      "path": "important.log"
+    },
+    "expected": false
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "foo/",
+        "!foo/",
+        "foo/private/"
+      ],
+      "path": "foo/private/a"
+    },
+    "expected": true
+  },
+  {
+    "function": "ignore",
+    "input": {
+      "patterns": [
+        "foo/",
+        "!foo/",
+        "foo/private/"
+      ],
+      "path": "foo/public/a"
+    },
+    "expected": false
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "markdown",
+      "content": "# Hello\ntext\n## World\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "Hello",
+          "level": 1,
+          "lineRange": [
+            1,
+            2
+          ]
+        },
+        {
+          "name": "World",
+          "level": 2,
+          "lineRange": [
+            3,
+            4
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "markdown",
+      "content": "```md\n# Hidden\n```\n# Shown\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "Shown",
+          "level": 1,
+          "lineRange": [
+            4,
+            5
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "markdown",
+      "content": "~~~\n# not a heading\n~~~\n### Unicode 文\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "Unicode 文",
+          "level": 3,
+          "lineRange": [
+            4,
+            5
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "markdown",
+      "content": ""
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "markdown",
+      "content": ""
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "yaml",
+      "content": "name: demo\nservices:\n  web: app\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "name",
+          "level": 1,
+          "lineRange": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "services",
+          "level": 1,
+          "lineRange": [
+            2,
+            4
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "yaml",
+      "content": "- name: web\n- id: worker\n- 3\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "web",
+          "level": 1,
+          "lineRange": [
+            1,
+            4
+          ]
+        },
+        {
+          "name": "worker",
+          "level": 1,
+          "lineRange": [
+            1,
+            4
+          ]
+        },
+        {
+          "name": "[2]",
+          "level": 1,
+          "lineRange": [
+            1,
+            4
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "yaml",
+      "content": "broken: [\nnext: key\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "broken",
+          "level": 1,
+          "lineRange": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "next",
+          "level": 1,
+          "lineRange": [
+            2,
+            3
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "yaml",
+      "content": "\"quoted key\": true\nother: x\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "quoted key",
+          "level": 1,
+          "lineRange": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "other",
+          "level": 1,
+          "lineRange": [
+            2,
+            3
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "yaml",
+      "content": "a: &a [1, 2]\nb: *a\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "a",
+          "level": 1,
+          "lineRange": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "b",
+          "level": 1,
+          "lineRange": [
+            2,
+            3
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "yaml",
+      "content": ""
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "json",
+      "content": "{\"a\":1,\"b\":2}"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "a",
+          "level": 1,
+          "lineRange": [
+            1,
+            0
+          ]
+        },
+        {
+          "name": "b",
+          "level": 1,
+          "lineRange": [
+            1,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "json",
+      "content": "// comment\n{\n \"url\": \"https://example.com\",\n \"b\": [1,],\n}\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "url",
+          "level": 1,
+          "lineRange": [
+            3,
+            3
+          ]
+        },
+        {
+          "name": "b",
+          "level": 1,
+          "lineRange": [
+            4,
+            6
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "json",
+      "content": "{bad"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "json",
+      "content": "[]"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "json",
+      "content": "{\"text\":\"/* literal */\",\"value\":true}"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "text",
+          "level": 1,
+          "lineRange": [
+            1,
+            0
+          ]
+        },
+        {
+          "name": "value",
+          "level": 1,
+          "lineRange": [
+            1,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "json",
+      "content": ""
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "env",
+      "content": "# comment\nFOO=bar\nexport BAD=no\nUNICODE=文\n EMPTY=\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "definitions": [
+        {
+          "name": "FOO",
+          "kind": "variable",
+          "lineRange": [
+            2,
+            2
+          ],
+          "fields": []
+        },
+        {
+          "name": "UNICODE",
+          "kind": "variable",
+          "lineRange": [
+            4,
+            4
+          ],
+          "fields": []
+        },
+        {
+          "name": "EMPTY",
+          "kind": "variable",
+          "lineRange": [
+            5,
+            5
+          ],
+          "fields": []
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "env",
+      "content": ""
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "definitions": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "toml",
+      "content": "[package]\nname=\"x\"\n[[bin]]\nname=\"a\"\n[dependencies.dev]\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": [
+        {
+          "name": "package",
+          "level": 1,
+          "lineRange": [
+            1,
+            2
+          ]
+        },
+        {
+          "name": "[[bin]]",
+          "level": 1,
+          "lineRange": [
+            3,
+            4
+          ]
+        },
+        {
+          "name": "dependencies.dev",
+          "level": 2,
+          "lineRange": [
+            5,
+            6
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "toml",
+      "content": ""
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "sections": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "dockerfile",
+      "content": "FROM python:3.14 AS build\nRUN echo hi\nEXPOSE 80 443/tcp\nFROM alpine\nCOPY --from=build /app /app\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "services": [
+        {
+          "name": "build",
+          "image": "python:3.14",
+          "ports": [
+            80
+          ],
+          "lineRange": [
+            1,
+            3
+          ]
+        },
+        {
+          "name": "alpine",
+          "image": "alpine",
+          "ports": [],
+          "lineRange": [
+            4,
+            6
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "name": "FROM python:3.14 AS build",
+          "lineRange": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "RUN echo hi",
+          "lineRange": [
+            2,
+            2
+          ]
+        },
+        {
+          "name": "EXPOSE 80 443/tcp",
+          "lineRange": [
+            3,
+            3
+          ]
+        },
+        {
+          "name": "FROM alpine",
+          "lineRange": [
+            4,
+            4
+          ]
+        },
+        {
+          "name": "COPY --from=build /app /app",
+          "lineRange": [
+            5,
+            5
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "dockerfile",
+      "content": ""
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "services": [],
+      "steps": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "sql",
+      "content": "CREATE TABLE IF NOT EXISTS users (id INT, name TEXT, PRIMARY KEY(id));\nCREATE OR REPLACE VIEW active AS SELECT * FROM users;\nCREATE UNIQUE INDEX idx ON users(id);\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "definitions": [
+        {
+          "name": "users",
+          "kind": "table",
+          "lineRange": [
+            1,
+            1
+          ],
+          "fields": [
+            "id",
+            "name"
+          ]
+        },
+        {
+          "name": "active",
+          "kind": "view",
+          "lineRange": [
+            2,
+            2
+          ],
+          "fields": []
+        },
+        {
+          "name": "idx",
+          "kind": "index",
+          "lineRange": [
+            3,
+            3
+          ],
+          "fields": []
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "sql",
+      "content": "CREATE TABLE broken\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "definitions": [
+        {
+          "name": "broken",
+          "kind": "table",
+          "lineRange": [
+            1,
+            6
+          ],
+          "fields": []
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "sql",
+      "content": ""
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "definitions": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "graphql",
+      "content": "type User {\n id: ID!\n name: String\n}\ntype Query {\n user: User\n}\nscalar Date\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "definitions": [
+        {
+          "name": "User",
+          "kind": "type",
+          "lineRange": [
+            1,
+            4
+          ],
+          "fields": [
+            "id",
+            "name"
+          ]
+        },
+        {
+          "name": "Date",
+          "kind": "scalar",
+          "lineRange": [
+            8,
+            8
+          ],
+          "fields": []
+        }
+      ],
+      "endpoints": [
+        {
+          "method": "Query",
+          "path": "user",
+          "lineRange": [
+            6,
+            6
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "graphql",
+      "content": "input Form {\n a: String\n}\nenum Role {\n ADMIN\n USER\n}\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "definitions": [
+        {
+          "name": "Form",
+          "kind": "input",
+          "lineRange": [
+            1,
+            3
+          ],
+          "fields": [
+            "a"
+          ]
+        },
+        {
+          "name": "Role",
+          "kind": "enum",
+          "lineRange": [
+            4,
+            7
+          ],
+          "fields": [
+            "ADMIN",
+            "USER"
+          ]
+        }
+      ],
+      "endpoints": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "graphql",
+      "content": ""
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "definitions": [],
+      "endpoints": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "protobuf",
+      "content": "message User {\n string name = 1;\n repeated int32 ids = 2;\n}\nenum Role {\n ADMIN = 0;\n}\nservice Users {\n rpc Find (User) returns (User);\n}\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "definitions": [
+        {
+          "name": "User",
+          "kind": "message",
+          "lineRange": [
+            1,
+            4
+          ],
+          "fields": [
+            "name",
+            "ids"
+          ]
+        },
+        {
+          "name": "Role",
+          "kind": "enum",
+          "lineRange": [
+            5,
+            7
+          ],
+          "fields": [
+            "ADMIN"
+          ]
+        }
+      ],
+      "endpoints": [
+        {
+          "method": "rpc",
+          "path": "Users.Find",
+          "lineRange": [
+            9,
+            9
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "protobuf",
+      "content": ""
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "definitions": [],
+      "endpoints": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "terraform",
+      "content": "resource \"aws_s3_bucket\" \"assets\" {\n tags = { Name = \"test\" }\n}\ndata \"aws_region\" \"current\" {}\nmodule \"web\" {}\nvariable \"name\" {}\noutput \"id\" {}\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "definitions": [
+        {
+          "name": "name",
+          "kind": "variable",
+          "lineRange": [
+            6,
+            6
+          ],
+          "fields": []
+        },
+        {
+          "name": "id",
+          "kind": "output",
+          "lineRange": [
+            7,
+            7
+          ],
+          "fields": []
+        }
+      ],
+      "resources": [
+        {
+          "name": "aws_s3_bucket.assets",
+          "kind": "aws_s3_bucket",
+          "lineRange": [
+            1,
+            3
+          ]
+        },
+        {
+          "name": "data.aws_region.current",
+          "kind": "data.aws_region",
+          "lineRange": [
+            4,
+            4
+          ]
+        },
+        {
+          "name": "module.web",
+          "kind": "module",
+          "lineRange": [
+            5,
+            5
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "terraform",
+      "content": ""
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "definitions": [],
+      "resources": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "makefile",
+      "content": ".PHONY: build\nVAR := value\nbuild: dep\n\techo hello\n\nnext:\n  echo world\n"
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "steps": [
+        {
+          "name": "build",
+          "lineRange": [
+            3,
+            5
+          ]
+        },
+        {
+          "name": "next",
+          "lineRange": [
+            6,
+            8
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "makefile",
+      "content": ""
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "steps": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "shell",
+      "content": "function one() {\n echo hi\n}\ntwo()\n{\n echo bye\n}\nnot_fn()\n# none\n"
+    },
+    "expected": {
+      "functions": [
+        {
+          "name": "one",
+          "lineRange": [
+            1,
+            3
+          ],
+          "params": []
+        },
+        {
+          "name": "two",
+          "lineRange": [
+            4,
+            7
+          ],
+          "params": []
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": []
+    }
+  },
+  {
+    "function": "noncode",
+    "input": {
+      "language": "shell",
+      "content": ""
+    },
+    "expected": {
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": []
+    }
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "abc",
+      "b": "xyzabcx"
+    },
+    "expected": [
+      1.0,
+      0.6
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "abc",
+      "b": "bc"
+    },
+    "expected": [
+      1.0,
+      0.8
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "a b",
+      "b": "b a"
+    },
+    "expected": [
+      0.5,
+      1.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "",
+      "b": ""
+    },
+    "expected": [
+      1.0,
+      0.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "你好",
+      "b": "你们好"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.8
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "adbaadccaab",
+      "b": "c"
+    },
+    "expected": [
+      1.0,
+      0.1666666666666667
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "dccb dacbbd",
+      "b": "aa d"
+    },
+    "expected": [
+      0.5,
+      0.4
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "d",
+      "b": "a abd baadd   bc a"
+    },
+    "expected": [
+      1.0,
+      0.13333333333333328
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bb dda",
+      "b": "ab dcd d"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.5714285714285715
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "  ca",
+      "b": " bdb cbbcbc bb caaa"
+    },
+    "expected": [
+      0.75,
+      0.2
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "adcbccbc da",
+      "b": "ddbbaadd dcad caba"
+    },
+    "expected": [
+      0.5555555555555556,
+      0.41379310344827586
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " ccab  bb",
+      "b": " acaddaccb cbcdbb d"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.4
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " cbaacca",
+      "b": "b "
+    },
+    "expected": [
+      0.6666666666666667,
+      0.25
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "abdba ",
+      "b": "cbccadbc addad aaca"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.33333333333333326
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bb ",
+      "b": "  adcaadbcc  aa"
+    },
+    "expected": [
+      0.5,
+      0.1428571428571429
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bdcc  c",
+      "b": "ab ccdacc a aacd"
+    },
+    "expected": [
+      0.7142857142857143,
+      0.36363636363636365
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "c cc",
+      "b": "dc"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.33333333333333326
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cbbdbbadc ",
+      "b": "adc"
+    },
+    "expected": [
+      1.0,
+      0.5
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "ab",
+      "b": "ababbccb "
+    },
+    "expected": [
+      1.0,
+      0.4
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cdc a b dab",
+      "b": "dbdbc  "
+    },
+    "expected": [
+      0.6153846153846154,
+      0.375
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "d ",
+      "b": "ad"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.6666666666666665
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " acdca daab",
+      "b": "aab d  bbad cda   "
+    },
+    "expected": [
+      0.5555555555555556,
+      0.5
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " ad",
+      "b": "dcddbadbaca"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.3076923076923077
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "b  bdbba",
+      "b": "bcd ba bc"
+    },
+    "expected": [
+      0.5714285714285714,
+      0.5
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "acbdc",
+      "b": "a aacc d dac  dda"
+    },
+    "expected": [
+      0.6,
+      0.38095238095238093
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cdbdc",
+      "b": "c d dbc"
+    },
+    "expected": [
+      0.75,
+      0.6666666666666665
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "b",
+      "b": "ccdccbc"
+    },
+    "expected": [
+      1.0,
+      0.25
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "dbd",
+      "b": "a bb aa ddc"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.2857142857142857
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cdbbad   db",
+      "b": "cc aacccbdc  c ca"
+    },
+    "expected": [
+      0.5714285714285714,
+      0.32
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cd bdcbc",
+      "b": "bb aababcb"
+    },
+    "expected": [
+      0.5454545454545454,
+      0.4444444444444444
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cbc cd d",
+      "b": "c bb  cdd cbc"
+    },
+    "expected": [
+      0.625,
+      0.7
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bdcacad",
+      "b": " "
+    },
+    "expected": [
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cadacabbbd",
+      "b": "b c cda ba aa"
+    },
+    "expected": [
+      0.4285714285714286,
+      0.43478260869565216
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "aaaa",
+      "b": "cbdd"
+    },
+    "expected": [
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "d d",
+      "b": " aabd "
+    },
+    "expected": [
+      0.8,
+      0.4
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " ac bdb",
+      "b": "dcac"
+    },
+    "expected": [
+      0.5714285714285714,
+      0.4
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bcb  a d dc",
+      "b": " b cccdb  a bcdba"
+    },
+    "expected": [
+      0.6363636363636364,
+      0.56
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "abdb d",
+      "b": "ccabccbcd"
+    },
+    "expected": [
+      0.5,
+      0.5333333333333333
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "dabdbccc",
+      "b": " cbcbbdbd dadb"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.38095238095238093
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " cbaabaacb",
+      "b": "cd"
+    },
+    "expected": [
+      0.5,
+      0.18181818181818188
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "dda",
+      "b": "c"
+    },
+    "expected": [
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cb b aac",
+      "b": "daacb adddbccc  bdd"
+    },
+    "expected": [
+      0.5333333333333333,
+      0.5384615384615384
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " b",
+      "b": "babcacd"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.25
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bbddcd d",
+      "b": "d ccd  aabdcbadd cc"
+    },
+    "expected": [
+      0.625,
+      0.6153846153846154
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "c ",
+      "b": "dabd cad cd"
+    },
+    "expected": [
+      0.5,
+      0.1666666666666667
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cd ",
+      "b": " c  cc"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.33333333333333326
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "d bdb ",
+      "b": "aabad  a cacdccaba"
+    },
+    "expected": [
+      0.5,
+      0.36363636363636365
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cda d",
+      "b": "dbacb a "
+    },
+    "expected": [
+      0.6,
+      0.5
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " cdcb  bcb ",
+      "b": "daad bdbad cd ccb"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.48
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "b   bb cb",
+      "b": "d bd  cacc  cccd"
+    },
+    "expected": [
+      0.5555555555555556,
+      0.38095238095238093
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "  adbdb",
+      "b": "   "
+    },
+    "expected": [
+      0.8,
+      0.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " d ccdb",
+      "b": " dcad cd a"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.5333333333333333
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "b",
+      "b": "cbcdaadbdccb"
+    },
+    "expected": [
+      1.0,
+      0.15384615384615385
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bba  dacbcd",
+      "b": "dcb  abbbda ba"
+    },
+    "expected": [
+      0.5714285714285714,
+      0.6086956521739131
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "d  d  db ba",
+      "b": "ddd d dbc"
+    },
+    "expected": [
+      0.7058823529411764,
+      0.625
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "ba bcbd bc",
+      "b": " b c dba "
+    },
+    "expected": [
+      0.5882352941176471,
+      0.5882352941176471
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "dbd",
+      "b": "  bdaccddc  a"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.3076923076923077
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cd b",
+      "b": "ddcddaaa"
+    },
+    "expected": [
+      0.5,
+      0.33333333333333326
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "abcbb dc",
+      "b": "dacacc abc  adc bba"
+    },
+    "expected": [
+      0.75,
+      0.6153846153846154
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "  ",
+      "b": "ddc"
+    },
+    "expected": [
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "a",
+      "b": "bacadbb ba "
+    },
+    "expected": [
+      1.0,
+      0.18181818181818188
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "b",
+      "b": " cda "
+    },
+    "expected": [
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "adb",
+      "b": "abacaacbccb"
+    },
+    "expected": [
+      0.8,
+      0.2857142857142857
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "ad cc accd",
+      "b": "dc baadcdbcbccda"
+    },
+    "expected": [
+      0.7,
+      0.5384615384615384
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "dddbcbbccac",
+      "b": "ba a aad "
+    },
+    "expected": [
+      0.2857142857142857,
+      0.31578947368421056
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "a cdc  c ",
+      "b": " d"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.25
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "acac b",
+      "b": "bdc    dda  badbba"
+    },
+    "expected": [
+      0.5,
+      0.4
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cca",
+      "b": "a"
+    },
+    "expected": [
+      1.0,
+      0.5
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bcbbddcaa",
+      "b": "daaccd"
+    },
+    "expected": [
+      0.6,
+      0.4
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bdacbdc",
+      "b": "abcabbabba"
+    },
+    "expected": [
+      0.6,
+      0.35294117647058826
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "abdc  a",
+      "b": "cc"
+    },
+    "expected": [
+      0.5,
+      0.25
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " c",
+      "b": "cdbc a cdbcacca dbd"
+    },
+    "expected": [
+      1.0,
+      0.1
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "ca",
+      "b": "adb daabaada dccc"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.10526315789473685
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " cdd daacbb",
+      "b": "ba"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.1666666666666667
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "ca a  dc",
+      "b": "c da cadc c   a"
+    },
+    "expected": [
+      0.7142857142857143,
+      0.6666666666666665
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "abcccabbcbc",
+      "b": "aadbdd  bca"
+    },
+    "expected": [
+      0.5,
+      0.4761904761904762
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bddada",
+      "b": "bd d ddcdcbbab cba"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.41666666666666663
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bd",
+      "b": "d  abdaba d accdb"
+    },
+    "expected": [
+      1.0,
+      0.25
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "dddbb d ",
+      "b": "b  cbbc"
+    },
+    "expected": [
+      0.5454545454545454,
+      0.4615384615384615
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "  a",
+      "b": "acb dcaaa"
+    },
+    "expected": [
+      0.5,
+      0.2
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " ac bcba",
+      "b": "bb"
+    },
+    "expected": [
+      0.5,
+      0.4444444444444444
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " ba  dd",
+      "b": "a c d"
+    },
+    "expected": [
+      0.8,
+      0.6
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "caab cdc",
+      "b": "dbab"
+    },
+    "expected": [
+      0.5,
+      0.33333333333333326
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "dca cacbacd",
+      "b": "cadcb cd"
+    },
+    "expected": [
+      0.8,
+      0.631578947368421
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cbcd badb",
+      "b": "ddba"
+    },
+    "expected": [
+      0.75,
+      0.3076923076923077
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bd d caad",
+      "b": "abd bbb cadb ad"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.5833333333333334
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "ab d ",
+      "b": "badbdbacc aba"
+    },
+    "expected": [
+      0.6,
+      0.4705882352941177
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "dbdcdb",
+      "b": "d "
+    },
+    "expected": [
+      0.6666666666666667,
+      0.2857142857142857
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " b  adb d ",
+      "b": " dcab"
+    },
+    "expected": [
+      0.6,
+      0.36363636363636365
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bbcdd bdccb",
+      "b": "badcbcbbc"
+    },
+    "expected": [
+      0.7142857142857143,
+      0.5
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "b ca c cad",
+      "b": "ddcbbaddabb"
+    },
+    "expected": [
+      0.3529411764705882,
+      0.2857142857142857
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "dbcb",
+      "b": "b cdab dcd a dcdb d"
+    },
+    "expected": [
+      0.75,
+      0.34782608695652173
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cdac  cba b",
+      "b": "  bdcabcca addd c"
+    },
+    "expected": [
+      0.5555555555555556,
+      0.48
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "a",
+      "b": "bbcda cdbb ccdaccba"
+    },
+    "expected": [
+      1.0,
+      0.1
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "d  abc",
+      "b": "bacaa  c   "
+    },
+    "expected": [
+      0.5,
+      0.5
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "daa c cabc",
+      "b": "bbac dcc"
+    },
+    "expected": [
+      0.625,
+      0.4444444444444444
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "c ",
+      "b": "dbccacacdb d"
+    },
+    "expected": [
+      0.5,
+      0.15384615384615385
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "aa",
+      "b": "db daccaabcc"
+    },
+    "expected": [
+      1.0,
+      0.2857142857142857
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " a bbd ccc",
+      "b": "db bd cdddac ddc"
+    },
+    "expected": [
+      0.6,
+      0.48
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "c",
+      "b": "cddb b"
+    },
+    "expected": [
+      1.0,
+      0.2857142857142857
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " aabadcd  ",
+      "b": "dc"
+    },
+    "expected": [
+      1.0,
+      0.4444444444444444
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bdcba bbd",
+      "b": "dabcb bbb"
+    },
+    "expected": [
+      0.75,
+      0.6666666666666665
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bb dbadb",
+      "b": "   bbdbcbcbc "
+    },
+    "expected": [
+      0.625,
+      0.5882352941176471
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "adcbd",
+      "b": "bbabcda  ad cddbb"
+    },
+    "expected": [
+      0.8,
+      0.38095238095238093
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " ",
+      "b": "dbd"
+    },
+    "expected": [
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " ",
+      "b": "c  a d"
+    },
+    "expected": [
+      1.0,
+      0.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "   ",
+      "b": "ac"
+    },
+    "expected": [
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " b",
+      "b": " cc  caaacbaddc"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.1428571428571429
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "a   ",
+      "b": "bca c abcbbccbbbd"
+    },
+    "expected": [
+      0.75,
+      0.11111111111111115
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bcc dba ",
+      "b": "bb cc bd d"
+    },
+    "expected": [
+      0.75,
+      0.5882352941176471
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " ddcdccb a ",
+      "b": "bca cddc caacccdb"
+    },
+    "expected": [
+      0.5454545454545454,
+      0.4615384615384615
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "b",
+      "b": "d"
+    },
+    "expected": [
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "acdca  cba",
+      "b": "d dc "
+    },
+    "expected": [
+      0.6,
+      0.4615384615384615
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "c ba  a",
+      "b": "a ba  d cdcb"
+    },
+    "expected": [
+      0.7692307692307692,
+      0.8
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bbb ",
+      "b": "add "
+    },
+    "expected": [
+      0.4,
+      0.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "b",
+      "b": "aac"
+    },
+    "expected": [
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "b",
+      "b": "cb"
+    },
+    "expected": [
+      1.0,
+      0.6666666666666665
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "dda ",
+      "b": " dbcdbba"
+    },
+    "expected": [
+      0.5,
+      0.6
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "ccbccdadcab",
+      "b": "dbcabdc bd  c"
+    },
+    "expected": [
+      0.6,
+      0.5217391304347826
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cabbd  ",
+      "b": "c a"
+    },
+    "expected": [
+      0.8,
+      0.25
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "dd addc",
+      "b": "b b baddd ddbbbb"
+    },
+    "expected": [
+      0.7142857142857143,
+      0.5714285714285715
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cbbcca c",
+      "b": " bccbab cca"
+    },
+    "expected": [
+      0.75,
+      0.7777777777777777
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bcbc b",
+      "b": " dcadadc cdaa  d"
+    },
+    "expected": [
+      0.33333333333333337,
+      0.3
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "c",
+      "b": "aabcad  "
+    },
+    "expected": [
+      1.0,
+      0.2857142857142857
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cacacb a d ",
+      "b": "aaaac "
+    },
+    "expected": [
+      0.6666666666666667,
+      0.5333333333333333
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "da cb",
+      "b": "b a dacb"
+    },
+    "expected": [
+      0.8888888888888888,
+      0.6153846153846154
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "aaaccdc ",
+      "b": "  b "
+    },
+    "expected": [
+      0.4,
+      0.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "caa  ca b ",
+      "b": "a   bcc dcbdddadbab"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.48
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bd",
+      "b": " bddcbcbacbdb"
+    },
+    "expected": [
+      1.0,
+      0.2857142857142857
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "daad",
+      "b": "dbaab"
+    },
+    "expected": [
+      0.75,
+      0.6666666666666665
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "daaccc",
+      "b": "abac"
+    },
+    "expected": [
+      0.75,
+      0.6
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " acddc",
+      "b": "cababcac"
+    },
+    "expected": [
+      0.5454545454545454,
+      0.4615384615384615
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bdb dcd",
+      "b": "ab bd bb   ab b"
+    },
+    "expected": [
+      0.5714285714285714,
+      0.4705882352941177
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "abbdd ",
+      "b": "bbdb a a"
+    },
+    "expected": [
+      0.7272727272727273,
+      0.7272727272727272
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "ad bd a d",
+      "b": "abbacbcccc  ca d"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.41666666666666663
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "c abdadcd",
+      "b": " bdaabdcdbbcd"
+    },
+    "expected": [
+      0.7777777777777779,
+      0.6666666666666665
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "a cb a db",
+      "b": "cbcccdbb a "
+    },
+    "expected": [
+      0.625,
+      0.7058823529411765
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "a  dccbccdd",
+      "b": "dcadac"
+    },
+    "expected": [
+      0.5454545454545454,
+      0.375
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "abbddcd",
+      "b": "abcb cdcdcb d dbda"
+    },
+    "expected": [
+      0.7142857142857143,
+      0.56
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bba",
+      "b": "dccabaddd cc"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.2666666666666667
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "a d",
+      "b": " cabcdccdcac"
+    },
+    "expected": [
+      0.5,
+      0.2857142857142857
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bbca",
+      "b": "cdcccbc cddcbcd"
+    },
+    "expected": [
+      0.5714285714285714,
+      0.31578947368421056
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "db cb c db ",
+      "b": "d dcdd  ccca bc c  "
+    },
+    "expected": [
+      0.7058823529411764,
+      0.43478260869565216
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": " d ",
+      "b": " a bd ddc"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.2222222222222223
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "ddbaddcdd ",
+      "b": " badddcdbacbcbb"
+    },
+    "expected": [
+      0.6666666666666667,
+      0.5217391304347826
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bcccb",
+      "b": "ad"
+    },
+    "expected": [
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "a ac c  ",
+      "b": "a bdbb abb"
+    },
+    "expected": [
+      0.4,
+      0.5
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "caab",
+      "b": "abd"
+    },
+    "expected": [
+      0.8,
+      0.5714285714285715
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "a",
+      "b": "  caabdab a"
+    },
+    "expected": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "dda",
+      "b": "adcddacd aadcb baba"
+    },
+    "expected": [
+      1.0,
+      0.27272727272727265
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "ddb a  bd",
+      "b": "dba  ca"
+    },
+    "expected": [
+      0.7142857142857143,
+      0.5714285714285715
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "da abbb ",
+      "b": "bdd daabaadcdc"
+    },
+    "expected": [
+      0.5,
+      0.38095238095238093
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "ccdcaaa",
+      "b": " abcddd"
+    },
+    "expected": [
+      0.4,
+      0.3076923076923077
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "dd aa",
+      "b": "adaddaaaacbc b"
+    },
+    "expected": [
+      0.8,
+      0.4210526315789474
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "adb da",
+      "b": "badcacbccbbacd"
+    },
+    "expected": [
+      0.5454545454545454,
+      0.4
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "da a",
+      "b": "cb"
+    },
+    "expected": [
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "a a",
+      "b": "bb b cadabcac "
+    },
+    "expected": [
+      0.6666666666666667,
+      0.1428571428571429
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "dbacb",
+      "b": "cbdcccda d"
+    },
+    "expected": [
+      0.5714285714285714,
+      0.2666666666666667
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "a ac",
+      "b": " "
+    },
+    "expected": [
+      1.0,
+      0.0
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "d",
+      "b": " dacbca da  c"
+    },
+    "expected": [
+      1.0,
+      0.1666666666666667
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "cdccdb",
+      "b": "cc bbb ddbbabdcaacc"
+    },
+    "expected": [
+      0.6,
+      0.32
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "bdcc a bd",
+      "b": "b "
+    },
+    "expected": [
+      0.6666666666666667,
+      0.2
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "abb",
+      "b": "ab a  ccaadaadbac"
+    },
+    "expected": [
+      0.8,
+      0.31578947368421056
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "ddcb aa ca ",
+      "b": "a a cdcbcb "
+    },
+    "expected": [
+      0.5882352941176471,
+      0.6666666666666665
+    ]
+  },
+  {
+    "function": "fuzz",
+    "input": {
+      "a": "b adb",
+      "b": "c cabcddb "
+    },
+    "expected": [
+      0.6,
+      0.42857142857142855
+    ]
+  },
+  {
+    "function": "search",
+    "input": {
+      "nodes": [
+        {
+          "id": "1",
+          "type": "file",
+          "name": "Authentication",
+          "tags": [
+            "login"
+          ],
+          "summary": "Session management",
+          "languageNotes": ""
+        },
+        {
+          "id": "2",
+          "type": "function",
+          "name": "logout",
+          "tags": [
+            "authentication"
+          ],
+          "summary": "End a session"
+        },
+        {
+          "id": "3",
+          "type": "class",
+          "name": "User",
+          "tags": [],
+          "summary": "A person"
+        }
+      ],
+      "query": "auth",
+      "types": null
+    },
+    "expected": [
+      {
+        "node_id": "1",
+        "score": 0.0
+      },
+      {
+        "node_id": "2",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "function": "search",
+    "input": {
+      "nodes": [
+        {
+          "id": "1",
+          "type": "file",
+          "name": "Authentication",
+          "tags": [
+            "login"
+          ],
+          "summary": "Session management",
+          "languageNotes": ""
+        },
+        {
+          "id": "2",
+          "type": "function",
+          "name": "logout",
+          "tags": [
+            "authentication"
+          ],
+          "summary": "End a session"
+        },
+        {
+          "id": "3",
+          "type": "class",
+          "name": "User",
+          "tags": [],
+          "summary": "A person"
+        }
+      ],
+      "query": "auth",
+      "types": [
+        "function"
+      ]
+    },
+    "expected": [
+      {
+        "node_id": "2",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "function": "search",
+    "input": {
+      "nodes": [
+        {
+          "id": "1",
+          "type": "file",
+          "name": "Authentication",
+          "tags": [
+            "login"
+          ],
+          "summary": "Session management",
+          "languageNotes": ""
+        },
+        {
+          "id": "2",
+          "type": "function",
+          "name": "logout",
+          "tags": [
+            "authentication"
+          ],
+          "summary": "End a session"
+        },
+        {
+          "id": "3",
+          "type": "class",
+          "name": "User",
+          "tags": [],
+          "summary": "A person"
+        }
+      ],
+      "query": "LOGIN",
+      "types": null
+    },
+    "expected": [
+      {
+        "node_id": "1",
+        "score": 0.0
+      },
+      {
+        "node_id": "2",
+        "score": 0.246
+      }
+    ]
+  },
+  {
+    "function": "search",
+    "input": {
+      "nodes": [
+        {
+          "id": "1",
+          "type": "file",
+          "name": "Authentication",
+          "tags": [
+            "login"
+          ],
+          "summary": "Session management",
+          "languageNotes": ""
+        },
+        {
+          "id": "2",
+          "type": "function",
+          "name": "logout",
+          "tags": [
+            "authentication"
+          ],
+          "summary": "End a session"
+        },
+        {
+          "id": "3",
+          "type": "class",
+          "name": "User",
+          "tags": [],
+          "summary": "A person"
+        }
+      ],
+      "query": "LOGIN",
+      "types": [
+        "function"
+      ]
+    },
+    "expected": [
+      {
+        "node_id": "2",
+        "score": 0.246
+      }
+    ]
+  },
+  {
+    "function": "search",
+    "input": {
+      "nodes": [
+        {
+          "id": "1",
+          "type": "file",
+          "name": "Authentication",
+          "tags": [
+            "login"
+          ],
+          "summary": "Session management",
+          "languageNotes": ""
+        },
+        {
+          "id": "2",
+          "type": "function",
+          "name": "logout",
+          "tags": [
+            "authentication"
+          ],
+          "summary": "End a session"
+        },
+        {
+          "id": "3",
+          "type": "class",
+          "name": "User",
+          "tags": [],
+          "summary": "A person"
+        }
+      ],
+      "query": "session",
+      "types": null
+    },
+    "expected": [
+      {
+        "node_id": "1",
+        "score": 0.0
+      },
+      {
+        "node_id": "2",
+        "score": 0.0
+      },
+      {
+        "node_id": "3",
+        "score": 0.32933333333333326
+      }
+    ]
+  },
+  {
+    "function": "search",
+    "input": {
+      "nodes": [
+        {
+          "id": "1",
+          "type": "file",
+          "name": "Authentication",
+          "tags": [
+            "login"
+          ],
+          "summary": "Session management",
+          "languageNotes": ""
+        },
+        {
+          "id": "2",
+          "type": "function",
+          "name": "logout",
+          "tags": [
+            "authentication"
+          ],
+          "summary": "End a session"
+        },
+        {
+          "id": "3",
+          "type": "class",
+          "name": "User",
+          "tags": [],
+          "summary": "A person"
+        }
+      ],
+      "query": "session",
+      "types": [
+        "function"
+      ]
+    },
+    "expected": [
+      {
+        "node_id": "2",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "function": "search",
+    "input": {
+      "nodes": [
+        {
+          "id": "1",
+          "type": "file",
+          "name": "Authentication",
+          "tags": [
+            "login"
+          ],
+          "summary": "Session management",
+          "languageNotes": ""
+        },
+        {
+          "id": "2",
+          "type": "function",
+          "name": "logout",
+          "tags": [
+            "authentication"
+          ],
+          "summary": "End a session"
+        },
+        {
+          "id": "3",
+          "type": "class",
+          "name": "User",
+          "tags": [],
+          "summary": "A person"
+        }
+      ],
+      "query": "end user",
+      "types": null
+    },
+    "expected": [
+      {
+        "node_id": "2",
+        "score": 0.0
+      },
+      {
+        "node_id": "3",
+        "score": 0.0
+      },
+      {
+        "node_id": "1",
+        "score": 0.32933333333333326
+      }
+    ]
+  },
+  {
+    "function": "search",
+    "input": {
+      "nodes": [
+        {
+          "id": "1",
+          "type": "file",
+          "name": "Authentication",
+          "tags": [
+            "login"
+          ],
+          "summary": "Session management",
+          "languageNotes": ""
+        },
+        {
+          "id": "2",
+          "type": "function",
+          "name": "logout",
+          "tags": [
+            "authentication"
+          ],
+          "summary": "End a session"
+        },
+        {
+          "id": "3",
+          "type": "class",
+          "name": "User",
+          "tags": [],
+          "summary": "A person"
+        }
+      ],
+      "query": "end user",
+      "types": [
+        "function"
+      ]
+    },
+    "expected": [
+      {
+        "node_id": "2",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "function": "search",
+    "input": {
+      "nodes": [
+        {
+          "id": "1",
+          "type": "file",
+          "name": "Authentication",
+          "tags": [
+            "login"
+          ],
+          "summary": "Session management",
+          "languageNotes": ""
+        },
+        {
+          "id": "2",
+          "type": "function",
+          "name": "logout",
+          "tags": [
+            "authentication"
+          ],
+          "summary": "End a session"
+        },
+        {
+          "id": "3",
+          "type": "class",
+          "name": "User",
+          "tags": [],
+          "summary": "A person"
+        }
+      ],
+      "query": "zzzz",
+      "types": null
+    },
+    "expected": []
+  },
+  {
+    "function": "search",
+    "input": {
+      "nodes": [
+        {
+          "id": "1",
+          "type": "file",
+          "name": "Authentication",
+          "tags": [
+            "login"
+          ],
+          "summary": "Session management",
+          "languageNotes": ""
+        },
+        {
+          "id": "2",
+          "type": "function",
+          "name": "logout",
+          "tags": [
+            "authentication"
+          ],
+          "summary": "End a session"
+        },
+        {
+          "id": "3",
+          "type": "class",
+          "name": "User",
+          "tags": [],
+          "summary": "A person"
+        }
+      ],
+      "query": "zzzz",
+      "types": [
+        "function"
+      ]
+    },
+    "expected": []
+  },
+  {
+    "function": "search",
+    "input": {
+      "nodes": [
+        {
+          "id": "1",
+          "type": "file",
+          "name": "Authentication",
+          "tags": [
+            "login"
+          ],
+          "summary": "Session management",
+          "languageNotes": ""
+        },
+        {
+          "id": "2",
+          "type": "function",
+          "name": "logout",
+          "tags": [
+            "authentication"
+          ],
+          "summary": "End a session"
+        },
+        {
+          "id": "3",
+          "type": "class",
+          "name": "User",
+          "tags": [],
+          "summary": "A person"
+        }
+      ],
+      "query": "",
+      "types": null
+    },
+    "expected": []
+  },
+  {
+    "function": "search",
+    "input": {
+      "nodes": [
+        {
+          "id": "1",
+          "type": "file",
+          "name": "Authentication",
+          "tags": [
+            "login"
+          ],
+          "summary": "Session management",
+          "languageNotes": ""
+        },
+        {
+          "id": "2",
+          "type": "function",
+          "name": "logout",
+          "tags": [
+            "authentication"
+          ],
+          "summary": "End a session"
+        },
+        {
+          "id": "3",
+          "type": "class",
+          "name": "User",
+          "tags": [],
+          "summary": "A person"
+        }
+      ],
+      "query": "",
+      "types": [
+        "function"
+      ]
+    },
+    "expected": []
+  },
+  {
+    "function": "search",
+    "input": {
+      "nodes": [
+        {
+          "id": "1",
+          "type": "file",
+          "name": "Authentication",
+          "tags": [
+            "login"
+          ],
+          "summary": "Session management",
+          "languageNotes": ""
+        },
+        {
+          "id": "2",
+          "type": "function",
+          "name": "logout",
+          "tags": [
+            "authentication"
+          ],
+          "summary": "End a session"
+        },
+        {
+          "id": "3",
+          "type": "class",
+          "name": "User",
+          "tags": [],
+          "summary": "A person"
+        }
+      ],
+      "query": " authentication  ",
+      "types": null
+    },
+    "expected": [
+      {
+        "node_id": "1",
+        "score": 0.0
+      },
+      {
+        "node_id": "2",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "function": "search",
+    "input": {
+      "nodes": [
+        {
+          "id": "1",
+          "type": "file",
+          "name": "Authentication",
+          "tags": [
+            "login"
+          ],
+          "summary": "Session management",
+          "languageNotes": ""
+        },
+        {
+          "id": "2",
+          "type": "function",
+          "name": "logout",
+          "tags": [
+            "authentication"
+          ],
+          "summary": "End a session"
+        },
+        {
+          "id": "3",
+          "type": "class",
+          "name": "User",
+          "tags": [],
+          "summary": "A person"
+        }
+      ],
+      "query": " authentication  ",
+      "types": [
+        "function"
+      ]
+    },
+    "expected": [
+      {
+        "node_id": "2",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "function": "cosine",
+    "input": {
+      "a": [
+        0,
+        0
+      ],
+      "b": [
+        1,
+        1
+      ]
+    },
+    "expected": 0.0
+  },
+  {
+    "function": "cosine",
+    "input": {
+      "a": [
+        1,
+        0
+      ],
+      "b": [
+        1,
+        0
+      ]
+    },
+    "expected": 1.0
+  },
+  {
+    "function": "cosine",
+    "input": {
+      "a": [
+        1,
+        0
+      ],
+      "b": [
+        -1,
+        0
+      ]
+    },
+    "expected": -1.0
+  },
+  {
+    "function": "cosine",
+    "input": {
+      "a": [
+        1,
+        2,
+        3
+      ],
+      "b": [
+        3,
+        2,
+        1
+      ]
+    },
+    "expected": 0.7142857142857143
+  },
+  {
+    "function": "validate",
+    "input": {
+      "graph": null
+    },
+    "expected": {
+      "success": false,
+      "issues": [],
+      "fatal": "Invalid input: not an object",
+      "errors": [
+        "Invalid input: not an object"
+      ]
+    }
+  },
+  {
+    "function": "validate",
+    "input": {
+      "graph": {}
+    },
+    "expected": {
+      "success": false,
+      "errors": [
+        "Missing or invalid project metadata"
+      ],
+      "issues": [],
+      "fatal": "Missing or invalid project metadata"
+    }
+  },
+  {
+    "function": "validate",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "file:a",
+            "type": "file",
+            "name": "a",
+            "summary": "a",
+            "tags": [],
+            "complexity": "simple",
+            "filePath": "a",
+            "extension": {
+              "keep": true
+            }
+          }
+        ],
+        "edges": [],
+        "layers": []
+      }
+    },
+    "expected": {
+      "success": true,
+      "data": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "file:a",
+            "type": "file",
+            "name": "a",
+            "filePath": "a",
+            "summary": "a",
+            "tags": [],
+            "complexity": "simple",
+            "extension": {
+              "keep": true
+            }
+          }
+        ],
+        "edges": [],
+        "layers": []
+      },
+      "issues": [],
+      "errors": null
+    }
+  },
+  {
+    "function": "validate",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [],
+        "edges": [],
+        "layers": []
+      }
+    },
+    "expected": {
+      "success": false,
+      "errors": [
+        "No valid nodes found in knowledge graph"
+      ],
+      "issues": [],
+      "fatal": "No valid nodes found in knowledge graph"
+    }
+  },
+  {
+    "function": "validate",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "file:a",
+            "type": "file",
+            "name": "a",
+            "summary": "a",
+            "tags": [],
+            "complexity": "simple",
+            "filePath": "a",
+            "extension": {
+              "keep": true
+            }
+          }
+        ],
+        "edges": [],
+        "layers": null
+      }
+    },
+    "expected": {
+      "success": true,
+      "data": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "file:a",
+            "type": "file",
+            "name": "a",
+            "filePath": "a",
+            "summary": "a",
+            "tags": [],
+            "complexity": "simple",
+            "extension": {
+              "keep": true
+            }
+          }
+        ],
+        "edges": [],
+        "layers": []
+      },
+      "issues": [],
+      "errors": null
+    }
+  },
+  {
+    "function": "validate",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "file:a",
+            "type": "FN",
+            "name": "a",
+            "summary": "a",
+            "tags": [],
+            "complexity": "simple",
+            "filePath": null,
+            "extension": {
+              "keep": true
+            }
+          }
+        ],
+        "edges": [],
+        "layers": []
+      }
+    },
+    "expected": {
+      "success": true,
+      "data": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "file:a",
+            "type": "function",
+            "name": "a",
+            "summary": "a",
+            "tags": [],
+            "complexity": "simple",
+            "extension": {
+              "keep": true
+            }
+          }
+        ],
+        "edges": [],
+        "layers": []
+      },
+      "issues": [],
+      "errors": null
+    }
+  },
+  {
+    "function": "validate",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "file:a",
+            "type": "file",
+            "name": "a",
+            "summary": "a",
+            "tags": [],
+            "complexity": "HIGH",
+            "filePath": "a",
+            "extension": {
+              "keep": true
+            }
+          }
+        ],
+        "edges": [],
+        "layers": []
+      }
+    },
+    "expected": {
+      "success": true,
+      "data": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "file:a",
+            "type": "file",
+            "name": "a",
+            "filePath": "a",
+            "summary": "a",
+            "tags": [],
+            "complexity": "complex",
+            "extension": {
+              "keep": true
+            }
+          }
+        ],
+        "edges": [],
+        "layers": []
+      },
+      "issues": [
+        {
+          "level": "auto-corrected",
+          "category": "alias",
+          "message": "nodes[0] (\"a\"): complexity \"high\" — mapped to \"complex\"",
+          "path": "nodes[0].complexity"
+        }
+      ],
+      "errors": [
+        "nodes[0] (\"a\"): complexity \"high\" — mapped to \"complex\""
+      ]
+    }
+  },
+  {
+    "function": "validate",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "file:a",
+            "type": "file",
+            "name": "a",
+            "summary": "a",
+            "tags": [],
+            "complexity": "simple",
+            "filePath": "a",
+            "extension": {
+              "keep": true
+            }
+          }
+        ],
+        "edges": [
+          {
+            "source": "file:a",
+            "target": "file:missing",
+            "type": "calls",
+            "direction": "forward",
+            "weight": 0.5
+          }
+        ],
+        "layers": []
+      }
+    },
+    "expected": {
+      "success": true,
+      "data": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "file:a",
+            "type": "file",
+            "name": "a",
+            "filePath": "a",
+            "summary": "a",
+            "tags": [],
+            "complexity": "simple",
+            "extension": {
+              "keep": true
+            }
+          }
+        ],
+        "edges": [],
+        "layers": []
+      },
+      "issues": [
+        {
+          "level": "dropped",
+          "category": "invalid-reference",
+          "message": "edges[0]: target \"file:missing\" does not exist in nodes — removed",
+          "path": "edges[0].target"
+        }
+      ],
+      "errors": [
+        "edges[0]: target \"file:missing\" does not exist in nodes — removed"
+      ]
+    }
+  },
+  {
+    "function": "validate",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "a",
+            "name": "a"
+          }
+        ],
+        "edges": [],
+        "layers": []
+      }
+    },
+    "expected": {
+      "success": true,
+      "data": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "a",
+            "type": "file",
+            "name": "a",
+            "summary": "a",
+            "tags": [],
+            "complexity": "moderate"
+          }
+        ],
+        "edges": [],
+        "layers": []
+      },
+      "issues": [
+        {
+          "level": "auto-corrected",
+          "category": "missing-field",
+          "message": "nodes[0] (\"a\"): missing \"type\" — defaulted to \"file\"",
+          "path": "nodes[0].type"
+        },
+        {
+          "level": "auto-corrected",
+          "category": "missing-field",
+          "message": "nodes[0] (\"a\"): missing \"complexity\" — defaulted to \"moderate\"",
+          "path": "nodes[0].complexity"
+        },
+        {
+          "level": "auto-corrected",
+          "category": "missing-field",
+          "message": "nodes[0] (\"a\"): missing \"tags\" — defaulted to []",
+          "path": "nodes[0].tags"
+        },
+        {
+          "level": "auto-corrected",
+          "category": "missing-field",
+          "message": "nodes[0] (\"a\"): missing \"summary\" — defaulted to name",
+          "path": "nodes[0].summary"
+        }
+      ],
+      "errors": [
+        "nodes[0] (\"a\"): missing \"type\" — defaulted to \"file\"",
+        "nodes[0] (\"a\"): missing \"complexity\" — defaulted to \"moderate\"",
+        "nodes[0] (\"a\"): missing \"tags\" — defaulted to []",
+        "nodes[0] (\"a\"): missing \"summary\" — defaulted to name"
+      ]
+    }
+  },
+  {
+    "function": "validate",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": "abc"
+        },
+        "nodes": {},
+        "edges": [],
+        "layers": []
+      }
+    },
+    "expected": {
+      "success": false,
+      "errors": [
+        "\"nodes\" must be an array when present"
+      ],
+      "issues": [
+        {
+          "level": "fatal",
+          "category": "invalid-collection",
+          "message": "\"nodes\" must be an array when present",
+          "path": "nodes"
+        }
+      ],
+      "fatal": "\"nodes\" must be an array when present"
+    }
+  },
+  {
+    "function": "validate",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "file:a",
+            "type": "file",
+            "name": "a",
+            "summary": "a",
+            "tags": [],
+            "complexity": "simple",
+            "filePath": "a",
+            "extension": {
+              "keep": true
+            }
+          }
+        ],
+        "edges": "bad",
+        "layers": []
+      }
+    },
+    "expected": {
+      "success": false,
+      "errors": [
+        "\"edges\" must be an array when present"
+      ],
+      "issues": [
+        {
+          "level": "fatal",
+          "category": "invalid-collection",
+          "message": "\"edges\" must be an array when present",
+          "path": "edges"
+        }
+      ],
+      "fatal": "\"edges\" must be an array when present"
+    }
+  },
+  {
+    "function": "merge",
+    "input": {
+      "graphs": [
+        {
+          "version": "1.0.0",
+          "project": {
+            "name": "demo",
+            "languages": [
+              "python"
+            ],
+            "frameworks": [],
+            "description": "Test",
+            "analyzedAt": "",
+            "gitCommitHash": "abc"
+          },
+          "nodes": [
+            {
+              "id": "file:a",
+              "type": "file",
+              "name": "a",
+              "summary": "a",
+              "tags": [],
+              "complexity": "simple",
+              "filePath": "a",
+              "extension": {
+                "keep": true
+              }
+            }
+          ],
+          "edges": [],
+          "layers": []
+        },
+        {
+          "version": "1.0.0",
+          "project": {
+            "name": "demo",
+            "languages": [
+              "python"
+            ],
+            "frameworks": [],
+            "description": "Test",
+            "analyzedAt": "",
+            "gitCommitHash": "abc"
+          },
+          "nodes": [
+            {
+              "id": "file:a",
+              "type": "file",
+              "name": "a",
+              "summary": "stub",
+              "tags": [],
+              "complexity": "simple",
+              "filePath": "a",
+              "extension": {
+                "keep": true
+              },
+              "stub": true
+            }
+          ],
+          "edges": [],
+          "layers": []
+        }
+      ]
+    },
+    "expected": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": ""
+        },
+        "nodes": [
+          {
+            "id": "file:a",
+            "type": "file",
+            "name": "a",
+            "summary": "a",
+            "tags": [],
+            "complexity": "simple",
+            "filePath": "a",
+            "extension": {
+              "keep": true
+            }
+          }
+        ],
+        "edges": [],
+        "layers": []
+      },
+      "report": [
+        "Input: 2 nodes, 0 edges (from 2 graphs)",
+        "",
+        "Output: 1 nodes, 0 edges, 0 layers"
+      ]
+    }
+  },
+  {
+    "function": "merge",
+    "input": {
+      "graphs": [
+        {
+          "version": "1.0.0",
+          "project": {
+            "name": "demo",
+            "languages": [
+              "python"
+            ],
+            "frameworks": [],
+            "description": "Test",
+            "analyzedAt": "",
+            "gitCommitHash": "abc"
+          },
+          "nodes": [
+            {
+              "id": "file:a",
+              "type": "file",
+              "name": "a",
+              "summary": "stub",
+              "tags": [],
+              "complexity": "simple",
+              "filePath": "a",
+              "extension": {
+                "keep": true
+              },
+              "stub": true
+            }
+          ],
+          "edges": [],
+          "layers": []
+        },
+        {
+          "version": "1.0.0",
+          "project": {
+            "name": "demo",
+            "languages": [
+              "python"
+            ],
+            "frameworks": [],
+            "description": "Test",
+            "analyzedAt": "",
+            "gitCommitHash": "abc"
+          },
+          "nodes": [
+            {
+              "id": "file:a",
+              "type": "file",
+              "name": "a",
+              "summary": "a",
+              "tags": [],
+              "complexity": "simple",
+              "filePath": "a",
+              "extension": {
+                "keep": true
+              }
+            }
+          ],
+          "edges": [],
+          "layers": []
+        }
+      ]
+    },
+    "expected": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": ""
+        },
+        "nodes": [
+          {
+            "id": "file:a",
+            "type": "file",
+            "name": "a",
+            "summary": "a",
+            "tags": [],
+            "complexity": "simple",
+            "filePath": "a",
+            "extension": {
+              "keep": true
+            }
+          }
+        ],
+        "edges": [],
+        "layers": []
+      },
+      "report": [
+        "Input: 2 nodes, 0 edges (from 2 graphs)",
+        "",
+        "Output: 1 nodes, 0 edges, 0 layers"
+      ]
+    }
+  },
+  {
+    "function": "merge",
+    "input": {
+      "graphs": [
+        {
+          "version": "1.0.0",
+          "project": {
+            "name": "demo",
+            "languages": [
+              "python"
+            ],
+            "frameworks": [],
+            "description": "Test",
+            "analyzedAt": "",
+            "gitCommitHash": "abc"
+          },
+          "nodes": [
+            {
+              "id": "file:a",
+              "type": "file",
+              "name": "a",
+              "summary": "a",
+              "tags": [],
+              "complexity": "simple",
+              "filePath": "a",
+              "extension": {
+                "keep": true
+              }
+            }
+          ],
+          "edges": [],
+          "layers": []
+        },
+        {
+          "version": "1.0.0",
+          "project": {
+            "name": "demo",
+            "languages": [
+              "python"
+            ],
+            "frameworks": [],
+            "description": "Test",
+            "analyzedAt": "",
+            "gitCommitHash": "abc"
+          },
+          "nodes": [
+            {
+              "id": "file:a",
+              "type": "file",
+              "name": "a",
+              "summary": "a",
+              "tags": [],
+              "complexity": "simple",
+              "filePath": "a",
+              "extension": {
+                "keep": true
+              }
+            }
+          ],
+          "edges": [],
+          "layers": []
+        }
+      ]
+    },
+    "expected": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": ""
+        },
+        "nodes": [
+          {
+            "id": "file:a",
+            "type": "file",
+            "name": "a",
+            "summary": "a",
+            "tags": [],
+            "complexity": "simple",
+            "filePath": "a",
+            "extension": {
+              "keep": true
+            }
+          }
+        ],
+        "edges": [],
+        "layers": []
+      },
+      "report": [
+        "Input: 2 nodes, 0 edges (from 2 graphs)",
+        "",
+        "Fixed (1 corrections):",
+        "     1 × duplicate 'file' nodes removed (kept later)",
+        "",
+        "Output: 1 nodes, 0 edges, 0 layers"
+      ]
+    }
+  },
+  {
+    "function": "stubs",
+    "input": {
+      "graph": {
+        "version": "1.0.0",
+        "project": {
+          "name": "demo",
+          "languages": [
+            "python"
+          ],
+          "frameworks": [],
+          "description": "Test",
+          "analyzedAt": "",
+          "gitCommitHash": "abc"
+        },
+        "nodes": [
+          {
+            "id": "file:a",
+            "type": "file",
+            "name": "a",
+            "summary": "a",
+            "tags": [],
+            "complexity": "simple",
+            "filePath": "a",
+            "extension": {
+              "keep": true
+            }
+          }
+        ],
+        "edges": [
+          {
+            "source": "file:a",
+            "target": "function:b:run",
+            "type": "imports"
+          }
+        ],
+        "layers": []
+      },
+      "known": [
+        "a",
+        "b"
+      ]
+    },
+    "expected": {
+      "version": "1.0.0",
+      "project": {
+        "name": "demo",
+        "languages": [
+          "python"
+        ],
+        "frameworks": [],
+        "description": "Test",
+        "analyzedAt": "",
+        "gitCommitHash": "abc"
+      },
+      "nodes": [
+        {
+          "id": "file:a",
+          "type": "file",
+          "name": "a",
+          "summary": "a",
+          "tags": [],
+          "complexity": "simple",
+          "filePath": "a",
+          "extension": {
+            "keep": true
+          }
+        },
+        {
+          "id": "function:b:run",
+          "type": "function",
+          "name": "run",
+          "summary": "External reference — defined in another part, not analyzed here.",
+          "tags": [],
+          "complexity": "simple",
+          "filePath": "b",
+          "stub": true
+        }
+      ],
+      "edges": [
+        {
+          "source": "file:a",
+          "target": "function:b:run",
+          "type": "imports"
+        }
+      ],
+      "layers": []
+    }
+  },
+  {
+    "function": "compare_fingerprints",
+    "input": {
+      "old": {
+        "filePath": "x.env",
+        "contentHash": "37aa02a54b51e32c856b55942ae0562460956f8b06bb157d646fc649f544ff25",
+        "functions": [],
+        "classes": [],
+        "imports": [],
+        "exports": [],
+        "totalLines": 2,
+        "hasStructuralAnalysis": true
+      },
+      "new": {
+        "filePath": "x.env",
+        "contentHash": "37aa02a54b51e32c856b55942ae0562460956f8b06bb157d646fc649f544ff25",
+        "functions": [],
+        "classes": [],
+        "imports": [],
+        "exports": [],
+        "totalLines": 2,
+        "hasStructuralAnalysis": true
+      }
+    },
+    "expected": [
+      "NONE",
+      []
+    ]
+  },
+  {
+    "function": "compare_fingerprints",
+    "input": {
+      "old": {
+        "filePath": "x.env",
+        "contentHash": "37aa02a54b51e32c856b55942ae0562460956f8b06bb157d646fc649f544ff25",
+        "functions": [],
+        "classes": [],
+        "imports": [],
+        "exports": [],
+        "totalLines": 2,
+        "hasStructuralAnalysis": true
+      },
+      "new": {
+        "filePath": "x.env",
+        "contentHash": "new",
+        "functions": [],
+        "classes": [],
+        "imports": [],
+        "exports": [],
+        "totalLines": 2,
+        "hasStructuralAnalysis": true
+      }
+    },
+    "expected": [
+      "COSMETIC",
+      [
+        "internal logic or formatting changed"
+      ]
+    ]
+  },
+  {
+    "function": "compare_fingerprints",
+    "input": {
+      "old": {
+        "filePath": "x.env",
+        "contentHash": "37aa02a54b51e32c856b55942ae0562460956f8b06bb157d646fc649f544ff25",
+        "functions": [],
+        "classes": [],
+        "imports": [],
+        "exports": [],
+        "totalLines": 2,
+        "hasStructuralAnalysis": true
+      },
+      "new": {
+        "filePath": "x.env",
+        "contentHash": "new",
+        "functions": [],
+        "classes": [],
+        "imports": [],
+        "exports": [],
+        "totalLines": 2,
+        "hasStructuralAnalysis": false
+      }
+    },
+    "expected": [
+      "STRUCTURAL",
+      [
+        "no structural support — treated as structural"
+      ]
+    ]
+  },
+  {
+    "function": "compare_fingerprints",
+    "input": {
+      "old": {
+        "filePath": "x.env",
+        "contentHash": "37aa02a54b51e32c856b55942ae0562460956f8b06bb157d646fc649f544ff25",
+        "functions": [],
+        "classes": [],
+        "imports": [],
+        "exports": [],
+        "totalLines": 2,
+        "hasStructuralAnalysis": true
+      },
+      "new": {
+        "filePath": "x.env",
+        "contentHash": "new",
+        "functions": [],
+        "classes": [],
+        "imports": [],
+        "exports": [
+          "foo"
+        ],
+        "totalLines": 2,
+        "hasStructuralAnalysis": true
+      }
+    },
+    "expected": [
+      "STRUCTURAL",
+      [
+        "exports changed"
+      ]
+    ]
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [],
+      "paths": []
+    },
+    "expected": {
+      "action": "SKIP",
+      "rerunArchitecture": false,
+      "reason": "No structural changes detected."
+    }
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [],
+      "paths": [
+        "src/0.py",
+        "src/1.py",
+        "src/2.py",
+        "src/3.py",
+        "src/4.py",
+        "src/5.py",
+        "src/6.py",
+        "src/7.py",
+        "src/8.py",
+        "src/9.py"
+      ]
+    },
+    "expected": {
+      "action": "SKIP",
+      "rerunArchitecture": false,
+      "reason": "No structural changes detected."
+    }
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [],
+      "paths": [
+        "src/0.py",
+        "src/1.py",
+        "src/10.py",
+        "src/11.py",
+        "src/12.py",
+        "src/13.py",
+        "src/14.py",
+        "src/15.py",
+        "src/16.py",
+        "src/17.py",
+        "src/18.py",
+        "src/19.py",
+        "src/2.py",
+        "src/20.py",
+        "src/21.py",
+        "src/22.py",
+        "src/23.py",
+        "src/24.py",
+        "src/25.py",
+        "src/26.py",
+        "src/27.py",
+        "src/28.py",
+        "src/29.py",
+        "src/3.py",
+        "src/30.py",
+        "src/31.py",
+        "src/32.py",
+        "src/33.py",
+        "src/34.py",
+        "src/35.py",
+        "src/36.py",
+        "src/37.py",
+        "src/38.py",
+        "src/39.py",
+        "src/4.py",
+        "src/40.py",
+        "src/41.py",
+        "src/42.py",
+        "src/43.py",
+        "src/44.py",
+        "src/45.py",
+        "src/46.py",
+        "src/47.py",
+        "src/48.py",
+        "src/49.py",
+        "src/5.py",
+        "src/50.py",
+        "src/51.py",
+        "src/52.py",
+        "src/53.py",
+        "src/54.py",
+        "src/55.py",
+        "src/56.py",
+        "src/57.py",
+        "src/58.py",
+        "src/59.py",
+        "src/6.py",
+        "src/60.py",
+        "src/61.py",
+        "src/62.py",
+        "src/63.py",
+        "src/64.py",
+        "src/65.py",
+        "src/66.py",
+        "src/67.py",
+        "src/68.py",
+        "src/69.py",
+        "src/7.py",
+        "src/70.py",
+        "src/71.py",
+        "src/72.py",
+        "src/73.py",
+        "src/74.py",
+        "src/75.py",
+        "src/76.py",
+        "src/77.py",
+        "src/78.py",
+        "src/79.py",
+        "src/8.py",
+        "src/80.py",
+        "src/81.py",
+        "src/82.py",
+        "src/83.py",
+        "src/84.py",
+        "src/85.py",
+        "src/86.py",
+        "src/87.py",
+        "src/88.py",
+        "src/89.py",
+        "src/9.py",
+        "src/90.py",
+        "src/91.py",
+        "src/92.py",
+        "src/93.py",
+        "src/94.py",
+        "src/95.py",
+        "src/96.py",
+        "src/97.py",
+        "src/98.py",
+        "src/99.py"
+      ]
+    },
+    "expected": {
+      "action": "SKIP",
+      "rerunArchitecture": false,
+      "reason": "No structural changes detected."
+    }
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [
+        {
+          "filePath": "src/0.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        }
+      ],
+      "paths": []
+    },
+    "expected": {
+      "action": "PARTIAL_UPDATE",
+      "rerunArchitecture": false,
+      "reason": "1 file(s) have localized structural changes."
+    }
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [
+        {
+          "filePath": "src/0.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        }
+      ],
+      "paths": [
+        "src/0.py",
+        "src/1.py",
+        "src/2.py",
+        "src/3.py",
+        "src/4.py",
+        "src/5.py",
+        "src/6.py",
+        "src/7.py",
+        "src/8.py",
+        "src/9.py"
+      ]
+    },
+    "expected": {
+      "action": "PARTIAL_UPDATE",
+      "rerunArchitecture": false,
+      "reason": "1 file(s) have localized structural changes."
+    }
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [
+        {
+          "filePath": "src/0.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        }
+      ],
+      "paths": [
+        "src/0.py",
+        "src/1.py",
+        "src/10.py",
+        "src/11.py",
+        "src/12.py",
+        "src/13.py",
+        "src/14.py",
+        "src/15.py",
+        "src/16.py",
+        "src/17.py",
+        "src/18.py",
+        "src/19.py",
+        "src/2.py",
+        "src/20.py",
+        "src/21.py",
+        "src/22.py",
+        "src/23.py",
+        "src/24.py",
+        "src/25.py",
+        "src/26.py",
+        "src/27.py",
+        "src/28.py",
+        "src/29.py",
+        "src/3.py",
+        "src/30.py",
+        "src/31.py",
+        "src/32.py",
+        "src/33.py",
+        "src/34.py",
+        "src/35.py",
+        "src/36.py",
+        "src/37.py",
+        "src/38.py",
+        "src/39.py",
+        "src/4.py",
+        "src/40.py",
+        "src/41.py",
+        "src/42.py",
+        "src/43.py",
+        "src/44.py",
+        "src/45.py",
+        "src/46.py",
+        "src/47.py",
+        "src/48.py",
+        "src/49.py",
+        "src/5.py",
+        "src/50.py",
+        "src/51.py",
+        "src/52.py",
+        "src/53.py",
+        "src/54.py",
+        "src/55.py",
+        "src/56.py",
+        "src/57.py",
+        "src/58.py",
+        "src/59.py",
+        "src/6.py",
+        "src/60.py",
+        "src/61.py",
+        "src/62.py",
+        "src/63.py",
+        "src/64.py",
+        "src/65.py",
+        "src/66.py",
+        "src/67.py",
+        "src/68.py",
+        "src/69.py",
+        "src/7.py",
+        "src/70.py",
+        "src/71.py",
+        "src/72.py",
+        "src/73.py",
+        "src/74.py",
+        "src/75.py",
+        "src/76.py",
+        "src/77.py",
+        "src/78.py",
+        "src/79.py",
+        "src/8.py",
+        "src/80.py",
+        "src/81.py",
+        "src/82.py",
+        "src/83.py",
+        "src/84.py",
+        "src/85.py",
+        "src/86.py",
+        "src/87.py",
+        "src/88.py",
+        "src/89.py",
+        "src/9.py",
+        "src/90.py",
+        "src/91.py",
+        "src/92.py",
+        "src/93.py",
+        "src/94.py",
+        "src/95.py",
+        "src/96.py",
+        "src/97.py",
+        "src/98.py",
+        "src/99.py"
+      ]
+    },
+    "expected": {
+      "action": "PARTIAL_UPDATE",
+      "rerunArchitecture": false,
+      "reason": "1 file(s) have localized structural changes."
+    }
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [
+        {
+          "filePath": "src/0.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/1.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/2.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/3.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/4.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/5.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/6.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/7.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/8.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/9.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        }
+      ],
+      "paths": []
+    },
+    "expected": {
+      "action": "PARTIAL_UPDATE",
+      "rerunArchitecture": false,
+      "reason": "10 file(s) have localized structural changes."
+    }
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [
+        {
+          "filePath": "src/0.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/1.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/2.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/3.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/4.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/5.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/6.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/7.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/8.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/9.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        }
+      ],
+      "paths": [
+        "src/0.py",
+        "src/1.py",
+        "src/2.py",
+        "src/3.py",
+        "src/4.py",
+        "src/5.py",
+        "src/6.py",
+        "src/7.py",
+        "src/8.py",
+        "src/9.py"
+      ]
+    },
+    "expected": {
+      "action": "FULL_UPDATE",
+      "rerunArchitecture": false,
+      "reason": "10 files have structural changes — major restructuring; recommend a full rebuild."
+    }
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [
+        {
+          "filePath": "src/0.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/1.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/2.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/3.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/4.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/5.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/6.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/7.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/8.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/9.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        }
+      ],
+      "paths": [
+        "src/0.py",
+        "src/1.py",
+        "src/10.py",
+        "src/11.py",
+        "src/12.py",
+        "src/13.py",
+        "src/14.py",
+        "src/15.py",
+        "src/16.py",
+        "src/17.py",
+        "src/18.py",
+        "src/19.py",
+        "src/2.py",
+        "src/20.py",
+        "src/21.py",
+        "src/22.py",
+        "src/23.py",
+        "src/24.py",
+        "src/25.py",
+        "src/26.py",
+        "src/27.py",
+        "src/28.py",
+        "src/29.py",
+        "src/3.py",
+        "src/30.py",
+        "src/31.py",
+        "src/32.py",
+        "src/33.py",
+        "src/34.py",
+        "src/35.py",
+        "src/36.py",
+        "src/37.py",
+        "src/38.py",
+        "src/39.py",
+        "src/4.py",
+        "src/40.py",
+        "src/41.py",
+        "src/42.py",
+        "src/43.py",
+        "src/44.py",
+        "src/45.py",
+        "src/46.py",
+        "src/47.py",
+        "src/48.py",
+        "src/49.py",
+        "src/5.py",
+        "src/50.py",
+        "src/51.py",
+        "src/52.py",
+        "src/53.py",
+        "src/54.py",
+        "src/55.py",
+        "src/56.py",
+        "src/57.py",
+        "src/58.py",
+        "src/59.py",
+        "src/6.py",
+        "src/60.py",
+        "src/61.py",
+        "src/62.py",
+        "src/63.py",
+        "src/64.py",
+        "src/65.py",
+        "src/66.py",
+        "src/67.py",
+        "src/68.py",
+        "src/69.py",
+        "src/7.py",
+        "src/70.py",
+        "src/71.py",
+        "src/72.py",
+        "src/73.py",
+        "src/74.py",
+        "src/75.py",
+        "src/76.py",
+        "src/77.py",
+        "src/78.py",
+        "src/79.py",
+        "src/8.py",
+        "src/80.py",
+        "src/81.py",
+        "src/82.py",
+        "src/83.py",
+        "src/84.py",
+        "src/85.py",
+        "src/86.py",
+        "src/87.py",
+        "src/88.py",
+        "src/89.py",
+        "src/9.py",
+        "src/90.py",
+        "src/91.py",
+        "src/92.py",
+        "src/93.py",
+        "src/94.py",
+        "src/95.py",
+        "src/96.py",
+        "src/97.py",
+        "src/98.py",
+        "src/99.py"
+      ]
+    },
+    "expected": {
+      "action": "PARTIAL_UPDATE",
+      "rerunArchitecture": false,
+      "reason": "10 file(s) have localized structural changes."
+    }
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [
+        {
+          "filePath": "src/0.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/1.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/2.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/3.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/4.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/5.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/6.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/7.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/8.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/9.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/10.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        }
+      ],
+      "paths": []
+    },
+    "expected": {
+      "action": "ARCHITECTURE_UPDATE",
+      "rerunArchitecture": true,
+      "reason": "11 structural files exceed the partial limit of 10 — re-running architecture."
+    }
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [
+        {
+          "filePath": "src/0.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/1.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/2.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/3.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/4.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/5.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/6.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/7.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/8.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/9.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/10.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        }
+      ],
+      "paths": [
+        "src/0.py",
+        "src/1.py",
+        "src/2.py",
+        "src/3.py",
+        "src/4.py",
+        "src/5.py",
+        "src/6.py",
+        "src/7.py",
+        "src/8.py",
+        "src/9.py"
+      ]
+    },
+    "expected": {
+      "action": "FULL_UPDATE",
+      "rerunArchitecture": false,
+      "reason": "11 files have structural changes — major restructuring; recommend a full rebuild."
+    }
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [
+        {
+          "filePath": "src/0.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/1.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/2.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/3.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/4.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/5.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/6.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/7.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/8.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/9.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/10.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        }
+      ],
+      "paths": [
+        "src/0.py",
+        "src/1.py",
+        "src/10.py",
+        "src/11.py",
+        "src/12.py",
+        "src/13.py",
+        "src/14.py",
+        "src/15.py",
+        "src/16.py",
+        "src/17.py",
+        "src/18.py",
+        "src/19.py",
+        "src/2.py",
+        "src/20.py",
+        "src/21.py",
+        "src/22.py",
+        "src/23.py",
+        "src/24.py",
+        "src/25.py",
+        "src/26.py",
+        "src/27.py",
+        "src/28.py",
+        "src/29.py",
+        "src/3.py",
+        "src/30.py",
+        "src/31.py",
+        "src/32.py",
+        "src/33.py",
+        "src/34.py",
+        "src/35.py",
+        "src/36.py",
+        "src/37.py",
+        "src/38.py",
+        "src/39.py",
+        "src/4.py",
+        "src/40.py",
+        "src/41.py",
+        "src/42.py",
+        "src/43.py",
+        "src/44.py",
+        "src/45.py",
+        "src/46.py",
+        "src/47.py",
+        "src/48.py",
+        "src/49.py",
+        "src/5.py",
+        "src/50.py",
+        "src/51.py",
+        "src/52.py",
+        "src/53.py",
+        "src/54.py",
+        "src/55.py",
+        "src/56.py",
+        "src/57.py",
+        "src/58.py",
+        "src/59.py",
+        "src/6.py",
+        "src/60.py",
+        "src/61.py",
+        "src/62.py",
+        "src/63.py",
+        "src/64.py",
+        "src/65.py",
+        "src/66.py",
+        "src/67.py",
+        "src/68.py",
+        "src/69.py",
+        "src/7.py",
+        "src/70.py",
+        "src/71.py",
+        "src/72.py",
+        "src/73.py",
+        "src/74.py",
+        "src/75.py",
+        "src/76.py",
+        "src/77.py",
+        "src/78.py",
+        "src/79.py",
+        "src/8.py",
+        "src/80.py",
+        "src/81.py",
+        "src/82.py",
+        "src/83.py",
+        "src/84.py",
+        "src/85.py",
+        "src/86.py",
+        "src/87.py",
+        "src/88.py",
+        "src/89.py",
+        "src/9.py",
+        "src/90.py",
+        "src/91.py",
+        "src/92.py",
+        "src/93.py",
+        "src/94.py",
+        "src/95.py",
+        "src/96.py",
+        "src/97.py",
+        "src/98.py",
+        "src/99.py"
+      ]
+    },
+    "expected": {
+      "action": "ARCHITECTURE_UPDATE",
+      "rerunArchitecture": true,
+      "reason": "11 structural files exceed the partial limit of 10 — re-running architecture."
+    }
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [
+        {
+          "filePath": "src/0.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/1.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/2.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/3.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/4.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/5.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/6.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/7.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/8.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/9.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/10.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/11.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/12.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/13.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/14.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/15.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/16.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/17.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/18.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/19.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/20.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/21.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/22.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/23.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/24.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/25.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/26.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/27.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/28.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/29.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        }
+      ],
+      "paths": []
+    },
+    "expected": {
+      "action": "ARCHITECTURE_UPDATE",
+      "rerunArchitecture": true,
+      "reason": "30 structural files exceed the partial limit of 10 — re-running architecture."
+    }
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [
+        {
+          "filePath": "src/0.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/1.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/2.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/3.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/4.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/5.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/6.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/7.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/8.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/9.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/10.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/11.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/12.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/13.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/14.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/15.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/16.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/17.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/18.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/19.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/20.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/21.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/22.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/23.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/24.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/25.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/26.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/27.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/28.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/29.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        }
+      ],
+      "paths": [
+        "src/0.py",
+        "src/1.py",
+        "src/2.py",
+        "src/3.py",
+        "src/4.py",
+        "src/5.py",
+        "src/6.py",
+        "src/7.py",
+        "src/8.py",
+        "src/9.py"
+      ]
+    },
+    "expected": {
+      "action": "FULL_UPDATE",
+      "rerunArchitecture": false,
+      "reason": "30 files have structural changes — major restructuring; recommend a full rebuild."
+    }
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [
+        {
+          "filePath": "src/0.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/1.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/2.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/3.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/4.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/5.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/6.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/7.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/8.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/9.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/10.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/11.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/12.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/13.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/14.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/15.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/16.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/17.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/18.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/19.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/20.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/21.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/22.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/23.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/24.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/25.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/26.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/27.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/28.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/29.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        }
+      ],
+      "paths": [
+        "src/0.py",
+        "src/1.py",
+        "src/10.py",
+        "src/11.py",
+        "src/12.py",
+        "src/13.py",
+        "src/14.py",
+        "src/15.py",
+        "src/16.py",
+        "src/17.py",
+        "src/18.py",
+        "src/19.py",
+        "src/2.py",
+        "src/20.py",
+        "src/21.py",
+        "src/22.py",
+        "src/23.py",
+        "src/24.py",
+        "src/25.py",
+        "src/26.py",
+        "src/27.py",
+        "src/28.py",
+        "src/29.py",
+        "src/3.py",
+        "src/30.py",
+        "src/31.py",
+        "src/32.py",
+        "src/33.py",
+        "src/34.py",
+        "src/35.py",
+        "src/36.py",
+        "src/37.py",
+        "src/38.py",
+        "src/39.py",
+        "src/4.py",
+        "src/40.py",
+        "src/41.py",
+        "src/42.py",
+        "src/43.py",
+        "src/44.py",
+        "src/45.py",
+        "src/46.py",
+        "src/47.py",
+        "src/48.py",
+        "src/49.py",
+        "src/5.py",
+        "src/50.py",
+        "src/51.py",
+        "src/52.py",
+        "src/53.py",
+        "src/54.py",
+        "src/55.py",
+        "src/56.py",
+        "src/57.py",
+        "src/58.py",
+        "src/59.py",
+        "src/6.py",
+        "src/60.py",
+        "src/61.py",
+        "src/62.py",
+        "src/63.py",
+        "src/64.py",
+        "src/65.py",
+        "src/66.py",
+        "src/67.py",
+        "src/68.py",
+        "src/69.py",
+        "src/7.py",
+        "src/70.py",
+        "src/71.py",
+        "src/72.py",
+        "src/73.py",
+        "src/74.py",
+        "src/75.py",
+        "src/76.py",
+        "src/77.py",
+        "src/78.py",
+        "src/79.py",
+        "src/8.py",
+        "src/80.py",
+        "src/81.py",
+        "src/82.py",
+        "src/83.py",
+        "src/84.py",
+        "src/85.py",
+        "src/86.py",
+        "src/87.py",
+        "src/88.py",
+        "src/89.py",
+        "src/9.py",
+        "src/90.py",
+        "src/91.py",
+        "src/92.py",
+        "src/93.py",
+        "src/94.py",
+        "src/95.py",
+        "src/96.py",
+        "src/97.py",
+        "src/98.py",
+        "src/99.py"
+      ]
+    },
+    "expected": {
+      "action": "ARCHITECTURE_UPDATE",
+      "rerunArchitecture": true,
+      "reason": "30 structural files exceed the partial limit of 10 — re-running architecture."
+    }
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [
+        {
+          "filePath": "src/0.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/1.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/2.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/3.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/4.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/5.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/6.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/7.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/8.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/9.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/10.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/11.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/12.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/13.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/14.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/15.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/16.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/17.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/18.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/19.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/20.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/21.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/22.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/23.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/24.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/25.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/26.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/27.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/28.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/29.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/30.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        }
+      ],
+      "paths": []
+    },
+    "expected": {
+      "action": "FULL_UPDATE",
+      "rerunArchitecture": false,
+      "reason": "31 files have structural changes — major restructuring; recommend a full rebuild."
+    }
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [
+        {
+          "filePath": "src/0.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/1.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/2.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/3.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/4.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/5.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/6.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/7.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/8.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/9.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/10.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/11.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/12.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/13.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/14.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/15.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/16.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/17.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/18.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/19.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/20.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/21.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/22.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/23.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/24.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/25.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/26.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/27.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/28.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/29.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/30.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        }
+      ],
+      "paths": [
+        "src/0.py",
+        "src/1.py",
+        "src/2.py",
+        "src/3.py",
+        "src/4.py",
+        "src/5.py",
+        "src/6.py",
+        "src/7.py",
+        "src/8.py",
+        "src/9.py"
+      ]
+    },
+    "expected": {
+      "action": "FULL_UPDATE",
+      "rerunArchitecture": false,
+      "reason": "31 files have structural changes — major restructuring; recommend a full rebuild."
+    }
+  },
+  {
+    "function": "classify_update",
+    "input": {
+      "changes": [
+        {
+          "filePath": "src/0.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/1.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/2.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/3.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/4.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/5.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/6.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/7.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/8.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/9.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/10.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/11.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/12.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/13.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/14.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/15.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/16.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/17.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/18.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/19.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/20.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/21.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/22.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/23.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/24.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/25.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/26.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/27.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/28.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/29.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        },
+        {
+          "filePath": "src/30.py",
+          "changeLevel": "STRUCTURAL",
+          "status": "modified"
+        }
+      ],
+      "paths": [
+        "src/0.py",
+        "src/1.py",
+        "src/10.py",
+        "src/11.py",
+        "src/12.py",
+        "src/13.py",
+        "src/14.py",
+        "src/15.py",
+        "src/16.py",
+        "src/17.py",
+        "src/18.py",
+        "src/19.py",
+        "src/2.py",
+        "src/20.py",
+        "src/21.py",
+        "src/22.py",
+        "src/23.py",
+        "src/24.py",
+        "src/25.py",
+        "src/26.py",
+        "src/27.py",
+        "src/28.py",
+        "src/29.py",
+        "src/3.py",
+        "src/30.py",
+        "src/31.py",
+        "src/32.py",
+        "src/33.py",
+        "src/34.py",
+        "src/35.py",
+        "src/36.py",
+        "src/37.py",
+        "src/38.py",
+        "src/39.py",
+        "src/4.py",
+        "src/40.py",
+        "src/41.py",
+        "src/42.py",
+        "src/43.py",
+        "src/44.py",
+        "src/45.py",
+        "src/46.py",
+        "src/47.py",
+        "src/48.py",
+        "src/49.py",
+        "src/5.py",
+        "src/50.py",
+        "src/51.py",
+        "src/52.py",
+        "src/53.py",
+        "src/54.py",
+        "src/55.py",
+        "src/56.py",
+        "src/57.py",
+        "src/58.py",
+        "src/59.py",
+        "src/6.py",
+        "src/60.py",
+        "src/61.py",
+        "src/62.py",
+        "src/63.py",
+        "src/64.py",
+        "src/65.py",
+        "src/66.py",
+        "src/67.py",
+        "src/68.py",
+        "src/69.py",
+        "src/7.py",
+        "src/70.py",
+        "src/71.py",
+        "src/72.py",
+        "src/73.py",
+        "src/74.py",
+        "src/75.py",
+        "src/76.py",
+        "src/77.py",
+        "src/78.py",
+        "src/79.py",
+        "src/8.py",
+        "src/80.py",
+        "src/81.py",
+        "src/82.py",
+        "src/83.py",
+        "src/84.py",
+        "src/85.py",
+        "src/86.py",
+        "src/87.py",
+        "src/88.py",
+        "src/89.py",
+        "src/9.py",
+        "src/90.py",
+        "src/91.py",
+        "src/92.py",
+        "src/93.py",
+        "src/94.py",
+        "src/95.py",
+        "src/96.py",
+        "src/97.py",
+        "src/98.py",
+        "src/99.py"
+      ]
+    },
+    "expected": {
+      "action": "FULL_UPDATE",
+      "rerunArchitecture": false,
+      "reason": "31 files have structural changes — major restructuring; recommend a full rebuild."
+    }
+  }
+]

@@ -1,0 +1,112 @@
+{
+  "$defs": {
+    "Edge": {
+      "description": "A directed edge between two file-level nodes.",
+      "properties": {
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "target": {
+          "title": "Target",
+          "type": "string"
+        },
+        "type": {
+          "default": "imports",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "target"
+      ],
+      "title": "Edge",
+      "type": "object"
+    },
+    "FileNode": {
+      "description": "A single file-level node from the knowledge graph.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "type": {
+          "default": "file",
+          "title": "Type",
+          "type": "string"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "filePath": {
+          "title": "Filepath",
+          "type": "string"
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Summary"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Tags",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "filePath"
+      ],
+      "title": "FileNode",
+      "type": "object"
+    }
+  },
+  "description": "The full input payload (``ua-arch-input.json``).",
+  "properties": {
+    "fileNodes": {
+      "items": {
+        "$ref": "#/$defs/FileNode"
+      },
+      "title": "Filenodes",
+      "type": "array"
+    },
+    "importEdges": {
+      "items": {
+        "$ref": "#/$defs/Edge"
+      },
+      "title": "Importedges",
+      "type": "array"
+    },
+    "allEdges": {
+      "items": {
+        "$ref": "#/$defs/Edge"
+      },
+      "title": "Alledges",
+      "type": "array"
+    }
+  },
+  "required": [
+    "fileNodes"
+  ],
+  "title": "AnalysisInput",
+  "type": "object"
+}

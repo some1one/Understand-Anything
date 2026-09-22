@@ -11,15 +11,15 @@ You produce a precise JSON inventory of a project's files, languages, frameworks
 
 ## Task
 
-The deterministic parts (file enumeration, language/category assignment, line counting, complexity, `.understandignore` filtering, import resolution) are handled by `arch_analysis` (`scan_project` + `extract_import_map`) — do NOT re-implement them. Your contribution is the **LLM narrative**: reading README + manifests for `name`/`description`/`frameworks`/`languages`.
+The deterministic parts (file enumeration, language/category assignment, line counting, complexity, `.understandignore` filtering, import resolution) are handled by `understand_core` (`scan_project` + `extract_import_map`) — do NOT re-implement them. Your contribution is the **LLM narrative**: reading README + manifests for `name`/`description`/`frameworks`/`languages`.
 
-**Running `arch_analysis`.** Resolve `PLUGIN_ROOT` — the directory containing `.claude-plugin/plugin.json` (usually `$CLAUDE_PLUGIN_ROOT`; otherwise the install location, e.g. `$HOME/.understand-anything-plugin`). Run modules via `"$PLUGIN_ROOT/packages/arch_analysis/run.sh" <module> …`; it creates the venv on first use. Pass absolute paths.
+**Running `understand_core`.** Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch. Run modules via `"$PLUGIN_ROOT/packages/core/run.sh" <module> …`; it creates the venv on first use. Pass absolute paths.
 
 ---
 
 ## Phase 1 -- Discovery
 
-Steps B and C run arch_analysis modules; Step A is the only LLM work.
+Steps B and C run understand_core modules; Step A is the only LLM work.
 
 ### Step A (LLM) -- Read manifests and README for narrative fields
 
@@ -47,8 +47,8 @@ If a manifest is missing/malformed, leave the field empty rather than guessing.
 Walks the project (prefers `git ls-files`, falls back to recursive walk), applies `.understandignore` filtering, assigns `language`/`fileCategory` per canonical tables, counts lines, writes deterministic JSON. You do not maintain those tables.
 
 ```bash
-mkdir -p $PROJECT_ROOT/.understand-anything/tmp
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" scan_project \
+mkdir -p "$PROJECT_ROOT/.understand-anything/tmp"
+"$PLUGIN_ROOT/packages/core/run.sh" scan_project \
   "$PROJECT_ROOT" \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-scan-files.json"
 ```
@@ -99,13 +99,13 @@ On non-zero exit, diagnose via stderr; up to 2 retry attempts. There is no subst
 
 ### Step C (`extract_import_map`) -- Import Resolution
 
-After Step B produces the file list, run `extract_import_map` for deterministic import extraction across supported code languages (tree-sitter + per-language rules in `arch_analysis/extract_import_map.py`). Do NOT re-implement import patterns.
+After Step B produces the file list, run `extract_import_map` for deterministic import extraction across supported code languages (tree-sitter + per-language rules in `understand_core/extract_import_map.py`). Do NOT re-implement import patterns.
 
 Write the input JSON (its `files[]` is Step B's `files[]` verbatim):
 
 ```bash
-mkdir -p $PROJECT_ROOT/.understand-anything/tmp
-cat > $PROJECT_ROOT/.understand-anything/tmp/ua-import-map-input.json << 'ENDJSON'
+mkdir -p "$PROJECT_ROOT/.understand-anything/tmp"
+cat > "$PROJECT_ROOT/.understand-anything/tmp/ua-import-map-input.json" << 'ENDJSON'
 {
   "projectRoot": "<absolute-project-root>",
   "files": [
@@ -117,9 +117,9 @@ ENDJSON
 ```
 
 ```bash
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" extract_import_map \
-  $PROJECT_ROOT/.understand-anything/tmp/ua-import-map-input.json \
-  $PROJECT_ROOT/.understand-anything/tmp/ua-import-map-output.json
+"$PLUGIN_ROOT/packages/core/run.sh" extract_import_map \
+  "$PROJECT_ROOT/.understand-anything/tmp/ua-import-map-input.json" \
+  "$PROJECT_ROOT/.understand-anything/tmp/ua-import-map-output.json"
 ```
 
 Output shape:
@@ -147,7 +147,7 @@ Merge `importMap` directly into the final scan-result.json (same key). Every inp
 
 ## Phase 2 -- Narrative JSON + Deterministic Assembly
 
-`arch_analysis.assemble_project_scan_result` merges your narrative JSON with the deterministic scan/import outputs, copies `files`/`totalFiles`/`filteredByIgnore`/`estimatedComplexity`/`importMap` **verbatim**, validates against `arch_analysis/schemas/project-scan-output.schema.json`, and writes `intermediate/scan-result.json`. You do NOT hand-assemble.
+`understand_core.assemble_project_scan_result` merges your narrative JSON with the deterministic scan/import outputs, copies `files`/`totalFiles`/`filteredByIgnore`/`estimatedComplexity`/`importMap` **verbatim**, validates against `understand_core/schemas/project-scan-output.schema.json`, and writes `intermediate/scan-result.json`. You do NOT hand-assemble.
 
 ### Step 1 — Write the narrative JSON
 
@@ -161,7 +161,7 @@ Do NOT add the "over 100 files" note — the assembler appends it when `totalFil
 Write only your narrative fields:
 
 ```bash
-cat > $PROJECT_ROOT/.understand-anything/tmp/ua-scan-narrative.json << 'ENDJSON'
+cat > "$PROJECT_ROOT/.understand-anything/tmp/ua-scan-narrative.json" << 'ENDJSON'
 {
   "name": "project-name",
   "description": "Brief description from README or package.json",
@@ -179,7 +179,7 @@ ENDJSON
 ### Step 2 — Run the assembler
 
 ```bash
-"$PLUGIN_ROOT/packages/arch_analysis/run.sh" assemble_project_scan_result \
+"$PLUGIN_ROOT/packages/core/run.sh" assemble_project_scan_result \
   "$PROJECT_ROOT" \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-scan-narrative.json"
 ```
@@ -188,7 +188,7 @@ Reads `tmp/ua-scan-files.json` (Step B) and `tmp/ua-import-map-output.json` (Ste
 
 On non-zero exit, read stderr: usual cause is a `totalFiles`/`len(files)` mismatch or `importMap` missing entries — both mean Step B and C are out of sync, so re-run those steps rather than editing outputs by hand. Up to 2 retry attempts.
 
-Authoritative contract: `arch_analysis/schemas/project-scan-output.schema.json`. Example (illustrative):
+Authoritative contract: `understand_core/schemas/project-scan-output.schema.json`. Example (illustrative):
 
 ```json
 {

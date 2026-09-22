@@ -18,8 +18,8 @@ When analyzing a Next.js project, apply these additional conventions on top of t
 | `app/**/loading.tsx` | Loading UI — shown as Suspense fallback during route transitions | `ui` |
 | `app/**/error.tsx` | Error boundary — catches errors in the route segment | `ui` |
 | `app/**/not-found.tsx` | 404 UI — shown when `notFound()` is called | `ui` |
-| `app/api/**/route.ts` | API route handlers — serverless endpoint functions (GET, POST, etc.) | `api-handler` |
-| `middleware.ts` | Edge middleware — intercepts requests before they reach routes | `middleware` |
+| `app/api/**/route.ts` | API route handlers — HTTP endpoint functions (GET, POST, etc.) | `api-handler` |
+| `proxy.ts` / `middleware.ts` | Request interception; Next.js 16 uses Proxy, older releases use Middleware. Check the installed version and configured runtime | `middleware` |
 | `lib/*.ts`, `lib/**/*.ts` | Shared server-side utilities, data access, and business logic | `service` |
 | `components/*.tsx`, `components/**/*.tsx` | Reusable UI components | `ui` |
 | `next.config.js`, `next.config.mjs`, `next.config.ts` | Next.js configuration — redirects, rewrites, env, webpack overrides | `config` |
@@ -31,7 +31,7 @@ When analyzing a Next.js project, apply these additional conventions on top of t
 
 **API route handlers** — When a `route.ts` file exports named functions (GET, POST, PUT, DELETE), create edges from consuming components or server actions to the route handler based on fetch calls.
 
-**Server/Client component boundary** — Files with `"use client"` directive at the top are Client Components. All other components in the `app/` directory are Server Components by default. Create `depends_on` edges that cross this boundary and note the boundary in the edge description.
+**Server/Client component boundary** — Files with `"use client"` directive at the top are Client Components. Modules imported by a client entry also belong to its client graph; a file does not need its own directive in that graph. Components outside that boundary are server components by default. Create `depends_on` edges that cross this boundary and note the boundary in the edge description.
 
 **Parallel routes** — When `app/@slot/page.tsx` patterns appear, create `contains` edges from the parent layout to each parallel slot. These render simultaneously in the same layout.
 
@@ -46,14 +46,16 @@ Assign nodes to these layers when detected:
 | `layer:ui` | UI Layer | `app/**/page.tsx`, `app/**/layout.tsx`, `components/`, loading/error boundaries |
 | `layer:api` | API Layer | `app/api/**/route.ts`, API route handlers |
 | `layer:service` | Service Layer | `lib/`, server actions, data-fetching utilities |
-| `layer:middleware` | Middleware Layer | `middleware.ts`, edge functions |
+| `layer:middleware` | Middleware Layer | `proxy.ts`, legacy `middleware.ts`, request interception |
 | `layer:config` | Config Layer | `next.config.*`, root layout, `tailwind.config.*`, environment setup |
 | `layer:test` | Test Layer | `__tests__/`, `*.test.tsx`, `*.spec.tsx`, `e2e/` |
 
 ### Notable Patterns to Capture in languageLesson
 
-- **Server Components by default**: Components in the `app/` directory are Server Components — no JavaScript is sent to the client unless `"use client"` is declared
+- **Server Components by default**: App Router components default to server execution outside a client module boundary; trace imports from `"use client"` entries before classifying a component
 - **Server Actions for mutations**: Functions marked with `"use server"` can be called directly from client components, replacing traditional API routes for form submissions and mutations
 - **App Router file conventions**: Special files (`page`, `layout`, `loading`, `error`, `not-found`, `route`) define behavior by naming convention within the file-system router
 - **ISR and static generation**: `generateStaticParams` pre-renders pages at build time; revalidation strategies control cache freshness
 - **Parallel and intercepting routes**: `@slot` directories enable parallel rendering; `(.)` prefix directories enable route interception for modal patterns
+
+Version reference: [Next.js Proxy](https://nextjs.org/docs/app/api-reference/file-conventions/proxy).

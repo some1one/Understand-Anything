@@ -1,0 +1,38 @@
+[package]
+name = "understand-anything-rs"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.90"
+description = "Standalone native Understand Anything analysis engine"
+license = "MIT"
+
+[lib]
+name = "understand_anything"
+
+[[bin]]
+name = "understand-anything-rs"
+path = "src/main.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+thiserror = "2"
+sha2 = "0.10"
+chrono = { version = "0.4", default-features = false, features = ["clock", "serde"] }
+jsonschema = { version = "0.45", default-features = false }
+ignore = "0.4"
+walkdir = "2"
+regex = "1"
+petgraph = "0.8"
+statrs = "0.18"
+reqwest = { version = "0.13", default-features = false, features = ["blocking", "json", "rustls"] }
+
+tree-sitter-language-pack = "=1.20.0"
+serde_yaml = "0.9"
+
+[dev-dependencies]
+tempfile = "3"
+
+[profile.release]
+lto = "thin"
+strip = true

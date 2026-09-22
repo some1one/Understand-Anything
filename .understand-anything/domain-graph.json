@@ -1,277 +1,308 @@
 {
   "version": "1.0.0",
   "project": {
-    "name": "arch_analysis",
+    "name": "Understand-Anything",
     "languages": [
-      "makefile",
-      "markdown",
       "python",
+      "typescript",
+      "javascript",
+      "markdown",
+      "json",
+      "yaml",
       "shell",
-      "unknown"
+      "toml",
+      "css",
+      "html"
     ],
-    "frameworks": [],
-    "description": "Repository-level installer, packaging, build, and documentation surface for Understand-Anything after generated dot-folder payloads are excluded from analysis.",
-    "analyzedAt": "2026-07-04T05:44:37.206Z",
-    "gitCommitHash": "b0978218ef0fdec003ac8506a0ca5ed12e016403"
+    "frameworks": [
+      "React",
+      "Vite",
+      "Python",
+      "PDM"
+    ],
+    "description": "AI-powered codebase understanding plugin with deterministic Python analysis, bundled skills, agent prompts, packaging scripts, and dashboard assets. Note: this project has over 100 source files; consider scoping analysis to a subdirectory for faster results.",
+    "analyzedAt": "2026-07-08T16:46:06.035Z",
+    "gitCommitHash": "7d86d9db5493d41e565cf80bbca5c06999c8111c"
   },
   "nodes": [
     {
-      "id": "domain:project-guidance",
+      "id": "domain:analysis-pipeline",
       "type": "domain",
-      "name": "Project Guidance",
-      "summary": "Documentation that orients agents and contributors around the repository purpose, operating rules, and install/build workflow.",
+      "name": "Analysis Pipeline",
+      "summary": "Deterministic codebase scanning, import extraction, batching, graph assembly, validation, persistence, and fingerprinting workflows.",
       "tags": [
-        "documentation",
-        "repository-guidance"
+        "analysis",
+        "knowledge-graph",
+        "deterministic"
       ],
-      "complexity": "simple",
-      "domainMeta": {
-        "entities": [
-          "AGENTS.md",
-          "CLAUDE.md",
-          "README.md"
-        ],
-        "businessRules": [
-          "Keep generated payload folders excluded from analysis outputs."
-        ],
-        "crossDomainInteractions": [
-          "Guides installation and build workflows."
-        ]
-      }
+      "complexity": "complex"
     },
     {
-      "id": "domain:installation-packaging",
-      "type": "domain",
-      "name": "Installation And Packaging",
-      "summary": "Installer and Debian command logic that assembles the plugin payload and links skills/tools into supported agent surfaces.",
-      "tags": [
-        "installation",
-        "packaging"
-      ],
-      "complexity": "complex",
-      "domainMeta": {
-        "entities": [
-          "install.sh",
-          "packaging/deb/understand-anything"
-        ],
-        "businessRules": [
-          "Generated local payloads belong under .agents and are excluded from graph analysis."
-        ],
-        "crossDomainInteractions": [
-          "Uses build outputs produced by distribution tooling."
-        ]
-      }
-    },
-    {
-      "id": "domain:build-distribution",
-      "type": "domain",
-      "name": "Build Distribution",
-      "summary": "Build orchestration for dashboard assets, Python packages, wheelhouses, archives, and Debian packaging inputs.",
-      "tags": [
-        "build-system",
-        "distribution"
-      ],
-      "complexity": "complex",
-      "domainMeta": {
-        "entities": [
-          "Makefile",
-          "scripts/build_dist.py"
-        ],
-        "businessRules": [
-          "Distribution artifacts are generated from source payloads rather than hand-edited outputs."
-        ],
-        "crossDomainInteractions": [
-          "Provides artifacts consumed by installation and packaging flows."
-        ]
-      }
-    },
-    {
-      "id": "flow:read-project-guidance",
+      "id": "flow:build-knowledge-graph",
       "type": "flow",
-      "name": "Read Project Guidance",
-      "summary": "Use repository guidance files to understand project rules and available commands.",
+      "name": "Build Knowledge Graph",
+      "summary": "Turns repository files into a validated structural knowledge graph for the dashboard and chat tools.",
       "tags": [
-        "documentation"
+        "scan",
+        "batch",
+        "validate"
       ],
-      "complexity": "simple",
-      "domainMeta": {
-        "entryPoint": "README.md",
-        "entryType": "manual"
-      }
+      "complexity": "complex"
     },
     {
-      "id": "step:read-project-guidance:review-agent-instructions",
+      "id": "step:scan-project",
       "type": "step",
-      "name": "Review Agent Instructions",
-      "summary": "Read AGENTS.md and CLAUDE.md for local operating instructions and repository conventions.",
+      "name": "Scan Project",
+      "summary": "Enumerate files, apply ignore rules, detect languages and categories, and estimate project complexity.",
       "tags": [
-        "documentation"
+        "scan",
+        "ignore",
+        "languages"
       ],
-      "complexity": "simple",
-      "filePath": "AGENTS.md",
-      "lineRange": [
-        1,
-        8
-      ]
+      "complexity": "moderate"
     },
     {
-      "id": "step:read-project-guidance:review-readme",
+      "id": "step:extract-and-merge",
       "type": "step",
-      "name": "Review README",
-      "summary": "Read README.md for the project overview and distribution workflow context.",
+      "name": "Extract and Merge Structure",
+      "summary": "Extract per-file structure, seed graph fragments, finalize batch outputs, and merge them into one assembled graph.",
       "tags": [
-        "documentation"
+        "structure",
+        "batches",
+        "merge"
       ],
-      "complexity": "simple",
-      "filePath": "README.md",
-      "lineRange": [
-        1,
-        120
-      ]
+      "complexity": "complex"
+    },
+    {
+      "id": "step:validate-and-save",
+      "type": "step",
+      "name": "Validate and Save Graph",
+      "summary": "Validate the assembled graph, save knowledge-graph.json, build fingerprints, and write metadata.",
+      "tags": [
+        "validation",
+        "persistence",
+        "fingerprints"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "domain:skill-runtime",
+      "type": "domain",
+      "name": "Skill Runtime",
+      "summary": "Codex-facing skills, scripts, prompts, hooks, and agent prompt contracts used to operate the analysis workflow.",
+      "tags": [
+        "skills",
+        "agents",
+        "prompts"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "flow:run-understand-skill",
+      "type": "flow",
+      "name": "Run Understand Skill",
+      "summary": "Coordinates preflight, project context capture, analysis phases, architecture grouping, review, save, and domain graph generation.",
+      "tags": [
+        "skill",
+        "workflow",
+        "automation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "step:preflight-and-context",
+      "type": "step",
+      "name": "Preflight and Context",
+      "summary": "Resolve project roots, initialize the Python environment, prepare workspace directories, and capture repository context.",
+      "tags": [
+        "preflight",
+        "context",
+        "environment"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:dispatch-or-run-phases",
+      "type": "step",
+      "name": "Dispatch or Run Phases",
+      "summary": "Runs deterministic phases and, when available, delegates semantic scan, file, architecture, review, and domain analysis phases.",
+      "tags": [
+        "agents",
+        "deterministic",
+        "semantic"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "domain:dashboard-experience",
+      "type": "domain",
+      "name": "Dashboard Experience",
+      "summary": "React/Vite dashboard and local server surfaces that visualize structural and domain graphs for interactive exploration.",
+      "tags": [
+        "dashboard",
+        "visualization",
+        "react"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "flow:explore-graph",
+      "type": "flow",
+      "name": "Explore Graph",
+      "summary": "Loads saved graph artifacts and presents structural layers, relationships, search, and domain views to users.",
+      "tags": [
+        "graph",
+        "search",
+        "visualization"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:load-graph-artifacts",
+      "type": "step",
+      "name": "Load Graph Artifacts",
+      "summary": "Read knowledge-graph.json and domain-graph.json artifacts from the analyzed repository.",
+      "tags": [
+        "load",
+        "artifacts",
+        "json"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:render-graph-views",
+      "type": "step",
+      "name": "Render Graph Views",
+      "summary": "Render graph nodes, edges, layers, details, and domain flows in the dashboard UI.",
+      "tags": [
+        "render",
+        "layers",
+        "domain"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "domain:distribution",
+      "type": "domain",
+      "name": "Distribution",
+      "summary": "Installer, packaging, plugin metadata, local payload layout, and command wrapper surfaces that ship the Understand-Anything plugin.",
+      "tags": [
+        "install",
+        "packaging",
+        "plugin"
+      ],
+      "complexity": "moderate"
     },
     {
       "id": "flow:install-plugin",
       "type": "flow",
       "name": "Install Plugin",
-      "summary": "Resolve platform targets, assemble payload files, and install or link the plugin for supported agent environments.",
+      "summary": "Builds and installs the plugin payload, command wrappers, skills, hooks, and package assets into target agent environments.",
       "tags": [
-        "installation"
+        "installer",
+        "payload",
+        "commands"
       ],
-      "complexity": "complex",
-      "domainMeta": {
-        "entryPoint": "./install.sh",
-        "entryType": "cli"
-      }
+      "complexity": "moderate"
     },
     {
-      "id": "step:install-plugin:check-prerequisites",
+      "id": "step:build-payload",
       "type": "step",
-      "name": "Check Prerequisites",
-      "summary": "Validate required tools and runtime assumptions before modifying install locations.",
+      "name": "Build Payload",
+      "summary": "Collect source packages, skills, agents, hooks, tools, dashboard assets, and plugin metadata into a distributable payload.",
       "tags": [
-        "validation"
+        "build",
+        "payload",
+        "assets"
       ],
-      "complexity": "moderate",
-      "filePath": "install.sh",
-      "lineRange": [
-        1,
-        220
-      ]
+      "complexity": "moderate"
     },
     {
-      "id": "step:install-plugin:assemble-payload",
-      "type": "step",
-      "name": "Assemble Payload",
-      "summary": "Copy plugin assets into the generated payload layout used by local installs.",
-      "tags": [
-        "payload"
-      ],
-      "complexity": "complex",
-      "filePath": "install.sh",
-      "lineRange": [
-        1,
-        220
-      ]
-    },
-    {
-      "id": "step:install-plugin:link-agent-surfaces",
+      "id": "step:link-agent-surfaces",
       "type": "step",
       "name": "Link Agent Surfaces",
-      "summary": "Create skill and tool links for supported local agent integrations.",
+      "summary": "Expose installed skills, hooks, and command wrappers through the target local agent integration paths.",
       "tags": [
-        "integration"
+        "links",
+        "agents",
+        "skills"
       ],
-      "complexity": "complex",
-      "filePath": "install.sh",
-      "lineRange": [
-        1,
-        220
-      ]
-    },
-    {
-      "id": "flow:build-distribution-artifacts",
-      "type": "flow",
-      "name": "Build Distribution Artifacts",
-      "summary": "Build dashboard, Python packages, archives, wheelhouses, and Debian artifacts for distribution.",
-      "tags": [
-        "build-system"
-      ],
-      "complexity": "complex",
-      "domainMeta": {
-        "entryPoint": "make",
-        "entryType": "cli"
-      }
-    },
-    {
-      "id": "step:build-distribution-artifacts:run-build-targets",
-      "type": "step",
-      "name": "Run Build Targets",
-      "summary": "Use Makefile targets to orchestrate distribution build tasks.",
-      "tags": [
-        "orchestration"
-      ],
-      "complexity": "moderate",
-      "filePath": "Makefile",
-      "lineRange": [
-        1,
-        200
-      ]
-    },
-    {
-      "id": "step:build-distribution-artifacts:build-python-and-dashboard",
-      "type": "step",
-      "name": "Build Python And Dashboard",
-      "summary": "Build Python packages and dashboard assets for inclusion in release payloads.",
-      "tags": [
-        "packaging"
-      ],
-      "complexity": "complex",
-      "filePath": "scripts/build_dist.py",
-      "lineRange": [
-        1,
-        260
-      ]
-    },
-    {
-      "id": "step:build-distribution-artifacts:package-release",
-      "type": "step",
-      "name": "Package Release",
-      "summary": "Create archives, wheelhouses, and Debian package outputs from assembled distribution inputs.",
-      "tags": [
-        "release"
-      ],
-      "complexity": "complex",
-      "filePath": "scripts/build_dist.py",
-      "lineRange": [
-        1,
-        260
-      ]
+      "complexity": "moderate"
     }
   ],
   "edges": [
     {
-      "source": "domain:project-guidance",
-      "target": "flow:read-project-guidance",
+      "source": "domain:analysis-pipeline",
+      "target": "flow:build-knowledge-graph",
       "type": "contains_flow",
       "direction": "forward",
       "weight": 1.0
     },
     {
-      "source": "flow:read-project-guidance",
-      "target": "step:read-project-guidance:review-agent-instructions",
+      "source": "flow:build-knowledge-graph",
+      "target": "step:scan-project",
       "type": "flow_step",
       "direction": "forward",
-      "weight": 0.5
+      "weight": 0.2
     },
     {
-      "source": "flow:read-project-guidance",
-      "target": "step:read-project-guidance:review-readme",
+      "source": "flow:build-knowledge-graph",
+      "target": "step:extract-and-merge",
       "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:build-knowledge-graph",
+      "target": "step:validate-and-save",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "domain:skill-runtime",
+      "target": "flow:run-understand-skill",
+      "type": "contains_flow",
       "direction": "forward",
       "weight": 1.0
     },
     {
-      "source": "domain:installation-packaging",
+      "source": "flow:run-understand-skill",
+      "target": "step:preflight-and-context",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:run-understand-skill",
+      "target": "step:dispatch-or-run-phases",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "domain:dashboard-experience",
+      "target": "flow:explore-graph",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:explore-graph",
+      "target": "step:load-graph-artifacts",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:explore-graph",
+      "target": "step:render-graph-views",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "domain:distribution",
       "target": "flow:install-plugin",
       "type": "contains_flow",
       "direction": "forward",
@@ -279,68 +310,38 @@
     },
     {
       "source": "flow:install-plugin",
-      "target": "step:install-plugin:check-prerequisites",
+      "target": "step:build-payload",
       "type": "flow_step",
       "direction": "forward",
-      "weight": 0.3
+      "weight": 0.4
     },
     {
       "source": "flow:install-plugin",
-      "target": "step:install-plugin:assemble-payload",
+      "target": "step:link-agent-surfaces",
       "type": "flow_step",
       "direction": "forward",
-      "weight": 0.6
+      "weight": 0.8
     },
     {
-      "source": "flow:install-plugin",
-      "target": "step:install-plugin:link-agent-surfaces",
-      "type": "flow_step",
-      "direction": "forward",
-      "weight": 0.9
-    },
-    {
-      "source": "domain:build-distribution",
-      "target": "flow:build-distribution-artifacts",
-      "type": "contains_flow",
-      "direction": "forward",
-      "weight": 1.0
-    },
-    {
-      "source": "flow:build-distribution-artifacts",
-      "target": "step:build-distribution-artifacts:run-build-targets",
-      "type": "flow_step",
-      "direction": "forward",
-      "weight": 0.3
-    },
-    {
-      "source": "flow:build-distribution-artifacts",
-      "target": "step:build-distribution-artifacts:build-python-and-dashboard",
-      "type": "flow_step",
-      "direction": "forward",
-      "weight": 0.6
-    },
-    {
-      "source": "flow:build-distribution-artifacts",
-      "target": "step:build-distribution-artifacts:package-release",
-      "type": "flow_step",
-      "direction": "forward",
-      "weight": 0.9
-    },
-    {
-      "source": "domain:build-distribution",
-      "target": "domain:installation-packaging",
+      "source": "domain:skill-runtime",
+      "target": "domain:analysis-pipeline",
       "type": "cross_domain",
       "direction": "forward",
-      "description": "Distribution artifacts are consumed by installer and package workflows.",
+      "weight": 0.8
+    },
+    {
+      "source": "domain:analysis-pipeline",
+      "target": "domain:dashboard-experience",
+      "type": "cross_domain",
+      "direction": "forward",
       "weight": 0.7
     },
     {
-      "source": "domain:project-guidance",
-      "target": "domain:installation-packaging",
+      "source": "domain:distribution",
+      "target": "domain:skill-runtime",
       "type": "cross_domain",
       "direction": "forward",
-      "description": "Guidance documents describe how installation workflows should be used.",
-      "weight": 0.4
+      "weight": 0.6
     }
   ],
   "layers": []
