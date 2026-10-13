@@ -1,7 +1,7 @@
 # Understand Anything plugin
 
 Build a codebase knowledge graph with Claude Code or Codex, then query, explain,
-compare, or visualize it. Both hosts use the same `skills/`, Python engine,
+compare, or visualize it. Both hosts use the same `skills/`, Rust engine,
 and graph files.
 
 ## Installation
@@ -47,10 +47,11 @@ review still applies when needed.
 
 ## Runtime and artifacts
 
-Python 3.14+ is required for the deterministic pipeline. Source installs use PDM;
-packaged installs use a bundled requirements file with pip/venv. Invoke modules
-through `packages/core/run.sh <module> …`, which preserves the caller's working
-directory. Use absolute paths when analyzing another project.
+The deterministic pipeline runs through `packages/rust/run.sh <command> …`,
+which preserves the caller's working directory. Packaged installs ship the Rust
+executable. Source checkouts build it with stable Rust and Cargo on first use.
+Use absolute paths when analyzing another project. Some workflow helper scripts
+and installation tooling still require Python 3.
 
 Artifacts belong to the requested project or worktree:
 
@@ -87,16 +88,14 @@ register hooks.
   `codex plugin list --json`; confirm you installed for the intended scope.
 - Missing auto-update: verify native installation, hook trust, and the boolean
   `autoUpdate` setting.
-- Python startup failure: check Python/PDM or packaged pip/venv requirements.
-  Dependency installation needs a writable plugin environment. Cached source
-  installs create their own environment rather than reuse the original
-  checkout's `.pdm-python` path. Failed environments are retained under
-  `packages/core/.venv-recovery.*` for diagnosis.
+- Rust startup failure: check that the packaged executable is present, or
+  build a source checkout with `cargo +stable build --locked --release` from
+  `packages/rust/`.
 - Dashboard startup failure: use the printed log path and check Node/pnpm.
 - Native installer failure: the installer reports fallback to standalone skills;
   inspect the preceding host CLI error before assuming native hooks are active.
 
-[Core reference](packages/core/README.md) documents the Python package.
+[Engine reference](packages/rust/README.md) documents the Rust package.
 [Command reference](tools/README.md) describes deterministic command wrappers.
 [Host integration](HOSTS.md) documents invocation and agent dispatch conventions.
 

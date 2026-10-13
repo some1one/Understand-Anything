@@ -51,7 +51,7 @@
       "type": "object"
     }
   },
-  "description": "Input contract for :mod:`understand_core.extract_structure`.\n\n``batchImportData`` maps a file path to its pre-resolved relative import\ntargets (used for ``metrics.importCount``).",
+  "description": "Input contract for Rust command `extract_structure`.\n\n``batchImportData`` maps a file path to its pre-resolved relative import\ntargets (used for ``metrics.importCount``).",
   "properties": {
     "projectRoot": {
       "title": "Projectroot",

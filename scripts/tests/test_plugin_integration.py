@@ -163,65 +163,24 @@ native_uninstall claude "$2"
     assert "plugin uninstall understand-anything@understand-anything --scope project" in result.stdout
 
 
-def test_distribution_contains_both_hosts_and_shared_references(tmp_path):
+def test_distribution_contains_native_engine_and_shared_references(tmp_path):
     builder = load_module(REPO / "scripts/build_dist.py")
-    requirements = tmp_path / "requirements.txt"
-    requirements.write_text("")
+    binary = PLUGIN / "packages/rust/target/release/understand-anything-rs"
+    if not binary.exists():
+        pytest.skip("Rust release binary has not been built")
     payload = tmp_path / "payload"
-    builder.assemble_payload(payload, requirements)
-    for relative in [".claude-plugin/plugin.json", ".codex-plugin/plugin.json", "HOSTS.md", "hooks/auto_update.py", "scripts/create_marketplace.py", "packages/core/run.sh"]:
+    builder.assemble_payload(payload, binary)
+    for relative in [".claude-plugin/plugin.json", ".codex-plugin/plugin.json",
+                     "HOSTS.md", "hooks/auto_update.py", "scripts/create_marketplace.py",
+                     "packages/rust/run.sh", "packages/rust/bin/understand-anything-rs",
+                     "packages/rust/schemas/knowledge-graph.schema.json"]:
         assert (payload / relative).is_file(), relative
     assert (payload / "AGENTS.md").read_text() == (PLUGIN / "AGENTS.md").read_text()
     assert len(list((payload / "skills").glob("*/SKILL.md"))) == 11
-    assert not (payload / "packages/core/.pdm-python").exists()
-    assert not (payload / "packages/core/.pdm-build").exists()
-
-
-def test_auto_update_discovers_split_batch_outputs(tmp_path, monkeypatch):
-    monkeypatch.syspath_prepend(str(PLUGIN / "packages/core"))
-    from understand_core.auto_update_apply_batches import _discover_batch_files
-    for name in ["batch-2-part-10.json", "batch-2-part-2.json", "batch-1.json", "batch-existing.json", "batch-invalid.json"]:
-        write_json(tmp_path / name, {"nodes": [], "edges": []})
-    assert [p.name for p in _discover_batch_files(tmp_path)] == ["batch-1.json", "batch-2-part-2.json", "batch-2-part-10.json"]
-
-
-@pytest.mark.parametrize("fail", [False, True])
-def test_source_bootstrap_ignores_saved_python_and_preserves_old_env(tmp_path, fail):
-    core = tmp_path / "cached core"
-    core.mkdir()
-    (core / "run.sh").write_text((PLUGIN / "packages/core/run.sh").read_text())
-    (core / "pyproject.toml").write_text("[project]\nname='fixture'\n")
-    (core / ".pdm-python").write_text("/unrelated/checkout/python")
-    old = core / ".venv"
-    old.mkdir()
-    (old / "keep.txt").write_text("recoverable")
-    bins = tmp_path / "bin"
-    bins.mkdir()
-    pdm = bins / "pdm"
-    pdm.write_text('#!/usr/bin/env python3\nimport json, os, sys\nfrom pathlib import Path\nPath("pdm-call.json").write_text(json.dumps({"argv": sys.argv[1:], "env": {key: value for key, value in os.environ.items() if key.startswith("PDM_")}}))\nsys.exit(' + str(int(fail)) + ')\n')
-    pdm.chmod(0o755)
-    result = subprocess.run(["bash", str(core / "run.sh"), "--ensure"], env={**os.environ, "PATH": str(bins) + os.pathsep + os.environ["PATH"]}, capture_output=True, text=True)
-    assert (result.returncode != 0) == fail, result.stderr
-    call = json.loads((core / "pdm-call.json").read_text())
-    assert call["argv"] == ["install", "--frozen-lockfile", "--prod", "--no-self"]
-    assert call["env"]["PDM_PYTHON"] == str(core / ".venv/bin/python")
-    assert call["env"]["PDM_IGNORE_SAVED_PYTHON"] == "1"
-    assert call["env"]["PDM_IGNORE_ACTIVE_VENV"] == "1"
-    assert list(core.glob(".venv-recovery.*/venv/keep.txt"))
-    assert (core / ".venv/bin/python").exists() != fail
-
-
-def test_packaged_bootstrap_is_offline_with_bundled_wheelhouse(tmp_path):
-    core = tmp_path / "packaged core"
-    core.mkdir()
-    (core / "run.sh").write_text((PLUGIN / "packages/core/run.sh").read_text())
-    (core / "requirements.txt").write_text("")
-    (core / "wheelhouse").mkdir()
-    (core / "wheelhouse/unused.whl").touch()
-    result = subprocess.run(["bash", str(core / "run.sh"), "--ensure"], env={**os.environ, "PIP_INDEX_URL": "http://127.0.0.1:1/unreachable", "PIP_DISABLE_PIP_VERSION_CHECK": "1", "PIP_RETRIES": "0"}, capture_output=True, text=True, timeout=30)
-    assert result.returncode == 0, result.stderr
-    assert "trying online" not in result.stderr
-    assert (core / ".venv/bin/python").exists()
+    assert not (payload / "packages/core").exists()
+    result = subprocess.run(["bash", str(payload / "packages/rust/run.sh"), "--version"],
+                            check=True, capture_output=True, text=True)
+    assert "understand-anything-rs" in result.stdout
 
 
 def test_markdown_relative_links_and_host_frontmatter():
@@ -249,3 +208,55 @@ def test_all_prompt_loader_references(kind):
     for prompt in (skill / "prompts").glob("*.md"):
         output = subprocess.run([sys.executable, str(skill / "scripts/load_prompt.py"), prompt.stem], check=True, capture_output=True, text=True)
         assert prompt.read_text().strip() in output.stdout
+
+
+@pytest.mark.parametrize("existing", [True, False])
+def test_installer_git_fallback_returns_only_path(tmp_path, existing):
+    ua_home = tmp_path / "ua home"
+    if existing:
+        (ua_home / "repo/.git").mkdir(parents=True)
+    script = '''source "$1" --help >/dev/null
+SCRIPT_DIR="$2/standalone"
+UA_HOME="$2/ua home"
+UA_REPO_URL=https://example.invalid/plugin.git
+find_assets() { return 1; }
+git() { printf 'mock git progress\\n' >&2; }
+plugin="$(resolve_plugin_home)"
+printf '%s' "$plugin"
+'''
+    result = subprocess.run(["bash", "-c", script, "test", str(REPO / "install.sh"), str(tmp_path)],
+                            capture_output=True, text=True, check=True)
+    assert result.stdout == str(ua_home / "repo/understand-anything-plugin")
+    assert ("Updating" if existing else "Cloning") in result.stderr
+
+
+@pytest.mark.parametrize("default_branch", ["main", "master", "trunk"])
+def test_diff_context_default_feature_base_and_working_tree(tmp_path, default_branch):
+    module = load_module(PLUGIN / "skills/understand-diff/scripts/diff_context.py")
+
+    def git(*args):
+        return subprocess.run(["git", *args], cwd=tmp_path, text=True, capture_output=True, check=True)
+
+    git("init", "-q", "-b", default_branch)
+    git("config", "user.email", "fixture@example.invalid")
+    git("config", "user.name", "Fixture")
+    (tmp_path / "base.txt").write_text("base\n")
+    git("add", ".")
+    git("commit", "-qm", "base")
+    if default_branch == "trunk":
+        git("update-ref", "refs/remotes/origin/trunk", "HEAD")
+        git("symbolic-ref", "refs/remotes/origin/HEAD", "refs/remotes/origin/trunk")
+    git("checkout", "-qb", "feature")
+    (tmp_path / "feature.txt").write_text("feature\n")
+    git("add", ".")
+    git("commit", "-qm", "feature")
+    files, label = module.changed_files(tmp_path, None)
+    assert files == ["feature.txt"]
+    assert label == ("origin/trunk" if default_branch == "trunk" else default_branch)
+    assert module.changed_files(tmp_path, default_branch) == (["feature.txt"], default_branch)
+    git("checkout", "-q", default_branch)
+    (tmp_path / "base.txt").write_text("staged\n")
+    git("add", ".")
+    assert module.changed_files(tmp_path, None) == (["base.txt"], "working-tree")
+    (tmp_path / "base.txt").write_text("unstaged\n")
+    assert module.changed_files(tmp_path, None) == (["base.txt"], "working-tree")

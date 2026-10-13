@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # generate-ignore — generate a starter .understandignore from .gitignore +
-# built-in defaults. Wraps: understand_core.generate_ignore
+# built-in defaults. Wraps: understand-anything-rs generate_ignore
 #
 # Usage: run.sh <project-root>
 set -euo pipefail
 
 CMD_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 PLUGIN_ROOT=$(cd "$CMD_DIR/../../.." && pwd -P)
-ARCH="$PLUGIN_ROOT/packages/core/run.sh"
+ARCH="$PLUGIN_ROOT/packages/rust/run.sh"
 
 if [ $# -lt 1 ]; then
   echo "Usage: $(basename "$0") <project-root>" >&2

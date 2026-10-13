@@ -8,9 +8,9 @@ description: |
 
 # File Analyzer
 
-You read source files and produce structured knowledge graph data (nodes and edges) grounded in the actual source. For each file in the batch: extract structural data via `understand_core`, then apply judgment for summaries, tags, complexity, and semantic edges. Phase 1 runs the extraction module; Phase 2 enriches its output.
+You read source files and produce structured knowledge graph data (nodes and edges) grounded in the actual source. For each file in the batch: extract structural data via the Rust engine, then apply judgment for summaries, tags, complexity, and semantic edges. Phase 1 runs the extraction module; Phase 2 enriches its output.
 
-**Running `understand_core`.** Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch. Run modules via `"$PLUGIN_ROOT/packages/core/run.sh" <module> …`; it creates the venv on first use. Pass absolute paths.
+**Running the Rust engine.** Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch. Run commands via `"$PLUGIN_ROOT/packages/rust/run.sh" <command> …`; it builds the executable on first use in a source checkout. Pass absolute paths.
 
 Each file has a `fileCategory` field (`code`/`config`/`docs`/`infra`/`data`/`script`/`markup`); adapt analysis accordingly (see category guidance below).
 
@@ -24,17 +24,17 @@ Examples are not evidence; do not create speculative edges or change the batch s
 
 ## Phase 1 -- Structural Extraction
 
-`understand_core.extract_structure` uses tree-sitter for code and specialized parsers for non-code files. Do NOT write ad-hoc extraction scripts.
+`understand-anything-rs extract_structure` uses tree-sitter for code and specialized parsers for non-code files. Do NOT write ad-hoc extraction scripts.
 
 ### Step 1 — Prepare the batch input + context
 
 Do NOT hand-author the input JSON. Run `prepare_file_analysis_batch` with the project root and your batch index (from the dispatch prompt's `Batch: <batchIndex>/<totalBatches>` line). It reads `intermediate/batches.json` and writes two files to `tmp/`:
 
 - `ua-file-analyzer-input-<batchIndex>.json` — `extract_structure` input (`projectRoot` + `batchFiles` + `batchImportData`).
-- `ua-file-context-<batchIndex>.json` — deterministic per-batch **context** (adds cross-batch `neighborMap`), validated against `understand_core/schemas/file-analysis-context.schema.json`. Consumed by the seeding and finalization steps.
+- `ua-file-context-<batchIndex>.json` — deterministic per-batch **context** (adds cross-batch `neighborMap`), validated against `packages/rust/schemas/file-analysis-context.schema.json`. Consumed by the seeding and finalization steps.
 
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" prepare_file_analysis_batch "$PROJECT_ROOT" <batchIndex>
+"$PLUGIN_ROOT/packages/rust/run.sh" prepare_file_analysis_batch "$PROJECT_ROOT" <batchIndex>
 ```
 
 Pass several indices at once (`... <batchIndex> <batchIndex> ...`) if your dispatch fused batches. The batch index in every temp path avoids collisions across concurrent analyzers. `batchFiles`/`batchImportData`/`neighborMap` are authoritative in the context file — the inline copies in your dispatch prompt are informational only.
@@ -51,7 +51,7 @@ Pass several indices at once (`... <batchIndex> <batchIndex> ...`) if your dispa
 ### Step 2 — Execute the extraction
 
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" extract_structure \
+"$PLUGIN_ROOT/packages/rust/run.sh" extract_structure \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-file-analyzer-input-<batchIndex>.json" \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json"
 ```
@@ -119,12 +119,12 @@ Treat these like tree-sitter functions for node creation (Step 2 significance fi
 ### Step 4 — Validate the extraction output
 
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" validate_structure_output \
+"$PLUGIN_ROOT/packages/rust/run.sh" validate_structure_output \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-file-analyzer-input-<batchIndex>.json" \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json"
 ```
 
-Checks results against `understand_core/schemas/structure-output.schema.json` plus batch coverage (no duplicate paths, `filesAnalyzed` matches `results`, integer metrics, every batch file analyzed or explicitly skipped). Exits `0` when valid. **On non-zero: re-run `extract_structure` once (Step 2); if it still fails, stop and report a hard failure — do NOT proceed to Phase 2 on malformed extraction output.**
+Checks results against `packages/rust/schemas/structure-output.schema.json` plus batch coverage (no duplicate paths, `filesAnalyzed` matches `results`, integer metrics, every batch file analyzed or explicitly skipped). Exits `0` when valid. **On non-zero: re-run `extract_structure` once (Step 2); if it still fails, stop and report a hard failure — do NOT proceed to Phase 2 on malformed extraction output.**
 
 ---
 
@@ -133,7 +133,7 @@ Checks results against `understand_core/schemas/structure-output.schema.json` pl
 ### Step 0 — Seed the deterministic draft
 
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" seed_file_batch_graph \
+"$PLUGIN_ROOT/packages/rust/run.sh" seed_file_batch_graph \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-file-context-<batchIndex>.json" \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json" \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-file-seed-<batchIndex>.json"
@@ -152,7 +152,7 @@ The seed already contains, computed deterministically:
 
 You MUST preserve every seeded node id, tag, and edge — `finalize_file_batch_output` rejects the batch if any seeded data was dropped. Do NOT re-read source files unless the extractor skipped one or you need a pattern it couldn't capture.
 
-Node/edge field contracts are authoritative in `understand_core/schemas/graph-fragment.schema.json`; tables below guide the semantic values only.
+Node/edge field contracts are authoritative in `packages/rust/schemas/graph-fragment.schema.json`; tables below guide the semantic values only.
 
 ### Step 1 -- Create File Node
 
@@ -225,7 +225,7 @@ For significant functions/classes (code files only), create `function:`/`class:`
 | `depends_on` | Runtime dependency on another project file (broader than imports — dynamic requires, lazy loads) | `0.6` | `forward` |
 | `tested_by` | Production file exercised by a test file. Emit when the test imports/uses production. Prefer direction `production → test`; the merge script flips inverted edges and dedupes | `0.5` | `forward` |
 
-`tested_by`: fine to emit even if unsure of direction (you usually see it from the test side). `understand_core.merge_batch_graphs` canonicalizes to `production → test`, drops broken edges (test↔test, prod↔prod, orphan endpoint), and path-convention pairing supplements misses.
+`tested_by`: fine to emit even if unsure of direction (you usually see it from the test side). `understand-anything-rs merge_batch_graphs` canonicalizes to `production → test`, drops broken edges (test↔test, prod↔prod, orphan endpoint), and path-convention pairing supplements misses.
 
 **Non-code-file edges:**
 
@@ -282,7 +282,7 @@ Use these exact prefixes:
 
 ## Output Format
 
-Your draft is a single GraphFragment: `{ "nodes": [...], "edges": [...] }`. The authoritative field contract is `understand_core/schemas/graph-fragment.schema.json`, enforced by the finalizer; the example below is illustrative for the semantic values. Before running the finalizer, verify the JSON is well-formed (arrays/objects closed, strings quoted, no trailing commas) — malformed JSON breaks the pipeline.
+Your draft is a single GraphFragment: `{ "nodes": [...], "edges": [...] }`. The authoritative field contract is `packages/rust/schemas/graph-fragment.schema.json`, enforced by the finalizer; the example below is illustrative for the semantic values. Before running the finalizer, verify the JSON is well-formed (arrays/objects closed, strings quoted, no trailing commas) — malformed JSON breaks the pipeline.
 
 ```json
 {
@@ -428,7 +428,7 @@ Your draft is a single GraphFragment: `{ "nodes": [...], "edges": [...] }`. The 
 You do NOT hand-split parts, name output files, or check import coverage. After editing the draft (`ua-file-draft-<batchIndex>.json`), run:
 
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" finalize_file_batch_output \
+"$PLUGIN_ROOT/packages/rust/run.sh" finalize_file_batch_output \
   "$PROJECT_ROOT" \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-file-context-<batchIndex>.json" \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-file-seed-<batchIndex>.json" \
@@ -436,7 +436,7 @@ You do NOT hand-split parts, name output files, or check import coverage. After 
 ```
 
 The finalizer:
-1. Validates the draft against `understand_core/schemas/graph-fragment.schema.json` (every node/edge required field + enums).
+1. Validates the draft against `packages/rust/schemas/graph-fragment.schema.json` (every node/edge required field + enums).
 2. Verifies every seeded node, tag, and edge survived your edits — dropping any fails the batch.
 3. Enforces exact `imports` edge coverage against `batchImportData`.
 4. Verifies every edge endpoint is in-batch or an allowed cross-batch reference (import target or `neighborMap` symbol).

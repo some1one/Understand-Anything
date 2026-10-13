@@ -1,27 +1,5 @@
 #!/usr/bin/env python3
-"""Build distributable artifacts for Understand-Anything.
-
-Layout of ``dist/``:
-
-* ``python/`` — wheel + sdist for the single ``understand-anything-core`` package.
-* ``understand-anything-plugin-<ver>.tar.gz`` — the SINGLE archive of copied /
-  source artifacts (the plugin payload: skills, agents, hooks, .claude-plugin,
-  Python source + run.sh, dashboard serve.mjs). Platform-agnostic, no build output.
-* Build-specific archives (extracted *onto* the payload by the installer):
-  * ``understand-anything-wheelhouse-<plat>-<ver>.tar.gz`` — offline Python wheels
-    (CPU/OS + Python-version specific; e.g. linux_x64).
-  * ``understand-anything-dashboard-<ver>.tar.gz`` — pre-built static dashboard.
-* ``understand-anything_<ver>_<arch>.deb`` — Debian package bundling the archives
-  + a per-user linker (``--deb``).
-
-Symlinks / moves / renames / per-platform layout are performed by the install
-scripts (repo ``install.sh`` / the deb's ``/usr/bin/understand-anything``), never
-baked into these archives.
-
-Usage:
-    python scripts/build_dist.py [--skip-python|--skip-wheelhouse|--skip-dashboard]
-                                 [--python-only] [--deb] [--clean]
-"""
+"""Build a plugin payload with the native Rust engine and dashboard bundle."""
 
 from __future__ import annotations
 
@@ -30,7 +8,6 @@ import json
 import platform as _platform
 import shutil
 import subprocess
-import sys
 import tarfile
 from pathlib import Path
 
@@ -42,9 +19,8 @@ DIST = REPO / "dist"
 DEB_SRC = REPO / "packaging" / "deb"
 
 IGNORE = shutil.ignore_patterns(
-    ".venv", "__pycache__", ".pytest_cache", "node_modules", "dist",
-    "build_test_dist", "*.pyc", ".DS_Store", "*.tsbuildinfo", "wheelhouse",
-    ".pdm-python", ".pdm-build", ".venv-recovery.*",
+    "__pycache__", ".pytest_cache", "node_modules", "dist",
+    "build_test_dist", "*.pyc", ".DS_Store", "*.tsbuildinfo",
 )
 
 MAINTAINER = "Justin Phillips <justin.phillips@trucesoftware.com>"
@@ -57,13 +33,6 @@ def run(cmd: list[str], cwd: Path | None = None) -> None:
 
 def read_version() -> str:
     return json.loads((PLUGIN / ".claude-plugin" / "plugin.json").read_text())["version"]
-
-
-def find_python() -> str:
-    c = PKGS / "core" / ".venv" / "bin" / "python"
-    if c.exists():
-        return str(c)
-    return shutil.which("python3") or sys.executable
 
 
 def platform_tag() -> str:
@@ -80,30 +49,16 @@ def deb_arch() -> str:
 
 
 # --------------------------------------------------------------------------- #
-# Python wheels + wheelhouse
+# Native engine
 # --------------------------------------------------------------------------- #
 
-def build_python(out: Path) -> None:
-    print("• Building the understand-anything-core wheel…")
-    if out.exists():
-        shutil.rmtree(out)
-    out.mkdir(parents=True, exist_ok=True)
-    # `understand_core` is a normal package dir, so a plain in-place build works
-    # (no flat-package staging needed).
-    run(["pdm", "build", "--project", str(PKGS / "core"), "--dest", str(out)])
-
-
-def build_wheelhouse(pywheels: Path, wheelhouse: Path, requirements: Path) -> None:
-    print("• Collecting offline wheelhouse (understand-anything-core + all deps)…")
-    if wheelhouse.exists():
-        shutil.rmtree(wheelhouse)
-    wheelhouse.mkdir(parents=True)
-    # Pin from requirements.txt so the wheelhouse holds exactly the lock-pinned
-    # versions run.sh's `pip install --no-index -r requirements.txt` will ask for.
-    run([find_python(), "-m", "pip", "wheel", "--find-links", str(pywheels),
-         "-r", str(requirements),
-         "understand-anything-core",
-         "-w", str(wheelhouse)])
+def build_rust() -> Path:
+    rust = PKGS / "rust"
+    run(["cargo", "+stable", "build", "--locked", "--release"], cwd=rust)
+    binary = rust / "target/release/understand-anything-rs"
+    if not binary.is_file():
+        raise FileNotFoundError(binary)
+    return binary
 
 
 def build_dashboard() -> None:
@@ -122,52 +77,26 @@ def _die(msg: str):
 # Payload (copied/source artifacts only)
 # --------------------------------------------------------------------------- #
 
-def export_requirements(out: Path) -> Path:
-    """Export core's locked prod deps to a PDM-free requirements.txt.
-
-    The wheelhouse is built from this file and it is shipped in the payload, so
-    both agree on exact (lock-pinned) versions and the target's offline
-    ``pip install --no-index -r requirements.txt`` always resolves.
-    """
-    out.parent.mkdir(parents=True, exist_ok=True)
-    run(["pdm", "export", "--project", str(PKGS / "core"),
-         "-f", "requirements", "--without-hashes", "--prod", "-o", str(out)])
-    return out
-
-
-def assemble_payload(payload: Path, requirements: Path) -> None:
-    print("• Assembling copied/source payload…")
+def assemble_payload(payload: Path, binary: Path) -> None:
+    print("• Assembling native plugin payload…")
     if payload.exists():
         shutil.rmtree(payload)
     payload.mkdir(parents=True)
-    shutil.copytree(PLUGIN / ".claude-plugin", payload / ".claude-plugin")
-    shutil.copytree(PLUGIN / ".codex-plugin", payload / ".codex-plugin")
-    for d in ("agents", "hooks", "skills", "tools", "scripts"):
+    for d in (".claude-plugin", ".codex-plugin", "agents", "hooks", "skills", "tools", "scripts"):
         shutil.copytree(PLUGIN / d, payload / d, ignore=IGNORE)
-    if (PLUGIN / "README.md").exists():
-        shutil.copy2(PLUGIN / "README.md", payload / "README.md")
-    shutil.copy2(PLUGIN / "HOSTS.md", payload / "HOSTS.md")
-    shutil.copy2(PLUGIN / "AGENTS.md", payload / "AGENTS.md")
-
+    for name in ("README.md", "HOSTS.md", "AGENTS.md"):
+        shutil.copy2(PLUGIN / name, payload / name)
     pkgs = payload / "packages"
-    pkgs.mkdir()
-    # core: source + run.sh + pyproject (wheelhouse is a separate archive).
-    core = pkgs / "core"
-    shutil.copytree(PKGS / "core", core, ignore=IGNORE)
-    for junk in ("pdm.lock", "pdm.toml", ".python-version", "CONVERSION_GUIDE.md"):
-        (core / junk).unlink(missing_ok=True)
-    shutil.rmtree(core / "tests", ignore_errors=True)
-    # Ship the pre-generated, fully-pinned, PDM-free requirements.txt. run.sh
-    # installs from it with plain pip (PDM is only a build-time tool); the
-    # package itself runs from source via PYTHONPATH, so only the third-party
-    # deps need installing.
-    shutil.copy2(requirements, core / "requirements.txt")
-    # dashboard: standalone server + package.json (dist is a separate archive).
+    rust = pkgs / "rust"
+    (rust / "bin").mkdir(parents=True)
+    shutil.copy2(PKGS / "rust/run.sh", rust / "run.sh")
+    shutil.copy2(binary, rust / "bin/understand-anything-rs")
+    shutil.copytree(PKGS / "rust/schemas", rust / "schemas")
+    shutil.copy2(PKGS / "rust/README.md", rust / "README.md")
     dash = pkgs / "dashboard"
     dash.mkdir()
-    shutil.copy2(PKGS / "dashboard" / "serve.mjs", dash / "serve.mjs")
-    shutil.copy2(PKGS / "dashboard" / "package.json", dash / "package.json")
-    (pkgs / "__init__.py").unlink(missing_ok=True)
+    for name in ("serve.mjs", "package.json"):
+        shutil.copy2(PKGS / "dashboard" / name, dash / name)
 
 
 def agents_md() -> str:
@@ -184,14 +113,9 @@ def tar_dir(src: Path, arcname: str, out: Path) -> Path:
     return out
 
 
-def make_archives(payload: Path, wheelhouse: Path, version: str,
-                  do_wheelhouse: bool, do_dashboard: bool) -> list[Path]:
-    made = []
-    made.append(tar_dir(payload, "understand-anything-plugin",
-                        DIST / f"understand-anything-plugin-{version}.tar.gz"))
-    if do_wheelhouse and wheelhouse.exists():
-        made.append(tar_dir(wheelhouse, "wheelhouse",
-                            DIST / f"understand-anything-wheelhouse-{platform_tag()}-{version}.tar.gz"))
+def make_archives(payload: Path, version: str, do_dashboard: bool) -> list[Path]:
+    made = [tar_dir(payload, "understand-anything-plugin",
+                    DIST / f"understand-anything-plugin-{platform_tag()}-{version}.tar.gz")]
     built = PKGS / "dashboard" / "dist"
     if do_dashboard and built.exists():
         made.append(tar_dir(built, "dist",
@@ -231,12 +155,12 @@ Version: {version}
 Section: devel
 Priority: optional
 Architecture: {arch}
-Depends: python3 (>= 3.14~), python3-venv, python3-pip
+Depends: python3
 Recommends: nodejs (>= 22)
 Maintainer: {MAINTAINER}
 Description: AI-powered codebase understanding — analyze, visualize, explain any project.
  Ships the Understand-Anything plugin (skills, agents, hooks), the deterministic
- understand_core Python engine with an offline wheelhouse, and a pre-built dashboard.
+ Rust analysis engine, and a pre-built dashboard.
  After install, run `understand-anything <platform>` to enable it for your user.
 """)
 
@@ -247,16 +171,8 @@ SHARE=/usr/share/understand-anything
 PLUGIN="$SHARE/understand-anything-plugin"
 rm -rf "$PLUGIN"
 tar -xzf "$SHARE"/understand-anything-plugin-*.tar.gz -C "$SHARE"
-if ls "$SHARE"/understand-anything-wheelhouse-*.tar.gz >/dev/null 2>&1; then
-  tar -xzf "$SHARE"/understand-anything-wheelhouse-*.tar.gz -C "$PLUGIN/packages/core"
-fi
 if ls "$SHARE"/understand-anything-dashboard-*.tar.gz >/dev/null 2>&1; then
   tar -xzf "$SHARE"/understand-anything-dashboard-*.tar.gz -C "$PLUGIN/packages/dashboard"
-fi
-# Warm the understand_core venv system-wide (offline, from the wheelhouse).
-if [ -x "$PLUGIN/packages/core/run.sh" ]; then
-  "$PLUGIN/packages/core/run.sh" --ensure || \
-    echo "understand-anything: venv will be created on first use." >&2
 fi
 echo "Understand-Anything installed. Enable it for your user with:"
 echo "    understand-anything <platform>              (claude | codex | opencode | agents | vscode | jetbrains | kilo | kiro)"
@@ -287,10 +203,7 @@ exit 0
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--skip-python", action="store_true")
-    ap.add_argument("--skip-wheelhouse", action="store_true")
     ap.add_argument("--skip-dashboard", action="store_true")
-    ap.add_argument("--python-only", action="store_true")
     ap.add_argument("--deb", action="store_true", help="also build the Debian package")
     ap.add_argument("--clean", action="store_true")
     args = ap.parse_args()
@@ -302,33 +215,16 @@ def main() -> int:
     BUILD.mkdir(parents=True, exist_ok=True)
     DIST.mkdir(parents=True, exist_ok=True)
 
-    pywheels = DIST / "python"
-    wheelhouse = BUILD / "wheelhouse"
-
-    # Export the locked deps first — the wheelhouse is built from this file and
-    # it ships in the payload, so both agree on exact versions.
-    requirements = export_requirements(BUILD / "requirements.txt")
-
-    if not args.skip_python:
-        build_python(pywheels)
-    if not args.skip_wheelhouse:
-        build_wheelhouse(pywheels, wheelhouse, requirements)
-    if args.python_only:
-        print("\n✓ dist/python built.")
-        return 0
+    binary = build_rust()
     if not args.skip_dashboard:
         build_dashboard()
 
     payload = BUILD / "payload"
-    assemble_payload(payload, requirements)
-    archives = make_archives(payload, wheelhouse, version,
-                             do_wheelhouse=not args.skip_wheelhouse,
-                             do_dashboard=not args.skip_dashboard)
+    assemble_payload(payload, binary)
+    archives = make_archives(payload, version, do_dashboard=not args.skip_dashboard)
     deb = build_deb(version, archives) if args.deb else None
 
     print("\n✓ dist/ artifacts:")
-    for f in sorted(pywheels.glob("*")) if pywheels.exists() else []:
-        print(f"   python/{f.name}")
     for f in archives + ([deb] if deb else []):
         print(f"   {f.name}  ({f.stat().st_size / (1024*1024):.1f} MB)")
     return 0

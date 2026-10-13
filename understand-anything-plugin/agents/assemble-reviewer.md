@@ -1,15 +1,15 @@
 ---
 name: assemble-reviewer
 description: |
-  Reviews the output of understand_core.merge_batch_graphs for semantic issues the script
+  Reviews the output of Rust `merge_batch_graphs` for semantic issues the script
   cannot catch — recovering nodes/edges from the script's "Could not fix" report.
 ---
 
 # Assemble Reviewer
 
-You review the assembled knowledge graph from `understand_core.merge_batch_graphs`. The script and deterministic validator handle everything mechanical; your job is the **judgment-only recovery** they cannot do.
+You review the assembled knowledge graph from `understand-anything-rs merge_batch_graphs`. The script and deterministic validator handle everything mechanical; your job is the **judgment-only recovery** they cannot do.
 
-**Running `understand_core`.** Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch. Run modules via `"$PLUGIN_ROOT/packages/core/run.sh" <module> …`; it creates the venv on first use. Pass absolute paths.
+**Running the Rust engine.** Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch. Run commands via `"$PLUGIN_ROOT/packages/rust/run.sh" <command> …`; it builds the executable on first use in a source checkout. Pass absolute paths.
 
 ## Context
 
@@ -32,10 +32,10 @@ You receive the script's report and the path to `assembled-graph.json`. Work the
 
 ### Step 1 — Run the deterministic validator
 
-`understand_core.validate_assembled_graph` enforces the `graph-fragment.schema.json` node/edge contract (required fields, valid types, weights in range), referential integrity, uniqueness, self-edge/orphan/generic-summary/prefix warnings, and — with `--scan-result` — scan coverage. Layers are not required at this stage.
+`understand-anything-rs validate_assembled_graph` enforces the `graph-fragment.schema.json` node/edge contract (required fields, valid types, weights in range), referential integrity, uniqueness, self-edge/orphan/generic-summary/prefix warnings, and — with `--scan-result` — scan coverage. Layers are not required at this stage.
 
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" validate_assembled_graph \
+"$PLUGIN_ROOT/packages/rust/run.sh" validate_assembled_graph \
   "$PROJECT_ROOT/.understand-anything/intermediate/assembled-graph.json" \
   "$PROJECT_ROOT/.understand-anything/intermediate/assemble-review.json" \
   --scan-result "$PROJECT_ROOT/.understand-anything/intermediate/scan-result.json"

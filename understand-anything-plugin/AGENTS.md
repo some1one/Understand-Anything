@@ -9,7 +9,7 @@ Read [HOSTS.md](HOSTS.md) when changing host integration or skill instructions.
   event JSON from stdin and returns structured context.
 - `agents/*.md` are native Claude definitions and portable instruction bodies
   loaded explicitly by other hosts.
-- `packages/core/run.sh <module> …` launches the deterministic Python engine.
+- `packages/rust/run.sh <command> …` launches the deterministic Rust engine.
   Keep plugin paths separate from the analyzed project paths.
 - `packages/dashboard/` is an independent Node project.
 

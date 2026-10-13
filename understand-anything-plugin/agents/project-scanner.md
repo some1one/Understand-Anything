@@ -11,15 +11,15 @@ You produce a precise JSON inventory of a project's files, languages, frameworks
 
 ## Task
 
-The deterministic parts (file enumeration, language/category assignment, line counting, complexity, `.understandignore` filtering, import resolution) are handled by `understand_core` (`scan_project` + `extract_import_map`) — do NOT re-implement them. Your contribution is the **LLM narrative**: reading README + manifests for `name`/`description`/`frameworks`/`languages`.
+The deterministic parts (file enumeration, language/category assignment, line counting, complexity, `.understandignore` filtering, import resolution) are handled by the Rust engine (`scan_project` + `extract_import_map`) — do NOT re-implement them. Your contribution is the **LLM narrative**: reading README + manifests for `name`/`description`/`frameworks`/`languages`.
 
-**Running `understand_core`.** Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch. Run modules via `"$PLUGIN_ROOT/packages/core/run.sh" <module> …`; it creates the venv on first use. Pass absolute paths.
+**Running the Rust engine.** Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch. Run commands via `"$PLUGIN_ROOT/packages/rust/run.sh" <command> …`; it builds the executable on first use in a source checkout. Pass absolute paths.
 
 ---
 
 ## Phase 1 -- Discovery
 
-Steps B and C run understand_core modules; Step A is the only LLM work.
+Steps B and C run the Rust engine modules; Step A is the only LLM work.
 
 ### Step A (LLM) -- Read manifests and README for narrative fields
 
@@ -48,7 +48,7 @@ Walks the project (prefers `git ls-files`, falls back to recursive walk), applie
 
 ```bash
 mkdir -p "$PROJECT_ROOT/.understand-anything/tmp"
-"$PLUGIN_ROOT/packages/core/run.sh" scan_project \
+"$PLUGIN_ROOT/packages/rust/run.sh" scan_project \
   "$PROJECT_ROOT" \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-scan-files.json"
 ```
@@ -99,7 +99,7 @@ On non-zero exit, diagnose via stderr; up to 2 retry attempts. There is no subst
 
 ### Step C (`extract_import_map`) -- Import Resolution
 
-After Step B produces the file list, run `extract_import_map` for deterministic import extraction across supported code languages (tree-sitter + per-language rules in `understand_core/extract_import_map.py`). Do NOT re-implement import patterns.
+After Step B produces the file list, run `extract_import_map` for deterministic import extraction across supported code languages (tree-sitter + per-language rules in `packages/rust/src/imports.rs`). Do NOT re-implement import patterns.
 
 Write the input JSON (its `files[]` is Step B's `files[]` verbatim):
 
@@ -117,7 +117,7 @@ ENDJSON
 ```
 
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" extract_import_map \
+"$PLUGIN_ROOT/packages/rust/run.sh" extract_import_map \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-import-map-input.json" \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-import-map-output.json"
 ```
@@ -147,7 +147,7 @@ Merge `importMap` directly into the final scan-result.json (same key). Every inp
 
 ## Phase 2 -- Narrative JSON + Deterministic Assembly
 
-`understand_core.assemble_project_scan_result` merges your narrative JSON with the deterministic scan/import outputs, copies `files`/`totalFiles`/`filteredByIgnore`/`estimatedComplexity`/`importMap` **verbatim**, validates against `understand_core/schemas/project-scan-output.schema.json`, and writes `intermediate/scan-result.json`. You do NOT hand-assemble.
+`understand-anything-rs assemble_project_scan_result` merges your narrative JSON with the deterministic scan/import outputs, copies `files`/`totalFiles`/`filteredByIgnore`/`estimatedComplexity`/`importMap` **verbatim**, validates against `packages/rust/schemas/project-scan-output.schema.json`, and writes `intermediate/scan-result.json`. You do NOT hand-assemble.
 
 ### Step 1 — Write the narrative JSON
 
@@ -179,7 +179,7 @@ ENDJSON
 ### Step 2 — Run the assembler
 
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" assemble_project_scan_result \
+"$PLUGIN_ROOT/packages/rust/run.sh" assemble_project_scan_result \
   "$PROJECT_ROOT" \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-scan-narrative.json"
 ```
@@ -188,7 +188,7 @@ Reads `tmp/ua-scan-files.json` (Step B) and `tmp/ua-import-map-output.json` (Ste
 
 On non-zero exit, read stderr: usual cause is a `totalFiles`/`len(files)` mismatch or `importMap` missing entries — both mean Step B and C are out of sync, so re-run those steps rather than editing outputs by hand. Up to 2 retry attempts.
 
-Authoritative contract: `understand_core/schemas/project-scan-output.schema.json`. Example (illustrative):
+Authoritative contract: `packages/rust/schemas/project-scan-output.schema.json`. Example (illustrative):
 
 ```json
 {

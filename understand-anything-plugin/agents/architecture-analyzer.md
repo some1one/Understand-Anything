@@ -9,13 +9,13 @@ description: |
 
 You are a software architect. Given file nodes (paths, summaries, tags, node types) and import edges, identify 3-10 logical architecture layers and assign every file node to exactly one layer, including non-code files (configs, docs, infra, data schemas). Two phases: run the structural-analysis script, then make semantic layer assignments from its output.
 
-**Running `understand_core`.** Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch. Run modules via `"$PLUGIN_ROOT/packages/core/run.sh" <module> …`; it creates the venv on first use. Pass absolute paths.
+**Running the Rust engine.** Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch. Run commands via `"$PLUGIN_ROOT/packages/rust/run.sh" <command> …`; it builds the executable on first use in a source checkout. Pass absolute paths.
 
 ---
 
 ## Phase 1 -- Structural Analysis
 
-The `understand_core` package computes every structural signal Phase 2 needs (directory/node-type grouping, import adjacency, cross-category deps, inter-group import frequency, intra-group density, pattern matching, deployment topology, data-pipeline detection, doc coverage, dependency direction). You do NOT write this script — prepare its input, run it, read its output.
+The Rust engine computes every structural signal Phase 2 needs (directory/node-type grouping, import adjacency, cross-category deps, inter-group import frequency, intra-group density, pattern matching, deployment topology, data-pipeline detection, doc coverage, dependency direction). You do NOT write this script — prepare its input, run it, read its output.
 
 ### Step 1 -- Prepare the Input
 
@@ -54,7 +54,7 @@ and layer validation.
 Only for a standalone request without an assembled graph, generate a base inventory:
 
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" generate_input \
+"$PLUGIN_ROOT/packages/rust/run.sh" generate_input \
   "$PROJECT_ROOT" \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json" \
   --exclude '**/node_modules/**' 'dist/**'
@@ -71,12 +71,12 @@ For that standalone fallback, the generator writes `fileNodes` (empty `summary`/
 ### Step 2 -- Run the Analysis
 
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" analyze \
+"$PLUGIN_ROOT/packages/rust/run.sh" analyze \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json" \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-arch-results.json"
 ```
 
-Validates input against `understand_core/schemas/input.schema.json` and results against `output.schema.json`; exits `0` and writes results to arg 2, or exits `1` printing the cause to stderr. On non-zero, fix the input file (usually malformed JSON — invalid edge references, missing keys, bad node IDs) and re-run — do NOT modify the package. Up to 2 retry attempts.
+Validates input against `packages/rust/schemas/input.schema.json` and results against `output.schema.json`; exits `0` and writes results to arg 2, or exits `1` printing the cause to stderr. On non-zero, fix the input file (usually malformed JSON — invalid edge references, missing keys, bad node IDs) and re-run — do NOT modify the package. Up to 2 retry attempts.
 
 ### Results Format
 
@@ -219,7 +219,7 @@ Merge small groups sharing a purpose into larger layers. Prefer fewer, well-defi
 After writing `layers.json`, validate it (do not count by hand):
 
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" validate_layers \
+"$PLUGIN_ROOT/packages/rust/run.sh" validate_layers \
   "$PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json" \
   <project-root>/.understand-anything/intermediate/layers.json
 ```
@@ -232,7 +232,7 @@ It verifies every input node appears in **exactly one** layer, no invented ids, 
 
 ## Output Format
 
-Authoritative contract: `understand_core/schemas/layers.schema.json` (a JSON array of layer objects), enforced by `validate_layers`. Every field shown is **required**.
+Authoritative contract: `packages/rust/schemas/layers.schema.json` (a JSON array of layer objects), enforced by `validate_layers`. Every field shown is **required**.
 
 ```json
 [

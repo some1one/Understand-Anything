@@ -611,9 +611,18 @@ pub fn recover_imports_from_scan(assembled: &mut Value, path: &Path) -> (usize, 
             )],
         );
     };
+    let known: BTreeSet<String> = array(&scan, "files")
+        .iter()
+        .filter_map(|f| f["path"].as_str().map(str::to_owned))
+        .collect();
     let ids: BTreeSet<_> = array(assembled, "nodes")
         .iter()
         .filter(|n| n["type"] == "file")
+        .map(|n| s(n, "id").to_owned())
+        .collect();
+    let sources: BTreeSet<_> = array(assembled, "nodes")
+        .iter()
+        .filter(|n| n["type"] == "file" && n["stub"] != true)
         .map(|n| s(n, "id").to_owned())
         .collect();
     let mut existing: BTreeSet<_> = array(assembled, "edges")
@@ -627,7 +636,7 @@ pub fn recover_imports_from_scan(assembled: &mut Value, path: &Path) -> (usize, 
             continue;
         }
         let src = format!("file:{src}");
-        if !ids.contains(&src) {
+        if !sources.contains(&src) {
             if !targets.as_array().unwrap().is_empty() {
                 no_src += 1;
             }
@@ -635,7 +644,7 @@ pub fn recover_imports_from_scan(assembled: &mut Value, path: &Path) -> (usize, 
         }
         for target in strings(targets).into_iter().filter(|s| !s.is_empty()) {
             let tgt = format!("file:{target}");
-            if !ids.contains(&tgt) {
+            if !ids.contains(&tgt) && !known.contains(&target) {
                 no_tgt += 1;
                 continue;
             }
@@ -659,6 +668,7 @@ pub fn recover_imports_from_scan(assembled: &mut Value, path: &Path) -> (usize, 
             "  Skipped {no_tgt} importMap target paths with no `file:` node in graph"
         ));
     }
+    *assembled = crate::merge::add_boundary_stubs(assembled, &known);
     (recovered, report)
 }
 pub fn load_batch(path: &Path) -> Option<Value> {
@@ -710,6 +720,14 @@ pub fn merge_batch_directory(root: &Path) -> Result<Value> {
             .and_then(|c| c[1].parse::<u64>().ok())
             .unwrap_or(0)
     });
+    let empty_plan = crate::persistence::read_json(&dir.join("batches.json")).is_ok_and(|plan| {
+        plan["batches"].as_array().is_some_and(Vec::is_empty) && plan["totalBatches"] == 0
+    });
+    if files.is_empty() && empty_plan {
+        let graph = json!({"nodes":[], "edges":[]});
+        crate::persistence::write_json(&dir.join("assembled-graph.json"), &graph)?;
+        return Ok(graph);
+    }
     if files.is_empty() {
         return Err(crate::Error::Invalid(
             "Error: no batch-*.json files found in intermediate/".into(),
@@ -786,7 +804,20 @@ pub fn merge_batch_directory(root: &Path) -> Result<Value> {
             "Error: no valid batch files loaded".into(),
         ));
     }
-    let (mut graph, mut report) = merge_and_normalize(&batches);
+    // Add scan-backed boundary nodes before normalization drops dangling edges.
+    let mut combined = json!({
+        "nodes": batches.iter().flat_map(|b| array(b, "nodes")).collect::<Vec<_>>(),
+        "edges": batches.iter().flat_map(|b| array(b, "edges")).collect::<Vec<_>>()
+    });
+    if let Ok(scan) = crate::persistence::read_json(&dir.join("scan-result.json")) {
+        let known = array(&scan, "files")
+            .iter()
+            .filter_map(|f| f["path"].as_str().map(str::to_owned))
+            .collect();
+        combined = crate::merge::add_boundary_stubs(&combined, &known);
+    }
+    let (mut graph, mut report) = merge_and_normalize(&[combined]);
+    let (_, recovery) = recover_imports_from_scan(&mut graph, &dir.join("scan-result.json"));
     if !missing_warnings.is_empty() {
         report.extend([
             String::new(),
@@ -800,7 +831,6 @@ pub fn merge_batch_directory(root: &Path) -> Result<Value> {
     if !unrecognized.is_empty() {
         report.extend([String::new(),format!("Warning: dropped {} batch file(s) with unrecognized filenames — files: {preview}{suffix} — fix the file-analyzer agent to use only batch-<N>.json or batch-<N>-part-<K>.json patterns (every node/edge in these files was excluded from the final graph)",unrecognized.len())]);
     }
-    let (_, recovery) = recover_imports_from_scan(&mut graph, &dir.join("scan-result.json"));
     if !recovery.is_empty() {
         report.extend([String::new(), "Imports edge recovery:".into()]);
         report.extend(recovery);

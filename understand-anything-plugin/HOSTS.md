@@ -47,7 +47,7 @@ graphs are snapshots: check current source before asserting current behavior.
 ## Hooks
 
 Native plugin installations discover `hooks/hooks.json`. Both hosts send event
-JSON on stdin; the bundled Python hook returns `hookSpecificOutput.additionalContext`.
+JSON on stdin; the bundled hook returns `hookSpecificOutput.additionalContext`.
 Codex supplies `CLAUDE_PLUGIN_ROOT` as a compatibility variable for the shared
 hook command. Codex hooks must be reviewed and trusted through the host before
 they run. Installation alone does not establish trust.

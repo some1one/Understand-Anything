@@ -626,7 +626,12 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
                 }
             }
             let paths = scan_paths(&root)?;
-            let parts = partition::partition_files(&paths, &sources, depth)?;
+            let mut parts = partition::partition_files(&paths, &sources, depth)?;
+            // Retain included parts as empty work items so deletion updates can
+            // replace their saved graphs through the normal assembly pipeline.
+            for part in ua::strings(&ua::persistence::load_config(&root)["includedParts"]) {
+                parts.entry(part).or_default();
+            }
             let counts: serde_json::Map<_, _> = parts
                 .iter()
                 .map(|(k, v)| (k.clone(), json!(v.len())))

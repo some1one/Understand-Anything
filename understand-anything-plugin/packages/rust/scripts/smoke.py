@@ -173,9 +173,9 @@ def main():
     assert read(inter/'auto-update-summary.json')['status'] == 'UPDATED'
     # A real source edit in the temporary snapshot exercises structural reanalysis,
     # graph pruning/merging and fingerprint refresh, beyond the no-change branch.
-    changed_source = 'understand-anything-plugin/packages/core/understand_core/scan_project.py'
+    changed_source = 'understand-anything-plugin/packages/rust/src/scan.rs'
     source = project/changed_source
-    source.write_text(source.read_text() + '\ndef smoke_added_helper(value):\n    current = value + 1\n    current += 2\n    current += 3\n    return current\n')
+    source.write_text(source.read_text() + '\nfn smoke_added_helper(value: i32) -> i32 {\n    let current = value + 1;\n    current + 2\n}\n')
     write(inter/'auto-update-state.json', dict(changedSourceFiles=[changed_source], currentCommit='smoke-updated'))
     run('auto_update_fingerprint_check', project)
     analysis = read(inter/'change-analysis.json')

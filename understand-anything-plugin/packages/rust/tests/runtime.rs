@@ -443,3 +443,114 @@ fn path_sanitization_matches_lexical_prefix_contract() {
     assert_eq!(actual["nodes"][2]["filePath"], "a.py");
     assert_eq!(actual["nodes"][3]["filePath"], "文/a.py");
 }
+
+#[test]
+fn part_merge_preserves_boundary_edges_and_recovers_imports() {
+    for emitted in [true, false] {
+        let tmp = tempfile::tempdir().unwrap();
+        let inter = tmp.path().join(".understand-anything/intermediate");
+        fs::create_dir_all(&inter).unwrap();
+        let scan = json!({"files":[{"path":"a/one.ts"},{"path":"b/two.ts"}],
+            "importMap":{"a/one.ts":["b/two.ts"],"b/two.ts":["a/one.ts"]}});
+        ua::persistence::write_json(&inter.join("scan-result.json"), &scan).unwrap();
+        let edges = if emitted {
+            vec![
+                json!({"source":"file:a/one.ts","target":"file:b/two.ts","type":"imports"}),
+                json!({"source":"file:a/one.ts","target":"file:missing.ts","type":"imports"}),
+            ]
+        } else {
+            vec![]
+        };
+        ua::persistence::write_json(
+            &inter.join("batch-0.json"),
+            &json!({
+            "nodes":[{"id":"file:a/one.ts","type":"file","filePath":"a/one.ts"}],"edges":edges}),
+        )
+        .unwrap();
+        let graph = ua::batch_merge::merge_batch_directory(tmp.path()).unwrap();
+        assert_eq!(ua::array(&graph, "edges").len(), 1);
+        let part = ua::assembly::build_part_graph(
+            &graph,
+            "a",
+            &["a/one.ts".into(), "b/two.ts".into()].into(),
+            &scan,
+            "",
+        );
+        assert_eq!(
+            ua::array(&part, "nodes")
+                .iter()
+                .filter(|n| n["stub"] == true)
+                .count(),
+            1
+        );
+        assert_eq!(part["edges"][0]["target"], "file:b/two.ts");
+        let (merged, _) = ua::merge::merge_graphs(&[
+            part,
+            json!({"nodes":[{"id":"file:b/two.ts","type":"file","summary":"Real node"}],"edges":[]}),
+        ]);
+        assert!(
+            ua::array(&merged, "nodes")
+                .iter()
+                .all(|n| n["stub"] != true)
+        );
+        assert_eq!(ua::array(&merged, "edges").len(), 1);
+    }
+}
+
+#[test]
+fn deleted_part_runs_through_empty_batch_assembly() {
+    let tmp = tempfile::tempdir().unwrap();
+    let root = tmp.path();
+    let inter = root.join(".understand-anything/intermediate");
+    fs::create_dir_all(&inter).unwrap();
+    ua::persistence::write_json(
+        &root.join(".understand-anything/config.json"),
+        &json!({"includedParts":["deleted"],"splitDepth":1}),
+    )
+    .unwrap();
+    ua::persistence::write_json(
+        &inter.join("scan-result.json"),
+        &json!({"files":[],"importMap":{}}),
+    )
+    .unwrap();
+    let saved = root.join(".understand-anything/partitions/deleted.knowledge-graph.json");
+    fs::create_dir_all(saved.parent().unwrap()).unwrap();
+    ua::persistence::write_json(
+        &saved,
+        &json!({"nodes":[{"id":"file:deleted/last.txt"}],"edges":[]}),
+    )
+    .unwrap();
+    let run = |args: &[&str]| {
+        let result = Command::new(env!("CARGO_BIN_EXE_understand-anything-rs"))
+            .args(args)
+            .output()
+            .unwrap();
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        String::from_utf8(result.stdout).unwrap()
+    };
+    let root_str = root.to_str().unwrap();
+    run(&["partition_files", root_str, "--depth=1"]);
+    let list = inter.join("part-files/deleted.txt");
+    assert!(fs::read_to_string(&list).unwrap().trim().is_empty());
+    fs::write(root.join("changed.txt"), "deleted/last.txt\n").unwrap();
+    let selection = run(&[
+        "parts_to_process",
+        root_str,
+        &format!("--changed={}", root.join("changed.txt").display()),
+    ]);
+    assert_eq!(selection.trim(), "deleted");
+    run(&[
+        "compute_batches",
+        root_str,
+        &format!("--changed-files={}", list.display()),
+    ]);
+    run(&["merge_batch_graphs", root_str]);
+    run(&["assemble_part_graph", root_str, "deleted"]);
+    let graph = ua::persistence::read_json(&saved).unwrap();
+    assert!(ua::array(&graph, "nodes").is_empty());
+    assert!(ua::array(&graph, "edges").is_empty());
+}

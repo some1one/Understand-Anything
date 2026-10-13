@@ -1,6 +1,6 @@
 {
   "additionalProperties": false,
-  "description": "Pre-flight state (``intermediate/auto-update-state.json``).\n\nWritten by :mod:`understand_core.auto_update_preflight` and read by the\nfingerprint-check phase. On a STOP outcome the pre-flight has already done\nwhatever metadata write is appropriate (``metadataUpdated``).",
+  "description": "Pre-flight state (``intermediate/auto-update-state.json``).\n\nWritten by Rust command `auto_update_preflight` and read by the\nfingerprint-check phase. On a STOP outcome the pre-flight has already done\nwhatever metadata write is appropriate (``metadataUpdated``).",
   "properties": {
     "status": {
       "enum": [

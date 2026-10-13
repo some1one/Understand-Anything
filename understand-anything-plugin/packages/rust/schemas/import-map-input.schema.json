@@ -25,7 +25,7 @@
       "type": "object"
     }
   },
-  "description": "Input contract for :mod:`understand_core.extract_import_map`.",
+  "description": "Input contract for Rust command `extract_import_map`.",
   "properties": {
     "projectRoot": {
       "title": "Projectroot",

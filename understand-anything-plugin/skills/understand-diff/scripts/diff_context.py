@@ -11,16 +11,37 @@ from pathlib import Path
 from typing import Any
 
 
+def default_base(project_root: Path) -> str | None:
+    def git(*args: str) -> str:
+        result = subprocess.run(["git", *args], cwd=project_root, text=True,
+                                capture_output=True, check=False)
+        return result.stdout.strip() if result.returncode == 0 else ""
+
+    branch = git("symbolic-ref", "--quiet", "--short", "HEAD")
+    remote_head = git("symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD")
+    for candidate in [remote_head, "main", "master", "origin/main", "origin/master"]:
+        if not candidate:
+            continue
+        if git("rev-parse", "--verify", f"{candidate}^{{commit}}"):
+            if branch == candidate.removeprefix("origin/"):
+                return None
+            if git("merge-base", candidate, "HEAD"):
+                return candidate
+    return None
+
+
 def changed_files(project_root: Path, base: str | None) -> tuple[list[str], str]:
+    if base is None:
+        base = default_base(project_root)
     if base:
         cmd = ["git", "diff", f"{base}...HEAD", "--name-only"]
         label = base
     else:
-        cmd = ["git", "diff", "--name-only"]
+        cmd = ["git", "diff", "HEAD", "--name-only"]
         label = "working-tree"
     result = subprocess.run(cmd, cwd=project_root, text=True, capture_output=True, check=False)
     if result.returncode != 0 and base:
-        result = subprocess.run(["git", "diff", "--name-only"], cwd=project_root, text=True, capture_output=True, check=False)
+        result = subprocess.run(["git", "diff", "HEAD", "--name-only"], cwd=project_root, text=True, capture_output=True, check=False)
         label = "working-tree"
     if result.returncode != 0:
         raise RuntimeError(result.stderr.strip() or "git diff failed")

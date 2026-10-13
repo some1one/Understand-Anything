@@ -20,14 +20,14 @@ Read [host integration](../../HOSTS.md) for invocation, argument handling, and a
 
 ## Instructions
 
-1. Set `SKILL_DIR` to the directory containing this `SKILL.md`. Warm the Python env and get `PLUGIN_ROOT`:
+1. Set `SKILL_DIR` to the directory containing this `SKILL.md`. Check the Rust engine and get `PLUGIN_ROOT`:
    ```bash
-   PLUGIN_ROOT="$("$SKILL_DIR/../understand/scripts/ensure_python_env.sh")"
+   PLUGIN_ROOT="$("$SKILL_DIR/../understand/scripts/ensure_rust_engine.sh")"
    ```
 
 2. Merge the selected partition graphs into `knowledge-graph.json`:
    ```bash
-   "$PLUGIN_ROOT/packages/core/run.sh" merge_subdomain_graphs "$PWD"
+   "$PLUGIN_ROOT/packages/rust/run.sh" merge_subdomain_graphs "$PWD"
    ```
    Report the resulting node/edge/layer counts (from stderr).
 

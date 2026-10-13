@@ -63,7 +63,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "Output contract for :mod:`understand_core.scan_project`.",
+  "description": "Output contract for Rust command `scan_project`.",
   "properties": {
     "scriptCompleted": {
       "title": "Scriptcompleted",

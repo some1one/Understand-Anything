@@ -3,7 +3,7 @@
 ## Arguments
 
 - `PROJECT_ROOT`: Absolute path to the project being analyzed.
-- `MERGE_REPORT`: Full stderr output from `understand_core.merge_batch_graphs`.
+- `MERGE_REPORT`: Full stderr output from `understand-anything-rs merge_batch_graphs`.
 - `IMPORT_MAP_JSON`: Import map from `scan-result.json#importMap`.
 
 ## Dispatch Prompt

@@ -24,7 +24,7 @@ Read [host integration](../../HOSTS.md) for invocation, argument handling, and a
 
 1. Set `SKILL_DIR` to the directory containing this `SKILL.md`.
 
-2. Run the helper. Pass a base branch as the optional second argument if the user specified one, else omit it. Gathers changed files, extracts changed/affected nodes, finds touched layers, and writes `.understand-anything/diff-overlay.json`.
+2. Run the helper. Pass a base branch as the optional second argument if the user specified one, else omit it. The helper compares feature branches against the local origin default-branch reference or an available main/master branch. On the default branch, or without a usable base, it includes staged and unstaged changes against HEAD. Gathers changed files, extracts changed/affected nodes, finds touched layers, and writes `.understand-anything/diff-overlay.json`.
    ```bash
    python3 "$SKILL_DIR/scripts/diff_context.py" "$PWD" [base-branch]
    ```

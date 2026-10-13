@@ -22,8 +22,7 @@
 # Distribution:
 #   * If the payload archives are found next to this script (or in $UA_ASSET_DIR,
 #     ./dist, or /usr/share/understand-anything), they are assembled — no network.
-#       - understand-anything-plugin-*.tar.gz         (copied/source payload)
-#       - understand-anything-wheelhouse-*.tar.gz     (offline Python wheels)
+#       - understand-anything-plugin-<platform>-*.tar.gz (native payload)
 #       - understand-anything-dashboard-*.tar.gz       (pre-built static dashboard)
 #   * Otherwise it falls back to a git checkout (set UA_REPO_URL).
 #
@@ -74,16 +73,23 @@ row_for()       { platforms_table | awk -F'|' -v id="$1" '$1==id{print;exit}'; }
 field()         { cut -d'|' -f"$2" <<<"$1"; }
 
 # --- asset discovery + assembly ---------------------------------------------
-CORE_TGZ="" WHEELHOUSE_TGZ="" DASH_TGZ=""
+CORE_TGZ="" DASH_TGZ=""
+asset_platform() {
+  local system arch
+  system=$(uname -s | tr '[:upper:]' '[:lower:]')
+  case "$system" in darwin) system=macos ;; esac
+  arch=$(uname -m)
+  case "$arch" in x86_64|amd64) arch=x64 ;; aarch64|arm64) arch=arm64 ;; esac
+  printf '%s_%s\n' "$system" "$arch"
+}
 find_assets() {
   local d found=""
   for d in "${UA_ASSET_DIR:-}" "$SCRIPT_DIR" "$SCRIPT_DIR/dist" \
            "/usr/share/understand-anything" "$PWD/dist"; do
     [ -n "$d" ] && [ -d "$d" ] || continue
-    local core; core="$(ls "$d"/understand-anything-plugin-*.tar.gz 2>/dev/null | head -1 || true)"
+    local core; core="$(ls "$d"/understand-anything-plugin-"$(asset_platform)"-*.tar.gz 2>/dev/null | head -1 || true)"
     [ -n "$core" ] || continue
     CORE_TGZ="$core"
-    WHEELHOUSE_TGZ="$(ls "$d"/understand-anything-wheelhouse-*.tar.gz 2>/dev/null | head -1 || true)"
     DASH_TGZ="$(ls "$d"/understand-anything-dashboard-*.tar.gz 2>/dev/null | head -1 || true)"
     found="$d"; break
   done
@@ -91,17 +97,13 @@ find_assets() {
 }
 
 # Assemble the plugin payload into <parent>/understand-anything-plugin, overlaying
-# the wheelhouse + dashboard build archives. Echoes the plugin dir path.
+# the dashboard build archive. Echoes the plugin dir path.
 assemble_into() {
   local parent="$1" plugin="$1/understand-anything-plugin"
   mkdir -p "$parent"
   rm -rf "$plugin"
   info "Assembling plugin payload → $plugin"
   tar -xzf "$CORE_TGZ" -C "$parent"
-  if [ -n "$WHEELHOUSE_TGZ" ]; then
-    tar -xzf "$WHEELHOUSE_TGZ" -C "$plugin/packages/core"
-    ok "wheelhouse (offline Python deps)"
-  fi
   if [ -n "$DASH_TGZ" ]; then
     tar -xzf "$DASH_TGZ" -C "$plugin/packages/dashboard"
     ok "dashboard (pre-built static bundle)"
@@ -111,8 +113,8 @@ assemble_into() {
 
 # Resolve (assembling if needed) the plugin dir to link against. Echoes its path.
 resolve_plugin_home() {
-  # Running from a repo checkout: link straight to the in-tree plugin (the venv
-  # is created on first use; the dashboard falls back to the Vite dev server).
+  # Running from a repo checkout: link to the source plugin. The Rust engine
+  # builds on first use; the dashboard falls back to the Vite dev server.
   if [ -f "$SCRIPT_DIR/understand-anything-plugin/.claude-plugin/plugin.json" ]; then
     printf '%s\n' "$SCRIPT_DIR/understand-anything-plugin"; return 0
   fi
@@ -125,10 +127,10 @@ resolve_plugin_home() {
   # git fallback
   local repo="$UA_HOME/repo"
   if [ -d "$repo/.git" ]; then
-    info "Updating git checkout at $repo"; git -C "$repo" pull --ff-only >&2 || true
+    info "Updating git checkout at $repo" >&2; git -C "$repo" pull --ff-only >&2 || true
   else
     [ -n "${UA_REPO_URL:-}" ] || die "No payload archives found and UA_REPO_URL is unset. Provide the archives or set UA_REPO_URL."
-    info "Cloning $UA_REPO_URL → $repo"; mkdir -p "$repo"; git clone "$UA_REPO_URL" "$repo" >&2
+    info "Cloning $UA_REPO_URL → $repo" >&2; mkdir -p "$repo"; git clone "$UA_REPO_URL" "$repo" >&2
   fi
   printf '%s\n' "$repo/understand-anything-plugin"
 }
@@ -142,27 +144,19 @@ marketplace_source() {
 
 # --- prerequisites ----------------------------------------------------------
 check_prereqs() {
-  if command -v python3 >/dev/null 2>&1; then
-    local v; v="$(python3 -c 'import sys;print("%d.%d"%sys.version_info[:2])' 2>/dev/null || echo '?')"
-    case "$v" in 3.1[4-9]|3.[2-9][0-9]|[4-9].*) : ;; *) warn "Python $v detected; the pipeline targets >= 3.14 (bundled wheels are 3.14). It will fall back to an online install if the wheelhouse doesn't match." ;; esac
-  else
-    warn "python3 not found — the analysis pipeline needs Python >= 3.14."
+  command -v python3 >/dev/null 2>&1 || warn "python3 not found — installer and workflow helper scripts need Python 3."
+  if [ -f "$SCRIPT_DIR/understand-anything-plugin/packages/rust/Cargo.toml" ]; then
+    command -v cargo >/dev/null 2>&1 || warn "cargo not found — a source checkout needs stable Rust to build the engine."
   fi
-  command -v pdm >/dev/null 2>&1 || true  # optional (only for dev checkouts)
   command -v node >/dev/null 2>&1 || warn "node not found — /understand-dashboard needs Node.js >= 22."
 }
 
-# Warm the understand_core venv so the first /understand run isn't a cold install.
+# Verify the native engine before the first analysis run.
 warm_env() {
-  local plugin="$1" runsh="$1/packages/core/run.sh"
-  [ -f "$runsh" ] || return 0
-  if [ ! -w "$1/packages/core" ]; then
-    info "Plugin payload is read-only (system install); skipping env warm-up."
-    return 0
-  fi
-  info "Preparing the Python environment (first-run setup)…"
-  "$runsh" --ensure >/dev/null 2>&1 && ok "understand_core venv ready" || \
-    warn "Could not pre-build the venv now; it will be created on first /understand run."
+  local plugin="$1" runsh="$1/packages/rust/run.sh"
+  [ -x "$runsh" ] || return 0
+  "$runsh" --version >/dev/null && ok "Rust engine ready" || \
+    warn "Rust engine unavailable; check the packaged binary or stable Rust toolchain."
 }
 
 # --- native CLIs (preferred over the scripted installer) --------------------
@@ -348,12 +342,12 @@ remove_project_tools() {
 # True when the payload at $1 is already assembled and no older than its source
 # (archives or the source checkout). Lets several `--local` installs into the
 # same project (e.g. `LOCAL=. make install-vscode install-kilo`) share one
-# assembly + one venv warm-up instead of wiping and rebuilding per platform.
+# assembly + one engine check instead of wiping and rebuilding per platform.
 _payload_current() {
   local dest="$1" marker="$dest/.ua-assembled" t src
   [ -f "$marker" ] || return 1
   if find_assets; then
-    for t in "$CORE_TGZ" "$WHEELHOUSE_TGZ" "$DASH_TGZ"; do
+    for t in "$CORE_TGZ" "$DASH_TGZ"; do
       [ -n "$t" ] && [ "$t" -nt "$marker" ] && return 1
     done
     return 0
@@ -365,7 +359,7 @@ _payload_current() {
 }
 
 # Copy the assembled plugin payload into a project-local hidden plugin root.
-# Skips the wipe+copy when the destination is already current, so the venv
+# Skips the wipe+copy when the destination is already current, so the engine
 # warmed by an earlier install in the same run survives (no re-warm).
 copy_payload_to() {
   local dest="$1"
@@ -379,13 +373,11 @@ copy_payload_to() {
     local tmp; tmp="$(mktemp -d)"
     tar -xzf "$CORE_TGZ" -C "$tmp"
     cp -R "$tmp/understand-anything-plugin/." "$dest/"
-    [ -n "$WHEELHOUSE_TGZ" ] && tar -xzf "$WHEELHOUSE_TGZ" -C "$dest/packages/core"
     [ -n "$DASH_TGZ" ] && tar -xzf "$DASH_TGZ" -C "$dest/packages/dashboard"
     rm -rf "$tmp"
   else
     local src; src="$(resolve_plugin_home)"
-    ( cd "$src" && tar --exclude='./packages/*/.venv' --exclude='./packages/*/node_modules' \
-        --exclude='./packages/*/.pdm-build' --exclude='./packages/*/.pdm-python' \
+    ( cd "$src" && tar --exclude='./packages/rust/target' --exclude='./packages/*/node_modules' \
         --exclude='*/__pycache__' --exclude='*/.pytest_cache' -cf - . ) | tar -xf - -C "$dest"
   fi
   touch "$dest/.ua-assembled"

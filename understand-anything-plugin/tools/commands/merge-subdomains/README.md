@@ -5,7 +5,7 @@ Merge subdomain graph fragments (e.g. `frontend-knowledge-graph.json`,
 deduplicating nodes and edges. Any existing `knowledge-graph.json` is loaded as
 the base, so subdomain data wins on conflict.
 
-**Wraps:** `understand_core.merge_subdomain_graphs`
+**Wraps:** `understand-anything-rs merge_subdomain_graphs`
 
 ```bash
 run.sh <project-root> [fragment.json ...]

@@ -19,7 +19,7 @@ Read [host integration](../HOSTS.md) for invocation and graph freshness. You hel
 
 ### Graph Structure
 
-Authoritative contracts: `understand_core/schemas/knowledge-graph.schema.json` (structural) and `domain-graph.schema.json` (domain). Tables below are explanatory; schema files are the source of truth for required fields and enums.
+Authoritative contracts: `packages/rust/schemas/knowledge-graph.schema.json` (structural) and `domain-graph.schema.json` (domain). Tables below are explanatory; schema files are the source of truth for required fields and enums.
 
 Both graph types share the same top-level shape:
 

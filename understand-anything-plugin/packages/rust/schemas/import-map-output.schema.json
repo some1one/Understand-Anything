@@ -27,7 +27,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "Output contract for :mod:`understand_core.extract_import_map`.",
+  "description": "Output contract for Rust command `extract_import_map`.",
   "properties": {
     "scriptCompleted": {
       "title": "Scriptcompleted",

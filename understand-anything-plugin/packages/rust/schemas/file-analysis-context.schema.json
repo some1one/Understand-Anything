@@ -78,7 +78,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "Deterministic per-batch context consumed by the file-analyzer.\n\nProduced by :mod:`understand_core.prepare_file_analysis_batch` from a single\n``batches.json`` entry. Carries everything the seeding and finalization\nsteps need: the batch's files, fully-resolved import data, and the\ncross-batch neighbor map (whose target paths bound the set of allowed\ncross-batch edge references).",
+  "description": "Deterministic per-batch context consumed by the file-analyzer.\n\nProduced by Rust command `prepare_file_analysis_batch` from a single\n``batches.json`` entry. Carries everything the seeding and finalization\nsteps need: the batch's files, fully-resolved import data, and the\ncross-batch neighbor map (whose target paths bound the set of allowed\ncross-batch edge references).",
   "properties": {
     "projectRoot": {
       "title": "Projectroot",

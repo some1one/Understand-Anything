@@ -2,7 +2,7 @@
 
 Thin, deterministic **commands** an AI agent (or human) can run directly, without
 executing a full prompted skill (`SKILL.md`). Each wraps existing project scripts
-(the `understand_core` pipeline via `packages/core/run.sh`, or a skill
+(the Rust engine pipeline via `packages/rust/run.sh`, or a skill
 helper) behind a single `run.sh` with a stable interface.
 
 Use a command for one deterministic step that produces or updates a **completed**
@@ -25,16 +25,16 @@ Every `run.sh` self-locates the plugin root from its own path (symlink-safe via
 understand-anything-plugin/tools/commands/validate-graph/run.sh /path/to/project
 ```
 
-On first use the `understand_core` virtualenv is created automatically, so the
-first command may take a moment.
+In a source checkout, the Rust executable is built on first use, so the first
+command may take a moment. Packaged installs include the executable.
 
 ## Available commands
 
 | Command | Wraps | Canonical file it writes |
 |---------|-------|--------------------------|
-| `generate-ignore` | `understand_core.generate_ignore` | `.understand-anything/.understandignore` |
-| `merge-subdomains` | `understand_core.merge_subdomain_graphs` | `.understand-anything/knowledge-graph.json` (merged) |
-| `validate-graph` | `understand_core.validate_graph` | `.understand-anything/intermediate/review.json` |
+| `generate-ignore` | `understand-anything-rs generate_ignore` | `.understand-anything/.understandignore` |
+| `merge-subdomains` | `understand-anything-rs merge_subdomain_graphs` | `.understand-anything/knowledge-graph.json` (merged) |
+| `validate-graph` | `understand-anything-rs validate_graph` | `.understand-anything/intermediate/review.json` |
 
 Run any command with no arguments to see its usage.
 

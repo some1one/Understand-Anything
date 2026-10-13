@@ -1,10 +1,9 @@
 # Native analysis engine
 
-A standalone Rust library (`understand_anything`) and executable
-(`understand-anything-rs`) for the current Understand Anything Python engine.
-The frozen reference includes the uncommitted consolidation and partition work:
-68 production modules, 33 commands, and 16 JSON schemas. Python, plugin callers,
-and the dashboard remain unchanged.
+The standalone Rust library (`understand_anything`) and executable
+(`understand-anything-rs`) power the deterministic Understand Anything pipeline.
+The plugin invokes it through `run.sh`; packaged plugins include a platform
+binary, while source checkouts build with stable Rust and Cargo on first use.
 
 All commands have native implementations. The module-to-code/test inventory is
 [`reference/coverage.json`](reference/coverage.json); observed results are recorded
@@ -30,11 +29,11 @@ needs neither Python, PDM, Node nor Cargo. Git remains an optional subprocess fo
 file enumeration and is required for Git revision/update operations. The Linux
 GNU executable uses the operating system's standard dynamic libraries.
 
-The executable preserves the existing underscore command names and PDM aliases.
+The executable preserves the existing underscore command names and legacy aliases.
 Relative arguments resolve against the invoking working directory. Commands use
 their existing output locations under `.understand-anything` unless an explicit
 output argument is supplied. Schema export defaults to `./schemas` and copies
-embedded schemas; it never regenerates the Python source schemas.
+embedded schemas; it does not regenerate the checked-in schema files.
 
 ## Parsers
 
@@ -149,28 +148,13 @@ and filesystem effects. Comparisons exclude temporary-root prefixes and generate
 timestamps; numeric tolerance is `1e-9`. Rankings and meaningful array order are
 retained. Louvain tests instead check repeatability, coverage, bounds, and neighbors.
 
-`reference/baseline.json` records source/schema/dependency hashes. Development-only
-capture scripts first run `scripts/check_reference.py`; reference drift stops
-recapture. They use the retained Python environment, never the Rust runtime.
-Only run recapture deliberately, after reviewing changes to the reference.
-Python's runpy import warning is excluded from command stderr fixtures because it
-is an interpreter startup artifact.
-
-```sh
-../core/.venv/bin/python scripts/check_reference.py
-cargo +stable build --locked --release --example parse_benchmark
-../core/.venv/bin/python scripts/benchmark.py --parser-cache /tmp/ua-parsers
-```
-
-`reference/benchmark.json` records informational startup, first/warm low-level
-parsing time, and peak RSS. It uses a synthetic 300-line Python file and already
-cached grammars, excluding structural extraction and cold network time. Rust
-`--version` startup and importing the Python core do different amounts of work;
-these numbers are not an end-to-end speedup claim or an acceptance threshold.
+The fixtures under `tests/fixtures/` preserve the original Python engine's
+observed behavior for differential regression testing. They are historical test
+data; normal builds and runtime do not need the old Python package.
 
 ## Command inventory
 
-| Command | PDM alias |
+| Command | Legacy alias |
 | --- | --- |
 | `affected_parts` |  |
 | `analyze` |  |

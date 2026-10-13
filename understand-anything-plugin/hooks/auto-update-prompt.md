@@ -31,7 +31,7 @@ uses the host's model context; do not claim it consumes zero tokens.
 ### 1. Check the baseline
 
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" auto_update_preflight "$PROJECT_ROOT"
+"$PLUGIN_ROOT/packages/rust/run.sh" auto_update_preflight "$PROJECT_ROOT"
 ```
 
 Read `auto-update-state.json`. On `STOP`, report its reason and stop.
@@ -42,7 +42,7 @@ On `CONTINUE / PROCEED`, continue.
 ### 2. Compare structural fingerprints
 
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" auto_update_fingerprint_check "$PROJECT_ROOT"
+"$PLUGIN_ROOT/packages/rust/run.sh" auto_update_fingerprint_check "$PROJECT_ROOT"
 ```
 
 Read `change-analysis.json`:
@@ -54,7 +54,7 @@ Read `change-analysis.json`:
 ### 3. Analyze changed files
 
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" auto_update_prepare_batches "$PROJECT_ROOT"
+"$PLUGIN_ROOT/packages/rust/run.sh" auto_update_prepare_batches "$PROJECT_ROOT"
 ```
 
 Read `dispatch-summary.json` and `batches.json`. For each batch, use the bundled
@@ -69,7 +69,7 @@ dispatch once; if it still fails, stop and retain intermediates. Do not finalize
 an incomplete update or advance its baseline.
 
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" auto_update_apply_batches "$PROJECT_ROOT"
+"$PLUGIN_ROOT/packages/rust/run.sh" auto_update_apply_batches "$PROJECT_ROOT"
 ```
 
 This writes `merged-graph.json` and, when architecture must be refreshed,
@@ -88,7 +88,7 @@ Otherwise, finalization performs the deterministic layer adjustment.
 ### 5. Save and report
 
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" auto_update_finalize "$PROJECT_ROOT"
+"$PLUGIN_ROOT/packages/rust/run.sh" auto_update_finalize "$PROJECT_ROOT"
 ```
 
 Read `intermediate/auto-update-summary.json`. Report files checked, structural

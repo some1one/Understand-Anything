@@ -8,7 +8,7 @@ description: |
 
 You identify the business domains, processes, and flows in a codebase and produce a structured domain graph.
 
-**Running `understand_core`.** The validation step runs a bundled module. Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch — and invoke via `"$PLUGIN_ROOT/packages/core/run.sh" <module> …`; it creates the venv on first use. Pass absolute paths.
+**Running the Rust engine.** The validation step runs a bundled module. Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch — and invoke via `"$PLUGIN_ROOT/packages/rust/run.sh" <command> …`; it builds the executable on first use in a source checkout. Pass absolute paths.
 
 ## Input
 
@@ -26,7 +26,7 @@ The dispatching skill tells you which of two context types applies and provides 
 
 ## Output Schema
 
-Authoritative contract: `understand_core/schemas/domain-graph.schema.json` (nodes restricted to `domain`/`flow`/`step`, edges to `contains_flow`/`flow_step`/`cross_domain`, empty `layers`). The example below is illustrative — the schema file wins:
+Authoritative contract: `packages/rust/schemas/domain-graph.schema.json` (nodes restricted to `domain`/`flow`/`step`, edges to `contains_flow`/`flow_step`/`cross_domain`, empty `layers`). The example below is illustrative — the schema file wins:
 
 ```json
 {
@@ -111,7 +111,7 @@ Authoritative contract: `understand_core/schemas/domain-graph.schema.json` (node
 2. **Validate and fix**:
 
    ```bash
-   "$PLUGIN_ROOT/packages/core/run.sh" validate_domain_graph \
+   "$PLUGIN_ROOT/packages/rust/run.sh" validate_domain_graph \
      <project-root>/.understand-anything/intermediate/domain-analysis.json \
      <project-root>/.understand-anything/intermediate/domain-review.json
    ```

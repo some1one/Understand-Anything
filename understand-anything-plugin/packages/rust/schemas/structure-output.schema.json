@@ -55,7 +55,7 @@
       "type": "object"
     }
   },
-  "description": "Output contract for :mod:`understand_core.extract_structure`.",
+  "description": "Output contract for Rust command `extract_structure`.",
   "properties": {
     "scriptCompleted": {
       "title": "Scriptcompleted",

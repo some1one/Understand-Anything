@@ -43,16 +43,16 @@ Decide full analysis vs. incremental update.
    ```
    Keep the requested worktree as the analysis target; do not redirect to another checkout.
 
-1.5. **Ensure the Python env** (creates the `understand_core` venv on first use). Prints `PLUGIN_ROOT`:
+1.5. **Locate and check the Rust engine.** Prints `PLUGIN_ROOT`:
    ```bash
-   PLUGIN_ROOT="$("$SKILL_DIR/scripts/ensure_python_env.sh")"
+   PLUGIN_ROOT="$("$SKILL_DIR/scripts/ensure_rust_engine.sh")"
    ```
-   All later `understand_core` steps run `"$PLUGIN_ROOT/packages/core/run.sh" <module> …`. If neither `pdm` nor `python3` exists, report: "Install Python ≥ 3.14 (and ideally PDM), then re-run `/understand`."
+   Run later deterministic commands with `"$PLUGIN_ROOT/packages/rust/run.sh" <command> …`. Packaged installs ship the executable; source checkouts build it with stable Rust and Cargo on first use.
 
    **Three roots — never use bare relative paths** (the skill installs apart from the analyzed code, sometimes via symlink):
    - `$PROJECT_ROOT` — analyzed codebase; all `.understand-anything/*`, source, and git state live here.
    - `$SKILL_DIR` — this skill; bundled `scripts/`, `prompts/`, `frameworks/`, `languages/` are here.
-   - `$PLUGIN_ROOT` — plugin root; `agents/` and `packages/core/` (and its `schemas/`) are here.
+   - `$PLUGIN_ROOT` — plugin root; `agents/` and `packages/rust/` (and its `schemas/`) are here.
 
 2. Get the commit hash: `git -C "$PROJECT_ROOT" rev-parse HEAD`. For a non-Git project or unborn branch, use an empty hash and perform a full analysis; commit-based incremental updates are unavailable.
 
@@ -93,7 +93,7 @@ Decide full analysis vs. incremental update.
 
 1. If `$PROJECT_ROOT/.understand-anything/.understandignore` does not exist, generate a starter:
    ```bash
-   "$PLUGIN_ROOT/packages/core/run.sh" generate_ignore "$PROJECT_ROOT"
+   "$PLUGIN_ROOT/packages/rust/run.sh" generate_ignore "$PROJECT_ROOT"
    ```
 
 2. **Decide whether to prompt for review:**
@@ -131,7 +131,7 @@ Split the scanned repo into folder-parts and decide which to analyze. Load `.und
 - else `config.sourceFolders` / `config.splitDepth` present → use them (update run).
 - else run layout detection for a recommended default:
   ```bash
-  "$PLUGIN_ROOT/packages/core/run.sh" detect_layout "$PROJECT_ROOT"
+  "$PLUGIN_ROOT/packages/rust/run.sh" detect_layout "$PROJECT_ROOT"
   ```
   It prints `{detectedRoots, recommendation:{sourceFolders, splitDepth}}` (single `src/` → `{[src],1}`; monorepo → `{null,2}`; flat → `{null,1}`).
 
@@ -139,21 +139,21 @@ Split the scanned repo into folder-parts and decide which to analyze. Load `.und
 1. Show the detected roots + recommended source/depth; ask the user to accept or adjust (at least one of source/depth must be set). Wait for confirmation.
 2. Partition (writes `intermediate/partitions.json` + per-part file lists under `intermediate/part-files/`):
    ```bash
-   "$PLUGIN_ROOT/packages/core/run.sh" partition_files "$PROJECT_ROOT" [--source=a,b] [--depth=N]
+   "$PLUGIN_ROOT/packages/rust/run.sh" partition_files "$PROJECT_ROOT" [--source=a,b] [--depth=N]
    ```
 3. Show each part with its file count (from `partitions.json`); ask which parts to include. Wait for confirmation.
 4. Persist the choice:
    ```bash
-   "$PLUGIN_ROOT/packages/core/run.sh" write_config "$PROJECT_ROOT" --source=<...> --depth=<N> --parts=<comma-separated included>
+   "$PLUGIN_ROOT/packages/rust/run.sh" write_config "$PROJECT_ROOT" --source=<...> --depth=<N> --parts=<comma-separated included>
    ```
 
 **`--all`:** partition with the resolved source/depth, then persist `includedParts` = **every** part from `partitions.json` (no inclusion prompt).
 
-**Update run** (config present, no first-run prompt needed): re-partition with the saved source/depth to refresh `partitions.json` + `part-files/`; keep the saved `includedParts`.
+**Update run** (config present, no first-run prompt needed): re-partition with the saved source/depth to refresh `partitions.json` + `part-files/`; keep the saved `includedParts`. Included parts with no remaining files retain an empty file list; process them to replace their saved graph with an empty graph.
 
 **Determine `$PARTS_TO_PROCESS`** (prints part names, one per line):
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" parts_to_process "$PROJECT_ROOT" \
+"$PLUGIN_ROOT/packages/rust/run.sh" parts_to_process "$PROJECT_ROOT" \
   [--full] [--changed="$PROJECT_ROOT/.understand-anything/tmp/changed-files.txt"]
 ```
 - Pass `--full` for `--full`/`--all`/first-run → every included part.
@@ -168,7 +168,7 @@ For **each** part in `$PARTS_TO_PROCESS`, run steps 1–4. Parts are independent
 
 1. **Batch the part's files** (scoped via the part file list; `neighborMap` still references files in other parts so cross-part edges stay emittable):
    ```bash
-   "$PLUGIN_ROOT/packages/core/run.sh" compute_batches "$PROJECT_ROOT" \
+   "$PLUGIN_ROOT/packages/rust/run.sh" compute_batches "$PROJECT_ROOT" \
      --changed-files="$PROJECT_ROOT/.understand-anything/intermediate/part-files/<part-encoded>.txt"
    ```
    Append `Warning:` stderr lines to `$PHASE_WARNINGS`; a non-zero exit is a hard failure.
@@ -179,18 +179,18 @@ For **each** part in `$PARTS_TO_PROCESS`, run steps 1–4. Parts are independent
 
 3. **Assemble the part's batches** (reads all `batch-*.json`, writes `intermediate/assembled-graph.json`):
    ```bash
-   "$PLUGIN_ROOT/packages/core/run.sh" merge_batch_graphs "$PROJECT_ROOT"
+   "$PLUGIN_ROOT/packages/rust/run.sh" merge_batch_graphs "$PROJECT_ROOT"
    ```
-   It combines nodes/edges, normalizes IDs and complexity values, rewrites edge refs, dedupes, drops dangling edges, and canonicalizes `tested_by` edges (all resulting edges run `production → test`; sourced production nodes get a `"tested"` tag). Add its warnings to `$PHASE_WARNINGS`.
+   An explicitly empty batch plan produces an empty assembled graph without dispatching analyzers. It creates scan-backed boundary stubs before normalization, combines nodes/edges, normalizes IDs and complexity values, rewrites edge refs, dedupes, drops dangling edges, and canonicalizes `tested_by` edges (all resulting edges run `production → test`; sourced production nodes get a `"tested"` tag). Add its warnings to `$PHASE_WARNINGS`.
 
 4. **Persist the part graph** (adds boundary stubs for cross-part edges, tags it with the part name, writes `partitions/<part>.knowledge-graph.json`, and clears this part's `batch-*.json` + `assembled-graph.json` scratch):
    ```bash
-   "$PLUGIN_ROOT/packages/core/run.sh" assemble_part_graph "$PROJECT_ROOT" "<part>" "<commit hash>"
+   "$PLUGIN_ROOT/packages/rust/run.sh" assemble_part_graph "$PROJECT_ROOT" "<part>" "<commit hash>"
    ```
 
 After all parts are processed, **merge the included parts** into the unified assembled graph — reused (unaffected) parts are read from `partitions/`, and boundary stubs resolve against the real nodes:
 ```bash
-"$PLUGIN_ROOT/packages/core/run.sh" merge_parts "$PROJECT_ROOT"
+"$PLUGIN_ROOT/packages/rust/run.sh" merge_parts "$PROJECT_ROOT"
 ```
 This writes `intermediate/assembled-graph.json` — the input to Phases 3–7, exactly as in a monolithic run.
 
@@ -234,7 +234,7 @@ python3 "$SKILL_DIR/scripts/normalize_layers.py" "$PROJECT_ROOT"
 
    **Default (no `--review`) — deterministic validation.** Runs referential-integrity, completeness, layer-coverage, uniqueness, quality, and (via `--scan-result`) scan-coverage checks; writes the review payload (`scriptCompleted`, `issues`, `warnings`, `stats`):
    ```bash
-   "$PLUGIN_ROOT/packages/core/run.sh" validate_graph \
+   "$PLUGIN_ROOT/packages/rust/run.sh" validate_graph \
      "$PROJECT_ROOT/.understand-anything/intermediate/assembled-graph.json" \
      "$PROJECT_ROOT/.understand-anything/intermediate/review.json" \
      --scan-result "$PROJECT_ROOT/.understand-anything/intermediate/scan-result.json"
@@ -263,7 +263,7 @@ python3 "$SKILL_DIR/scripts/normalize_layers.py" "$PROJECT_ROOT"
 2. **Build the fingerprints baseline** — **must succeed before `meta.json` is written** (otherwise auto-update finds no baseline and escalates every commit to `FULL_UPDATE`, issue #152):
    ```bash
    python3 "$SKILL_DIR/scripts/write_fingerprint_input.py" "$PROJECT_ROOT" "<commit hash>"
-   "$PLUGIN_ROOT/packages/core/run.sh" build_fingerprints \
+   "$PLUGIN_ROOT/packages/rust/run.sh" build_fingerprints \
      "$PROJECT_ROOT/.understand-anything/intermediate/fingerprint-input.json"
    ```
    **If it exits non-zero or stdout lacks `Fingerprints baseline:`, abort Phase 6 and report — do NOT write `meta.json`.**
@@ -319,5 +319,5 @@ Derives domains, business flows, and process steps into `domain-graph.json` from
 
 ## Reference Schemas
 
-Authoritative contracts (do not duplicate schema tables here) under `$PLUGIN_ROOT/packages/core/understand_core/schemas/`:
+Authoritative contracts (do not duplicate schema tables here) under `$PLUGIN_ROOT/packages/rust/schemas/`:
 `knowledge-graph.schema.json`, `graph-fragment.schema.json`, `project-scan-output.schema.json`, `file-analysis-context.schema.json`, `layers.schema.json`.

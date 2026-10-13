@@ -1,27 +1,32 @@
 # Understand Anything — root orchestrator.
 #
 # Two buildable/runnable subprojects, each owning its own config:
-#   packages/core           — Python (PDM)   analysis engine + view-model + skill builders
+#   packages/rust           — Rust analysis engine and skill builders
 #   packages/dashboard      — TypeScript (pnpm + Vite) React dashboard
 #
 # Common targets:
 #   make           (default) build all distributable artifacts into dist/
 #   make deps      install every subproject's dependencies
 #   make install-<platform>... [LOCAL=<dir>] install one or more plugin targets
-#   make build     build everything that has a build step (the dashboard)
+#   make build     build the Rust engine and dashboard
 #   make test      run every subproject's test suite
 #   make lint      lint the dashboard
 #   make dev       run the dashboard dev server
-#   make clean     remove venvs, node_modules, build output and caches
+#   make clean     remove local installed skills, node_modules, build output and caches
 # Per-project variants exist too, e.g. `make test-core`, `make build-dashboard`.
 
 PKGS := understand-anything-plugin/packages
-CORE := $(PKGS)/core
+RUST := $(PKGS)/rust
 DASH := $(PKGS)/dashboard
-
-# pdm's generated bin/pytest shebang is not portable across a moved/copied venv,
-# so always invoke pytest as a module.
-PYTEST := pdm run python -m pytest
+PLATFORM ?= codex
+# LOCAL also selects the repository for local cleanup (defaults to this checkout).
+LOCAL ?=
+override LOCAL := $(value LOCAL)
+export LOCAL PLATFORM
+DRY_RUN ?=
+export DRY_RUN
+# Pass paths via the environment so spaces and shell metacharacters stay literal.
+PYTHON ?= python3
 
 # ---- build detection -------------------------------------------------------
 # Each expensive step (deps install, dashboard build, dist packaging, deb)
@@ -38,7 +43,7 @@ PYTEST := pdm run python -m pytest
 STAMPDIR := build/.make
 
 # Inputs that invalidate each dependency install.
-CORE_DEPS_SRC := $(CORE)/pyproject.toml $(wildcard $(CORE)/pdm.lock)
+RUST_SRC := $(shell find $(RUST)/src -type f 2>/dev/null) $(RUST)/Cargo.toml $(RUST)/Cargo.lock
 DASH_DEPS_SRC := $(DASH)/package.json $(wildcard $(DASH)/pnpm-lock.yaml)
 
 # Inputs that invalidate the dashboard build (all sources + build config).
@@ -46,24 +51,15 @@ DASH_BUILD_SRC := $(shell find $(DASH)/src -type f 2>/dev/null) \
                   $(shell find $(DASH)/public -type f 2>/dev/null) \
                   $(wildcard $(DASH)/*.ts $(DASH)/*.json $(DASH)/*.html)
 
-# Python sources that invalidate packaging (tests excluded — not shipped in the
-# wheels).
-PY_SRC := $(shell find $(CORE) -name '*.py' \
-            -not -path '*/.venv/*' -not -path '*/__pycache__/*' \
-            -not -path '*/tests/*' 2>/dev/null)
-
-# The full payload that goes into the release archives / deb: packaged Python
-# sources, the dashboard build stamp, the build script, and the plugin's
-# non-Python assets (skills, agents, hooks, manifests, run.sh, serve.mjs).
+# Plugin assets exclude generated Rust build artifacts.
 PKG_ASSETS := $(shell find understand-anything-plugin \
-                -not -path '*/node_modules/*' -not -path '*/.venv/*' \
-                -not -path '*/dist/*' -not -path '*/__pycache__/*' \
-                -not -name '*.pyc' -type f 2>/dev/null)
+                -not -path '*/node_modules/*' -not -path '*/target/*' \
+                -not -path '*/dist/*' \
+                -not -path '*/__pycache__/*' -not -name '*.pyc' -type f 2>/dev/null)
 DEB_SRC := $(shell find packaging -type f 2>/dev/null) \
            $(wildcard .claude-plugin/marketplace.json)
 
-# The default goal builds all distributable artifacts (wheels + wheelhouse +
-# dashboard + release archives) into dist/. Run `make help` for the full list.
+# The default goal builds the native plugin and dashboard artifacts into dist/.
 .DEFAULT_GOAL := package
 
 # Targets the plugin can be installed for. Per-platform `install-<name>` /
@@ -74,9 +70,10 @@ UNINSTALL_TARGETS := $(addprefix uninstall-,$(INSTALL_PLATFORMS))
 
 .PHONY: help deps deps-core deps-dashboard \
         $(INSTALL_TARGETS) $(UNINSTALL_TARGETS) \
-        build build-dashboard test test-core test-dashboard \
-        lint lint-dashboard dev dev-dashboard preview package deb package-python \
-        clean clean-stamps
+        build build-core build-dashboard test test-core test-dashboard \
+        lint lint-dashboard dev dev-dashboard preview package deb \
+        install install-local uninstall-local test-integration engine-help \
+        clean clean-local clean-cache clean-build clean-stamps
 
 help:
 	@grep -E '^[a-zA-Z0-9_-]+:.*?##' $(MAKEFILE_LIST) | \
@@ -100,31 +97,40 @@ help:
 # prerequisite once, then runs both installers.
 define _ua_install_rule
 install-$(1): build
-	@./install.sh $(1) $$(if $$(LOCAL),--local $$(LOCAL))
+	@./install.sh $(1) $$$${LOCAL:+--local "$$$$LOCAL"}
 uninstall-$(1):
-	@./install.sh --uninstall $(1) $$(if $$(LOCAL),--local $$(LOCAL))
+	@./install.sh --uninstall $(1) $$$${LOCAL:+--local "$$$$LOCAL"}
 endef
 $(foreach p,$(INSTALL_PLATFORMS),$(eval $(call _ua_install_rule,$(p))))
+
+install: ## Install from source without a dashboard build (PLATFORM=codex, optional LOCAL)
+	@./install.sh "$$PLATFORM" $${LOCAL:+--local "$$LOCAL"}
+
+install-local: ## Install standalone skills into LOCAL (default: .; PLATFORM=codex)
+	@UA_NO_NATIVE=1 ./install.sh "$$PLATFORM" --local "$${LOCAL:-.}"
+
+uninstall-local: ## Remove this project's local skill links/payload in LOCAL (default: .)
+	@$(PYTHON) scripts/clean_local.py --mode skills
 
 ## ---- dependencies --------------------------------------------------------
 deps: deps-core deps-dashboard ## Install every subproject's deps
 
-deps-core: $(STAMPDIR)/deps-core ## Install core deps (Python/PDM)
+deps-core: ## Fetch locked engine dependencies
+	cd $(RUST) && cargo +stable fetch --locked
 deps-dashboard: $(STAMPDIR)/deps-dashboard ## Install dashboard deps (pnpm)
 
 $(STAMPDIR):
 	@mkdir -p $(STAMPDIR)
-
-$(STAMPDIR)/deps-core: $(CORE_DEPS_SRC) | $(STAMPDIR)
-	cd $(CORE) && pdm install
-	@touch $@
 
 $(STAMPDIR)/deps-dashboard: $(DASH_DEPS_SRC) | $(STAMPDIR)
 	cd $(DASH) && pnpm install
 	@touch $@
 
 ## ---- build ---------------------------------------------------------------
-build: build-dashboard ## Build everything with a build step (the dashboard)
+build: build-core build-dashboard ## Build the Rust engine and dashboard
+
+build-core: ## Build native engine
+	cd $(RUST) && cargo +stable build --locked --release
 
 build-dashboard: $(STAMPDIR)/dashboard ## Build the dashboard (tsc + vite)
 
@@ -134,13 +140,19 @@ $(STAMPDIR)/dashboard: $(DASH_BUILD_SRC) $(STAMPDIR)/deps-dashboard | $(STAMPDIR
 	@touch $@
 
 ## ---- test ----------------------------------------------------------------
-test: test-core test-dashboard ## Run all test suites
+test: test-core test-dashboard test-integration ## Run all test suites
 
-test-core: ## Run core (Python) tests
-	cd $(CORE) && $(PYTEST)
+test-core: ## Run Rust engine tests
+	cd $(RUST) && cargo +stable test --locked
 
 test-dashboard: ## Run dashboard tests
 	cd $(DASH) && pnpm test
+
+test-integration: ## Run installer and plugin integration regression checks
+	$(PYTHON) -m pytest scripts/tests -q
+
+engine-help: ## List deterministic engine commands (builds engine on first use)
+	@$(RUST)/run.sh --help
 
 ## ---- lint ----------------------------------------------------------------
 lint: lint-dashboard ## Lint the dashboard
@@ -160,29 +172,28 @@ preview: ## Preview a production dashboard build
 # Each variant is stamped independently — it re-runs only when the dashboard
 # build, a packaged source/asset, the build script, or (for deb) the packaging
 # files changed.
-package: $(STAMPDIR)/package ## Build wheels + wheelhouse + dashboard and the archives into dist/
-deb: $(STAMPDIR)/deb ## Build the archives AND the Debian package (linux_x64 / py3.14) into dist/
-package-python: $(STAMPDIR)/package-python ## Build only the Python wheels + sdists + wheelhouse into dist/python/
+package: $(STAMPDIR)/package ## Build native engine, dashboard, and plugin archives into dist/
+deb: $(STAMPDIR)/deb ## Build the archives and Debian package into dist/
 
-$(STAMPDIR)/package: $(STAMPDIR)/dashboard $(PY_SRC) $(PKG_ASSETS) scripts/build_dist.py | $(STAMPDIR)
+$(STAMPDIR)/package: $(STAMPDIR)/dashboard $(RUST_SRC) $(PKG_ASSETS) scripts/build_dist.py | $(STAMPDIR)
 	python3 scripts/build_dist.py
 	@touch $@
 
-$(STAMPDIR)/deb: $(STAMPDIR)/dashboard $(PY_SRC) $(PKG_ASSETS) $(DEB_SRC) scripts/build_dist.py | $(STAMPDIR)
+$(STAMPDIR)/deb: $(STAMPDIR)/dashboard $(RUST_SRC) $(PKG_ASSETS) $(DEB_SRC) scripts/build_dist.py | $(STAMPDIR)
 	python3 scripts/build_dist.py --deb
 	@touch $@
 
-$(STAMPDIR)/package-python: $(PY_SRC) $(CORE_DEPS_SRC) scripts/build_dist.py | $(STAMPDIR)
-	python3 scripts/build_dist.py --python-only
-	@touch $@
-
 ## ---- clean ---------------------------------------------------------------
-clean: ## Remove venvs, node_modules, build output, caches, stamps, and dist/
-	rm -rf $(CORE)/.venv
-	rm -rf $(DASH)/node_modules $(DASH)/dist
-	rm -rf build dist
-	find $(PKGS) -type d -name __pycache__ -prune -exec rm -rf {} +
-	find $(PKGS) -type d -name .pytest_cache -prune -exec rm -rf {} +
+clean: clean-local clean-build ## Clean local installation, caches and build output; preserve indexes
+
+clean-local: ## Remove local skills/payload and caches in LOCAL (default: .); preserve indexes
+	@$(PYTHON) scripts/clean_local.py --mode local
+
+clean-cache: ## Clear repo caches/scratch in LOCAL (default: .); preserve indexes and skills
+	@$(PYTHON) scripts/clean_local.py --mode cache
+
+clean-build: ## Remove checkout deps/build output/stamps/dist
+	@$(PYTHON) scripts/clean_local.py --mode build
 
 clean-stamps: ## Drop only the build-detection stamps (force a rebuild, keep deps/output)
-	rm -rf $(STAMPDIR)
+	@$(PYTHON) scripts/clean_local.py --mode stamps

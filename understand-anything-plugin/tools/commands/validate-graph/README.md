@@ -7,7 +7,7 @@ coverage, uniqueness, and quality checks — and write the review payload
 `scan-result.json` is present it also cross-checks scan coverage. Deterministic,
 no LLM.
 
-**Wraps:** `understand_core.validate_graph`
+**Wraps:** `understand-anything-rs validate_graph`
 
 ```bash
 run.sh <project-root>

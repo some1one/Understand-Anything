@@ -2,14 +2,14 @@
 # validate-graph — validate the project's saved knowledge graph and write the
 # review payload to the canonical intermediate/review.json (the same file the
 # /understand skill's Phase 5 produces). Deterministic, no LLM.
-# Wraps: understand_core.validate_graph
+# Wraps: understand-anything-rs validate_graph
 #
 # Usage: run.sh <project-root>
 set -euo pipefail
 
 CMD_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 PLUGIN_ROOT=$(cd "$CMD_DIR/../../.." && pwd -P)
-ARCH="$PLUGIN_ROOT/packages/core/run.sh"
+ARCH="$PLUGIN_ROOT/packages/rust/run.sh"
 
 if [ $# -lt 1 ]; then
   echo "Usage: $(basename "$0") <project-root>" >&2

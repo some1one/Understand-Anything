@@ -2,14 +2,13 @@
 # Understand-Anything — per-user linker for the Debian package.
 #
 # The .deb already did the heavy lifting via dpkg:
-#   * Depends: (python3 >= 3.14, python3-venv/pip) — prerequisites.
+#   * Depends: python3 for installer and workflow helper scripts.
 #   * postinst — assembled the payload into /usr/share/understand-anything,
-#     warmed the understand_core virtualenv (offline).
+#     including the native Rust executable.
 # This linker generates per-user Claude and Codex marketplace catalogs.
 # This command only wires the system payload into the *current user's* agent
 # skill directories, preferring a target's native CLI (e.g. `claude plugin
-# install`) before the scripted symlink fallback. For assembly/prereqs/env
-# warming from source or tarballs, use the standalone install.sh instead.
+# install`) before the scripted symlink fallback. For assembly/prereqs from source or tarballs, use the standalone install.sh instead.
 #
 # Usage:
 #   understand-anything <platform>                     Enable for your user

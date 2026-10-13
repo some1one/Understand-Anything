@@ -21,9 +21,9 @@ Read [host integration](../../HOSTS.md) for invocation, argument handling, and a
 
 ## Instructions
 
-1. Set `SKILL_DIR` to the directory containing this `SKILL.md`. Warm the env:
+1. Set `SKILL_DIR` to the directory containing this `SKILL.md`. Check the Rust engine:
    ```bash
-   PLUGIN_ROOT="$("$SKILL_DIR/../understand/scripts/ensure_python_env.sh")"
+   PLUGIN_ROOT="$("$SKILL_DIR/../understand/scripts/ensure_rust_engine.sh")"
    UNDERSTAND_DIR="$SKILL_DIR/../understand"
    ```
    Confirm `.understand-anything/config.json` exists with `sourceFolders`/`splitDepth`; if not, stop and instruct the user to run `/understand`.
@@ -32,11 +32,11 @@ Read [host integration](../../HOSTS.md) for invocation, argument handling, and a
 
 3. **Partition and select the new part.** Re-partition with the saved source/depth (no flags → `partition_files` reads none, so pass the saved values from `config.json`):
    ```bash
-   "$PLUGIN_ROOT/packages/core/run.sh" partition_files "$PWD" [--source=<saved>] [--depth=<saved>]
+   "$PLUGIN_ROOT/packages/rust/run.sh" partition_files "$PWD" [--source=<saved>] [--depth=<saved>]
    ```
    From `intermediate/partitions.json`, take the part key(s) equal to `$ARGUMENTS` or starting with `$ARGUMENTS/`. Add them to the selection (existing `includedParts` + new):
    ```bash
-   "$PLUGIN_ROOT/packages/core/run.sh" write_config "$PWD" --parts=<existing + new parts>
+   "$PLUGIN_ROOT/packages/rust/run.sh" write_config "$PWD" --parts=<existing + new parts>
    ```
    If `$ARGUMENTS` matches no files, report that and stop.
 
@@ -44,7 +44,7 @@ Read [host integration](../../HOSTS.md) for invocation, argument handling, and a
 
 5. **Merge + finalize.** Recombine all included parts and re-run architecture so the new nodes get layers:
    ```bash
-   "$PLUGIN_ROOT/packages/core/run.sh" merge_parts "$PWD"
+   "$PLUGIN_ROOT/packages/rust/run.sh" merge_parts "$PWD"
    ```
    Then run **`/understand` Phases 3–7** (architecture on the merged set, review, save) to write `knowledge-graph.json`, fingerprints, and `meta.json`.
 
