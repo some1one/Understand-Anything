@@ -14,10 +14,8 @@ const MAX_SOURCE_FILE_BYTES = 1024 * 1024;
 
 function graphFileCandidates(fileName: string): string[] {
   const graphDir = process.env.GRAPH_DIR;
+  if (graphDir) return [path.resolve(graphDir, `.understand-anything/${fileName}`)];
   return [
-    ...(graphDir
-      ? [path.resolve(graphDir, `.understand-anything/${fileName}`)]
-      : []),
     path.resolve(process.cwd(), `.understand-anything/${fileName}`),
     path.resolve(process.cwd(), `../../../.understand-anything/${fileName}`),
   ];
@@ -179,7 +177,7 @@ function readSourceFile(url: URL) {
 export default defineConfig({
   test: {
     environment: "node",
-    include: ["src/**/__tests__/**/*.test.ts"],
+    include: ["src/**/__tests__/**/*.test.ts", "tests/**/*.test.ts"],
   },
 
   // FIX 1 — bind only to localhost, not 0.0.0.0

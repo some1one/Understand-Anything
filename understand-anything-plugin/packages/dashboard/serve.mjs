@@ -46,8 +46,8 @@ const MIME = {
 
 function graphFileCandidates(fileName) {
   const graphDir = process.env.GRAPH_DIR;
+  if (graphDir) return [path.resolve(graphDir, `.understand-anything/${fileName}`)];
   return [
-    ...(graphDir ? [path.resolve(graphDir, `.understand-anything/${fileName}`)] : []),
     path.resolve(process.cwd(), `.understand-anything/${fileName}`),
   ];
 }

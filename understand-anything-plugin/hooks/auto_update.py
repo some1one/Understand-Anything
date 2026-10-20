@@ -58,7 +58,9 @@ def context_for(event):
                 f"commit differs from HEAD. Project root: {json.dumps(str(root))}. "
                 f"Read {json.dumps(str(prompt))} and follow its update workflow "
                 "for this project within the current task's permissions. "
-                "If analysis is already running, let that run finish first."
+                "If analysis is already running, let that run finish first. "
+                "Graph maintenance stays offline. Dictionary downloads run only "
+                "during explicit plugin maintenance via /understand-update."
             ),
         }
     }

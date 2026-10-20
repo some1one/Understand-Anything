@@ -1,0 +1,2697 @@
+[
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "noise:0",
+          "name": "Item 0",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:1",
+          "name": "Item 1",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:2",
+          "name": "Item 2",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:3",
+          "name": "Item 3",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:4",
+          "name": "Item 4",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:5",
+          "name": "Item 5",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:6",
+          "name": "Item 6",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:7",
+          "name": "Item 7",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:8",
+          "name": "Item 8",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:9",
+          "name": "Item 9",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:10",
+          "name": "Item 10",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:11",
+          "name": "Item 11",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:12",
+          "name": "Item 12",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:13",
+          "name": "Item 13",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:14",
+          "name": "Item 14",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:15",
+          "name": "Item 15",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:16",
+          "name": "Item 16",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:17",
+          "name": "Item 17",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:18",
+          "name": "Item 18",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:19",
+          "name": "Item 19",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:20",
+          "name": "Item 20",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:21",
+          "name": "Item 21",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:22",
+          "name": "Item 22",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:23",
+          "name": "Item 23",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:24",
+          "name": "Item 24",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:25",
+          "name": "Item 25",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:26",
+          "name": "Item 26",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:27",
+          "name": "Item 27",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:28",
+          "name": "Item 28",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:29",
+          "name": "Item 29",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "file:auth.py",
+          "name": "Authentication",
+          "summary": "Handles authentication requests."
+        }
+      ]
+    },
+    "query": "Where is authentication handled?",
+    "expected": {
+      "project": {},
+      "query": "Where is authentication handled?",
+      "matchedNodes": [
+        {
+          "id": "file:auth.py",
+          "name": "Authentication",
+          "summary": "Handles authentication requests."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "noise:0",
+          "name": "Item 0",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:1",
+          "name": "Item 1",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:2",
+          "name": "Item 2",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:3",
+          "name": "Item 3",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:4",
+          "name": "Item 4",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:5",
+          "name": "Item 5",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:6",
+          "name": "Item 6",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:7",
+          "name": "Item 7",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:8",
+          "name": "Item 8",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:9",
+          "name": "Item 9",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:10",
+          "name": "Item 10",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:11",
+          "name": "Item 11",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:12",
+          "name": "Item 12",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:13",
+          "name": "Item 13",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:14",
+          "name": "Item 14",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:15",
+          "name": "Item 15",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:16",
+          "name": "Item 16",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:17",
+          "name": "Item 17",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:18",
+          "name": "Item 18",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:19",
+          "name": "Item 19",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:20",
+          "name": "Item 20",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:21",
+          "name": "Item 21",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:22",
+          "name": "Item 22",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:23",
+          "name": "Item 23",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:24",
+          "name": "Item 24",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:25",
+          "name": "Item 25",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:26",
+          "name": "Item 26",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:27",
+          "name": "Item 27",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:28",
+          "name": "Item 28",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:29",
+          "name": "Item 29",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "file:auth.py",
+          "name": "Authentication",
+          "summary": "Handles authentication requests."
+        }
+      ]
+    },
+    "query": "Please quickly explain this beautiful authentication.",
+    "expected": {
+      "project": {},
+      "query": "Please quickly explain this beautiful authentication.",
+      "matchedNodes": [
+        {
+          "id": "file:auth.py",
+          "name": "Authentication",
+          "summary": "Handles authentication requests."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "noise:0",
+          "name": "Item 0",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:1",
+          "name": "Item 1",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:2",
+          "name": "Item 2",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:3",
+          "name": "Item 3",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:4",
+          "name": "Item 4",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:5",
+          "name": "Item 5",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:6",
+          "name": "Item 6",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:7",
+          "name": "Item 7",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:8",
+          "name": "Item 8",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:9",
+          "name": "Item 9",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:10",
+          "name": "Item 10",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:11",
+          "name": "Item 11",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:12",
+          "name": "Item 12",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:13",
+          "name": "Item 13",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:14",
+          "name": "Item 14",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:15",
+          "name": "Item 15",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:16",
+          "name": "Item 16",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:17",
+          "name": "Item 17",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:18",
+          "name": "Item 18",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:19",
+          "name": "Item 19",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:20",
+          "name": "Item 20",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:21",
+          "name": "Item 21",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:22",
+          "name": "Item 22",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:23",
+          "name": "Item 23",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:24",
+          "name": "Item 24",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:25",
+          "name": "Item 25",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:26",
+          "name": "Item 26",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:27",
+          "name": "Item 27",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:28",
+          "name": "Item 28",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:29",
+          "name": "Item 29",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "file:auth.py",
+          "name": "Authentication",
+          "summary": "Handles authentication requests."
+        }
+      ]
+    },
+    "query": "AUTHENTICATION HANDLED?!",
+    "expected": {
+      "project": {},
+      "query": "AUTHENTICATION HANDLED?!",
+      "matchedNodes": [
+        {
+          "id": "file:auth.py",
+          "name": "Authentication",
+          "summary": "Handles authentication requests."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "noise:0",
+          "name": "Item 0",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:1",
+          "name": "Item 1",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:2",
+          "name": "Item 2",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:3",
+          "name": "Item 3",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:4",
+          "name": "Item 4",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:5",
+          "name": "Item 5",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:6",
+          "name": "Item 6",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:7",
+          "name": "Item 7",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:8",
+          "name": "Item 8",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:9",
+          "name": "Item 9",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:10",
+          "name": "Item 10",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:11",
+          "name": "Item 11",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:12",
+          "name": "Item 12",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:13",
+          "name": "Item 13",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:14",
+          "name": "Item 14",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:15",
+          "name": "Item 15",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:16",
+          "name": "Item 16",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:17",
+          "name": "Item 17",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:18",
+          "name": "Item 18",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:19",
+          "name": "Item 19",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:20",
+          "name": "Item 20",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:21",
+          "name": "Item 21",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:22",
+          "name": "Item 22",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:23",
+          "name": "Item 23",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:24",
+          "name": "Item 24",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:25",
+          "name": "Item 25",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:26",
+          "name": "Item 26",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:27",
+          "name": "Item 27",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:28",
+          "name": "Item 28",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:29",
+          "name": "Item 29",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "file:auth.py",
+          "name": "Authentication",
+          "summary": "Handles authentication requests."
+        }
+      ]
+    },
+    "query": "THIS BEAUTIFUL AUTHENTICATION HANDLED?!",
+    "expected": {
+      "project": {},
+      "query": "THIS BEAUTIFUL AUTHENTICATION HANDLED?!",
+      "matchedNodes": [
+        {
+          "id": "file:auth.py",
+          "name": "Authentication",
+          "summary": "Handles authentication requests."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "noise:0",
+          "name": "Item 0",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:1",
+          "name": "Item 1",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:2",
+          "name": "Item 2",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:3",
+          "name": "Item 3",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:4",
+          "name": "Item 4",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:5",
+          "name": "Item 5",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:6",
+          "name": "Item 6",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:7",
+          "name": "Item 7",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:8",
+          "name": "Item 8",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:9",
+          "name": "Item 9",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:10",
+          "name": "Item 10",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:11",
+          "name": "Item 11",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:12",
+          "name": "Item 12",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:13",
+          "name": "Item 13",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:14",
+          "name": "Item 14",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:15",
+          "name": "Item 15",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:16",
+          "name": "Item 16",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:17",
+          "name": "Item 17",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:18",
+          "name": "Item 18",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:19",
+          "name": "Item 19",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:20",
+          "name": "Item 20",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:21",
+          "name": "Item 21",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:22",
+          "name": "Item 22",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:23",
+          "name": "Item 23",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:24",
+          "name": "Item 24",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:25",
+          "name": "Item 25",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:26",
+          "name": "Item 26",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:27",
+          "name": "Item 27",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:28",
+          "name": "Item 28",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:29",
+          "name": "Item 29",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "file:auth.py",
+          "name": "Authentication",
+          "summary": "Handles authentication requests."
+        }
+      ]
+    },
+    "query": "Where are authentication requests handled?",
+    "expected": {
+      "project": {},
+      "query": "Where are authentication requests handled?",
+      "matchedNodes": [
+        {
+          "id": "file:auth.py",
+          "name": "Authentication",
+          "summary": "Handles authentication requests."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "noise:0",
+          "name": "Item 0",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:1",
+          "name": "Item 1",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:2",
+          "name": "Item 2",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:3",
+          "name": "Item 3",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:4",
+          "name": "Item 4",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:5",
+          "name": "Item 5",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:6",
+          "name": "Item 6",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:7",
+          "name": "Item 7",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:8",
+          "name": "Item 8",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:9",
+          "name": "Item 9",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:10",
+          "name": "Item 10",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:11",
+          "name": "Item 11",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:12",
+          "name": "Item 12",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:13",
+          "name": "Item 13",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:14",
+          "name": "Item 14",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:15",
+          "name": "Item 15",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:16",
+          "name": "Item 16",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:17",
+          "name": "Item 17",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:18",
+          "name": "Item 18",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:19",
+          "name": "Item 19",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:20",
+          "name": "Item 20",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:21",
+          "name": "Item 21",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:22",
+          "name": "Item 22",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:23",
+          "name": "Item 23",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:24",
+          "name": "Item 24",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:25",
+          "name": "Item 25",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:26",
+          "name": "Item 26",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:27",
+          "name": "Item 27",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:28",
+          "name": "Item 28",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:29",
+          "name": "Item 29",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "file:auth.py",
+          "name": "Authentication",
+          "summary": "Handles authentication requests."
+        }
+      ]
+    },
+    "query": "this is really beautiful",
+    "expected": {
+      "project": {},
+      "query": "this is really beautiful",
+      "matchedNodes": [],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "noise:0",
+          "name": "Item 0",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:1",
+          "name": "Item 1",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:2",
+          "name": "Item 2",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:3",
+          "name": "Item 3",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:4",
+          "name": "Item 4",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:5",
+          "name": "Item 5",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:6",
+          "name": "Item 6",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:7",
+          "name": "Item 7",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:8",
+          "name": "Item 8",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:9",
+          "name": "Item 9",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:10",
+          "name": "Item 10",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:11",
+          "name": "Item 11",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:12",
+          "name": "Item 12",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:13",
+          "name": "Item 13",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:14",
+          "name": "Item 14",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:15",
+          "name": "Item 15",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:16",
+          "name": "Item 16",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:17",
+          "name": "Item 17",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:18",
+          "name": "Item 18",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:19",
+          "name": "Item 19",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:20",
+          "name": "Item 20",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:21",
+          "name": "Item 21",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:22",
+          "name": "Item 22",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:23",
+          "name": "Item 23",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:24",
+          "name": "Item 24",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:25",
+          "name": "Item 25",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:26",
+          "name": "Item 26",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:27",
+          "name": "Item 27",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:28",
+          "name": "Item 28",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "noise:29",
+          "name": "Item 29",
+          "summary": "This is a really beautiful example."
+        },
+        {
+          "id": "file:auth.py",
+          "name": "Authentication",
+          "summary": "Handles authentication requests."
+        }
+      ]
+    },
+    "query": "",
+    "expected": {
+      "project": {},
+      "query": "",
+      "matchedNodes": [],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "a",
+          "summary": "Workers ran checks and handled requests."
+        },
+        {
+          "id": "b",
+          "summary": "A worker runs a check and handles a request."
+        },
+        {
+          "id": "c",
+          "summary": "Preauthentication and subrequests."
+        },
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        },
+        {
+          "id": "e",
+          "name": "this",
+          "summary": "Keyword definition."
+        },
+        {
+          "id": "f",
+          "name": "beautiful",
+          "summary": "A symbol whose name is an adjective."
+        }
+      ]
+    },
+    "query": "workers running checks handle requests",
+    "expected": {
+      "project": {},
+      "query": "workers running checks handle requests",
+      "matchedNodes": [
+        {
+          "id": "a",
+          "summary": "Workers ran checks and handled requests."
+        },
+        {
+          "id": "b",
+          "summary": "A worker runs a check and handles a request."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "a",
+          "summary": "Workers ran checks and handled requests."
+        },
+        {
+          "id": "b",
+          "summary": "A worker runs a check and handles a request."
+        },
+        {
+          "id": "c",
+          "summary": "Preauthentication and subrequests."
+        },
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        },
+        {
+          "id": "e",
+          "name": "this",
+          "summary": "Keyword definition."
+        },
+        {
+          "id": "f",
+          "name": "beautiful",
+          "summary": "A symbol whose name is an adjective."
+        }
+      ]
+    },
+    "query": "authentication",
+    "expected": {
+      "project": {},
+      "query": "authentication",
+      "matchedNodes": [],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "a",
+          "summary": "Workers ran checks and handled requests."
+        },
+        {
+          "id": "b",
+          "summary": "A worker runs a check and handles a request."
+        },
+        {
+          "id": "c",
+          "summary": "Preauthentication and subrequests."
+        },
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        },
+        {
+          "id": "e",
+          "name": "this",
+          "summary": "Keyword definition."
+        },
+        {
+          "id": "f",
+          "name": "beautiful",
+          "summary": "A symbol whose name is an adjective."
+        }
+      ]
+    },
+    "query": "OAuthHandler",
+    "expected": {
+      "project": {},
+      "query": "OAuthHandler",
+      "matchedNodes": [
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "a",
+          "summary": "Workers ran checks and handled requests."
+        },
+        {
+          "id": "b",
+          "summary": "A worker runs a check and handles a request."
+        },
+        {
+          "id": "c",
+          "summary": "Preauthentication and subrequests."
+        },
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        },
+        {
+          "id": "e",
+          "name": "this",
+          "summary": "Keyword definition."
+        },
+        {
+          "id": "f",
+          "name": "beautiful",
+          "summary": "A symbol whose name is an adjective."
+        }
+      ]
+    },
+    "query": "src/auth_checks.py",
+    "expected": {
+      "project": {},
+      "query": "src/auth_checks.py",
+      "matchedNodes": [
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "a",
+          "summary": "Workers ran checks and handled requests."
+        },
+        {
+          "id": "b",
+          "summary": "A worker runs a check and handles a request."
+        },
+        {
+          "id": "c",
+          "summary": "Preauthentication and subrequests."
+        },
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        },
+        {
+          "id": "e",
+          "name": "this",
+          "summary": "Keyword definition."
+        },
+        {
+          "id": "f",
+          "name": "beautiful",
+          "summary": "A symbol whose name is an adjective."
+        }
+      ]
+    },
+    "query": "JWT",
+    "expected": {
+      "project": {},
+      "query": "JWT",
+      "matchedNodes": [
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "a",
+          "summary": "Workers ran checks and handled requests."
+        },
+        {
+          "id": "b",
+          "summary": "A worker runs a check and handles a request."
+        },
+        {
+          "id": "c",
+          "summary": "Preauthentication and subrequests."
+        },
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        },
+        {
+          "id": "e",
+          "name": "this",
+          "summary": "Keyword definition."
+        },
+        {
+          "id": "f",
+          "name": "beautiful",
+          "summary": "A symbol whose name is an adjective."
+        }
+      ]
+    },
+    "query": "Quuxly",
+    "expected": {
+      "project": {},
+      "query": "Quuxly",
+      "matchedNodes": [
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "a",
+          "summary": "Workers ran checks and handled requests."
+        },
+        {
+          "id": "b",
+          "summary": "A worker runs a check and handles a request."
+        },
+        {
+          "id": "c",
+          "summary": "Preauthentication and subrequests."
+        },
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        },
+        {
+          "id": "e",
+          "name": "this",
+          "summary": "Keyword definition."
+        },
+        {
+          "id": "f",
+          "name": "beautiful",
+          "summary": "A symbol whose name is an adjective."
+        }
+      ]
+    },
+    "query": "oauth handler",
+    "expected": {
+      "project": {},
+      "query": "oauth handler",
+      "matchedNodes": [
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "a",
+          "summary": "Workers ran checks and handled requests."
+        },
+        {
+          "id": "b",
+          "summary": "A worker runs a check and handles a request."
+        },
+        {
+          "id": "c",
+          "summary": "Preauthentication and subrequests."
+        },
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        },
+        {
+          "id": "e",
+          "name": "this",
+          "summary": "Keyword definition."
+        },
+        {
+          "id": "f",
+          "name": "beautiful",
+          "summary": "A symbol whose name is an adjective."
+        }
+      ]
+    },
+    "query": "this",
+    "expected": {
+      "project": {},
+      "query": "this",
+      "matchedNodes": [
+        {
+          "id": "e",
+          "name": "this",
+          "summary": "Keyword definition."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "a",
+          "summary": "Workers ran checks and handled requests."
+        },
+        {
+          "id": "b",
+          "summary": "A worker runs a check and handles a request."
+        },
+        {
+          "id": "c",
+          "summary": "Preauthentication and subrequests."
+        },
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        },
+        {
+          "id": "e",
+          "name": "this",
+          "summary": "Keyword definition."
+        },
+        {
+          "id": "f",
+          "name": "beautiful",
+          "summary": "A symbol whose name is an adjective."
+        }
+      ]
+    },
+    "query": "`this`",
+    "expected": {
+      "project": {},
+      "query": "`this`",
+      "matchedNodes": [
+        {
+          "id": "e",
+          "name": "this",
+          "summary": "Keyword definition."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "a",
+          "summary": "Workers ran checks and handled requests."
+        },
+        {
+          "id": "b",
+          "summary": "A worker runs a check and handles a request."
+        },
+        {
+          "id": "c",
+          "summary": "Preauthentication and subrequests."
+        },
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        },
+        {
+          "id": "e",
+          "name": "this",
+          "summary": "Keyword definition."
+        },
+        {
+          "id": "f",
+          "name": "beautiful",
+          "summary": "A symbol whose name is an adjective."
+        }
+      ]
+    },
+    "query": "beautiful",
+    "expected": {
+      "project": {},
+      "query": "beautiful",
+      "matchedNodes": [
+        {
+          "id": "f",
+          "name": "beautiful",
+          "summary": "A symbol whose name is an adjective."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "a",
+          "summary": "Workers ran checks and handled requests."
+        },
+        {
+          "id": "b",
+          "summary": "A worker runs a check and handles a request."
+        },
+        {
+          "id": "c",
+          "summary": "Preauthentication and subrequests."
+        },
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        },
+        {
+          "id": "e",
+          "name": "this",
+          "summary": "Keyword definition."
+        },
+        {
+          "id": "f",
+          "name": "beautiful",
+          "summary": "A symbol whose name is an adjective."
+        }
+      ]
+    },
+    "query": "`beautiful`",
+    "expected": {
+      "project": {},
+      "query": "`beautiful`",
+      "matchedNodes": [
+        {
+          "id": "f",
+          "name": "beautiful",
+          "summary": "A symbol whose name is an adjective."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "a",
+          "summary": "Workers ran checks and handled requests."
+        },
+        {
+          "id": "b",
+          "summary": "A worker runs a check and handles a request."
+        },
+        {
+          "id": "c",
+          "summary": "Preauthentication and subrequests."
+        },
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        },
+        {
+          "id": "e",
+          "name": "this",
+          "summary": "Keyword definition."
+        },
+        {
+          "id": "f",
+          "name": "beautiful",
+          "summary": "A symbol whose name is an adjective."
+        }
+      ]
+    },
+    "query": "This private handler isn't authenticated and runs asynchronously.",
+    "expected": {
+      "project": {},
+      "query": "This private handler isn't authenticated and runs asynchronously.",
+      "matchedNodes": [
+        {
+          "id": "a",
+          "summary": "Workers ran checks and handled requests."
+        },
+        {
+          "id": "b",
+          "summary": "A worker runs a check and handles a request."
+        },
+        {
+          "id": "d",
+          "name": "OAuthHandler",
+          "filePath": "src/auth_checks.py",
+          "tags": [
+            "JWT"
+          ],
+          "summary": "Quuxly processes callbacks."
+        },
+        {
+          "id": "e",
+          "name": "this",
+          "summary": "Keyword definition."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "post:0",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:1",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:2",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:3",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:4",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:5",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:6",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:7",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:8",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:9",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:10",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:11",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:12",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:13",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:14",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:15",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:16",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:17",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:18",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:19",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:20",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:21",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:22",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:23",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:24",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:25",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:26",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:27",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:28",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:29",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "get",
+          "name": "GET",
+          "summary": "Handles requests."
+        }
+      ]
+    },
+    "query": "GET requests",
+    "expected": {
+      "project": {},
+      "query": "GET requests",
+      "matchedNodes": [
+        {
+          "id": "get",
+          "name": "GET",
+          "summary": "Handles requests."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "post:0",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:1",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:2",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:3",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:4",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:5",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:6",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:7",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:8",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:9",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:10",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:11",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:12",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:13",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:14",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:15",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:16",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:17",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:18",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:19",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:20",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:21",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:22",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:23",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:24",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:25",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:26",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:27",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:28",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:29",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "get",
+          "name": "GET",
+          "summary": "Handles requests."
+        }
+      ]
+    },
+    "query": "Where are GET requests handled?",
+    "expected": {
+      "project": {},
+      "query": "Where are GET requests handled?",
+      "matchedNodes": [
+        {
+          "id": "get",
+          "name": "GET",
+          "summary": "Handles requests."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "post:0",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:1",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:2",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:3",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:4",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:5",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:6",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:7",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:8",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:9",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:10",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:11",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:12",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:13",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:14",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:15",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:16",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:17",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:18",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:19",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:20",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:21",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:22",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:23",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:24",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:25",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:26",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:27",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:28",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "post:29",
+          "name": "POST",
+          "summary": "Handles requests."
+        },
+        {
+          "id": "get",
+          "name": "GET",
+          "summary": "Handles requests."
+        }
+      ]
+    },
+    "query": "get requests",
+    "expected": {
+      "project": {},
+      "query": "get requests",
+      "matchedNodes": [
+        {
+          "id": "get",
+          "name": "GET",
+          "summary": "Handles requests."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "unicode",
+          "name": "Straße",
+          "summary": "Handles fullwidth requests."
+        },
+        {
+          "id": "other",
+          "name": "GET"
+        }
+      ]
+    },
+    "query": "STRASSE",
+    "expected": {
+      "project": {},
+      "query": "STRASSE",
+      "matchedNodes": [
+        {
+          "id": "unicode",
+          "name": "Straße",
+          "summary": "Handles fullwidth requests."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "unicode",
+          "name": "Straße",
+          "summary": "Handles fullwidth requests."
+        },
+        {
+          "id": "other",
+          "name": "GET"
+        }
+      ]
+    },
+    "query": "ＧＥＴ",
+    "expected": {
+      "project": {},
+      "query": "ＧＥＴ",
+      "matchedNodes": [
+        {
+          "id": "other",
+          "name": "GET"
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  },
+  {
+    "graph": {
+      "nodes": [
+        {
+          "id": "unicode",
+          "name": "Straße",
+          "summary": "Handles fullwidth requests."
+        },
+        {
+          "id": "other",
+          "name": "GET"
+        }
+      ]
+    },
+    "query": "Straße",
+    "expected": {
+      "project": {},
+      "query": "Straße",
+      "matchedNodes": [
+        {
+          "id": "unicode",
+          "name": "Straße",
+          "summary": "Handles fullwidth requests."
+        }
+      ],
+      "connectedNodes": [],
+      "edges": [],
+      "layers": [],
+      "truncation": {
+        "maxBytes": 32768,
+        "omittedMatchedNodes": 0,
+        "omittedConnectedNodes": 0,
+        "omittedEdges": 0,
+        "omittedLayers": 0,
+        "textShortened": false
+      }
+    }
+  }
+]

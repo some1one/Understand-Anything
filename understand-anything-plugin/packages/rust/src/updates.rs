@@ -93,23 +93,7 @@ impl GitClient for ProcessGit {
         }
     }
     fn changed_files(&self, root: &Path, prev: &str, head: &str) -> Option<Vec<String>> {
-        let out = Command::new("git")
-            .args(["diff", &format!("{prev}..{head}"), "--name-only"])
-            .current_dir(root)
-            .output()
-            .ok()?;
-        if out.status.success() {
-            Some(
-                String::from_utf8_lossy(&out.stdout)
-                    .lines()
-                    .map(str::trim)
-                    .filter(|s| !s.is_empty())
-                    .map(str::to_owned)
-                    .collect(),
-            )
-        } else {
-            None
-        }
+        crate::context_helpers::changed_paths(root, &format!("{prev}..{head}")).ok()
     }
 }
 pub fn write_meta(root: &Path, commit: &str, analyzed: Option<usize>) -> Result<()> {
@@ -171,6 +155,22 @@ pub fn preflight_with_git(root: &Path, force: bool, git: &dyn GitClient) -> Resu
             "No files changed between commits. Metadata updated.",
             vec![],
         )
+    } else if changed
+        .iter()
+        .any(|p| crate::context_helpers::is_ignore_file(p))
+    {
+        let graph = required(&ua(root, "knowledge-graph.json"))?;
+        let scan = crate::scan::scan_project(root)?;
+        let paths: BTreeSet<_> = graph_file_paths(&graph)
+            .into_iter()
+            .chain(array(&scan, "files").iter().filter_map(|f| {
+                f["path"]
+                    .as_str()
+                    .filter(|p| is_source_file(p))
+                    .map(str::to_owned)
+            }))
+            .collect();
+        ("PROCEED", "", paths.into_iter().collect())
     } else if source.is_empty() {
         (
             "NO_SOURCE_CHANGES",
@@ -211,9 +211,17 @@ pub fn fingerprint_check(root: &Path) -> Result<Value> {
     let state = required(&inter(root, "auto-update-state.json"))?;
     let (store, _) = fingerprints::load_fingerprint_store(&ua(root, "fingerprints.json"))?;
     let graph = read(&ua(root, "knowledge-graph.json"));
+    let graph_paths = graph_file_paths(&graph);
+    let filter = crate::scan::create_ignore_filter(root)?;
     let changes: Vec<_> = strings(&state["changedSourceFiles"])
         .iter()
-        .map(|p| fingerprints::classify_file_change(root, p, store["files"].get(p)))
+        .map(|p| {
+            if filter.is_ignored(p) && graph_paths.contains(p) {
+                json!({"filePath":p,"changeLevel":"STRUCTURAL","status":"deleted","details":["file ignored"]})
+            } else {
+                fingerprints::classify_file_change(root, p, if graph_paths.contains(p) { store["files"].get(p) } else { None })
+            }
+        })
         .collect();
     let decision = fingerprints::classify_update(&changes, &graph_file_paths(&graph));
     let select = |level: &str, status: Option<&str>, exclude: bool| {
@@ -289,6 +297,7 @@ pub fn build_arch_input(nodes: &[Value], edges: &[Value]) -> Value {
     json!({"fileNodes":files,"importEdges":imports,"allEdges":all})
 }
 pub fn apply_batches(root: &Path) -> Result<Value> {
+    let _lock = crate::batch_files::lock(&inter(root, ""))?;
     let analysis = required(&inter(root, "change-analysis.json"))?;
     let graph = required(&ua(root, "knowledge-graph.json"))?;
     let targets: BTreeSet<_> = strings(&analysis["filesToReanalyze"])
@@ -300,7 +309,16 @@ pub fn apply_batches(root: &Path) -> Result<Value> {
         .filter(|n| node_file_path(n).is_none_or(|p| !targets.contains(&p)))
         .cloned()
         .collect();
-    let existing = json!({"nodes":kept,"edges":array(&graph,"edges")});
+    let kept_ids: BTreeSet<_> = kept.iter().filter_map(|n| n["id"].as_str()).collect();
+    let edges: Vec<_> = array(&graph, "edges")
+        .iter()
+        .filter(|e| {
+            ["source", "target"]
+                .iter()
+                .all(|key| e[key].as_str().is_some_and(|id| kept_ids.contains(id)))
+        })
+        .collect();
+    let existing = json!({"nodes":kept,"edges":edges});
     write(&inter(root, "batch-existing.json"), &existing)?;
     let re = regex::Regex::new(r"^batch-(\d+)(?:-part-(\d+))?\.json$").unwrap();
     let mut files: Vec<_> = fs::read_dir(inter(root, ""))?
@@ -441,6 +459,7 @@ pub fn finalize(root: &Path) -> Result<Value> {
     merged["layers"] = json!(reconcile_layers(array(&merged, "nodes"), layers));
     clean_graph(&mut merged);
     write(&ua(root, "knowledge-graph.json"), &merged)?;
+    crate::query_dictionary::refresh(&ua(root, "knowledge-graph.json"))?;
     let changed: Vec<_> = strings(&analysis["filesToReanalyze"])
         .into_iter()
         .chain(strings(&analysis["deletedFiles"]))

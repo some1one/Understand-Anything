@@ -1,21 +1,9 @@
 //! Git revision staleness and file-keyed graph replacement.
 use crate::array;
 use serde_json::{Value, json};
-use std::{collections::BTreeSet, path::Path, process::Command};
+use std::{collections::BTreeSet, path::Path};
 pub fn get_changed_files(root: &Path, last_commit: &str) -> Vec<String> {
-    match Command::new("git")
-        .args(["diff", &format!("{last_commit}..HEAD"), "--name-only"])
-        .current_dir(root)
-        .output()
-    {
-        Ok(out) if out.status.success() => String::from_utf8_lossy(&out.stdout)
-            .lines()
-            .map(str::trim)
-            .filter(|s| !s.is_empty())
-            .map(str::to_owned)
-            .collect(),
-        _ => vec![],
-    }
+    crate::context_helpers::changed_paths(root, &format!("{last_commit}..HEAD")).unwrap_or_default()
 }
 pub fn is_stale(root: &Path, last_commit: &str) -> Value {
     let changed = get_changed_files(root, last_commit);

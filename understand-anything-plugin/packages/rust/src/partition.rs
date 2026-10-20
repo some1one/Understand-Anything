@@ -135,7 +135,12 @@ pub fn affected_parts(
 pub fn parts_to_process(root: &Path, full: bool, changed: &[String]) -> Result<Vec<String>> {
     let config = persistence::load_config(root);
     let included = crate::strings(&config["includedParts"]);
-    if full || changed.is_empty() {
+    if full
+        || changed.is_empty()
+        || changed
+            .iter()
+            .any(|p| crate::context_helpers::is_ignore_file(p))
+    {
         return Ok(included);
     }
     let mut parts: BTreeSet<_> = affected_parts(

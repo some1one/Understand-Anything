@@ -30,6 +30,12 @@ Read [host integration](../../HOSTS.md) for invocation, argument handling, and a
    python3 "$SKILL_DIR/scripts/query_graph.py" "$PWD" "$ARGUMENTS"
    ```
 
+If the helper reports inaccessible dictionaries, relay its configuration path and
+repair instructions: updated system paths (`--lemma-resources`/`--cspell-root`),
+or latest repo-local data (`--prefer-local --local-dir` through
+[understand-update](../understand-update/SKILL.md)). Do not silently download data
+or treat an error as an empty result. Recommend `/understand --full` after repair.
+
 3. Use the helper's relevant subgraph to locate evidence, then inspect current source when the question concerns current behavior:
    - Reference specific files, functions, and relationships from the graph
    - Explain which layer(s) are relevant and why

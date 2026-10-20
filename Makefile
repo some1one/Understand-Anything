@@ -32,7 +32,7 @@ PYTHON ?= python3
 # Each expensive step (deps install, dashboard build, dist packaging, deb)
 # records a stamp file under $(STAMPDIR). The stamp depends on that step's
 # inputs, so Make's timestamp comparison re-runs the step only when an input is
-# newer — repeated `make build` / `make install-<platform>` / `make package`
+# newer — repeated `make build` / `make install-<platform>`
 # are no-ops when nothing changed. `make clean` (and `make clean-stamps`)
 # removes the stamps to force a full rebuild.
 #
@@ -71,7 +71,7 @@ UNINSTALL_TARGETS := $(addprefix uninstall-,$(INSTALL_PLATFORMS))
 .PHONY: help deps deps-core deps-dashboard \
         $(INSTALL_TARGETS) $(UNINSTALL_TARGETS) \
         build build-core build-dashboard test test-core test-dashboard \
-        lint lint-dashboard dev dev-dashboard preview package deb \
+        lint lint-dashboard dev dev-dashboard preview package deb update-dictionaries configure-dictionaries \
         install install-local uninstall-local test-integration engine-help \
         clean clean-local clean-cache clean-build clean-stamps
 
@@ -169,9 +169,13 @@ preview: ## Preview a production dashboard build
 	cd $(DASH) && pnpm preview
 
 ## ---- package / distribution ---------------------------------------------
-# Each variant is stamped independently — it re-runs only when the dashboard
-# build, a packaged source/asset, the build script, or (for deb) the packaging
-# files changed.
+update-dictionaries: ## Detect system dictionaries and refresh only missing local components
+	$(PYTHON) understand-anything-plugin/scripts/configure_dictionaries.py --plugin-root understand-anything-plugin
+
+configure-dictionaries: ## Detect installed dictionaries and configure local fallbacks offline
+	$(PYTHON) understand-anything-plugin/scripts/configure_dictionaries.py --plugin-root understand-anything-plugin --offline
+
+# Bundles omit dictionaries by default and never download them.
 package: $(STAMPDIR)/package ## Build native engine, dashboard, and plugin archives into dist/
 deb: $(STAMPDIR)/deb ## Build the archives and Debian package into dist/
 

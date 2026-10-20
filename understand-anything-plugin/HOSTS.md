@@ -24,6 +24,29 @@ plugin root is two levels above that directory. Keep it distinct from the
 absolute `PROJECT_ROOT` being analyzed. Pass those roots explicitly to agents;
 shell assignments do not necessarily persist between tool calls.
 
+## Setup and help routing
+
+Use [understand-help](skills/understand-help/SKILL.md) for plugin installation,
+first-run repository setup, usage instructions, or choosing a skill. Use
+`understand-onboard` for onboarding to the analyzed codebase itself. Answer help
+requests without starting analysis; when the user asks to perform setup or
+analysis, continue into the corresponding workflow within that scope.
+
+## Choose the smallest useful retrieval
+
+For automatic skill selection, use graph workflows when cross-file discovery,
+relationships, or change impact help answer the task. Generic questions needing
+no repository evidence, known single-file tasks, and exact lookups usually need
+no graph retrieval. Reuse relevant graph slices, search results, and source already
+in context; retrieve again for missing scope, changed code, or stale evidence.
+A single-file task can warrant graph context when external dependencies matter.
+Explicit user requests to use or skip a skill take precedence over these defaults.
+
+Do not make indexing a prerequisite when direct source inspection is sufficient.
+Use the [repository instruction template](README.md#recommended-repository-instructions)
+when helping users configure their own agent. Follow the selected skill when a
+workflow is needed; this routing guidance does not silently skip its required steps.
+
 ## Agent dispatch
 
 Claude native installations discover the Markdown definitions in `agents/`.
@@ -54,7 +77,10 @@ they run. Installation alone does not establish trust.
 
 Hooks only suggest an update when `config.json` contains `"autoUpdate": true`
 and the stored commit differs from the current repository's HEAD. They never
-commit, stage, or install dependencies themselves. A skills-only installation
+commit, stage, or install dependencies themselves. Graph updates remain offline;
+installation and explicit plugin maintenance
+([understand-update](skills/understand-update/SKILL.md)) discover system dictionaries
+and download only missing local fallbacks. Packaging excludes dictionary data. A skills-only installation
 does not register hooks; run the analysis skill explicitly to update its graph.
 
 References: [Claude plugin reference](https://code.claude.com/docs/en/plugins-reference),

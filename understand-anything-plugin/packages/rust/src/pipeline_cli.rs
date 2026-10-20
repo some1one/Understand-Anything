@@ -164,16 +164,7 @@ pub fn run(command: &str, args: &[String]) -> Result<i32> {
                 ua::array(&draft, "edges"),
                 &files,
             );
-            let mut written = vec![];
-            for (i, fragment) in fragments.iter().enumerate() {
-                let name = if fragments.len() == 1 {
-                    format!("batch-{idx}.json")
-                } else {
-                    format!("batch-{idx}-part-{}.json", i + 1)
-                };
-                write_json(&out.join(&name), fragment)?;
-                written.push(name);
-            }
+            let written = ua::batch_files::replace(&out, idx, &fragments)?;
             eprintln!(
                 "finalize_file_batch_output: batch {idx} OK — {} nodes, {} edges → {}",
                 ua::array(&draft, "nodes").len(),

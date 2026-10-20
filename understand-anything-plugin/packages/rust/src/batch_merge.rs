@@ -702,6 +702,7 @@ pub fn merge_batch_directory(root: &Path) -> Result<Value> {
             dir.display()
         )));
     }
+    let _lock = crate::batch_files::lock(&dir)?;
     let numeric = regex::Regex::new(r"batch-(\d+)").unwrap();
     let exact = regex::Regex::new(r"^batch-(\d+)(?:-part-(\d+))?\.json").unwrap();
     let mut files: Vec<_> = std::fs::read_dir(&dir)?

@@ -176,7 +176,7 @@ def test_distribution_contains_native_engine_and_shared_references(tmp_path):
                      "packages/rust/schemas/knowledge-graph.schema.json"]:
         assert (payload / relative).is_file(), relative
     assert (payload / "AGENTS.md").read_text() == (PLUGIN / "AGENTS.md").read_text()
-    assert len(list((payload / "skills").glob("*/SKILL.md"))) == 11
+    assert len(list((payload / "skills").glob("*/SKILL.md"))) == 13
     assert not (payload / "packages/core").exists()
     result = subprocess.run(["bash", str(payload / "packages/rust/run.sh"), "--version"],
                             check=True, capture_output=True, text=True)
@@ -260,3 +260,45 @@ def test_diff_context_default_feature_base_and_working_tree(tmp_path, default_br
     assert module.changed_files(tmp_path, None) == (["base.txt"], "working-tree")
     (tmp_path / "base.txt").write_text("unstaged\n")
     assert module.changed_files(tmp_path, None) == (["base.txt"], "working-tree")
+
+
+@pytest.mark.parametrize("native_mode", ["success", "failure", "unavailable"])
+def test_archive_install_reuses_configured_payload(tmp_path, native_mode):
+    script = r'''source "$1" --help >/dev/null
+UA_HOME="$2/ua home"
+SCRIPT_DIR="$2/archive"
+mkdir -p "$SCRIPT_DIR"
+# Model assembly replacing dictionary state, without downloading or installing.
+find_assets() { return 0; }
+# Keep the real resolver, including its per-install resolved-payload reuse.
+assemble_into() {
+  local plugin="$1/understand-anything-plugin"
+  mkdir -p "$plugin/scripts"
+  printf 'assembly\n' >> "$UA_HOME/assemblies"
+  printf 'unconfigured' > "$plugin/state"
+  printf '%s\n' "$plugin"
+}
+check_prereqs() { :; }
+python3() {
+  case "$1" in
+    */configure_dictionaries.py) printf 'configured' > "$3/state" ;;
+    */create_marketplace.py) printf '%s\n' "$3" ;;
+  esac
+}
+native_available() { [ "$mode" != unavailable ]; }
+native_install() {
+  local plugin
+  plugin="$(marketplace_source)" || return 1
+  [ "$(cat "$plugin/state")" = configured ] || return 1
+  [ "$mode" = success ]
+}
+link_skills_global() { [ "$(cat "$1/state")" = configured ]; }
+link_plugin_root() { :; }
+warm_env() { :; }
+mode="$3"
+cmd_install claude
+[ "$(cat "$UA_HOME/understand-anything-plugin/state")" = configured ]
+[ "$(wc -l < "$UA_HOME/assemblies")" -eq 1 ]
+'''
+    subprocess.run(["bash", "-e", "-c", script, "test", str(REPO / "install.sh"),
+                    str(tmp_path), native_mode], check=True, capture_output=True, text=True)

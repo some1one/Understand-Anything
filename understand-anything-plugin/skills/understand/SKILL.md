@@ -1,6 +1,6 @@
 ---
 name: understand
-description: Analyze a codebase to produce an interactive knowledge graph for understanding architecture, components, and relationships
+description: Analyze a codebase to produce or refresh a knowledge graph of architecture, components, and relationships. For plugin installation, first-run setup instructions, or usage help, use understand-help.
 argument-hint: "[path] [--split=<depth>] [--source=<dir>] [--all] [--full] [--auto-update|--no-auto-update] [--review] [--no-domain]"
 ---
 
@@ -32,6 +32,15 @@ On an update run the saved config is reused silently (no prompts).
 Read [host integration](../../HOSTS.md) before running the workflow. It explains Claude/Codex invocation, argument handling, and how to load the bundled agent instructions. Give concise updates during long runs and report failures when they occur.
 
 ---
+
+Dictionary downloads are plugin maintenance via
+[understand-update](../understand-update/SKILL.md), not part of graph indexing.
+Use configured system dictionaries and local fallback snapshots throughout this workflow.
+If dictionary access fails, report the configuration path and both repair options
+from the error: update system file paths or use the configurator with
+`--prefer-local --local-dir` to download latest repo-local data. Relay the
+[maintenance instructions](../understand-update/SKILL.md) and recommend
+`/understand --full` after repair; do not download during indexing.
 
 ## Phase 0 — Pre-flight
 

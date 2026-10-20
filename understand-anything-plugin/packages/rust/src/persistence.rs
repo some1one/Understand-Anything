@@ -104,7 +104,9 @@ pub fn save_graph(root: &Path, graph: &Value) -> Result<()> {
         root,
         "knowledge-graph.json",
         &sanitize_file_paths(graph, root),
-    )
+    )?;
+    crate::query_dictionary::refresh(&root.join(".understand-anything/knowledge-graph.json"))?;
+    Ok(())
 }
 pub fn save_domain_graph(root: &Path, graph: &Value) -> Result<()> {
     save_artifact(root, "domain-graph.json", &sanitize_file_paths(graph, root))

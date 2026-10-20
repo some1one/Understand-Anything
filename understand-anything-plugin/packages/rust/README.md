@@ -11,6 +11,11 @@ in [`reference/verification.json`](reference/verification.json). **Full acceptan
 pending execution of the four-platform CI matrix.** Captured differential tests
 cover substantial behavior, not every possible input or diagnostic.
 
+The native helper commands also cover project context capture, incremental changed
+paths and pruning, graph saving, diff context, graph queries, and dictionary cache
+refresh. Python helper entrypoints forward to these commands; JSON compatibility
+requests use `helper_request`, `query_payload`, and `query_terms`.
+
 ## Build and run
 
 Run these commands from this package directory (its `.cargo/config.toml` prevents
@@ -108,7 +113,8 @@ cargo +stable test --locked --test runtime -- --ignored
 cargo +stable test --locked --test differential -- --ignored
 ```
 
-Ordinary tests require no Python or downloads. Ignored tests are explicit parser
+Ordinary tests use a frozen dictionary subset and require no downloads. The
+compatibility-launcher test requires Python 3. Ignored tests are explicit parser
 integration tests (first run downloads grammars), command/update fixtures using
 those parsers, and a local HTTP test. After warming the cache, parser tests also
 run with unreachable proxy settings to check offline loading. Corrupt,

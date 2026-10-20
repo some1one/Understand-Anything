@@ -113,6 +113,9 @@ assemble_into() {
 
 # Resolve (assembling if needed) the plugin dir to link against. Echoes its path.
 resolve_plugin_home() {
+  if [ -n "${resolved_plugin_home:-}" ]; then
+    printf '%s\n' "$resolved_plugin_home"; return 0
+  fi
   # Running from a repo checkout: link to the source plugin. The Rust engine
   # builds on first use; the dashboard falls back to the Vite dev server.
   if [ -f "$SCRIPT_DIR/understand-anything-plugin/.claude-plugin/plugin.json" ]; then
@@ -378,6 +381,7 @@ copy_payload_to() {
   else
     local src; src="$(resolve_plugin_home)"
     ( cd "$src" && tar --exclude='./packages/rust/target' --exclude='./packages/*/node_modules' \
+        --exclude='./packages/rust/dictionary-config.json' --exclude='./packages/rust/dictionaries' \
         --exclude='*/__pycache__' --exclude='*/.pytest_cache' -cf - . ) | tar -xf - -C "$dest"
   fi
   touch "$dest/.ua-assembled"
@@ -401,6 +405,7 @@ scripted_local_install() {
   [ "$id" = "kilo" ] && { info "Installing Kilo workflows"; install_kilo_workflows "$project/$payload_dir" "$project/.kilocode/workflows"; }
   info "Installing project tool wrappers (.understand-anything/tools)"
   install_project_tools "$project" "$payload_dir"
+  python3 "$project/$payload_dir/scripts/configure_dictionaries.py" --plugin-root "$project/$payload_dir" --project-root "$project" || return 1
   warm_env "$project/$payload_dir"
 }
 
@@ -424,9 +429,21 @@ cmd_install() {
 
   check_prereqs
 
+  # Configure shared system paths and fetch only missing dictionary components.
+  # Bash locals remain visible to resolver calls in native and fallback installs.
+  local dictionary_plugin resolved_plugin_home=""
+  dictionary_plugin="$(resolve_plugin_home)" || return 1
+  resolved_plugin_home="$dictionary_plugin"
+  if [ -z "$project" ]; then
+    python3 "$dictionary_plugin/scripts/configure_dictionaries.py" --plugin-root "$dictionary_plugin" --project-root "${project:-$PWD}" || return 1
+  fi
+
   # 1) Prefer the target's native CLI.
   if native_available "$native" "$project"; then
     if native_install "$native" "$project"; then
+      if [ -n "$project" ]; then
+        python3 "$dictionary_plugin/scripts/configure_dictionaries.py" --plugin-root "$dictionary_plugin" --project-root "${project:-$PWD}" || return 1
+      fi
       printf '\n✓ Installed Understand-Anything for %s (native CLI).\n' "$id"
       printf '  Start a new session to pick up the plugin. Review and trust its hooks in Codex before enabling auto-update.\n'
       return 0
@@ -499,9 +516,18 @@ cmd_uninstall() {
 }
 
 cmd_update() {
-  if [ -d "$UA_HOME/repo/.git" ]; then git -C "$UA_HOME/repo" pull --ff-only && printf '✓ Updated (git).\n';
-  elif find_assets; then assemble_into "$UA_HOME" >/dev/null; printf '✓ Re-assembled from archives.\n';
-  else die "Nothing to update (no git checkout or archives)."; fi
+  local updated_plugin
+  if [ -d "$UA_HOME/repo/.git" ]; then
+    git -C "$UA_HOME/repo" pull --ff-only || return 1
+    updated_plugin="$UA_HOME/repo/understand-anything-plugin"
+  elif find_assets; then
+    assemble_into "$UA_HOME" >/dev/null || return 1
+    updated_plugin="$UA_HOME/understand-anything-plugin"
+  else
+    die "Nothing to update (no git checkout or archives)."
+  fi
+  python3 "$updated_plugin/scripts/configure_dictionaries.py" --plugin-root "$updated_plugin" || return 1
+  printf '✓ Updated plugin and configured system/local dictionary dependencies.\n'
 }
 
 prompt_platform() {

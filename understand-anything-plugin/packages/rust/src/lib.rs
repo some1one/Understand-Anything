@@ -68,3 +68,10 @@ pub mod structure;
 pub mod updates;
 
 pub mod models;
+
+pub mod batch_files;
+pub mod context_helpers;
+pub mod dictionary_data;
+pub mod query_dictionary;
+pub mod query_graph;
+pub mod query_terms;

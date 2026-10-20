@@ -176,6 +176,12 @@ fn check_command_cases(cases: Vec<Value>) {
             .filter(|e| e.file_type().is_file())
         {
             let rel = entry.path().strip_prefix(root).unwrap().to_str().unwrap();
+            // Native coordination and query caches are additive runtime artifacts.
+            if rel == ".understand-anything/.batch-files.lock"
+                || rel.starts_with(".understand-anything/query-dictionaries/")
+            {
+                continue;
+            }
             let content = fs::read_to_string(entry.path())
                 .unwrap()
                 .replace(root.to_str().unwrap(), "<ROOT>");

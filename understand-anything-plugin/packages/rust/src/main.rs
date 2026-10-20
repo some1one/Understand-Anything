@@ -1,3 +1,4 @@
+mod helper_cli;
 mod pipeline_cli;
 use serde_json::json;
 use std::{
@@ -10,6 +11,16 @@ use understand_anything::{
     persistence::{read_json, write_json},
 };
 const IMPLEMENTED: &[&str] = &[
+    "capture_project_context",
+    "write_changed_files",
+    "prune_incremental_batch",
+    "save_knowledge_graph",
+    "diff_context",
+    "query_graph",
+    "query_payload",
+    "query_terms",
+    "helper_request",
+    "refresh_query_dictionaries",
     "merge_batch_graphs",
     "auto_update_preflight",
     "auto_update_fingerprint_check",
@@ -72,9 +83,9 @@ fn scan_paths(root: &Path) -> Result<Vec<String>> {
         .collect())
 }
 fn changed(path: &Path) -> Result<Vec<String>> {
-    Ok(fs::read_to_string(path)?
-        .lines()
-        .map(str::trim)
+    let raw = fs::read_to_string(path)?;
+    Ok(raw
+        .split(if raw.contains('\0') { '\0' } else { '\n' })
         .filter(|s| !s.is_empty())
         .map(str::to_owned)
         .collect())
@@ -142,6 +153,9 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
         "merge-subdomains" => "merge_subdomain_graphs",
         s => s,
     };
+    if helper_cli::COMMANDS.contains(&command) {
+        return helper_cli::run(command, &args);
+    }
     match command {
         "merge_batch_graphs" => {
             require(&args, 1, command, "<project-root>")?;
@@ -801,6 +815,9 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
             let (merged, report) = ua::merge::merge_graphs(&graphs);
             fs::create_dir_all(output.parent().unwrap())?;
             write_json(&output, &merged)?;
+            if !is_parts {
+                ua::query_dictionary::refresh(&output)?;
+            }
             if !is_parts {
                 eprintln!();
             }

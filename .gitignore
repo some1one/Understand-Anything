@@ -17,3 +17,16 @@ venv/
 *.pyo
 Thumbs.db
 .trash*/
+
+# Machine-specific dictionary discovery configuration
+**/understand-anything-plugin/packages/rust/dictionary-config.json
+
+# Downloaded runtime dictionary generations
+**/understand-anything-plugin/packages/rust/dictionaries/
+understand-anything-plugin/packages/rust/tests/fixtures/dictionaries/
+
+# Generated vocabulary cache for this repository graph
+/.understand-anything/query-dictionaries/
+
+# Optional repository-local full dictionary downloads
+/.understand-anything/dictionaries/

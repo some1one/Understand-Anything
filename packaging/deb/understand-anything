@@ -199,7 +199,14 @@ cmd_install() {
   fi
 
   # 1) Native CLI first.
+  if [ -z "$project" ]; then
+    python3 "$PLUGIN/scripts/configure_dictionaries.py" --plugin-root "$PLUGIN" --project-root "${project:-$PWD}" || return 1
+  fi
+
   if native_available "$native" "$project" && native_install "$native" "$project"; then
+    if [ -n "$project" ]; then
+      python3 "$PLUGIN/scripts/configure_dictionaries.py" --plugin-root "$PLUGIN" --project-root "${project:-$PWD}" || return 1
+    fi
     printf '\n✓ Enabled Understand-Anything for %s (native CLI). Restart your CLI/IDE.\n' "$id"
     return 0
   fi
@@ -218,6 +225,7 @@ cmd_install() {
       cp -R "$PLUGIN/." "$dest/"
       touch "$marker"
     fi
+    python3 "$dest/scripts/configure_dictionaries.py" --plugin-root "$dest" --project-root "$project" || return 1
     local dirs d back depth
     dirs="$(printf '%s\n%s\n' ".agents/skills" "$local_dir" | sort -u)"
     while IFS= read -r d; do

@@ -9,6 +9,11 @@ An enabled hook authorizes this graph-maintenance workflow within the current
 task's permissions. Honor instructions to stop and wait for an existing analysis
 run to finish before starting another. Do not stage, commit, or modify source files.
 
+Dictionary dependencies are discovered during installation and the explicit
+[plugin maintenance skill](../skills/understand-update/SKILL.md). Keep this graph
+workflow offline: do not invoke the dictionary downloader here. Graph publication
+rebuilds project caches from configured system data and local fallback snapshots.
+
 ## Part-based graphs
 
 Read `$PROJECT_ROOT/.understand-anything/config.json`. If it contains

@@ -1,6 +1,6 @@
 ---
 name: understand-dashboard
-description: Launch the interactive web dashboard to visualize a codebase's knowledge graph
+description: Launch the interactive web dashboard to visualize a codebase's knowledge graph. For plugin setup or instructions before the first analysis, use understand-help.
 argument-hint: "[project-path]"
 ---
 

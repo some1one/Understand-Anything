@@ -30,11 +30,22 @@ Claude supports native project scope; Codex uses standalone project skills for
 `--local`. Standalone skills share the bundled workflows, but do not register
 native hooks or named plugin agents.
 
-Start a new host session after installation. In Claude Code, run
+Start a new host session after installation. For first-run guidance, invoke
+`/understand-anything:understand-help` in Claude Code or `$understand-help` in Codex.
+To analyze a project in Claude Code, run
 `/understand-anything:understand`; in Codex, select `$understand`.
 Then use the dashboard skill to open the generated graph. See the
 [plugin guide](understand-anything-plugin/README.md) for all skills, options,
 hook behavior, and troubleshooting.
+
+## Help your agent choose when to use the plugin
+
+Copy the [recommended repository instructions](understand-anything-plugin/README.md#recommended-repository-instructions)
+into your project's `AGENTS.md` or `CLAUDE.md`, or ask `understand-help` to adapt
+them. They recommend graph-based discovery for unfamiliar components and
+cross-file relationships, direct reads for known single-file tasks, and no
+retrieval for generic questions or relevant context already loaded. The graph
+helps navigation; current source remains the evidence for behavior.
 
 ## Requirements
 
@@ -125,6 +136,12 @@ parts, embeddings, fingerprints, configuration and metadata remain under
 remain. `clean-build` always targets this source checkout, even when `LOCAL`
 selects another repository for `clean-local`.
 
+## TODO / future work
+
+- Add relevance ranking before limiting graph matches: score exact symbol/path
+  matches and meaningful term coverage, with stable tie-breaking. Dictionary-backed
+  normalization and word filtering are implemented.
+
 ## Layout
 
 - [Plugin](understand-anything-plugin/README.md): manifests, skills, agents, hooks,
@@ -136,3 +153,15 @@ selects another repository for `clean-local`.
 - `install.sh`, `scripts/build_dist.py`, and `packaging/deb/`: installation and
   distribution.
 - [Agent guidance](AGENTS.md): repository conventions for coding agents.
+
+Distribution bundles exclude dictionary data and never download it. Installation
+and plugin updates discover compatible system dictionaries, record their paths,
+and maintain downloaded data for missing components. First-time setup asks for
+shared OS storage (recommended) or repo-local storage, then saves the choice.
+Unattended installers can set `UA_DICTIONARY_STORAGE=shared` or `repo`; existing
+configurations reuse their saved path.
+Use `make update-dictionaries` to repeat that process or `make configure-dictionaries`
+for offline discovery. Graph updates and searches stay offline.
+Downloaded dictionaries and generated query caches should stay out of Git.
+For multiple projects, use the [shared storage setup and recommendations](understand-anything-plugin/scripts/dictionaries.md#share-downloads-across-projects);
+per-project caches remain separate. See [dictionary maintenance](understand-anything-plugin/scripts/dictionaries.md).
