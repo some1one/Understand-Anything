@@ -1644,22 +1644,52 @@ pub fn analyze_file(path: &str, content: &str) -> Option<Value> {
             raw: tree.root_node(),
             source: content,
         };
-        match normalized_lang(&lang) {
-            "typescript" => typescript(&n, &mut a),
-            "python" => python(&n, &mut a),
-            "go" => go(&n, &mut a),
-            "rust" => rust(&n, &mut a),
-            "java" => java(&n, &mut a, false, false),
-            "kotlin" => kotlin(&n, &mut a),
-            "csharp" => java(&n, &mut a, true, false),
-            "php" => php(&n, &mut a),
-            "ruby" => ruby(&n, &mut a),
-            "c" | "cpp" => cpp(&n, &mut a),
-            _ => {}
-        }
+        extract_tree_structure(&n, &lang, &mut a);
     }
     Some(a)
 }
+fn extract_tree_structure(n: &N, lang: &str, a: &mut Value) {
+    match normalized_lang(lang) {
+        "typescript" => typescript(n, a),
+        "python" => python(n, a),
+        "go" => go(n, a),
+        "rust" => rust(n, a),
+        "java" => java(n, a, false, false),
+        "kotlin" => kotlin(n, a),
+        "csharp" => java(n, a, true, false),
+        "php" => php(n, a),
+        "ruby" => ruby(n, a),
+        "c" | "cpp" => cpp(n, a),
+        _ => {}
+    }
+}
+
+/// Evidence for destructive comparisons: recovered syntax errors and unavailable
+/// grammars must never be interpreted as a successful file with zero symbols.
+pub fn analyze_file_strict(path: &str, content: &str) -> Value {
+    let Some(lang) = parsers::detect_registry_language(path)
+        .filter(|lang| parsers::LANGUAGES.contains(&lang.as_str())) else {
+        return json!({"status":"unsupported","structure":null,"leafTexts":[]});
+    };
+    let tree = match parsers::parse(&lang, content) {
+        Ok(tree) => tree,
+        Err(error) => return json!({"status":"failed","structure":null,"leafTexts":[],"reason":error.to_string()}),
+    };
+    let root = N { raw: tree.root_node(), source: content };
+    if root.raw.has_error() {
+        return json!({"status":"failed","structure":null,"leafTexts":[],"reason":"syntax errors"});
+    }
+    let mut structure = empty();
+    extract_tree_structure(&root, &lang, &mut structure);
+    let mut leaves = BTreeSet::new();
+    let mut pending = vec![root];
+    while let Some(node) = pending.pop() {
+        if node.raw.child_count() == 0 { leaves.insert(node.text()); }
+        else { pending.extend(node.children()); }
+    }
+    json!({"status":"succeeded","structure":structure,"leafTexts":leaves})
+}
+
 pub fn extract_call_graph(path: &str, content: &str) -> Option<Vec<Value>> {
     let lang = parsers::detect_registry_language(path)?;
     if !parsers::LANGUAGES.contains(&lang.as_str()) {
