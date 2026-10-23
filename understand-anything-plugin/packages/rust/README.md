@@ -294,3 +294,9 @@ major restructuring, full runs, and unusable baselines require architecture anal
 The command writes `architecture-update-plan.json` and, only when reusing layers,
 `layers.json`. Incremental assemble-review dispatch can be skipped as directed by
 the plan; graph validation and an explicit user review remain required.
+
+With refreshed scan and partition inventories, `parts_to_process` supplements the
+merged changed-file list with each saved partition's revision and assigned scope.
+A stale, ahead-of-HEAD, newly scoped, or unverifiable part is selected even when
+absent from that changed-file list. Calls without scan artifacts retain the
+legacy affected-path/missing-part selection behavior.

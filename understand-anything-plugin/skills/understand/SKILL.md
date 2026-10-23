@@ -186,7 +186,7 @@ Split the scanned repo into folder-parts and decide which to analyze. Load `$UA_
   [--full] [--changed="$UA_DIR/tmp/changed-files.json"]
 ```
 - Pass `--full` for `--full`/`--all`/first-run or `$SCOPE_CHANGED=true` → every included part. This replaces newly empty part graphs and restores newly included files. Partitioning, import resolution, batching, and fingerprints must all use the filtered scan inventory; do not rescan without the invocation patterns.
-- Otherwise pass `--changed=…` → **affected** parts plus any included part that has no partition graph yet (e.g. one just added via `/understand-add-part`).
+- Otherwise pass `--changed=…` → **affected** parts plus any included part that has no partition graph yet (e.g. one just added via `/understand-add-part`). With the refreshed scan and part inventories, selection also checks each saved part's own revision and scope. This catches older or ahead-of-HEAD partitions left by interrupted updates or branch switches, even when the merged changed-file list omits them.
 - If the output is empty, skip analysis. With `--review`, follow Phase 0's
   review-only path using the saved graph; retain warnings about changed files
   outside the selected parts and distinguish that saved scope from the fresh

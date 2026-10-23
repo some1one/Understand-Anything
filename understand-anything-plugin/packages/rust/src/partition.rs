@@ -151,13 +151,24 @@ pub fn parts_to_process(root: &Path, full: bool, changed: &[String]) -> Result<V
     )?
     .into_iter()
     .collect();
+    let data = crate::persistence::data_dir(root);
+    let has_inventory = data.join("intermediate/scan-result.json").exists();
     for p in included {
-        if !crate::persistence::data_dir(&root)
-            .join("partitions")
-            .join(part_to_filename(&p))
-            .exists()
-        {
+        if parts.contains(&p) {
+            continue;
+        }
+        if !data.join("partitions").join(part_to_filename(&p)).exists() {
             parts.insert(p);
+        } else if has_inventory {
+            // Merged metadata may describe a different revision from this part
+            // after interrupted updates, explicit part additions or branch switches.
+            let plan = crate::partition_updates::plan(root, &p, false)?;
+            if plan["mode"] == "full"
+                || !crate::array(&plan, "filesToAnalyze").is_empty()
+                || !crate::array(&plan, "removedFiles").is_empty()
+            {
+                parts.insert(p);
+            }
         }
     }
     Ok(parts.into_iter().collect())

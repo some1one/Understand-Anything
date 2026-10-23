@@ -142,3 +142,89 @@ fn subproject_plans_handle_dirty_files_and_new_or_empty_parts() {
     write_json(&inter.join("part-files/_root.json"), &json!(["missing.md"])).unwrap();
     assert!(plan(&root, "_root", false).is_err());
 }
+
+#[test]
+fn selection_checks_saved_part_revisions_beyond_the_merged_changed_list() {
+    use understand_anything::{partition::parts_to_process, persistence::save_config};
+    let temp = tempfile::tempdir().unwrap();
+    let root = temp.path();
+    let git = |args: &[&str]| {
+        let output = Command::new("git")
+            .args(args)
+            .current_dir(root)
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        String::from_utf8(output.stdout).unwrap().trim().to_owned()
+    };
+    git(&["init", "-q"]);
+    git(&["config", "user.name", "Test"]);
+    git(&["config", "user.email", "test@example.com"]);
+    let parts = ["old", "ahead", "current", "other"];
+    for part in parts {
+        fs::create_dir(root.join(part)).unwrap();
+        fs::write(root.join(part).join("file.md"), "base").unwrap();
+    }
+    git(&["add", "."]);
+    git(&["commit", "-qm", "base"]);
+    let base = git(&["rev-parse", "HEAD"]);
+    fs::write(root.join("old/file.md"), "current").unwrap();
+    git(&["add", "old"]);
+    git(&["commit", "-qm", "current"]);
+    let current = git(&["rev-parse", "HEAD"]);
+    fs::write(root.join("ahead/file.md"), "future").unwrap();
+    git(&["add", "ahead"]);
+    git(&["commit", "-qm", "future partial analysis"]);
+    let future = git(&["rev-parse", "HEAD"]);
+    git(&["checkout", "-q", &current]);
+    let data = root.join(".ua");
+    let inter = data.join("intermediate");
+    fs::create_dir_all(inter.join("part-files")).unwrap();
+    fs::create_dir_all(data.join("partitions")).unwrap();
+    save_config(root, &json!({"includedParts":parts,"splitDepth":1})).unwrap();
+    write_json(&data.join("meta.json"), &json!({"gitCommitHash":current})).unwrap();
+    let scan_files: Vec<_> = parts
+        .iter()
+        .map(|p| json!({"path":format!("{p}/file.md")}))
+        .collect();
+    write_json(
+        &inter.join("scan-result.json"),
+        &json!({"files":scan_files}),
+    )
+    .unwrap();
+    for (part, hash) in [
+        ("old", &base),
+        ("ahead", &future),
+        ("current", &current),
+        ("other", &current),
+    ] {
+        let path = format!("{part}/file.md");
+        write_json(
+            &inter.join(format!("part-files/{part}.json")),
+            &json!([path]),
+        )
+        .unwrap();
+        write_json(&data.join(format!("partitions/{part}.knowledge-graph.json")),&json!({"project":{"gitCommitHash":hash},"nodes":[{"id":format!("file:{path}"),"type":"file","filePath":path}],"edges":[]})).unwrap();
+    }
+    let changed = vec!["other/file.md".to_owned()];
+    assert_eq!(
+        parts_to_process(root, false, &changed).unwrap(),
+        vec!["ahead", "old", "other"]
+    );
+    // Scope removal needs refreshing even with no source change for that part.
+    write_json(&inter.join("part-files/current.json"), &json!([])).unwrap();
+    assert_eq!(
+        parts_to_process(root, false, &changed).unwrap(),
+        vec!["ahead", "current", "old", "other"]
+    );
+    write_json(
+        &inter.join("scan-result.json"),
+        &json!({"files":[],"failures":["unreadable"]}),
+    )
+    .unwrap();
+    assert!(parts_to_process(root, false, &changed).is_err());
+}
