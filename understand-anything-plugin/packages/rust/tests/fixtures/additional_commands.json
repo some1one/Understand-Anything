@@ -7,14 +7,14 @@
     ],
     "env": {},
     "before": {
-      "project/README.md": "# \u6587\n",
+      "project/README.md": "# 文\n",
       "project/.understandignore": "excluded/\n",
       "project/excluded/b.py": "skip",
       "project/src/a.py": "def a():\n    return 1\n"
     },
     "after": {
       "scan.json": "{\n  \"scriptCompleted\": true,\n  \"files\": [\n    {\n      \"path\": \".understandignore\",\n      \"language\": \"unknown\",\n      \"sizeLines\": 1,\n      \"fileCategory\": \"code\"\n    },\n    {\n      \"path\": \"README.md\",\n      \"language\": \"markdown\",\n      \"sizeLines\": 1,\n      \"fileCategory\": \"docs\"\n    },\n    {\n      \"path\": \"src/a.py\",\n      \"language\": \"python\",\n      \"sizeLines\": 2,\n      \"fileCategory\": \"code\"\n    }\n  ],\n  \"totalFiles\": 3,\n  \"filteredByIgnore\": 1,\n  \"estimatedComplexity\": \"small\",\n  \"stats\": {\n    \"filesScanned\": 3,\n    \"byCategory\": {\n      \"code\": 2,\n      \"docs\": 1\n    },\n    \"byLanguage\": {\n      \"unknown\": 1,\n      \"markdown\": 1,\n      \"python\": 1\n    }\n  }\n}",
-      "project/README.md": "# \u6587\n",
+      "project/README.md": "# 文\n",
       "project/.understandignore": "excluded/\n",
       "project/excluded/b.py": "skip",
       "project/src/a.py": "def a():\n    return 1\n"
@@ -34,12 +34,12 @@
       "project/src/a.py": "pass"
     },
     "after": {
-      "project/.understand-anything/.understandignore": "# .understandignore \u2014 patterns for files/dirs to exclude from analysis\n# Syntax: same as .gitignore (globs, # comments, ! negation, trailing / for dirs)\n# Lines below are suggestions \u2014 uncomment to activate.\n# Use ! prefix to force-include something excluded by defaults.\n#\n# Built-in defaults (always excluded unless negated):\n#   node_modules/, .git/, dist/, build/, obj/, *.lock, *.min.js, etc.\n#\n\n# --- Test file patterns (uncomment to exclude) ---\n\n# JS / TS\n# *.test.*\n# *.spec.*\n# *.snap\n# C# / .NET\n# **/*Tests.cs\n# **/*Test.cs\n# **/*Fixture.cs\n# **/*.Tests.csproj\n# Java / Kotlin\n# **/src/test/**\n# **/*Test.java\n# **/*IT.java\n# **/*Spec.kt\n# Go\n# **/*_test.go\n",
+      "project/.ua/.understandignore": "# .understandignore — patterns for files/dirs to exclude from analysis\n# Syntax: same as .gitignore (globs, # comments, ! negation, trailing / for dirs)\n# Lines below are suggestions — uncomment to activate.\n# Use ! prefix to force-include something excluded by defaults.\n#\n# Built-in defaults (always excluded unless negated):\n#   node_modules/, .git/, dist/, build/, obj/, *.lock, *.min.js, etc.\n#\n\n# --- Test file patterns (uncomment to exclude) ---\n\n# JS / TS\n# *.test.*\n# *.spec.*\n# *.snap\n# C# / .NET\n# **/*Tests.cs\n# **/*Test.cs\n# **/*Fixture.cs\n# **/*.Tests.csproj\n# Java / Kotlin\n# **/src/test/**\n# **/*Test.java\n# **/*IT.java\n# **/*Spec.kt\n# Go\n# **/*_test.go\n# C++\n# **/*_test.cc\n# **/*_test.cpp\n# **/*_test.cxx\n# **/*Test.cc\n# **/*Test.cpp\n# **/*_unittest.cc\n# **/*_unittest.cpp\n# **/*_browsertest.cc\n# **/*_benchmark.cc\n# **/*Benchmark.cpp\n# Python\n# **/test_*.py\n# **/*_test.py\n# **/tests.py\n# **/conftest.py\n# Rust\n# **/tests.rs\n# **/test_*.rs\n# **/*_test.rs\n# **/bench_*.rs\n# **/*_bench.rs\n# Ruby\n# **/*_spec.rb\n# **/*_test.rb\n# **/test_*.rb\n# **/spec_helper.rb\n# **/test_helper.rb\n# **/rails_helper.rb\n# Swift\n# **/Tests/**/*.swift\n# **/Specs/**/*.swift\n",
       "project/node_modules/a.js": "skip",
       "project/src/a.py": "pass"
     },
     "stdout": "",
-    "stderr": "generate-ignore: wrote <ROOT>/project/.understand-anything/.understandignore\n",
+    "stderr": "generate-ignore: wrote <ROOT>/project/.ua/.understandignore\n",
     "status": 0
   },
   {
@@ -55,7 +55,7 @@
       "project/.understand-anything/.understandignore": "keep\n"
     },
     "stdout": "",
-    "stderr": "generate-ignore: <ROOT>/project/.understand-anything/.understandignore already exists \u2014 skipping\n",
+    "stderr": "generate-ignore: <ROOT>/project/.understand-anything/.understandignore already exists — skipping\n",
     "status": 0
   },
   {
@@ -142,10 +142,10 @@
       "narrative.json": "{\n  \"name\": \"demo\",\n  \"description\": \"Demo project\",\n  \"languages\": [\n    \"python\"\n  ],\n  \"frameworks\": []\n}",
       "imports.json": "{\n  \"importMap\": {\n    \"src/a.py\": []\n  }\n}",
       "scan.json": "{\n  \"files\": [\n    {\n      \"path\": \"src/a.py\",\n      \"language\": \"python\",\n      \"sizeLines\": 2,\n      \"fileCategory\": \"code\"\n    }\n  ],\n  \"totalFiles\": 1,\n  \"filteredByIgnore\": 0,\n  \"estimatedComplexity\": \"small\"\n}",
-      ".understand-anything/intermediate/scan-result.json": "{\n  \"name\": \"demo\",\n  \"description\": \"Demo project\",\n  \"languages\": [\n    \"python\"\n  ],\n  \"frameworks\": [],\n  \"files\": [\n    {\n      \"path\": \"src/a.py\",\n      \"language\": \"python\",\n      \"sizeLines\": 2,\n      \"fileCategory\": \"code\"\n    }\n  ],\n  \"totalFiles\": 1,\n  \"filteredByIgnore\": 0,\n  \"estimatedComplexity\": \"small\",\n  \"importMap\": {\n    \"src/a.py\": []\n  }\n}"
+      ".ua/intermediate/scan-result.json": "{\n  \"name\": \"demo\",\n  \"description\": \"Demo project\",\n  \"languages\": [\n    \"python\"\n  ],\n  \"frameworks\": [],\n  \"files\": [\n    {\n      \"path\": \"src/a.py\",\n      \"language\": \"python\",\n      \"sizeLines\": 2,\n      \"fileCategory\": \"code\"\n    }\n  ],\n  \"totalFiles\": 1,\n  \"filteredByIgnore\": 0,\n  \"estimatedComplexity\": \"small\",\n  \"importMap\": {\n    \"src/a.py\": []\n  }\n}"
     },
     "stdout": "",
-    "stderr": "assemble_project_scan_result: wrote 1 files, 1 importMap entries to <ROOT>/.understand-anything/intermediate/scan-result.json\n",
+    "stderr": "assemble_project_scan_result: wrote 1 files, 1 importMap entries to <ROOT>/.ua/intermediate/scan-result.json\n",
     "status": 0
   },
   {
@@ -160,12 +160,12 @@
       "src/a.py": "def a():\n    return 1\n"
     },
     "after": {
-      "results.json": "{\n  \"scriptCompleted\": true,\n  \"filesAnalyzed\": 1,\n  \"filesSkipped\": [\n    \"missing.py\"\n  ],\n  \"results\": [\n    {\n      \"path\": \"src/a.py\",\n      \"language\": \"python\",\n      \"fileCategory\": \"code\",\n      \"totalLines\": 2,\n      \"nonEmptyLines\": 2,\n      \"functions\": [\n        {\n          \"name\": \"a\",\n          \"startLine\": 1,\n          \"endLine\": 2,\n          \"params\": []\n        }\n      ],\n      \"exports\": [\n        {\n          \"name\": \"a\",\n          \"line\": 1,\n          \"isDefault\": false\n        }\n      ],\n      \"metrics\": {\n        \"importCount\": 0,\n        \"exportCount\": 1,\n        \"functionCount\": 1,\n        \"classCount\": 0\n      }\n    }\n  ]\n}",
+      "results.json": "{\n  \"scriptCompleted\": true,\n  \"filesAnalyzed\": 1,\n  \"filesSkipped\": [\n    \"missing.py\"\n  ],\n  \"results\": [\n    {\n      \"path\": \"src/a.py\",\n      \"language\": \"python\",\n      \"fileCategory\": \"code\",\n      \"totalLines\": 2,\n      \"nonEmptyLines\": 2,\n      \"functions\": [\n        {\n          \"name\": \"a\",\n          \"startLine\": 1,\n          \"endLine\": 2,\n          \"params\": []\n        }\n      ],\n      \"exports\": [\n        {\n          \"name\": \"a\",\n          \"line\": 1,\n          \"isDefault\": false\n        }\n      ],\n      \"metrics\": {\n        \"importCount\": 0,\n        \"exportCount\": 1,\n        \"functionCount\": 1,\n        \"classCount\": 0\n      }\n    }\n  ],\n  \"filesUnreadable\": [\n    {\n      \"path\": \"missing.py\",\n      \"code\": \"ENOENT\"\n    }\n  ]\n}",
       "input.json": "{\n  \"projectRoot\": \"<ROOT>\",\n  \"batchFiles\": [\n    {\n      \"path\": \"src/a.py\",\n      \"language\": \"python\",\n      \"sizeLines\": 2,\n      \"fileCategory\": \"code\"\n    },\n    {\n      \"path\": \"missing.py\",\n      \"language\": \"python\",\n      \"sizeLines\": 2,\n      \"fileCategory\": \"code\"\n    }\n  ],\n  \"batchImportData\": {}\n}",
       "src/a.py": "def a():\n    return 1\n"
     },
     "stdout": "",
-    "stderr": "",
+    "stderr": "extract_structure: 1 batch file(s) could not be read; check projectRoot and filesUnreadable in the output\n",
     "status": 0
   },
   {
@@ -202,7 +202,7 @@
     },
     "after": {
       "input.json": "{\n  \"projectRoot\": \"<ROOT>\",\n  \"sourceFilePaths\": [\n    \"src/a.py\",\n    \"missing.py\"\n  ],\n  \"gitCommitHash\": \"abc\"\n}",
-      ".understand-anything/fingerprints.json": "{\n  \"version\": \"1.0.0\",\n  \"gitCommitHash\": \"abc\",\n  \"generatedAt\": \"2026-09-21T20:33:41.755Z\",\n  \"files\": {\n    \"src/a.py\": {\n      \"filePath\": \"src/a.py\",\n      \"contentHash\": \"0c2863d70c1f0e4d3682a1608c1e161ec2fad5bc4d911fc69e314677ca080149\",\n      \"functions\": [\n        {\n          \"name\": \"a\",\n          \"params\": [],\n          \"returnType\": null,\n          \"exported\": true,\n          \"lineCount\": 2\n        }\n      ],\n      \"classes\": [],\n      \"imports\": [],\n      \"exports\": [\n        \"a\"\n      ],\n      \"totalLines\": 3,\n      \"hasStructuralAnalysis\": true\n    }\n  }\n}",
+      ".ua/fingerprints.json": "{\n  \"version\": \"1.0.0\",\n  \"gitCommitHash\": \"abc\",\n  \"generatedAt\": \"2026-09-21T20:33:41.755Z\",\n  \"files\": {\n    \"src/a.py\": {\n      \"filePath\": \"src/a.py\",\n      \"contentHash\": \"0c2863d70c1f0e4d3682a1608c1e161ec2fad5bc4d911fc69e314677ca080149\",\n      \"functions\": [\n        {\n          \"name\": \"a\",\n          \"params\": [],\n          \"returnType\": null,\n          \"exported\": true,\n          \"lineCount\": 2\n        }\n      ],\n      \"classes\": [],\n      \"imports\": [],\n      \"exports\": [\n        \"a\"\n      ],\n      \"totalLines\": 3,\n      \"hasStructuralAnalysis\": true\n    }\n  }\n}",
       "src/a.py": "def a():\n    return 1\n"
     },
     "stdout": "Fingerprints baseline: 1 files\n",
@@ -217,17 +217,17 @@
     "env": {},
     "before": {
       "package.json": "{\n  \"name\": \"demo\",\n  \"scripts\": {\n    \"start\": \"run\"\n  },\n  \"dependencies\": {\n    \"one\": \"*\"\n  }\n}",
-      "README.md": "# Demo \u6587\n",
+      "README.md": "# Demo 文\n",
       "src/service.py": "from .helpers import help\n@app.route(\"/hello\")\ndef hello():\n    return help()\n"
     },
     "after": {
       "package.json": "{\n  \"name\": \"demo\",\n  \"scripts\": {\n    \"start\": \"run\"\n  },\n  \"dependencies\": {\n    \"one\": \"*\"\n  }\n}",
-      "README.md": "# Demo \u6587\n",
+      "README.md": "# Demo 文\n",
       "src/service.py": "from .helpers import help\n@app.route(\"/hello\")\ndef hello():\n    return help()\n",
-      ".understand-anything/intermediate/domain-context.json": "{\n  \"projectRoot\": \"<ROOT>\",\n  \"fileCount\": 1,\n  \"fileTree\": [\n    \"src/service.py\"\n  ],\n  \"entryPoints\": [\n    {\n      \"file\": \"src/service.py\",\n      \"line\": 2,\n      \"type\": \"http\",\n      \"description\": \"Decorator route (Flask/FastAPI/NestJS)\",\n      \"match\": \"@app.route(\\\"/hello\\\"\",\n      \"snippet\": \"@app.route(\\\"/hello\\\")\\ndef hello():\\n    return help()\"\n    }\n  ],\n  \"fileSignatures\": [\n    {\n      \"file\": \"src/service.py\",\n      \"exports\": [\n        \"hello\"\n      ],\n      \"imports\": [\n        \".helpers\"\n      ],\n      \"lines\": 4,\n      \"preview\": \"from .helpers import help\\n@app.route(\\\"/hello\\\")\\ndef hello():\\n    return help()\"\n    }\n  ],\n  \"metadata\": {\n    \"package.json\": {\n      \"name\": \"demo\",\n      \"description\": null,\n      \"scripts\": [\n        \"start\"\n      ],\n      \"dependencies\": [\n        \"one\"\n      ],\n      \"devDependencies\": []\n    },\n    \"README.md\": \"# Demo \\u6587\\n\"\n  }\n}"
+      ".ua/intermediate/domain-context.json": "{\n  \"projectRoot\": \"<ROOT>\",\n  \"fileCount\": 1,\n  \"fileTree\": [\n    \"src/service.py\"\n  ],\n  \"entryPoints\": [\n    {\n      \"file\": \"src/service.py\",\n      \"line\": 2,\n      \"type\": \"http\",\n      \"description\": \"Decorator route (Flask/FastAPI/NestJS)\",\n      \"match\": \"@app.route(\\\"/hello\\\"\",\n      \"snippet\": \"@app.route(\\\"/hello\\\")\\ndef hello():\\n    return help()\"\n    }\n  ],\n  \"fileSignatures\": [\n    {\n      \"file\": \"src/service.py\",\n      \"exports\": [\n        \"hello\"\n      ],\n      \"imports\": [\n        \".helpers\"\n      ],\n      \"lines\": 4,\n      \"preview\": \"from .helpers import help\\n@app.route(\\\"/hello\\\")\\ndef hello():\\n    return help()\"\n    }\n  ],\n  \"metadata\": {\n    \"package.json\": {\n      \"name\": \"demo\",\n      \"description\": null,\n      \"scripts\": [\n        \"start\"\n      ],\n      \"dependencies\": [\n        \"one\"\n      ],\n      \"devDependencies\": []\n    },\n    \"README.md\": \"# Demo \\u6587\\n\"\n  }\n}"
     },
     "stdout": "",
-    "stderr": "Scanning <ROOT> ...\n  Found 1 source files\n  Detected 1 entry points\n  Extracted 1 file signatures\n  Read 2 metadata files\n  Wrote <ROOT>/.understand-anything/intermediate/domain-context.json (1 KB)\n",
+    "stderr": "Scanning <ROOT> ...\n  Found 1 source files\n  Detected 1 entry points\n  Extracted 1 file signatures\n  Read 2 metadata files\n  Wrote <ROOT>/.ua/intermediate/domain-context.json (1 KB)\n",
     "status": 0
   },
   {
@@ -243,7 +243,8 @@
     "after": {
       ".understand-anything/intermediate/assembled-graph.json": "{\n  \"nodes\": [\n    {\n      \"id\": \"file:src/a.py\",\n      \"type\": \"file\",\n      \"name\": \"a.py\",\n      \"filePath\": \"src/a.py\",\n      \"summary\": \"Performs a useful operation\",\n      \"tags\": [\n        \"python\"\n      ],\n      \"complexity\": \"simple\"\n    }\n  ],\n  \"edges\": []\n}",
       ".understand-anything/intermediate/scan-result.json": "{\n  \"name\": \"demo\",\n  \"description\": \"Demo project\",\n  \"languages\": [\n    \"python\"\n  ],\n  \"frameworks\": [],\n  \"files\": [\n    {\n      \"path\": \"src/a.py\",\n      \"language\": \"python\",\n      \"sizeLines\": 2,\n      \"fileCategory\": \"code\"\n    }\n  ],\n  \"totalFiles\": 1,\n  \"filteredByIgnore\": 0,\n  \"estimatedComplexity\": \"small\",\n  \"importMap\": {\n    \"src/a.py\": []\n  }\n}",
-      ".understand-anything/intermediate/batch-1.json": "{\n  \"nodes\": [\n    {\n      \"id\": \"file:src/a.py\",\n      \"type\": \"file\",\n      \"name\": \"a.py\",\n      \"filePath\": \"src/a.py\",\n      \"summary\": \"Performs a useful operation\",\n      \"tags\": [\n        \"python\"\n      ],\n      \"complexity\": \"simple\"\n    }\n  ],\n  \"edges\": []\n}"
+      ".understand-anything/intermediate/batch-1.json": "{\n  \"nodes\": [\n    {\n      \"id\": \"file:src/a.py\",\n      \"type\": \"file\",\n      \"name\": \"a.py\",\n      \"filePath\": \"src/a.py\",\n      \"summary\": \"Performs a useful operation\",\n      \"tags\": [\n        \"python\"\n      ],\n      \"complexity\": \"simple\"\n    }\n  ],\n  \"edges\": []\n}",
+      ".understand-anything/intermediate/batch-merge-report.txt": "Input: 1 nodes, 0 edges\n\nOutput: 1 nodes, 0 edges\n\nImports edge recovery:\n  Recovered 0 `imports` edges from importMap (1 entries scanned)"
     },
     "stdout": "",
     "stderr": "Found 1 batch files (1 logical batches, 0 multi-part):\n  batch-1.json: 1 nodes, 0 edges\n\nInput: 1 nodes, 0 edges\n\nOutput: 1 nodes, 0 edges\n\nImports edge recovery:\n  Recovered 0 `imports` edges from importMap (1 entries scanned)\n\nWritten to <ROOT>/.understand-anything/intermediate/assembled-graph.json (0 KB)\n",
@@ -284,7 +285,7 @@
       ".understand-anything/partitions/src.knowledge-graph.json": "{\n  \"version\": \"1.0.0\",\n  \"project\": {\n    \"name\": \"demo\",\n    \"languages\": [\n      \"python\"\n    ],\n    \"frameworks\": [],\n    \"description\": \"Demo project\",\n    \"analyzedAt\": \"2026-01-01T00:00:00Z\",\n    \"gitCommitHash\": \"abc\"\n  },\n  \"nodes\": [\n    {\n      \"id\": \"file:src/a.py\",\n      \"type\": \"file\",\n      \"name\": \"a.py\",\n      \"filePath\": \"src/a.py\",\n      \"summary\": \"Performs a useful operation\",\n      \"tags\": [\n        \"python\"\n      ],\n      \"complexity\": \"simple\"\n    }\n  ],\n  \"edges\": [],\n  \"layers\": []\n}"
     },
     "stdout": "",
-    "stderr": "Input: 1 nodes, 0 edges (from 1 graphs)\n\nOutput: 1 nodes, 0 edges, 0 layers\n\nMerged 1 parts \u2192 <ROOT>/.understand-anything/intermediate/assembled-graph.json\n",
+    "stderr": "Input: 1 nodes, 0 edges (from 1 graphs)\n\nOutput: 1 nodes, 0 edges, 0 layers\n\nMerged 1 parts → <ROOT>/.understand-anything/intermediate/assembled-graph.json\n",
     "status": 0
   },
   {
@@ -298,7 +299,8 @@
     },
     "after": {
       ".understand-anything/knowledge-graph.json": "{\n  \"version\": \"1.0.0\",\n  \"project\": {\n    \"name\": \"demo\",\n    \"languages\": [\n      \"python\"\n    ],\n    \"frameworks\": [],\n    \"description\": \"Demo project\",\n    \"analyzedAt\": \"2026-01-01T00:00:00Z\",\n    \"gitCommitHash\": \"abc\"\n  },\n  \"nodes\": [\n    {\n      \"id\": \"file:src/a.py\",\n      \"type\": \"file\",\n      \"name\": \"a.py\",\n      \"filePath\": \"src/a.py\",\n      \"summary\": \"Performs a useful operation\",\n      \"tags\": [\n        \"python\"\n      ],\n      \"complexity\": \"simple\"\n    }\n  ],\n  \"edges\": [],\n  \"layers\": []\n}",
-      ".understand-anything/partitions/src.knowledge-graph.json": "{\n  \"version\": \"1.0.0\",\n  \"project\": {\n    \"name\": \"demo\",\n    \"languages\": [\n      \"python\"\n    ],\n    \"frameworks\": [],\n    \"description\": \"Demo project\",\n    \"analyzedAt\": \"2026-01-01T00:00:00Z\",\n    \"gitCommitHash\": \"abc\"\n  },\n  \"nodes\": [\n    {\n      \"id\": \"file:src/a.py\",\n      \"type\": \"file\",\n      \"name\": \"a.py\",\n      \"filePath\": \"src/a.py\",\n      \"summary\": \"Performs a useful operation\",\n      \"tags\": [\n        \"python\"\n      ],\n      \"complexity\": \"simple\"\n    }\n  ],\n  \"edges\": [],\n  \"layers\": []\n}"
+      ".understand-anything/partitions/src.knowledge-graph.json": "{\n  \"version\": \"1.0.0\",\n  \"project\": {\n    \"name\": \"demo\",\n    \"languages\": [\n      \"python\"\n    ],\n    \"frameworks\": [],\n    \"description\": \"Demo project\",\n    \"analyzedAt\": \"2026-01-01T00:00:00Z\",\n    \"gitCommitHash\": \"abc\"\n  },\n  \"nodes\": [\n    {\n      \"id\": \"file:src/a.py\",\n      \"type\": \"file\",\n      \"name\": \"a.py\",\n      \"filePath\": \"src/a.py\",\n      \"summary\": \"Performs a useful operation\",\n      \"tags\": [\n        \"python\"\n      ],\n      \"complexity\": \"simple\"\n    }\n  ],\n  \"edges\": [],\n  \"layers\": []\n}",
+      ".understand-anything/merge-report.json": "{\n  \"generatedBy\": \"merge_subdomain_graphs\",\n  \"output\": {\n    \"nodes\": 1,\n    \"edges\": 0,\n    \"layers\": 0\n  },\n  \"recoveredStructuralEdges\": 0,\n  \"droppedEdges\": []\n}"
     },
     "stdout": "",
     "stderr": "Found 1 subdomain graphs:\n  - src.knowledge-graph.json\n    Loaded src.knowledge-graph.json: 1 nodes, 0 edges\n\nInput: 1 nodes, 0 edges (from 1 graphs)\n\nOutput: 1 nodes, 0 edges, 0 layers\n\nWritten to <ROOT>/.understand-anything/knowledge-graph.json (1 KB)\n",
@@ -363,14 +365,12 @@
       ".understand-anything/intermediate/auto-update-state.json": "{\n  \"changedSourceFiles\": [],\n  \"currentCommit\": \"abc\"\n}"
     },
     "after": {
-      ".understand-anything/meta.json": "{\n  \"lastAnalyzedAt\": \"2026-09-21T20:33:45.234Z\",\n  \"gitCommitHash\": \"abc\",\n  \"version\": \"1.0.0\"\n}",
       ".understand-anything/knowledge-graph.json": "{\n  \"version\": \"1.0.0\",\n  \"project\": {\n    \"name\": \"demo\",\n    \"languages\": [\n      \"python\"\n    ],\n    \"frameworks\": [],\n    \"description\": \"Demo project\",\n    \"analyzedAt\": \"2026-01-01T00:00:00Z\",\n    \"gitCommitHash\": \"abc\"\n  },\n  \"nodes\": [\n    {\n      \"id\": \"file:src/a.py\",\n      \"type\": \"file\",\n      \"name\": \"a.py\",\n      \"filePath\": \"src/a.py\",\n      \"summary\": \"Performs a useful operation\",\n      \"tags\": [\n        \"python\"\n      ],\n      \"complexity\": \"simple\"\n    }\n  ],\n  \"edges\": [],\n  \"layers\": []\n}",
-      ".understand-anything/intermediate/change-analysis.json": "{\n  \"action\": \"SKIP\",\n  \"rerunArchitecture\": false,\n  \"reason\": \"No structural changes detected.\",\n  \"filesToReanalyze\": [],\n  \"newFiles\": [],\n  \"deletedFiles\": [],\n  \"cosmeticOnlyFiles\": [],\n  \"unchangedFiles\": [],\n  \"fileChanges\": [],\n  \"metadataUpdated\": true\n}",
       ".understand-anything/intermediate/auto-update-state.json": "{\n  \"changedSourceFiles\": [],\n  \"currentCommit\": \"abc\"\n}"
     },
-    "stdout": "{\"action\": \"SKIP\", \"rerunArchitecture\": false, \"reason\": \"No structural changes detected.\", \"filesToReanalyze\": [], \"newFiles\": [], \"deletedFiles\": [], \"cosmeticOnlyFiles\": [], \"unchangedFiles\": [], \"fileChanges\": [], \"metadataUpdated\": true}\n",
-    "stderr": "",
-    "status": 0
+    "stdout": "",
+    "stderr": "HEAD changed since incremental preflight; prepare the update again\n",
+    "status": 1
   },
   {
     "command": "auto_update_prepare_batches",
@@ -390,10 +390,12 @@
       "src/a.py": "def a():\n    return 1\n",
       ".understand-anything/intermediate/dispatch-summary.json": "{\n  \"projectName\": \"demo\",\n  \"projectDescription\": \"Demo project\",\n  \"languages\": [\n    \"python\"\n  ],\n  \"frameworks\": [],\n  \"totalBatches\": 1,\n  \"filesToReanalyze\": [\n    \"src/a.py\"\n  ],\n  \"allProjectFiles\": [\n    \"src/a.py\"\n  ],\n  \"batches\": [\n    {\n      \"batchIndex\": 1,\n      \"outputPath\": \"<ROOT>/.understand-anything/intermediate/batch-1.json\",\n      \"files\": [\n        {\n          \"path\": \"src/a.py\",\n          \"sizeLines\": 2,\n          \"language\": \"python\"\n        }\n      ]\n    }\n  ]\n}",
       ".understand-anything/intermediate/batches.json": "{\n  \"schemaVersion\": 1,\n  \"algorithm\": \"count-fallback\",\n  \"totalFiles\": 1,\n  \"totalBatches\": 1,\n  \"exportsByPath\": {\n    \"src/a.py\": [\n      \"a\"\n    ]\n  },\n  \"batches\": [\n    {\n      \"batchIndex\": 1,\n      \"files\": [\n        {\n          \"path\": \"src/a.py\",\n          \"language\": \"python\",\n          \"sizeLines\": 2,\n          \"fileCategory\": \"code\"\n        }\n      ],\n      \"batchImportData\": {\n        \"src/a.py\": []\n      },\n      \"neighborMap\": {}\n    }\n  ]\n}",
-      ".understand-anything/intermediate/change-analysis.json": "{\n  \"filesToReanalyze\": [\n    \"src/a.py\"\n  ]\n}"
+      ".understand-anything/intermediate/change-analysis.json": "{\n  \"filesToReanalyze\": [\n    \"src/a.py\"\n  ]\n}",
+      ".understand-anything/intermediate/incremental-symbol-baseline.json": "{\n  \"version\": 1,\n  \"baseCommit\": null,\n  \"headCommit\": null,\n  \"files\": [\n    \"src/a.py\"\n  ],\n  \"graph\": {\n    \"version\": \"1.0.0\",\n    \"project\": {\n      \"name\": \"demo\",\n      \"languages\": [\n        \"python\"\n      ],\n      \"frameworks\": [],\n      \"description\": \"Demo project\",\n      \"analyzedAt\": \"2026-01-01T00:00:00Z\",\n      \"gitCommitHash\": \"abc\"\n    },\n    \"nodes\": [\n      {\n        \"id\": \"file:src/a.py\",\n        \"type\": \"file\",\n        \"name\": \"a.py\",\n        \"filePath\": \"src/a.py\",\n        \"summary\": \"Performs a useful operation\",\n        \"tags\": [\n          \"python\"\n        ],\n        \"complexity\": \"simple\"\n      }\n    ],\n    \"edges\": [],\n    \"layers\": []\n  }\n}",
+      ".understand-anything/intermediate/scan-result.json": "{\n  \"scriptCompleted\": true,\n  \"totalFiles\": 1,\n  \"filteredByIgnore\": 0,\n  \"estimatedComplexity\": \"small\",\n  \"stats\": {\n    \"filesScanned\": 1,\n    \"byCategory\": {\n      \"code\": 1\n    },\n    \"byLanguage\": {\n      \"python\": 1\n    }\n  },\n  \"files\": [\n    {\n      \"path\": \"src/a.py\",\n      \"language\": \"python\",\n      \"sizeLines\": 2,\n      \"fileCategory\": \"code\"\n    }\n  ],\n  \"importMap\": {\n    \"src/a.py\": []\n  },\n  \"importMapRefreshPaths\": [\n    \"src/a.py\"\n  ]\n}"
     },
     "stdout": "{\"projectName\": \"demo\", \"projectDescription\": \"Demo project\", \"languages\": [\"python\"], \"frameworks\": [], \"totalBatches\": 1, \"filesToReanalyze\": [\"src/a.py\"], \"allProjectFiles\": [\"src/a.py\"], \"batches\": [{\"batchIndex\": 1, \"outputPath\": \"<ROOT>/.understand-anything/intermediate/batch-1.json\", \"files\": [{\"path\": \"src/a.py\", \"sizeLines\": 2, \"language\": \"python\"}]}]}\n",
-    "stderr": "Loaded 1 files (1 code).\nWarning: compute-batches: Louvain failed (forced throw via UA_COMPUTE_BATCHES_FORCE_LOUVAIN_THROW) \u2014 falling back to count-based grouping (12 files/batch)\nInfo: compute-batches: merged 1 small batches (1 files) into 1 misc batches \u2014 singletons and orphans consolidated\nprepare-batches: 1 batch(es) for 1 file(s)\n",
+    "stderr": "Loaded 1 files (1 code).\nWarning: compute-batches: Louvain failed (forced throw via UA_COMPUTE_BATCHES_FORCE_LOUVAIN_THROW) — falling back to count-based grouping (12 files/batch)\nInfo: compute-batches: merged 1 small batches (1 files) into 1 misc batches — singletons and orphans consolidated\nprepare-batches: 1 batch(es) for 1 file(s)\n",
     "status": 0
   },
   {
@@ -410,7 +412,8 @@
       ".understand-anything/knowledge-graph.json": "{\n  \"version\": \"1.0.0\",\n  \"project\": {\n    \"name\": \"demo\",\n    \"languages\": [\n      \"python\"\n    ],\n    \"frameworks\": [],\n    \"description\": \"Demo project\",\n    \"analyzedAt\": \"2026-01-01T00:00:00Z\",\n    \"gitCommitHash\": \"abc\"\n  },\n  \"nodes\": [\n    {\n      \"id\": \"file:src/a.py\",\n      \"type\": \"file\",\n      \"name\": \"a.py\",\n      \"filePath\": \"src/a.py\",\n      \"summary\": \"Performs a useful operation\",\n      \"tags\": [\n        \"python\"\n      ],\n      \"complexity\": \"simple\"\n    }\n  ],\n  \"edges\": [],\n  \"layers\": []\n}",
       ".understand-anything/intermediate/merged-graph.json": "{\n  \"version\": \"1.0.0\",\n  \"project\": {\n    \"name\": \"demo\",\n    \"languages\": [\n      \"python\"\n    ],\n    \"frameworks\": [],\n    \"description\": \"Demo project\",\n    \"analyzedAt\": \"2026-01-01T00:00:00Z\",\n    \"gitCommitHash\": \"abc\"\n  },\n  \"nodes\": [\n    {\n      \"id\": \"file:src/a.py\",\n      \"type\": \"file\",\n      \"name\": \"a.py\",\n      \"filePath\": \"src/a.py\",\n      \"summary\": \"Performs a useful operation\",\n      \"tags\": [\n        \"python\"\n      ],\n      \"complexity\": \"simple\"\n    }\n  ],\n  \"edges\": [],\n  \"layers\": []\n}",
       ".understand-anything/intermediate/batch-existing.json": "{\n  \"nodes\": [\n    {\n      \"id\": \"file:src/a.py\",\n      \"type\": \"file\",\n      \"name\": \"a.py\",\n      \"filePath\": \"src/a.py\",\n      \"summary\": \"Performs a useful operation\",\n      \"tags\": [\n        \"python\"\n      ],\n      \"complexity\": \"simple\"\n    }\n  ],\n  \"edges\": []\n}",
-      ".understand-anything/intermediate/change-analysis.json": "{\n  \"filesToReanalyze\": [],\n  \"deletedFiles\": [],\n  \"action\": \"PARTIAL_UPDATE\",\n  \"fileChanges\": [],\n  \"reason\": \"Test\",\n  \"rerunArchitecture\": false\n}"
+      ".understand-anything/intermediate/change-analysis.json": "{\n  \"filesToReanalyze\": [],\n  \"deletedFiles\": [],\n  \"action\": \"PARTIAL_UPDATE\",\n  \"fileChanges\": [],\n  \"reason\": \"Test\",\n  \"rerunArchitecture\": false\n}",
+      ".understand-anything/intermediate/incremental-edge-candidates.json": "{\n  \"version\": 1,\n  \"baseCommit\": null,\n  \"headCommit\": null,\n  \"graphHash\": \"ff185bf0cca8db62b1802c07ef1a9d6a7ca24de0ee6b462956e87c63f333d6ce\",\n  \"edges\": [],\n  \"nodes\": [\n    {\n      \"id\": \"file:src/a.py\",\n      \"type\": \"file\",\n      \"name\": \"a.py\",\n      \"filePath\": \"src/a.py\",\n      \"summary\": \"Performs a useful operation\",\n      \"tags\": [\n        \"python\"\n      ],\n      \"complexity\": \"simple\"\n    }\n  ]\n}"
     },
     "stdout": "{\"totalNodes\": 1, \"totalEdges\": 0, \"rerunArchitecture\": false}\n",
     "stderr": "Input: 1 nodes, 0 edges\n\nOutput: 1 nodes, 0 edges\n",
@@ -429,14 +432,13 @@
       ".understand-anything/intermediate/merged-graph.json": "{\n  \"version\": \"1.0.0\",\n  \"project\": {\n    \"name\": \"demo\",\n    \"languages\": [\n      \"python\"\n    ],\n    \"frameworks\": [],\n    \"description\": \"Demo project\",\n    \"analyzedAt\": \"2026-01-01T00:00:00Z\",\n    \"gitCommitHash\": \"abc\"\n  },\n  \"nodes\": [\n    {\n      \"id\": \"file:src/a.py\",\n      \"type\": \"file\",\n      \"name\": \"a.py\",\n      \"filePath\": \"src/a.py\",\n      \"summary\": \"Performs a useful operation\",\n      \"tags\": [\n        \"python\"\n      ],\n      \"complexity\": \"simple\"\n    }\n  ],\n  \"edges\": [],\n  \"layers\": []\n}"
     },
     "after": {
-      ".understand-anything/meta.json": "{\n  \"lastAnalyzedAt\": \"2026-09-21T20:33:46.587Z\",\n  \"gitCommitHash\": \"abc\",\n  \"version\": \"1.0.0\",\n  \"analyzedFiles\": 1\n}",
-      ".understand-anything/fingerprints.json": "{\n  \"version\": \"1.0.0\",\n  \"files\": {},\n  \"gitCommitHash\": \"abc\"\n}",
-      ".understand-anything/knowledge-graph.json": "{\n  \"version\": \"1.0.0\",\n  \"project\": {\n    \"name\": \"demo\",\n    \"languages\": [\n      \"python\"\n    ],\n    \"frameworks\": [],\n    \"description\": \"Demo project\",\n    \"analyzedAt\": \"2026-01-01T00:00:00Z\",\n    \"gitCommitHash\": \"abc\"\n  },\n  \"nodes\": [\n    {\n      \"id\": \"file:src/a.py\",\n      \"type\": \"file\",\n      \"name\": \"a.py\",\n      \"filePath\": \"src/a.py\",\n      \"summary\": \"Performs a useful operation\",\n      \"tags\": [\n        \"python\"\n      ],\n      \"complexity\": \"simple\"\n    }\n  ],\n  \"edges\": [],\n  \"layers\": [\n    {\n      \"id\": \"layer:misc\",\n      \"name\": \"Miscellaneous\",\n      \"description\": \"Files not assigned to a specific architecture layer.\",\n      \"nodeIds\": [\n        \"file:src/a.py\"\n      ]\n    }\n  ]\n}",
-      ".understand-anything/intermediate/auto-update-summary.json": "{\n  \"status\": \"UPDATED\",\n  \"action\": \"PARTIAL_UPDATE\",\n  \"reason\": \"Test\",\n  \"filesChecked\": 0,\n  \"structuralChanges\": 0,\n  \"cosmeticOnly\": 0,\n  \"newFiles\": 0,\n  \"deletedFiles\": 0,\n  \"nodesUpdated\": 1,\n  \"totalNodes\": 1,\n  \"totalEdges\": 0,\n  \"metadataUpdated\": true,\n  \"outputPath\": \"<ROOT>/.understand-anything/knowledge-graph.json\"\n}",
-      ".understand-anything/intermediate/scan-result.json": "{\n  \"name\": \"demo\",\n  \"description\": \"Demo project\",\n  \"languages\": [\n    \"python\"\n  ],\n  \"frameworks\": [],\n  \"files\": [\n    {\n      \"path\": \"src/a.py\",\n      \"language\": \"python\",\n      \"sizeLines\": 2,\n      \"fileCategory\": \"code\"\n    }\n  ],\n  \"totalFiles\": 1,\n  \"filteredByIgnore\": 0,\n  \"estimatedComplexity\": \"small\",\n  \"importMap\": {\n    \"src/a.py\": []\n  }\n}"
+      ".understand-anything/intermediate/scan-result.json": "{\n  \"name\": \"demo\",\n  \"description\": \"Demo project\",\n  \"languages\": [\n    \"python\"\n  ],\n  \"frameworks\": [],\n  \"files\": [\n    {\n      \"path\": \"src/a.py\",\n      \"language\": \"python\",\n      \"sizeLines\": 2,\n      \"fileCategory\": \"code\"\n    }\n  ],\n  \"totalFiles\": 1,\n  \"filteredByIgnore\": 0,\n  \"estimatedComplexity\": \"small\",\n  \"importMap\": {\n    \"src/a.py\": []\n  }\n}",
+      ".understand-anything/intermediate/auto-update-state.json": "{\n  \"currentCommit\": \"abc\"\n}",
+      ".understand-anything/intermediate/change-analysis.json": "{\n  \"filesToReanalyze\": [],\n  \"deletedFiles\": [],\n  \"action\": \"PARTIAL_UPDATE\",\n  \"fileChanges\": [],\n  \"reason\": \"Test\",\n  \"rerunArchitecture\": false\n}",
+      ".understand-anything/intermediate/merged-graph.json": "{\n  \"version\": \"1.0.0\",\n  \"project\": {\n    \"name\": \"demo\",\n    \"languages\": [\n      \"python\"\n    ],\n    \"frameworks\": [],\n    \"description\": \"Demo project\",\n    \"analyzedAt\": \"2026-01-01T00:00:00Z\",\n    \"gitCommitHash\": \"abc\"\n  },\n  \"nodes\": [\n    {\n      \"id\": \"file:src/a.py\",\n      \"type\": \"file\",\n      \"name\": \"a.py\",\n      \"filePath\": \"src/a.py\",\n      \"summary\": \"Performs a useful operation\",\n      \"tags\": [\n        \"python\"\n      ],\n      \"complexity\": \"simple\"\n    }\n  ],\n  \"edges\": [],\n  \"layers\": []\n}"
     },
-    "stdout": "{\"status\": \"UPDATED\", \"action\": \"PARTIAL_UPDATE\", \"reason\": \"Test\", \"filesChecked\": 0, \"structuralChanges\": 0, \"cosmeticOnly\": 0, \"newFiles\": 0, \"deletedFiles\": 0, \"nodesUpdated\": 1, \"totalNodes\": 1, \"totalEdges\": 0, \"metadataUpdated\": true, \"outputPath\": \"<ROOT>/.understand-anything/knowledge-graph.json\"}\n",
-    "stderr": "finalize: fingerprints 0 \u2192 0\n",
-    "status": 0
+    "stdout": "",
+    "stderr": "HEAD changed since incremental preflight; prepare the update again\n",
+    "status": 1
   }
 ]

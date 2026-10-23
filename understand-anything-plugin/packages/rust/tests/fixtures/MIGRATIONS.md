@@ -24,3 +24,14 @@ UA_TEST_PARSER_CACHE=/path/to/cache cargo +stable test --locked --test runtime a
 
 The grammar-loading test covers every registered grammar, but is only a loading
 smoke test. Language-specific structure and symbol tests provide semantic checks.
+
+`additional_commands.json` retains existing legacy-directory fixtures while new
+projects expect `.ua`. The generated ignore template includes the migrated,
+commented language suggestions. Structure extraction expects `filesUnreadable`
+and its warning for the existing mixed readable/missing input. Batch/subdomain
+merge fixtures assert their new reports; update preparation asserts the fresh
+scan and symbol baseline, and batch application asserts the edge-candidate
+record with its exact graph hash. The two command fixtures with a nonexistent
+prepared HEAD now assert failure and byte-preserved input artifacts instead of
+allowing fingerprint/finalization writes. Real-repository publication behavior
+is covered by the dedicated symbol and dirty-update tests.

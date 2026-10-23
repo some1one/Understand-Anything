@@ -199,7 +199,7 @@ fn check_command_cases(cases: Vec<Value>) {
                 assert_eq!(content, expected);
             }
         }
-        assert_eq!(actual.len(), case["after"].as_object().unwrap().len());
+        assert_eq!(actual.len(), case["after"].as_object().unwrap().len(), "{} artifacts: {:?}", case["command"], actual.keys().collect::<Vec<_>>());
     }
 }
 #[test]
