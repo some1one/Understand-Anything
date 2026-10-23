@@ -1603,6 +1603,23 @@ pub fn analyze_file(path: &str, content: &str) -> Option<Value> {
     }
     Some(a)
 }
+/// Batch extraction shares one syntax tree between both deterministic passes.
+/// Keep the existing permissive fallback contract; strict evidence uses its own API.
+pub fn analyze_file_full(path: &str, content: &str) -> (Option<Value>, Option<Vec<Value>>) {
+    let Some(lang) = parsers::detect_registry_language(path) else { return (None, None) };
+    if !parsers::LANGUAGES.contains(&lang.as_str()) {
+        return (analyze_file(path, content), None);
+    }
+    let mut structure = empty();
+    let mut calls = vec![];
+    if let Ok(tree) = parsers::parse(&lang, content) {
+        let root = N { raw: tree.root_node(), source: content };
+        extract_tree_structure(&root, &lang, &mut structure);
+        calls = call_graph(&root, normalized_lang(&lang));
+    }
+    (Some(structure), Some(calls))
+}
+
 fn extract_tree_structure(n: &N, lang: &str, a: &mut Value) {
     match normalized_lang(lang) {
         "typescript" => typescript(n, a),
@@ -1774,11 +1791,10 @@ pub fn extract_structure(input: &Value) -> Result<Value> {
         };
         let content = content.replace("\r\n", "\n").replace('\r', "\n");
         let (total, nonempty) = count_lines(&content);
-        let analysis = analyze_file(path, &content);
-        let calls = if ["code", "script"].contains(&f["fileCategory"].as_str().unwrap_or("")) {
-            extract_call_graph(path, &content)
+        let (analysis, calls) = if ["code", "script"].contains(&f["fileCategory"].as_str().unwrap_or("")) {
+            analyze_file_full(path, &content)
         } else {
-            None
+            (analyze_file(path, &content), None)
         };
         results.push(build_result(
             f,

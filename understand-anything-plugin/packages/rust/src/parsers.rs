@@ -1,6 +1,19 @@
 //! Version-locked parser management. Only the baseline's thirteen grammars are supported.
 use crate::{Error, Result};
-use std::path::Path;
+use std::{cell::RefCell, collections::HashMap, path::Path, sync::atomic::{AtomicU64, Ordering}};
+
+// Parsers are mutable. Give each worker its own reusable instances, while trees
+// remain owned by each call. Reconfiguration invalidates every worker's cache.
+static CONFIG_GENERATION: AtomicU64 = AtomicU64::new(0);
+#[derive(Default)]
+struct ParserCache {
+    generation: u64,
+    parsers: HashMap<String, tree_sitter_language_pack::Parser>,
+}
+thread_local! {
+    static PARSERS: RefCell<ParserCache> = RefCell::new(ParserCache::default());
+}
+
 pub const VERSION: &str = "1.20.0";
 pub const LANGUAGES: &[&str] = &[
     "typescript",
@@ -24,6 +37,7 @@ pub fn configure(cache_dir: Option<&Path>) -> Result<()> {
             ..Default::default()
         };
         tree_sitter_language_pack::configure(&config).map_err(|e| Error::Invalid(e.to_string()))?;
+        CONFIG_GENERATION.fetch_add(1, Ordering::SeqCst);
     }
     Ok(())
 }
@@ -46,11 +60,26 @@ pub fn parse(language: &str, source: &str) -> Result<tree_sitter_language_pack::
     if !LANGUAGES.contains(&language) {
         return Err(Error::Invalid(format!("Unsupported grammar: {language}")));
     }
-    let mut parser = tree_sitter_language_pack::get_parser(language)
-        .map_err(|e| Error::Invalid(e.to_string()))?;
-    parser
-        .parse(source)
-        .ok_or_else(|| Error::Invalid(format!("Parser returned no tree: {language}")))
+    PARSERS.with(|cache| {
+        let mut cache = cache.borrow_mut();
+        let generation = CONFIG_GENERATION.load(Ordering::SeqCst);
+        if cache.generation != generation {
+            cache.parsers.clear();
+            cache.generation = generation;
+        }
+        if !cache.parsers.contains_key(language) {
+            let parser = tree_sitter_language_pack::get_parser(language)
+                .map_err(|e| Error::Invalid(e.to_string()))?;
+            cache.parsers.insert(language.to_owned(), parser);
+        }
+        let tree = cache.parsers.get_mut(language).unwrap().parse(source);
+        if tree.is_none() {
+            // A cancelled parser can retain resumable state; never reuse it for
+            // an unrelated file after a failed parse.
+            cache.parsers.remove(language);
+        }
+        tree.ok_or_else(|| Error::Invalid(format!("Parser returned no tree: {language}")))
+    })
 }
 pub fn detect_registry_language(path: &str) -> Option<String> {
     let p = path.replace('\\', "/");
