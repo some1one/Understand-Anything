@@ -344,5 +344,5 @@ pub fn collect(root: Node, content: &str, language: &str, structure: &Value) -> 
             "Language has no verified declaration coverage profile",
         ));
     }
-    json!({"functions":inventory.functions,"classes":inventory.classes,"unresolved":inventory.unresolved,"coverageGaps":inventory.gaps,"effects":inventory.effects})
+    json!({"version":1,"functions":inventory.functions,"classes":inventory.classes,"unresolved":inventory.unresolved,"coverageGaps":inventory.gaps,"effects":inventory.effects})
 }

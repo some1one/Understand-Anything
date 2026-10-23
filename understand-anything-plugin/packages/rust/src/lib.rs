@@ -81,3 +81,5 @@ pub mod symbol_scopes;
 mod symbol_coverage;
 
 mod symbol_effects;
+
+pub mod incremental_symbols;
