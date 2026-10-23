@@ -197,3 +197,16 @@ data; normal builds and runtime do not need the old Python package.
 | `write_config` |  |
 
 The parser integration uses the language pack’s [low-level Rust API](https://docs.tree-sitter-language-pack.xberg.io/reference/api-rust/); strict validation uses the [Draft 2020-12 validator](https://docs.rs/jsonschema/0.45.1/jsonschema/draft202012/index.html).
+
+## Selective import extraction
+
+`extract_import_map` accepts an optional `analysisPaths` array of project-relative
+paths in its input JSON. Keep `files` as the complete current inventory: resolution
+still needs unchanged files and configuration. Only selected files are read for
+imports and emitted in `importMap`; `stats.filesScanned` counts that selection.
+Omit `analysisPaths` for a full scan, or use an empty array for no work. Selections
+are deduplicated in request order. Unknown, absolute, escaping, or malformed paths
+fail instead of silently producing incomplete results. Unix backslashes remain
+literal filename characters. Callers must merge the selected results into their
+previous map and explicitly remove entries for deleted files; a partial result is
+not a replacement for the entire project import map.

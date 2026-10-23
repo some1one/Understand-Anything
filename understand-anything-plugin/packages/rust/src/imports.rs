@@ -673,6 +673,60 @@ pub fn resolve_import(imp: &Value, file: &Value, c: &mut ResolutionContext) -> V
         _ => vec![],
     }
 }
+/// Select source files without narrowing the inventory used for resolution.
+pub fn select_analysis_files<'a>(
+    files: &'a [Value],
+    paths: Option<&Value>,
+) -> Result<Vec<&'a Value>> {
+    let Some(paths) = paths else {
+        return Ok(files.iter().collect());
+    };
+    let paths = paths
+        .as_array()
+        .ok_or_else(|| Error::Invalid("analysisPaths must be an array".into()))?;
+    let mut inventory = BTreeMap::new();
+    for file in files {
+        let path = file["path"]
+            .as_str()
+            .filter(|path| !path.is_empty())
+            .ok_or_else(|| {
+                Error::Invalid("every inventory entry must have a non-empty path".into())
+            })?;
+        if Path::new(path).is_absolute() || to_posix(path).split('/').any(|part| part == "..") {
+            return Err(Error::Invalid(format!(
+                "inventory path must be project-relative: {path}"
+            )));
+        }
+        inventory.insert(to_posix(path), file);
+    }
+    let mut selected = vec![];
+    let mut seen = BTreeSet::new();
+    for value in paths {
+        let path = value
+            .as_str()
+            .filter(|path| !path.is_empty())
+            .ok_or_else(|| {
+                Error::Invalid("every analysisPaths entry must be a non-empty string".into())
+            })?;
+        let normalized = to_posix(path);
+        if Path::new(path).is_absolute()
+            || normalized.is_empty()
+            || normalized.split('/').any(|part| part == "..")
+        {
+            return Err(Error::Invalid(format!(
+                "analysisPaths must stay inside projectRoot: {path}"
+            )));
+        }
+        let file = inventory.get(&normalized).ok_or_else(|| {
+            Error::Invalid(format!("analysisPaths entry is not in inventory: {path}"))
+        })?;
+        if seen.insert(normalized) {
+            selected.push(*file);
+        }
+    }
+    Ok(selected)
+}
+
 pub fn extract_import_map(input: &Value) -> Result<Value> {
     let root = input["projectRoot"]
         .as_str()
@@ -683,7 +737,16 @@ pub fn extract_import_map(input: &Value) -> Result<Value> {
     let files = input["files"].as_array().ok_or_else(|| {
         Error::Invalid("Invalid input: must contain projectRoot and files array".into())
     })?;
-    let ready = crate::parsers::parse("typescript", "").is_ok();
+    let analysis_files = select_analysis_files(files, input.get("analysisPaths"))?;
+    if analysis_files.is_empty() {
+        return Ok(
+            json!({"scriptCompleted":true,"stats":{"filesScanned":0,"filesWithImports":0,"totalEdges":0},"importMap":{}}),
+        );
+    }
+    let needs_parser = analysis_files
+        .iter()
+        .any(|file| file["fileCategory"] == "code");
+    let ready = !needs_parser || crate::parsers::parse("typescript", "").is_ok();
     if !ready {
         eprintln!(
             "Warning: extract-import-map: tree-sitter init failed (no parser available) — all importMap entries will be empty — structural graph will have no import edges"
@@ -693,7 +756,7 @@ pub fn extract_import_map(input: &Value) -> Result<Value> {
     let mut map = json!({});
     let mut count = 0;
     let mut edges = 0;
-    for f in files {
+    for f in &analysis_files {
         let path = to_posix(f["path"].as_str().unwrap_or(""));
         map[&path] = json!([]);
         if f["fileCategory"] != "code" || !ready {
@@ -749,6 +812,6 @@ pub fn extract_import_map(input: &Value) -> Result<Value> {
         map[path] = json!(resolved);
     }
     Ok(
-        json!({"scriptCompleted":true,"stats":{"filesScanned":files.len(),"filesWithImports":count,"totalEdges":edges},"importMap":map}),
+        json!({"scriptCompleted":true,"stats":{"filesScanned":analysis_files.len(),"filesWithImports":count,"totalEdges":edges},"importMap":map}),
     )
 }
