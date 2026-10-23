@@ -397,6 +397,35 @@ pub fn validate_analyzed_file_coverage(nodes: &[Value], paths: &[String]) -> Res
     }
 }
 
+/// Restore relationships owned by unchanged sources after replacement nodes exist.
+/// Fresh analyzer edges win, and an ID reused by another file is never rebound.
+pub fn restore_inbound_edges(previous: &Value, assembled: &mut Value, changed: &BTreeSet<String>) -> Result<()> {
+    let old_nodes: BTreeMap<_, _> = array(previous, "nodes").iter()
+        .map(|node| (s(node, "id"), node)).collect();
+    let new_nodes: BTreeMap<_, _> = array(assembled, "nodes").iter()
+        .map(|node| (s(node, "id"), node)).collect();
+    let mut seen: BTreeSet<_> = array(assembled, "edges").iter()
+        .map(|edge| (s(edge, "source").to_owned(), s(edge, "target").to_owned(), s(edge, "type").to_owned())).collect();
+    let mut restored = vec![];
+    for edge in array(previous, "edges") {
+        let (Some(old_source), Some(old_target)) = (old_nodes.get(s(edge, "source")), old_nodes.get(s(edge, "target"))) else { continue; };
+        if node_file_path(old_source).is_some_and(|path| changed.contains(&path))
+            || !node_file_path(old_target).is_some_and(|path| changed.contains(&path)) {
+            continue;
+        }
+        let (Some(new_source), Some(new_target)) = (new_nodes.get(s(edge, "source")), new_nodes.get(s(edge, "target"))) else { continue; };
+        for (old, new) in [(old_source, new_source), (old_target, new_target)] {
+            if node_file_path(old) != node_file_path(new) || old["type"] != new["type"] {
+                return Err(Error::Invalid(format!("Preserved edge endpoint changed ownership or type: {}", s(old, "id"))));
+            }
+        }
+        let key = (s(edge, "source").to_owned(), s(edge, "target").to_owned(), s(edge, "type").to_owned());
+        if seen.insert(key) { restored.push(edge.clone()); }
+    }
+    assembled["edges"].as_array_mut().unwrap().extend(restored);
+    Ok(())
+}
+
 pub fn apply_batches(root: &Path) -> Result<Value> {
     let _lock = crate::batch_files::lock(&inter(root, ""))?;
     let analysis = required(&inter(root, "change-analysis.json"))?;
@@ -444,7 +473,8 @@ pub fn apply_batches(root: &Path) -> Result<Value> {
         }
         batches.push(batch);
     }
-    let (assembled, report) = batch_merge::merge_and_normalize(&batches);
+    let (mut assembled, report) = batch_merge::merge_and_normalize(&batches);
+    restore_inbound_edges(&graph, &mut assembled, &targets)?;
     validate_analyzed_file_coverage(array(&assembled, "nodes"), &strings(&analysis["filesToReanalyze"]))?;
     let scan = read(&inter(root, "scan-result.json"));
     let assembled = refresh_graph_imports(&assembled, &scan["importMap"], &strings(&scan["importMapRefreshPaths"]))?;
