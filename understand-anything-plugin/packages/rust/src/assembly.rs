@@ -78,9 +78,14 @@ pub fn assemble_scan_result(
     } else {
         strings(&narrative["languages"])
     };
-    Ok(
-        json!({"name":name,"description":description,"languages":languages,"frameworks":array(narrative,"frameworks"),"files":files,"totalFiles":total,"filteredByIgnore":filtered,"estimatedComplexity":complexity,"importMap":imports}),
-    )
+    let mut result = json!({"name":name,"description":description,"languages":languages,"frameworks":array(narrative,"frameworks"),"files":files,"totalFiles":total,"filteredByIgnore":filtered,"estimatedComplexity":complexity,"importMap":imports});
+    if let Some(patterns) = scan.get("excludePatterns") {
+        if !patterns.as_array().is_some_and(|patterns| patterns.iter().all(Value::is_string)) {
+            return Err(Error::Invalid("scan excludePatterns must be an array of strings".into()));
+        }
+        result["excludePatterns"] = patterns.clone();
+    }
+    Ok(result)
 }
 pub fn build_part_graph(
     assembled: &Value,

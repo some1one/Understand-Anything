@@ -24,7 +24,7 @@ build-time grammar-source downloads):
 ```sh
 cargo +stable build --locked --release
 ./target/release/understand-anything-rs --help
-./target/release/understand-anything-rs scan_project /path/to/project /tmp/scan.json
+./target/release/understand-anything-rs scan_project /path/to/project /tmp/scan.json --exclude="docs/,e2e/,!e2e/keep.ts"
 ./target/release/understand-anything-rs json_schema --output-dir /tmp/ua-schemas
 ```
 
@@ -235,3 +235,11 @@ Git failures and timeouts produce `unknown`, never a claim that the graph is fre
 Changed paths are scoped to the requested project and exclude generated files
 inside `.ua` and `.understand-anything`. Each Git command has a five-second
 limit and a four-MiB output limit.
+
+`scan_project` accepts `--exclude=pattern,...` or `--exclude pattern,...`, including
+repeated options. Patterns use gitignore syntax and are applied in argument order
+after defaults and both `.understandignore` files; `!` negates an earlier rule.
+Quote patterns so the shell does not expand them. This filters the scanner's
+existing file inventory; it does not make Git-ignored, untracked files enumerable.
+Nonempty patterns are retained as `excludePatterns` in scan and assembled scan
+output. They do not modify ignore files.

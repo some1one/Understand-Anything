@@ -121,6 +121,10 @@ pub fn default_patterns() -> Vec<String> {
     patterns
 }
 pub fn create_ignore_filter(root: &Path) -> Result<IgnoreFilter> {
+    create_ignore_filter_with_patterns(root, &[])
+}
+/// Invocation patterns are last, after defaults and both user ignore files.
+pub fn create_ignore_filter_with_patterns(root: &Path, extra: &[String]) -> Result<IgnoreFilter> {
     let mut patterns = default_patterns();
     for p in [
         crate::persistence::data_dir(root).join(".understandignore"),
@@ -130,6 +134,7 @@ pub fn create_ignore_filter(root: &Path) -> Result<IgnoreFilter> {
             patterns.extend(text.lines().map(str::to_owned));
         }
     }
+    patterns.extend_from_slice(extra);
     IgnoreFilter::new(&patterns)
 }
 pub fn enumerate_files(root: &Path) -> Vec<String> {
@@ -174,7 +179,10 @@ fn enumerate_files_with_failures(root: &Path, failures: &mut Vec<Value>) -> Vec<
         .collect()
 }
 pub fn scan_project(root: &Path) -> Result<Value> {
-    let combined = create_ignore_filter(root)?;
+    scan_project_with_patterns(root, &[])
+}
+pub fn scan_project_with_patterns(root: &Path, extra: &[String]) -> Result<Value> {
+    let combined = create_ignore_filter_with_patterns(root, extra)?;
     let defaults = IgnoreFilter::new(&default_patterns())?;
     let has_user = root.join(".understandignore").exists()
         || crate::persistence::data_dir(&root)
@@ -185,7 +193,7 @@ pub fn scan_project(root: &Path) -> Result<Value> {
     let mut failures = vec![];
     for p in enumerate_files_with_failures(root, &mut failures) {
         if combined.is_ignored(&p) {
-            if has_user && !defaults.is_ignored(&p) {
+            if (has_user || !extra.is_empty()) && !defaults.is_ignored(&p) {
                 filtered += 1;
             }
             continue;
@@ -223,6 +231,7 @@ pub fn scan_project(root: &Path) -> Result<Value> {
         }
     }
     let mut result = json!({"scriptCompleted":true,"totalFiles":files.len(),"filteredByIgnore":filtered,"estimatedComplexity":estimate_complexity(files.len()),"stats":{"filesScanned":files.len(),"byCategory":categories,"byLanguage":languages},"files":files});
+    if !extra.is_empty() { result["excludePatterns"] = json!(extra); }
     if !failures.is_empty() {
         result["failures"] = json!(failures);
     }

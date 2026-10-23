@@ -622,7 +622,7 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
             }
         }
         "scan_project" => {
-            require(&args, 2, command, "<projectRoot> <outputPath>")?;
+            require(&args, 2, command, "<projectRoot> <outputPath> [--exclude=pattern,...]")?;
             let root = Path::new(&args[0]);
             if !root.is_dir() {
                 return Err(Error::Invalid(format!(
@@ -635,7 +635,16 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
                     root.display()
                 )));
             }
-            let result = ua::scan::scan_project(root)?;
+            let mut extra = vec![];
+            let mut options = args[2..].iter();
+            while let Some(option) = options.next() {
+                let value = if option == "--exclude" {
+                    options.next().ok_or_else(|| Error::Invalid("--exclude requires patterns".into()))?.as_str()
+                } else if let Some(value) = option.strip_prefix("--exclude=") { value }
+                else { return Err(Error::Invalid(format!("scan_project: unknown argument '{option}'"))); };
+                extra.extend(value.split(',').map(str::trim).filter(|p| !p.is_empty()).map(str::to_owned));
+            }
+            let result = ua::scan::scan_project_with_patterns(root, &extra)?;
             write_json(Path::new(&args[1]), &result)?;
             eprintln!(
                 "scan-project: filesScanned={} filteredByIgnore={} complexity={}",
