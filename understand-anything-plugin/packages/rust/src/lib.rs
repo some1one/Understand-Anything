@@ -93,3 +93,5 @@ pub mod freshness;
 pub mod file_lists;
 
 mod symbol_bindings;
+
+pub mod partition_updates;
