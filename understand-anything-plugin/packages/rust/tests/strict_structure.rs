@@ -86,7 +86,8 @@ fn coverage_gaps_keep_parameter_properties_and_computed_members_in_their_owner_s
     assert_eq!(parameter["scope"]["kind"], "class");
     assert_eq!(parameter["scope"]["name"], "Worker");
     assert!(gaps.iter().any(|gap| gap["name"].is_null() && gap["reason"] == "Unresolved declaration name" && gap["scope"]["name"] == "Worker"));
-    assert!(gaps.iter().any(|gap| gap["name"] == "run" && gap["scope"]["name"] == "Worker"));
+    assert!(!gaps.iter().any(|gap| gap["name"] == "run"));
+    assert!(result["declarationScopes"]["functions"].as_array().unwrap().iter().any(|f| f["name"] == "run" && f["scope"]["name"] == "Worker"));
     assert!(!gaps.iter().any(|gap| gap["name"] == "value"));
 }
 

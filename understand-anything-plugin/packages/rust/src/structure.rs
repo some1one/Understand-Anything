@@ -218,7 +218,7 @@ fn ts_class(n: &N, a: &mut Value) {
             for m in body.children() {
                 if let Some(p) = m.child("property_identifier") {
                     match m.ty().as_str() {
-                        "method_definition" => methods.push(p.text().into()),
+                        "method_definition" | "abstract_method_signature" => methods.push(p.text().into()),
                         "public_field_definition" | "property_definition" => {
                             props.push(p.text().into())
                         }
@@ -258,7 +258,7 @@ fn typescript(root: &N, a: &mut Value) {
     for n in root.children() {
         match n.ty().as_str() {
             "function_declaration" => ts_function(&n, a),
-            "class_declaration" => ts_class(&n, a),
+            "class_declaration" | "abstract_class_declaration" => ts_class(&n, a),
             "lexical_declaration" | "variable_declaration" => ts_vars(&n, a),
             "import_statement" => {
                 if let Some(source) = n.child("string") {
@@ -307,7 +307,7 @@ fn typescript(root: &N, a: &mut Value) {
                                 names.push(("default".into(), Some(true)));
                             }
                         }
-                        "class_declaration" => {
+                        "class_declaration" | "abstract_class_declaration" => {
                             ts_class(&c, a);
                             if let Some(name) = c.any(&["type_identifier", "identifier"])
                                 && !exported.contains(name.text())

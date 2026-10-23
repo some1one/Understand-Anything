@@ -21,6 +21,7 @@ const FUNCTIONS: &[&str] = &[
     "method",
     "singleton_method",
     "method_definition",
+    "abstract_method_signature",
     "function_definition",
     "function_declaration",
     "generator_function_declaration",
