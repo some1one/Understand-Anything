@@ -117,6 +117,19 @@ fn directory(path: &str) -> &str {
     path.rsplit_once('/').map(|(d, _)| d).unwrap_or("")
 }
 pub fn classify_update(changes: &[Value], graph_paths: &BTreeSet<String>) -> Value {
+    let mut current = graph_paths.clone();
+    for change in changes {
+        if let Some(path) = change["filePath"].as_str() {
+            if change["status"] == "deleted" { current.remove(path); }
+            else if change["status"] == "new" { current.insert(path.into()); }
+        }
+    }
+    classify_update_with_inventory(changes, graph_paths, &current)
+}
+/// Compare complete inventories so replacements do not look like removed directories.
+pub fn classify_update_with_inventory(
+    changes: &[Value], graph_paths: &BTreeSet<String>, current_paths: &BTreeSet<String>,
+) -> Value {
     let structural: Vec<_> = changes
         .iter()
         .filter(|c| c["changeLevel"] == "STRUCTURAL")
@@ -136,28 +149,9 @@ pub fn classify_update(changes: &[Value], graph_paths: &BTreeSet<String>) -> Val
         );
     }
     let known: BTreeSet<_> = graph_paths.iter().map(|p| directory(p)).collect();
-    let deleted: BTreeSet<_> = structural
-        .iter()
-        .filter(|c| c["status"] == "deleted")
-        .filter_map(|c| c["filePath"].as_str())
-        .collect();
-    let surviving: BTreeSet<_> = graph_paths
-        .iter()
-        .filter(|p| !deleted.contains(p.as_str()))
-        .map(|p| directory(p))
-        .collect();
-    let new: BTreeSet<_> = structural
-        .iter()
-        .filter(|c| c["status"] == "new")
-        .filter_map(|c| c["filePath"].as_str())
-        .map(directory)
-        .filter(|d| !known.contains(d))
-        .collect();
-    let removed: BTreeSet<_> = deleted
-        .iter()
-        .map(|p| directory(p))
-        .filter(|d| known.contains(d) && !surviving.contains(d))
-        .collect();
+    let surviving: BTreeSet<_> = current_paths.iter().map(|p| directory(p)).collect();
+    let new: BTreeSet<_> = surviving.difference(&known).copied().collect();
+    let removed: BTreeSet<_> = known.difference(&surviving).copied().collect();
     if !new.is_empty() || !removed.is_empty() || count > 10 {
         let reason = if !new.is_empty() || !removed.is_empty() {
             format!(
