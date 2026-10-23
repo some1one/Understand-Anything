@@ -1215,15 +1215,14 @@ fn cpp_unwrap<'a>(n: &N<'a>) -> Option<&'a str> {
     }
 }
 fn cpp_name<'a>(n: &N<'a>) -> Option<(&'a str, Option<&'a str>)> {
-    let d = n.field("declarator")?;
-    if d.ty() == "qualified_identifier" {
-        Some((
-            d.name().unwrap_or(d.text()),
-            d.child("namespace_identifier").map(|n| n.text()),
-        ))
-    } else {
-        Some((d.text(), None))
-    }
+    crate::receivers::cpp_declarator(&n.raw, n.source).or_else(|| {
+        let d = n.field("declarator")?;
+        if d.ty() == "qualified_identifier" {
+            Some((d.name().unwrap_or(d.text()), d.field("scope").map(|n| n.text())))
+        } else {
+            Some((d.text(), None))
+        }
+    })
 }
 fn cpp_params(n: Option<N>) -> Vec<String> {
     n.map(|p| {
@@ -1236,7 +1235,7 @@ fn cpp_params(n: Option<N>) -> Vec<String> {
     .unwrap_or_default()
 }
 fn cpp_class(n: &N, a: &mut Value) {
-    let Some(name) = n.name() else { return };
+    let Some(class_name) = n.name() else { return };
     let mut methods = vec![];
     let mut props = vec![];
     if let Some(body) = n
@@ -1273,16 +1272,9 @@ fn cpp_class(n: &N, a: &mut Value) {
                     && let Some((name, _)) = cpp_name(&d)
                 {
                     methods.push(name.into());
-                    push(
-                        a,
-                        "functions",
-                        function(
-                            &m,
-                            name,
-                            cpp_params(d.field("parameters")),
-                            m.field("type").map(|n| n.text()),
-                        ),
-                    );
+                    let mut extracted = function(&m, name, cpp_params(d.field("parameters")), m.field("type").map(|n| n.text()));
+                    extracted["owner"] = json!(class_name);
+                    push(a, "functions", extracted);
                     if access == "public" {
                         export(a, name, m.row(), None);
                     }
@@ -1290,8 +1282,8 @@ fn cpp_class(n: &N, a: &mut Value) {
             }
         }
     }
-    push(a, "classes", class(n, name, methods, props));
-    export(a, name, n.row(), None);
+    push(a, "classes", class(n, class_name, methods, props));
+    export(a, class_name, n.row(), None);
 }
 fn cpp_walk(root: &N, a: &mut Value, methods: &mut BTreeMap<String, Vec<String>>) {
     for n in root.children() {
@@ -1329,16 +1321,9 @@ fn cpp_walk(root: &N, a: &mut Value, methods: &mut BTreeMap<String, Vec<String>>
                     .filter(|d| d.ty() == "function_declarator")
                     && let Some((name, q)) = cpp_name(&d)
                 {
-                    push(
-                        a,
-                        "functions",
-                        function(
-                            &n,
-                            name,
-                            cpp_params(d.field("parameters")),
-                            n.field("type").map(|n| n.text()),
-                        ),
-                    );
+                    let mut extracted = function(&n, name, cpp_params(d.field("parameters")), n.field("type").map(|n| n.text()));
+                    extracted["owner"] = json!(q.unwrap_or(""));
+                    push(a, "functions", extracted);
                     if let Some(q) = q {
                         methods.entry(q.into()).or_default().push(name.into());
                     }

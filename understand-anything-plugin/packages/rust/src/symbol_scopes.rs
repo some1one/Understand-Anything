@@ -83,6 +83,7 @@ struct Inventory<'a> {
     python: bool,
     go: bool,
     rust: bool,
+    cpp: bool,
     effects: Vec<Value>,
     javascript: bool,
     functions: Vec<Value>,
@@ -130,7 +131,11 @@ impl Inventory<'_> {
                     ["struct_type", "interface_type"].contains(&ty.kind().as_str())
                 }));
         let is_function = FUNCTIONS.contains(&kind.as_str());
-        let declared = identifier(node.child_by_field_name("name"), self.content);
+        let cpp_declaration = if self.cpp && kind == "function_definition" {
+            crate::receivers::cpp(&node, self.content)
+        } else { None };
+        let declared = cpp_declaration.as_ref().map(|(name, _)| (*name).to_owned())
+            .or_else(|| identifier(node.child_by_field_name("name"), self.content));
         if let Some(gap) = crate::symbol_coverage::gap(
             &node,
             &enclosing.json(),
@@ -195,6 +200,11 @@ impl Inventory<'_> {
                 } else {
                     Scope::Unknown
                 };
+            }
+            if let Some((_, Some(qualifier))) = &cpp_declaration {
+                owner = if matches!(enclosing, Scope::File) {
+                    Scope::Class((*qualifier).to_owned())
+                } else { Scope::Unknown };
             }
             if kind == "singleton_method" {
                 let receiver = node
@@ -306,6 +316,7 @@ pub fn collect(root: Node, content: &str, language: &str, structure: &Value) -> 
         python: language == "python",
         go: language == "go",
         rust: language == "rust",
+        cpp: ["c", "cpp"].contains(&language),
         effects: vec![],
         javascript: ["typescript", "javascript", "tsx"].contains(&language),
         functions: vec![],

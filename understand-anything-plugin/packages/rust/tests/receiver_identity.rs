@@ -75,3 +75,33 @@ fn receiver_whitespace_changes_are_not_treated_as_proven_deletions() {
     assert_eq!(result["ok"], false, "{result}");
     assert_eq!(result["missing"][0]["status"], "unknown", "{result}");
 }
+
+#[test]
+#[ignore = "requires pinned C++ grammar; run with UA_TEST_PARSER_CACHE"]
+fn cpp_inline_and_qualified_methods_preserve_receiver_identity() {
+    if let Ok(cache) = std::env::var("UA_TEST_PARSER_CACHE") { parsers::configure(Some(std::path::Path::new(&cache))).unwrap(); }
+    let source = "struct A { void run() {} }; void B::run() {} void run() {} void ns::C::run() {}";
+    let evidence = structure::analyze_file_strict("file.cpp", source);
+    assert_eq!(evidence["status"], "succeeded", "{evidence}");
+    let owners: Vec<_> = evidence["structure"]["functions"].as_array().unwrap().iter().map(|f| f["owner"].clone()).collect();
+    assert_eq!(owners, vec![json!("A"),json!("B"),json!(""),json!("ns::C")], "{evidence}");
+    let scopes = evidence["declarationScopes"]["functions"].as_array().unwrap();
+    assert_eq!(scopes.len(), 4, "{evidence}");
+    for owner in ["A", "B", "ns::C"] {
+        assert!(scopes.iter().any(|f| f["name"] == "run" && f["scope"]["name"] == owner), "{evidence}");
+    }
+    let file = json!({"path":"file.cpp","language":"cpp","fileCategory":"code"});
+    let result = structure::build_result(&file, 1, 1, Some(&evidence["structure"]), None, &json!({}));
+    let seed = understand_anything::seed::build_seed(&json!({"batchIndex":0,"batchFiles":[file]}), &json!({"results":[result]}));
+    for name in ["A.run", "B.run", "run", "ns::C.run"] {
+        assert!(seed["nodes"].as_array().unwrap().iter().any(|n| n["id"] == format!("function:file.cpp:{name}")), "{seed}");
+    }
+    for name in ["A.run", "B.run", "ns::C.run"] {
+        let graph = |prefix: &str| json!({"nodes":[{"id":format!("{prefix}:file.cpp:{name}"),"name":name,"type":"function","filePath":"file.cpp"}],"edges":[]});
+        let comparison = understand_anything::incremental_symbols::compare_file_symbols("file.cpp", &graph("function"), &graph("func"), &evidence, &evidence);
+        assert_eq!(comparison["ok"], true, "{comparison}");
+    }
+    let special = structure::analyze_file_strict("file.cpp", "struct A { A() {} ~A() {} }; ");
+    let names: Vec<_> = special["structure"]["functions"].as_array().unwrap().iter().map(|f| f["name"].clone()).collect();
+    assert_eq!(names, vec![json!("A"), json!("~A")], "{special}");
+}
