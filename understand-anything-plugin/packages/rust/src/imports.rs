@@ -743,15 +743,6 @@ pub fn extract_import_map(input: &Value) -> Result<Value> {
             json!({"scriptCompleted":true,"stats":{"filesScanned":0,"filesWithImports":0,"totalEdges":0},"importMap":{}}),
         );
     }
-    let needs_parser = analysis_files
-        .iter()
-        .any(|file| file["fileCategory"] == "code");
-    let ready = !needs_parser || crate::parsers::parse("typescript", "").is_ok();
-    if !ready {
-        eprintln!(
-            "Warning: extract-import-map: tree-sitter init failed (no parser available) — all importMap entries will be empty — structural graph will have no import edges"
-        );
-    }
     let mut c = ResolutionContext::new(Path::new(root), files);
     let mut map = json!({});
     let mut count = 0;
@@ -759,20 +750,12 @@ pub fn extract_import_map(input: &Value) -> Result<Value> {
     for f in &analysis_files {
         let path = to_posix(f["path"].as_str().unwrap_or(""));
         map[&path] = json!([]);
-        if f["fileCategory"] != "code" || !ready {
+        if f["fileCategory"] != "code" {
             continue;
         }
-        let content = match fs::read_to_string(
-            Path::new(root).join(f["path"].as_str().unwrap_or("")),
-        ) {
-            Ok(s) => s,
-            Err(e) => {
-                eprintln!(
-                    "Warning: extract-import-map: import resolution failed for {path} (read error: {e}) — importMap[{path}]=[]"
-                );
-                continue;
-            }
-        };
+        let content = fs::read_to_string(Path::new(root).join(&path)).map_err(|e| {
+            Error::Invalid(format!("Import extraction failed for {path} (read error: {e})"))
+        })?;
         let content = content.replace("\r\n", "\n").replace('\r', "\n");
         let lang = f["language"].as_str().unwrap_or("");
         let mut resolved = BTreeSet::new();
@@ -785,8 +768,16 @@ pub fn extract_import_map(input: &Value) -> Result<Value> {
                 "tsx" | "jsx" | "vue" => "typescript",
                 s => s,
             };
-            for imp in crate::structure::extract_import_sources(extraction, &content) {
-                resolved.extend(resolve_import(&imp, f, &mut c));
+            // Unsupported languages have no structural import extractor. A supported
+            // grammar failing to load, however, must never publish an empty map.
+            if crate::parsers::LANGUAGES.contains(&extraction) {
+                let imports = crate::structure::try_extract_import_sources(extraction, &content)
+                    .map_err(|e| Error::Invalid(format!(
+                        "Import extraction failed for {path} ({extraction} parser: {e})"
+                    )))?;
+                for imp in imports {
+                    resolved.extend(resolve_import(&imp, f, &mut c));
+                }
             }
             let extras = match lang {
                 "typescript" | "javascript" | "tsx" | "jsx" | "vue" => {

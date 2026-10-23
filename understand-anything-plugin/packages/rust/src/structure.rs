@@ -1810,9 +1810,12 @@ pub fn extract_structure(input: &Value) -> Result<Value> {
 /// Import-map extraction intentionally has different traversal and alias rules
 /// from the structural extractor. Keep this boundary separate.
 pub fn extract_import_sources(language: &str, content: &str) -> Vec<Value> {
-    let Ok(tree) = parsers::parse(language, content) else {
-        return vec![];
-    };
+    try_extract_import_sources(language, content).unwrap_or_default()
+}
+
+/// Import refresh callers must distinguish parser failures from an empty import list.
+pub fn try_extract_import_sources(language: &str, content: &str) -> Result<Vec<Value>> {
+    let tree = parsers::parse(language, content)?;
     let root = N {
         raw: tree.root_node(),
         source: content,
@@ -1995,8 +1998,8 @@ pub fn extract_import_sources(language: &str, content: &str) -> Vec<Value> {
         }
         _ => {}
     }
-    array(&a, "imports")
+    Ok(array(&a, "imports")
         .iter()
         .map(|i| json!({"source":i["source"],"specifiers":i["specifiers"]}))
-        .collect()
+        .collect())
 }
