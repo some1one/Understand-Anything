@@ -133,6 +133,9 @@ pub fn create_ignore_filter(root: &Path) -> Result<IgnoreFilter> {
     IgnoreFilter::new(&patterns)
 }
 pub fn enumerate_files(root: &Path) -> Vec<String> {
+    enumerate_files_with_failures(root, &mut vec![])
+}
+fn enumerate_files_with_failures(root: &Path, failures: &mut Vec<Value>) -> Vec<String> {
     if let Ok(output) = Command::new("git")
         .args(["ls-files", "-z", "-co", "--exclude-standard"])
         .current_dir(root)
@@ -154,7 +157,13 @@ pub fn enumerate_files(root: &Path) -> Vec<String> {
                 || !e.file_type().is_dir()
                 || !hard.contains(&e.file_name().to_string_lossy().as_ref())
         })
-        .filter_map(|e| e.ok())
+        .filter_map(|entry| match entry {
+            Ok(entry) => Some(entry),
+            Err(error) => {
+                failures.push(json!({"path":error.path().map(|p| p.to_string_lossy()),"stage":"enumeration","message":error.to_string()}));
+                None
+            }
+        })
         .filter(|e| e.file_type().is_file())
         .filter_map(|e| {
             e.path()
@@ -173,7 +182,8 @@ pub fn scan_project(root: &Path) -> Result<Value> {
             .exists();
     let mut filtered = 0;
     let mut files = vec![];
-    for p in enumerate_files(root) {
+    let mut failures = vec![];
+    for p in enumerate_files_with_failures(root, &mut failures) {
         if combined.is_ignored(&p) {
             if has_user && !defaults.is_ignored(&p) {
                 filtered += 1;
@@ -184,12 +194,20 @@ pub fn scan_project(root: &Path) -> Result<Value> {
             continue;
         }
         let path = root.join(&p);
-        if !path.is_file() {
-            continue;
+        match fs::metadata(&path) {
+            Ok(metadata) if metadata.is_file() => {},
+            Ok(_) => continue,
+            Err(error) => {
+                failures.push(json!({"path":p,"stage":"file-stat","message":error.to_string()}));
+                continue;
+            }
         }
         match fs::read(path) {
             Ok(bytes) => files.push(json!({"path":p,"language":detect_language(&p),"sizeLines":bytes.iter().filter(|b| **b==b'\n').count(),"fileCategory":detect_category(&p)})),
-            Err(e) => eprintln!("Warning: scan-project: {p} — line count failed ({e}) — file skipped from output"),
+            Err(e) => {
+                failures.push(json!({"path":p,"stage":"file-read","message":e.to_string()}));
+                eprintln!("Warning: scan-project: {p} — line count failed ({e}) — file skipped from output");
+            },
         }
     }
     files.sort_by(|a, b| a["path"].as_str().cmp(&b["path"].as_str()));
@@ -204,7 +222,9 @@ pub fn scan_project(root: &Path) -> Result<Value> {
             *entry = json!(entry.as_u64().unwrap() + 1);
         }
     }
-    Ok(
-        json!({"scriptCompleted":true,"totalFiles":files.len(),"filteredByIgnore":filtered,"estimatedComplexity":estimate_complexity(files.len()),"stats":{"filesScanned":files.len(),"byCategory":categories,"byLanguage":languages},"files":files}),
-    )
+    let mut result = json!({"scriptCompleted":true,"totalFiles":files.len(),"filteredByIgnore":filtered,"estimatedComplexity":estimate_complexity(files.len()),"stats":{"filesScanned":files.len(),"byCategory":categories,"byLanguage":languages},"files":files});
+    if !failures.is_empty() {
+        result["failures"] = json!(failures);
+    }
+    Ok(result)
 }
