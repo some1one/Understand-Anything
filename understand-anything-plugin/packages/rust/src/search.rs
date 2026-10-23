@@ -136,6 +136,9 @@ impl SearchEngine {
 }
 pub fn cosine_similarity(a: &[f64], b: &[f64]) -> Result<f64> {
     let ma = a.iter().map(|x| x * x).sum::<f64>().sqrt();
+    cosine_with_query_magnitude(a, b, ma)
+}
+fn cosine_with_query_magnitude(a: &[f64], b: &[f64], ma: f64) -> Result<f64> {
     let mb = b.iter().map(|x| x * x).sum::<f64>().sqrt();
     if ma == 0. || mb == 0. {
         return Ok(0.);
@@ -170,6 +173,7 @@ impl SemanticSearchEngine {
         threshold: f64,
         types: &[String],
     ) -> Result<Vec<SearchResult>> {
+        let query_magnitude = query.iter().map(|x| x * x).sum::<f64>().sqrt();
         let mut results = vec![];
         for n in &self.nodes {
             if !types.is_empty() && !types.iter().any(|t| n["type"] == *t) {
@@ -177,7 +181,7 @@ impl SemanticSearchEngine {
             }
             let id = n["id"].as_str().unwrap_or("");
             if let Some(e) = self.embeddings.get(id) {
-                let sim = cosine_similarity(query, e)?;
+                let sim = cosine_with_query_magnitude(query, e, query_magnitude)?;
                 if sim >= threshold {
                     results.push(SearchResult {
                         node_id: id.into(),
