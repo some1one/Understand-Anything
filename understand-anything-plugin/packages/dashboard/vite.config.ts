@@ -187,7 +187,7 @@ function readSourceFile(url: URL) {
 export default defineConfig({
   test: {
     environment: "node",
-    include: ["src/**/__tests__/**/*.test.ts", "tests/**/*.test.ts"],
+    include: ["src/**/__tests__/**/*.test.{ts,tsx}", "tests/**/*.test.ts"],
   },
 
   // FIX 1 — bind only to localhost, not 0.0.0.0
