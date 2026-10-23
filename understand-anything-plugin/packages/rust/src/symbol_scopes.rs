@@ -78,6 +78,8 @@ fn record(node: &Node, name: Option<String>, scope: &Scope) -> Value {
 }
 struct Inventory<'a> {
     content: &'a str,
+    ruby: bool,
+    effects: Vec<Value>,
     javascript: bool,
     functions: Vec<Value>,
     classes: Vec<Value>,
@@ -99,6 +101,14 @@ impl Inventory<'_> {
         receiver: Scope,
     ) {
         let kind = node.kind();
+        if self.ruby {
+            self.effects.extend(crate::symbol_effects::ruby(
+                &node,
+                self.content,
+                &enclosing.json(),
+                &receiver.json(),
+            ));
+        }
         let is_class = CLASSES.contains(&kind.as_str());
         let is_function = FUNCTIONS.contains(&kind.as_str());
         let declared = identifier(node.child_by_field_name("name"), self.content);
@@ -205,6 +215,7 @@ impl Inventory<'_> {
         .contains(&kind.as_str())
         {
             children_scope = Scope::Unknown;
+            children_receiver = Scope::Unknown;
         } else if self.javascript
             && [
                 "statement_block",
@@ -261,6 +272,8 @@ impl Inventory<'_> {
 pub fn collect(root: Node, content: &str, language: &str, structure: &Value) -> Value {
     let mut inventory = Inventory {
         content,
+        ruby: language == "ruby",
+        effects: vec![],
         javascript: ["typescript", "javascript", "tsx"].contains(&language),
         functions: vec![],
         classes: vec![],
@@ -319,5 +332,5 @@ pub fn collect(root: Node, content: &str, language: &str, structure: &Value) -> 
             "Language has no verified declaration coverage profile",
         ));
     }
-    json!({"functions":inventory.functions,"classes":inventory.classes,"unresolved":inventory.unresolved,"coverageGaps":inventory.gaps})
+    json!({"functions":inventory.functions,"classes":inventory.classes,"unresolved":inventory.unresolved,"coverageGaps":inventory.gaps,"effects":inventory.effects})
 }

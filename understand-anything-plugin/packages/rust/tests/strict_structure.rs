@@ -105,3 +105,45 @@ fn ordinary_identifiers_and_references_are_not_declaration_gaps() {
         assert_eq!(result["declarationScopes"]["coverageGaps"], serde_json::json!([]), "{result}");
     }
 }
+
+#[test]
+#[ignore = "requires pinned Ruby grammar; run with UA_TEST_PARSER_CACHE"]
+fn ruby_runtime_evidence_tracks_accessors_aliases_and_unresolved_installers() {
+    if let Ok(cache) = std::env::var("UA_TEST_PARSER_CACHE") {
+        parsers::configure(Some(std::path::Path::new(&cache))).unwrap();
+    }
+    let result = analyze_file_strict("file.rb", r#"
+class Worker
+  attr_reader :name
+  attr_writer :token
+  attr_accessor :value
+  attr :enabled, true
+  attr :flag, false
+  attr_writer dynamic_name
+  define_method(:run) { 1 }
+  define_singleton_method(:build) { new }
+  alias renamed run
+  alias_method :copied, :run
+  class << Other
+    attr_reader :singleton_value
+  end
+end
+Other.attr_reader :alien
+installer = Worker.method(:define_method)
+eval(source)
+text = "attr_accessor :fake"
+"#);
+    assert_eq!(result["status"], "succeeded", "{result}");
+    let effects = result["declarationScopes"]["effects"].as_array().unwrap();
+    for name in ["name", "token=", "value", "value=", "enabled", "enabled=", "flag", "run", "self.build", "renamed", "copied"] {
+        assert!(effects.iter().any(|e| e["name"] == name && e["scope"]["kind"] == "class" && e["scope"]["name"] == "Worker"), "missing {name}: {result}");
+    }
+    for name in ["token", "flag=", "fake"] {
+        assert!(!effects.iter().any(|e| e["name"] == name), "unexpected {name}: {result}");
+    }
+    assert!(effects.iter().any(|e| e["name"].is_null() && e["nameSuffix"] == "=" && e["scope"]["name"] == "Worker"));
+    assert!(effects.iter().any(|e| e["name"] == "alien" && e["scope"]["kind"] == "unknown"));
+    assert!(effects.iter().any(|e| e["name"] == "singleton_value" && e["scope"]["kind"] == "unknown"));
+    assert!(effects.iter().any(|e| e["reason"] == "Indirect method installer"));
+    assert!(effects.iter().any(|e| e["reason"] == "Dynamic dispatch or code evaluation" && e["kind"].is_null()));
+}

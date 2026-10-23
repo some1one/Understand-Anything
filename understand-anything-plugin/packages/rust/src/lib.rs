@@ -79,3 +79,5 @@ pub mod query_terms;
 pub mod symbol_scopes;
 
 mod symbol_coverage;
+
+mod symbol_effects;
