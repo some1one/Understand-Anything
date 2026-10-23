@@ -462,7 +462,26 @@ pub fn resolve_python_import(
         }
         let mut base = dir[..dir.len() - (dots - 1)].to_vec();
         if tail.is_empty() {
-            return python_submodules(&base.join("/"), spec, c);
+            let base = base.join("/");
+            let package = if base.is_empty() {
+                "__init__.py".to_owned()
+            } else {
+                format!("{base}/__init__.py")
+            };
+            let mut matches = Vec::new();
+            for name in spec.iter().filter(|s| !s.is_empty() && !s.contains('.')) {
+                let submodules = python_submodules(&base, std::slice::from_ref(name), c);
+                if !submodules.is_empty() {
+                    matches.extend(submodules);
+                } else if c.file_set.contains(&package)
+                    && package != to_posix(path)
+                    && !matches.contains(&package)
+                {
+                    // A non-module name (including *) comes from the package itself.
+                    matches.push(package.clone());
+                }
+            }
+            return matches;
         }
         base.extend(tail);
         return resolve_python_probe(&base, spec, c);
