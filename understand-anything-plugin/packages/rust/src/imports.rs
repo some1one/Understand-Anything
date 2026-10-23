@@ -200,6 +200,7 @@ pub struct ResolutionContext {
     pub php_autoloads: BTreeMap<String, Value>,
     pub go_files_by_dir: BTreeMap<String, Vec<String>>,
     pub suffix_index: BTreeMap<String, Vec<String>>,
+    failures: Vec<String>,
     warned_go: BTreeSet<String>,
     warned_rust: BTreeSet<String>,
 }
@@ -216,6 +217,7 @@ impl ResolutionContext {
             php_autoloads: BTreeMap::new(),
             go_files_by_dir: BTreeMap::new(),
             suffix_index: BTreeMap::new(),
+            failures: Vec::new(),
             warned_go: BTreeSet::new(),
             warned_rust: BTreeSet::new(),
         };
@@ -226,18 +228,10 @@ impl ResolutionContext {
                     continue;
                 }
                 let abs = root.join(&p);
-                if !abs.exists() {
-                    continue;
-                }
                 let raw = match fs::read_to_string(&abs) {
                     Ok(s) => s,
                     Err(e) => {
-                        if name != "go.mod" {
-                            eprintln!(
-                                "Warning: extract-import-map: {name} at {} failed to read ({e}) — configuration unavailable",
-                                abs.display()
-                            );
-                        }
+                        c.failures.push(format!("{p}: resolver configuration read failed: {e}"));
                         continue;
                     }
                 };
@@ -247,7 +241,9 @@ impl ResolutionContext {
                     _ => raw
                         .lines()
                         .map(|l| l.split("//").next().unwrap_or("").trim())
-                        .find_map(|l| l.strip_prefix("module ").map(|s| json!(s.trim()))),
+                        .find_map(|l| l.strip_prefix("module ").map(str::trim))
+                        .filter(|s| !s.is_empty())
+                        .map(|s| json!(s)),
                 };
                 if let Some(config) = parsed {
                     let target = match name {
@@ -256,16 +252,8 @@ impl ResolutionContext {
                         _ => &mut c.go_modules,
                     };
                     target.insert(dir_of(&p).into(), config);
-                } else if name == "tsconfig.json" {
-                    eprintln!(
-                        "Warning: extract-import-map: tsconfig.json at {} failed to parse — path aliases from this config will not be applied — relative imports unaffected",
-                        abs.display()
-                    );
-                } else if name == "composer.json" {
-                    eprintln!(
-                        "Warning: extract-import-map: composer.json at {} failed to parse — PSR-4 namespace mapping unavailable — PHP imports under this package will not resolve",
-                        abs.display()
-                    );
+                } else {
+                    c.failures.push(format!("{p}: resolver configuration parse failed"));
                 }
             }
         }
@@ -744,6 +732,11 @@ pub fn extract_import_map(input: &Value) -> Result<Value> {
         );
     }
     let mut c = ResolutionContext::new(Path::new(root), files);
+    if !c.failures.is_empty() {
+        return Err(Error::Invalid(format!(
+            "Import extraction failed: {}", c.failures.join("; ")
+        )));
+    }
     let mut map = json!({});
     let mut count = 0;
     let mut edges = 0;

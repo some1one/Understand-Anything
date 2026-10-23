@@ -37,3 +37,26 @@ fn invalid_utf8_is_a_read_failure_and_unselected_files_are_not_read() {
     let result = extract_import_map(&input).unwrap();
     assert_eq!(result["importMap"], json!({"good.rb":["dep.rb"]}));
 }
+
+#[test]
+fn resolver_configuration_failures_abort_even_for_selective_refresh() {
+    let temp = tempfile::tempdir().unwrap();
+    fs::write(temp.path().join("source.rb"), "require_relative 'dep'").unwrap();
+    for (name, valid, invalid) in [
+        ("tsconfig.json", "{}", "{broken"),
+        ("composer.json", "{}", "{broken"),
+        ("go.mod", "module example.com/project\n", "go 1.24\n"),
+    ] {
+        let input = json!({"projectRoot":temp.path(),"files":[
+            {"path":"source.rb","language":"ruby","fileCategory":"code"},
+            {"path":name,"fileCategory":"config"}
+        ],"analysisPaths":["source.rb"]});
+        let error = extract_import_map(&input).unwrap_err().to_string();
+        assert!(error.contains(name) && error.contains("read failed"), "{error}");
+        fs::write(temp.path().join(name), invalid).unwrap();
+        let error = extract_import_map(&input).unwrap_err().to_string();
+        assert!(error.contains(name) && error.contains("parse failed"), "{error}");
+        fs::write(temp.path().join(name), valid).unwrap();
+        assert!(extract_import_map(&input).is_ok());
+    }
+}
