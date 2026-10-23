@@ -200,9 +200,12 @@ pub fn build_seed(context: &Value, extract_results: &Value) -> Value {
                 if !significant {
                     continue;
                 }
-                let id = format!("{kind}:{path}:{name}");
+                let qualified_name = if kind == "function" {
+                    symbol["owner"].as_str().filter(|owner| !owner.is_empty()).map(|owner| format!("{owner}.{name}")).unwrap_or_else(|| name.to_owned())
+                } else { name.to_owned() };
+                let id = format!("{kind}:{path}:{qualified_name}");
                 if node_ids.insert(id.clone()) {
-                    let mut node = json!({"id":id,"type":kind,"name":name,"filePath":path,"summary":format!("{} {name} defined in {path}, included because structural extraction marked it significant for the file graph.",title(kind)),"tags":unique_tags(vec![kind.into()],category_tags("file","code",path,s(result,"language"))),"complexity":complexity(span)});
+                    let mut node = json!({"id":id,"type":kind,"name":qualified_name,"filePath":path,"summary":format!("{} {name} defined in {path}, included because structural extraction marked it significant for the file graph.",title(kind)),"tags":unique_tags(vec![kind.into()],category_tags("file","code",path,s(result,"language"))),"complexity":complexity(span)});
                     if let Some((a, b)) = range {
                         node["lineRange"] = json!([a, b]);
                     }

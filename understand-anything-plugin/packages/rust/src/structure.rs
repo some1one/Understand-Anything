@@ -460,39 +460,15 @@ fn go(root: &N, a: &mut Value) {
         match n.ty().as_str() {
             "function_declaration" | "method_declaration" => {
                 if let Some(name) = n.name() {
-                    push(
-                        a,
-                        "functions",
-                        function(
-                            &n,
-                            name,
-                            params(n.field("parameters"), "go"),
-                            n.field("result").map(|n| n.text()),
-                        ),
-                    );
-                    if go_public(name) {
-                        export(a, name, n.row(), None);
-                    }
-                    if let Some(recv) = n
-                        .field("receiver")
-                        .and_then(|r| r.child("parameter_declaration"))
-                    {
-                        for c in recv.children() {
-                            let ty = if c.ty() == "type_identifier" {
-                                Some(c)
-                            } else if c.ty() == "pointer_type" {
-                                c.child("type_identifier")
-                            } else {
-                                None
-                            };
-                            if let Some(t) = ty {
-                                receivers
-                                    .entry(t.text().into())
-                                    .or_default()
-                                    .push(name.into());
-                                break;
-                            }
-                        }
+                    let owner = if n.ty() == "method_declaration" {
+                        crate::receivers::go(&n.raw, n.source)
+                    } else { Some(String::new()) };
+                    let mut extracted = function(&n, name, params(n.field("parameters"), "go"), n.field("result").map(|n| n.text()));
+                    extracted["owner"] = json!(owner);
+                    push(a, "functions", extracted);
+                    if go_public(name) { export(a, name, n.row(), None); }
+                    if let Some(owner) = owner.filter(|owner| !owner.is_empty()) {
+                        receivers.entry(owner).or_default().push(name.into());
                     }
                 }
             }
@@ -1739,7 +1715,7 @@ pub fn build_result(
         "resources",
     ] {
         let values:Vec<_>=array(a,key).iter().map(|n|match key{
-            "functions"=>json!({"name":n["name"],"startLine":n["lineRange"][0],"endLine":n["lineRange"][1],"params":array(n,"params")}),
+            "functions"=>{let mut function = json!({"name":n["name"],"startLine":n["lineRange"][0],"endLine":n["lineRange"][1],"params":array(n,"params")}); if let Some(owner) = n.get("owner") { function["owner"] = owner.clone(); } function},
             "classes"=>json!({"name":n["name"],"startLine":n["lineRange"][0],"endLine":n["lineRange"][1],"methods":array(n,"methods"),"properties":array(n,"properties")}),
             "exports"=>json!({"name":n["name"],"line":n["lineNumber"],"isDefault":n["isDefault"]==true}),
             "sections"=>json!({"heading":n["name"],"level":n["level"],"line":n["lineRange"][0]}),

@@ -80,6 +80,7 @@ struct Inventory<'a> {
     content: &'a str,
     ruby: bool,
     python: bool,
+    go: bool,
     effects: Vec<Value>,
     javascript: bool,
     functions: Vec<Value>,
@@ -120,7 +121,12 @@ impl Inventory<'_> {
                     self.javascript,
                 ));
         }
-        let is_class = CLASSES.contains(&kind.as_str());
+        let is_class = CLASSES.contains(&kind.as_str())
+            || (self.go
+                && kind == "type_spec"
+                && node.child_by_field_name("type").is_some_and(|ty| {
+                    ["struct_type", "interface_type"].contains(&ty.kind().as_str())
+                }));
         let is_function = FUNCTIONS.contains(&kind.as_str());
         let declared = identifier(node.child_by_field_name("name"), self.content);
         if let Some(gap) = crate::symbol_coverage::gap(
@@ -180,7 +186,13 @@ impl Inventory<'_> {
             // Rust impls and Go receivers require language-specific owner evidence.
             // Singleton methods on arbitrary objects likewise cannot inherit scope.
             if kind == "method_declaration" && node.child_by_field_name("receiver").is_some() {
-                owner = Scope::Unknown;
+                owner = if self.go {
+                    crate::receivers::go(&node, self.content)
+                        .map(Scope::Class)
+                        .unwrap_or(Scope::Unknown)
+                } else {
+                    Scope::Unknown
+                };
             }
             if kind == "singleton_method" {
                 let receiver = node
@@ -285,6 +297,7 @@ pub fn collect(root: Node, content: &str, language: &str, structure: &Value) -> 
         content,
         ruby: language == "ruby",
         python: language == "python",
+        go: language == "go",
         effects: vec![],
         javascript: ["typescript", "javascript", "tsx"].contains(&language),
         functions: vec![],

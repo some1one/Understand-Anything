@@ -83,3 +83,5 @@ mod symbol_coverage;
 mod symbol_effects;
 
 pub mod incremental_symbols;
+
+mod receivers;

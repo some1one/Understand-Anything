@@ -13,7 +13,11 @@ pub fn extract_file_fingerprint(path: &str, content: &str, analysis: Option<&Val
         .iter()
         .map(|e| e["name"].clone())
         .collect();
-    let functions:Vec<_>=array(a,"functions").iter().map(|f|json!({"name":f["name"],"params":strings(&f["params"]),"returnType":f["returnType"],"exported":exports.contains(&f["name"]),"lineCount":f["lineRange"][1].as_i64().unwrap_or(0)-f["lineRange"][0].as_i64().unwrap_or(0)+1})).collect();
+    let functions: Vec<_> = array(a, "functions").iter().map(|f| {
+        let mut fingerprint = json!({"name":f["name"],"params":strings(&f["params"]),"returnType":f["returnType"],"exported":exports.contains(&f["name"]),"lineCount":f["lineRange"][1].as_i64().unwrap_or(0)-f["lineRange"][0].as_i64().unwrap_or(0)+1});
+        if let Some(owner) = f.get("owner") { fingerprint["owner"] = owner.clone(); }
+        fingerprint
+    }).collect();
     let classes:Vec<_>=array(a,"classes").iter().map(|c|json!({"name":c["name"],"methods":strings(&c["methods"]),"properties":strings(&c["properties"]),"exported":exports.contains(&c["name"]),"lineCount":c["lineRange"][1].as_i64().unwrap_or(0)-c["lineRange"][0].as_i64().unwrap_or(0)+1})).collect();
     let imports: Vec<_> = array(a, "imports")
         .iter()
@@ -26,7 +30,7 @@ fn signature(fp: &Value) -> Value {
     for (key, fields) in [
         (
             "functions",
-            vec!["name", "params", "returnType", "exported"],
+            vec!["name", "owner", "params", "returnType", "exported"],
         ),
         ("classes", vec!["name", "methods", "properties", "exported"]),
         ("imports", vec!["source", "specifiers"]),
@@ -71,6 +75,9 @@ pub fn compare_fingerprints(old: &Value, new: &Value) -> (&'static str, Vec<Stri
             "STRUCTURAL",
             vec!["no structural support — treated as structural".into()],
         );
+    }
+    if [old, new].iter().any(|fp| array(fp, "functions").iter().any(|f| f.get("owner").is_some_and(Value::is_null))) {
+        return ("STRUCTURAL", vec!["callable receiver identity is unresolved".into()]);
     }
     if signature(old) == signature(new) {
         return (
