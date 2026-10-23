@@ -19,7 +19,8 @@ fn metadata_only_completion_refreshes_snapshot_identity_without_changing_graph_c
     let saved=read_json(&data.join("knowledge-graph.json")).unwrap();
     for key in ["nodes","edges","layers","custom"] {assert_eq!(saved[key],graph[key]);}
     for key in ["name","description","frameworks","extension"] {assert_eq!(saved["project"][key],graph["project"][key]);}
-    assert_eq!(saved["project"]["languages"],json!(["python","rust"]));
+    // Fresh inventory supersedes the stale cached Python entry.
+    assert_eq!(saved["project"]["languages"],json!(["rust"]));
     assert_eq!(saved["project"]["gitCommitHash"],head);assert_ne!(saved["project"]["analyzedAt"],"old time");
     assert_eq!(read_json(&data.join("meta.json")).unwrap()["gitCommitHash"],head);
     let before=fs::read(data.join("meta.json")).unwrap();

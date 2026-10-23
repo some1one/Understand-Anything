@@ -322,7 +322,10 @@ pub fn fingerprint_check(root: &Path) -> Result<Value> {
     verify_prepared_revision(root)?;
     let state = required(&inter(root, "auto-update-state.json"))?;
     let (store, _) = fingerprints::load_fingerprint_store(&ua(root, "fingerprints.json"))?;
-    let graph = read(&ua(root, "knowledge-graph.json"));
+    let graph = required(&ua(root, "knowledge-graph.json"))?;
+    if !graph["nodes"].is_array() || !graph["edges"].is_array() {
+        return Err(Error::Invalid("Cannot classify incremental changes against an invalid saved graph".into()));
+    }
     let graph_paths = graph_file_paths(&graph);
     let scan = scoped_scan(root)?;
     if !array(&scan, "failures").is_empty() {
