@@ -231,6 +231,12 @@ pub fn preflight_with_git(root: &Path, force: bool, git: &dyn GitClient) -> Resu
     {
         let graph = required(&ua(root, "knowledge-graph.json"))?;
         let scan = crate::scan::scan_project(root)?;
+        if !array(&scan, "failures").is_empty() {
+            state["action"] = json!("SCAN_FAILED");
+            state["reason"] = json!("Cannot reconcile ignore changes with an incomplete project inventory. Resolve scan failures and retry.");
+            state["scanFailures"] = scan["failures"].clone();
+            return Ok(state);
+        }
         let paths: BTreeSet<_> = graph_file_paths(&graph)
             .into_iter()
             .chain(

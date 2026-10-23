@@ -64,6 +64,10 @@ stage, commit, stash, or discard their work automatically. Generated graph data
 and ignored files do not block the update; ignore-rule changes do. Preparation
 and finalization recheck HEAD and relevant worktree changes, so source drift
 requires a new preflight instead of publishing against the old revision.
+`SCAN_FAILED` stops ignore-rule reconciliation when the inventory is incomplete.
+Report `scanFailures`; retain the existing graph and baseline, resolve the read
+or enumeration failures, and retry preflight. Missing scan entries are not proof
+that files were deleted or excluded.
 On `CONTINUE / PROCEED`, continue.
 
 ### 2. Compare structural fingerprints
