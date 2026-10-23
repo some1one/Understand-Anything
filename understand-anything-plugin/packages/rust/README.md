@@ -218,3 +218,19 @@ configuration changes, or an incomplete cache trigger a full import refresh so
 unchanged importers can resolve newly available targets. Source-read, parser-load,
 and resolver-configuration failures leave previous preparation outputs intact.
 This refresh updates batch inputs; graph publication remains a separate phase.
+
+## Graph freshness
+
+`run.sh graph_freshness <project-root> [input.json]` performs a read-only check.
+With no input file, it uses the commit and analysis time stored in the selected
+project data directory's `knowledge-graph.json`. It does not substitute a newer
+metadata watermark or start analysis.
+
+An input object can supply `graphCommitHash` and optional `lastAnalyzedAt`.
+For multiple snapshots, use `{"graphs":{"name":{"graphCommitHash":"…"}}}`;
+all entries share one HEAD/worktree snapshot. Results distinguish `fresh`,
+`dirty`, `stale` (with `behind`, `ahead`, or `diverged`), and `unknown`.
+Git failures and timeouts produce `unknown`, never a claim that the graph is fresh.
+Changed paths are scoped to the requested project and exclude generated files
+inside `.ua` and `.understand-anything`. Each Git command has a five-second
+limit and a four-MiB output limit.
