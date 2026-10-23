@@ -85,3 +85,5 @@ mod symbol_effects;
 pub mod incremental_symbols;
 
 mod receivers;
+
+mod swift_imports;

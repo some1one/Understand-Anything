@@ -349,7 +349,7 @@ pub fn prepare_batches(root: &Path) -> Result<Value> {
         .filter_map(|f| f["path"].as_str().map(str::to_owned)).collect();
     let resolver_changed = ["filesToReanalyze", "deletedFiles", "cosmeticOnlyFiles"]
         .iter().flat_map(|key| strings(&analysis[*key]))
-        .any(|path| matches!(path.rsplit('/').next(), Some("tsconfig.json" | "composer.json" | "go.mod")));
+        .any(|path| matches!(path.rsplit('/').next(), Some("tsconfig.json" | "composer.json" | "go.mod" | "Package.swift")));
     let cache_complete = baseline["importMap"].as_object().is_some_and(|map| {
         map.len() == known.len() && known.iter().all(|path| {
             map.get(path).and_then(Value::as_array).is_some_and(|targets| {

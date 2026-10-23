@@ -200,6 +200,7 @@ pub struct ResolutionContext {
     pub php_autoloads: BTreeMap<String, Value>,
     pub go_files_by_dir: BTreeMap<String, Vec<String>>,
     pub suffix_index: BTreeMap<String, Vec<String>>,
+    pub swift_modules: BTreeMap<String, Vec<String>>,
     failures: Vec<String>,
     warned_go: BTreeSet<String>,
     warned_rust: BTreeSet<String>,
@@ -217,10 +218,12 @@ impl ResolutionContext {
             php_autoloads: BTreeMap::new(),
             go_files_by_dir: BTreeMap::new(),
             suffix_index: BTreeMap::new(),
+            swift_modules: BTreeMap::new(),
             failures: Vec::new(),
             warned_go: BTreeSet::new(),
             warned_rust: BTreeSet::new(),
         };
+        c.swift_modules = crate::swift_imports::build(root, &c.file_set, &mut c.failures);
         for name in ["tsconfig.json", "go.mod", "composer.json"] {
             for f in files {
                 let p = to_posix(f["path"].as_str().unwrap_or(""));
@@ -524,6 +527,7 @@ pub fn resolve_import(imp: &Value, file: &Value, c: &mut ResolutionContext) -> V
     let path = to_posix(file["path"].as_str().unwrap_or(""));
     let lang = file["language"].as_str().unwrap_or("");
     match lang {
+        "swift" => crate::swift_imports::resolve(src, &path, &c.swift_modules),
         "typescript" | "javascript" | "tsx" | "jsx" | "vue" => {
             resolve_ts_js_import(src, &path, c).into_iter().collect()
         }
