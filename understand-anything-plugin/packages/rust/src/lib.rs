@@ -91,3 +91,5 @@ mod scala_imports;
 pub mod freshness;
 
 pub mod file_lists;
+
+mod symbol_bindings;

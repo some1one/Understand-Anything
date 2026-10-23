@@ -217,7 +217,13 @@ fn member(node: &Node, content: &str) -> Option<(Node, Option<String>)> {
         _ => None,
     }
 }
-fn target_scope(node: &Node, content: &str, receiver: &Value, javascript: bool) -> Value {
+fn target_scope(
+    node: &Node,
+    content: &str,
+    receiver: &Value,
+    javascript: bool,
+    bindings: &crate::symbol_bindings::Index,
+) -> Value {
     // `this` is a lexical receiver only when scope analysis has verified it.
     // Named variables (including Python's `self`) need binding-resolution evidence.
     if javascript && text(node, content) == "this" && receiver["kind"] == "class" {
@@ -226,9 +232,9 @@ fn target_scope(node: &Node, content: &str, receiver: &Value, javascript: bool) 
     if let Some((object, Some(name))) = member(node, content)
         && ["prototype", "__dict__"].contains(&name.as_str())
     {
-        return target_scope(&object, content, receiver, javascript);
+        return target_scope(&object, content, receiver, javascript, bindings);
     }
-    json!({"kind":"unknown"})
+    bindings.reference(node, content)
 }
 fn object_keys(
     object: Option<Node>,
@@ -297,10 +303,11 @@ fn assignment_effects(
     receiver: &Value,
     javascript: bool,
     value: Option<Node>,
+    bindings: &crate::symbol_bindings::Index,
     out: &mut Vec<Value>,
 ) {
     if let Some((object, name)) = member(target, content) {
-        let owner = target_scope(&object, content, receiver, javascript);
+        let owner = target_scope(&object, content, receiver, javascript, bindings);
         if javascript && name.as_deref() == Some("prototype") {
             object_keys(value, content, &owner, target, out);
         } else {
@@ -334,7 +341,9 @@ fn assignment_effects(
             .map(|n| vec![n])
             .unwrap_or_else(|| named_children(target));
         for child in children {
-            assignment_effects(&child, content, scope, receiver, javascript, None, out);
+            assignment_effects(
+                &child, content, scope, receiver, javascript, None, bindings, out,
+            );
         }
     }
 }
@@ -347,6 +356,8 @@ pub(crate) fn javascript_python(
     scope: &Value,
     receiver: &Value,
     javascript: bool,
+    bindings: &crate::symbol_bindings::Index,
+    handled: &mut std::collections::BTreeSet<crate::symbol_bindings::Key>,
 ) -> Vec<Value> {
     let mut effects = vec![];
     let kind = node.kind();
@@ -378,6 +389,7 @@ pub(crate) fn javascript_python(
                 receiver,
                 javascript,
                 value,
+                bindings,
                 &mut effects,
             );
         }
@@ -421,19 +433,60 @@ pub(crate) fn javascript_python(
                 }
             });
             if installer {
-                effects.push(entry(
-                    node,
-                    &json!({"kind":"unknown"}),
-                    None,
-                    None,
-                    "Runtime installer identity is unresolved",
-                ));
+                consume(&callee, handled);
+                let standard = if javascript {
+                    access.as_ref().is_some_and(|(namespace, _)| {
+                        bindings.unbound(namespace, text(namespace, content))
+                            && ((text(namespace, content) == "Object"
+                                && ["defineProperty", "defineProperties", "assign"]
+                                    .contains(&method.as_deref().unwrap_or("")))
+                                || (text(namespace, content) == "Reflect"
+                                    && ["defineProperty", "set"]
+                                        .contains(&method.as_deref().unwrap_or(""))))
+                    })
+                } else {
+                    access.is_none()
+                        && method.as_deref() == Some("setattr")
+                        && bindings.unbound(&callee, "setattr")
+                };
+                if !standard {
+                    effects.push(entry(
+                        node,
+                        &json!({"kind":"unknown"}),
+                        None,
+                        None,
+                        "Runtime installer identity is unresolved",
+                    ));
+                } else {
+                    let owner = args
+                        .first()
+                        .map(|arg| target_scope(arg, content, receiver, javascript, bindings))
+                        .unwrap_or(json!({"kind":"unknown"}));
+                    match method.as_deref() {
+                        Some("defineProperties") => {
+                            object_keys(args.get(1).cloned(), content, &owner, node, &mut effects)
+                        }
+                        Some("assign") => {
+                            for arg in args.iter().skip(1) {
+                                object_keys(Some(arg.clone()), content, &owner, node, &mut effects);
+                            }
+                        }
+                        _ => effects.push(entry(
+                            node,
+                            &owner,
+                            args.get(1).and_then(|n| literal(n, content)),
+                            None,
+                            "Runtime property definition",
+                        )),
+                    }
+                }
             } else if method.as_ref().is_some_and(|method| {
                 (javascript && ["eval", "Function"].contains(&method.as_str()))
                     || (!javascript
                         && (["eval", "exec"].contains(&method.as_str())
                             || method == "type" && args.len() >= 3))
             }) {
+                consume(&callee, handled);
                 effects.push(entry(
                     node,
                     &json!({"kind":"unknown"}),
@@ -442,6 +495,7 @@ pub(crate) fn javascript_python(
                     "Dynamic code or class evaluation",
                 ));
             } else if access.as_ref().is_some_and(|(_, name)| name.is_none()) {
+                consume(&callee, handled);
                 effects.push(entry(
                     node,
                     &json!({"kind":"unknown"}),
@@ -452,8 +506,27 @@ pub(crate) fn javascript_python(
             }
         }
     }
+    if handled.contains(&crate::symbol_bindings::key(node)) {
+        return effects;
+    }
     if let Some((object, name)) = member(node, content) {
         if javascript
+            && text(&object, content) == "Reflect"
+            && bindings.unbound(&object, "Reflect")
+            && name.as_ref().is_some_and(|name| {
+                [
+                    "get",
+                    "has",
+                    "ownKeys",
+                    "getOwnPropertyDescriptor",
+                    "getPrototypeOf",
+                    "isExtensible",
+                ]
+                .contains(&name.as_str())
+            })
+        {
+            consume(node, handled);
+        } else if javascript
             && (name
                 .as_ref()
                 .is_some_and(|n| js_installers.contains(&n.as_str()))
@@ -467,17 +540,19 @@ pub(crate) fn javascript_python(
                 None,
                 "Aliased property installer",
             ));
+            consume(node, handled);
         } else if !javascript && name.as_deref() == Some("__dict__") {
             effects.push(entry(
                 node,
-                &target_scope(&object, content, receiver, false),
+                &target_scope(&object, content, receiver, false, bindings),
                 None,
                 None,
                 "Indirect attribute dictionary",
             ));
+            consume(node, handled);
         }
     }
-    if kind == "identifier" {
+    if kind == "identifier" && !bindings.is_binding(node) {
         let name = text(node, content);
         if (javascript
             && (js_installers.contains(&name) || ["Reflect", "eval", "Function"].contains(&name)))
@@ -495,4 +570,11 @@ pub(crate) fn javascript_python(
         }
     }
     effects
+}
+
+fn consume(node: &Node, handled: &mut std::collections::BTreeSet<crate::symbol_bindings::Key>) {
+    handled.insert(crate::symbol_bindings::key(node));
+    for child in named_children(node) {
+        consume(&child, handled);
+    }
 }

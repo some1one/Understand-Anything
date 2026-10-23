@@ -165,7 +165,8 @@ fn javascript_python_runtime_evidence_covers_bindings_properties_and_installers(
         assert!(effects.iter().any(|e| e["name"] == "run" && e["scope"]["kind"] == "file" && e["reason"] == "Binding assignment"), "{result}");
         assert!(effects.iter().any(|e| e["name"] == "run" && e["reason"] == "Property assignment"), "{result}");
         assert!(!effects.iter().any(|e| e["name"] == "local"), "{result}");
-        for reason in ["Runtime installer identity is unresolved", "Computed callee may select a runtime installer", "Dynamic code or class evaluation"] {
+        assert!(effects.iter().any(|e| e["name"] == "created" && e["scope"]["name"] == "Worker" && e["reason"] == "Runtime property definition"), "{result}");
+        for reason in ["Computed callee may select a runtime installer", "Dynamic code or class evaluation"] {
             assert!(effects.iter().any(|e| e["reason"] == reason && e["scope"]["kind"] == "unknown"), "{reason}: {result}");
         }
         if path.ends_with(".ts") {

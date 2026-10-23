@@ -79,6 +79,8 @@ fn record(node: &Node, name: Option<String>, scope: &Scope) -> Value {
     json!({"name":name,"scope":scope.json(),"lineRange":[node.start_position().row+1,node.end_position().row+1]})
 }
 struct Inventory<'a> {
+    bindings: crate::symbol_bindings::Index,
+    handled_references: std::collections::BTreeSet<crate::symbol_bindings::Key>,
     content: &'a str,
     ruby: bool,
     python: bool,
@@ -123,6 +125,8 @@ impl Inventory<'_> {
                     &enclosing.json(),
                     &receiver.json(),
                     self.javascript,
+                    &self.bindings,
+                    &mut self.handled_references,
                 ));
         }
         let is_class = CLASSES.contains(&kind.as_str())
@@ -312,6 +316,8 @@ impl Inventory<'_> {
 /// explicit, and local declarations are never treated as file-level replacements.
 pub fn collect(root: Node, content: &str, language: &str, structure: &Value) -> Value {
     let mut inventory = Inventory {
+        bindings: crate::symbol_bindings::Index::build(&root, content, language == "python"),
+        handled_references: Default::default(),
         content,
         ruby: language == "ruby",
         python: language == "python",
