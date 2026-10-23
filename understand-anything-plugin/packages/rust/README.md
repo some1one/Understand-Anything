@@ -214,6 +214,13 @@ literal filename characters. Callers must merge the selected results into their
 previous map and explicitly remove entries for deleted files; a partial result is
 not a replacement for the entire project import map.
 
+Incremental fingerprint comparison reconciles the saved graph inventory with a
+fresh scoped scan, adding newly included files and pruning deleted/excluded files
+even when Git's changed list does not mention them. The before/after inventories
+also drive architecture decisions. Incomplete scans stop classification before
+metadata changes. Newly discovered ignore controls trigger scope reconciliation
+without becoming semantic targets.
+
 Incremental batch preparation rescans the current inventory and aborts on reported
 scan failures or missing analysis targets. It refreshes imports for changed files
 when the cached inventory and map are complete. Added/deleted paths, resolver

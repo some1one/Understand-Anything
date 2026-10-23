@@ -324,18 +324,29 @@ pub fn fingerprint_check(root: &Path) -> Result<Value> {
     let (store, _) = fingerprints::load_fingerprint_store(&ua(root, "fingerprints.json"))?;
     let graph = read(&ua(root, "knowledge-graph.json"));
     let graph_paths = graph_file_paths(&graph);
-    let filter = scope_filter(root)?;
-    let changes: Vec<_> = strings(&state["changedSourceFiles"])
-        .iter()
-        .map(|p| {
-            if filter.is_ignored(p) && graph_paths.contains(p) {
-                json!({"filePath":p,"changeLevel":"STRUCTURAL","status":"deleted","details":["file ignored"]})
-            } else {
-                fingerprints::classify_file_change(root, p, if graph_paths.contains(p) { store["files"].get(p) } else { None })
-            }
-        })
-        .collect();
-    let decision = fingerprints::classify_update(&changes, &graph_file_paths(&graph));
+    let scan = scoped_scan(root)?;
+    if !array(&scan, "failures").is_empty() {
+        return Err(Error::Invalid("Cannot classify incremental changes from an incomplete project inventory".into()));
+    }
+    let current_paths: BTreeSet<String> = array(&scan, "files").iter()
+        .filter_map(|file| file["path"].as_str())
+        // Scope-control files trigger reconciliation; do not introduce them as
+        // semantic targets unless they were already part of the saved graph.
+        .filter(|path| !crate::context_helpers::is_ignore_file(path) || graph_paths.contains(*path))
+        .map(str::to_owned).collect();
+    // Git's changed list alone cannot describe files newly included/excluded by
+    // scanner rules, or omissions from an older analyzed inventory.
+    let candidates: BTreeSet<_> = strings(&state["changedSourceFiles"]).into_iter()
+        .filter(|path| current_paths.contains(path) || graph_paths.contains(path))
+        .chain(graph_paths.symmetric_difference(&current_paths).cloned()).collect();
+    let changes: Vec<_> = candidates.iter().map(|path| {
+        if !current_paths.contains(path) {
+            json!({"filePath":path,"changeLevel":"STRUCTURAL","status":"deleted","details":["file deleted or outside current inventory"]})
+        } else {
+            fingerprints::classify_file_change(root, path, if graph_paths.contains(path) { store["files"].get(path) } else { None })
+        }
+    }).collect();
+    let decision = fingerprints::classify_update_with_inventory(&changes, &graph_paths, &current_paths);
     let select = |level: &str, status: Option<&str>, exclude: bool| {
         let mut paths: Vec<_> = changes
             .iter()
@@ -351,7 +362,7 @@ pub fn fingerprint_check(root: &Path) -> Result<Value> {
     if decision["action"] == "SKIP" && !s(&state, "currentCommit").is_empty() {
         verify_prepared_revision(root)?;
         let mut graph = required(&ua(root, "knowledge-graph.json"))?;
-        refresh_project_metadata(&mut graph, &read(&inter(root,"scan-result.json")), s(&state,"currentCommit"))?;
+        refresh_project_metadata(&mut graph, &scan, s(&state,"currentCommit"))?;
         write(&ua(root,"knowledge-graph.json"), &graph)?;
         write_meta(root, s(&state, "currentCommit"), None)?;
         analysis["metadataUpdated"] = json!(true);

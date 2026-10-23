@@ -77,6 +77,11 @@ On `CONTINUE / PROCEED`, continue.
 "$PLUGIN_ROOT/packages/rust/run.sh" auto_update_fingerprint_check "$PROJECT_ROOT"
 ```
 
+Fingerprint comparison refreshes the scoped file inventory and reconciles it
+against the saved graph before choosing targets. Newly included files are analyzed,
+excluded or deleted files are pruned, and incomplete scans stop the update. Ignore
+controls trigger this comparison without becoming new semantic targets themselves.
+
 Read `change-analysis.json`:
 
 - `SKIP`: metadata is already updated; report that semantic analysis was skipped.
