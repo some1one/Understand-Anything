@@ -30,6 +30,7 @@ pub const LANGUAGES: &[&str] = &[
     "c",
     "cpp",
     "swift",
+    "scala",
 ];
 pub fn configure(cache_dir: Option<&Path>) -> Result<()> {
     if let Some(dir) = cache_dir {

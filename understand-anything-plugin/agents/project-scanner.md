@@ -162,7 +162,7 @@ Merge `importMap` directly into the final scan-result.json (same key). Every inp
 
 **Capture stderr:** append any `Warning:` line to phase warnings (the SKILL.md orchestrator captures these). A `extract-import-map: filesScanned=… filesWithImports=… totalEdges=…` summary line is informational.
 
-**Languages supported:** TypeScript, JavaScript (incl. CJS `require()`), Python (relative + absolute + `__init__.py`), Go (go.mod prefix stripping), Rust (`use crate::`/`super::`/`self::`, `mod x;`), Java, Kotlin, C#, Ruby (`require` + `require_relative`), PHP (composer.json PSR-4), C, C++ (`#include` with relative + include/ + src/ probes). Others get empty arrays (no LLM fallback).
+**Languages supported:** TypeScript, JavaScript (incl. CJS `require()`), Python (relative + absolute + `__init__.py`), Go (go.mod prefix stripping), Rust (`use crate::`/`super::`/`self::`, `mod x;`), Java, Kotlin, Scala (selectors, wildcard packages, and package-object fallback), Swift (module directories and literal SwiftPM target paths), C#, Ruby (`require` + `require_relative`), PHP (composer.json PSR-4), C, C++ (`#include` with relative + include/ + src/ probes). Others get empty arrays (no LLM fallback).
 
 ---
 
