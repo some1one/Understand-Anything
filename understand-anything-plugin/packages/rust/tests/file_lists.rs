@@ -45,7 +45,8 @@ fn batching_uses_json_targets_and_leaves_output_on_invalid_input() {
     fs::create_dir_all(&inter).unwrap();
     let target = "docs/line\nname.md";
     write_json(&inter.join("scan-result.json"), &json!({"files":[
-        {"path":target,"language":"markdown","fileCategory":"docs"}
+        {"path":target,"language":"markdown","fileCategory":"docs"},
+        {"path":"docs/other.md","language":"markdown","fileCategory":"docs"}
     ]})).unwrap();
     let list = inter.join("changed.json");
     write_json(&list, &json!([target])).unwrap();

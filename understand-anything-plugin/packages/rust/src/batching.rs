@@ -417,11 +417,17 @@ pub fn compute_batches(root: &Path, scan: &Value, changed: Option<&BTreeSet<Stri
         })
         .collect();
     let mut batches = vec![];
+    let normalize = |p: &str| crate::partition::posix(p).split('/').filter(|s| !s.is_empty()).collect::<Vec<_>>().join("/");
+    let changed = changed.map(|paths| paths.iter().map(|p| normalize(p)).collect::<BTreeSet<_>>());
     for b in &merged {
-        let paths: BTreeSet<_> = array(b, "files").iter().map(path).collect();
+        let analysis_files: Vec<_> = array(b, "files").iter()
+            .filter(|f| changed.as_ref().is_none_or(|c| c.contains(&normalize(path(f)))))
+            .cloned().collect();
+        if analysis_files.is_empty() { continue; }
+        let paths: BTreeSet<_> = analysis_files.iter().map(path).collect();
         let mut imports = json!({});
         let mut neighbors = json!({});
-        for f in array(b, "files") {
+        for f in &analysis_files {
             let p = path(f);
             let out = strings(&scan["importMap"][p]);
             imports[p] = json!(out);
@@ -451,9 +457,7 @@ pub fn compute_batches(root: &Path, scan: &Value, changed: Option<&BTreeSet<Stri
                 neighbors[p] = json!(kept);
             }
         }
-        if changed.is_none_or(|c| paths.iter().any(|p| c.contains(*p))) {
-            batches.push(json!({"batchIndex":b["batchIndex"],"files":b["files"],"batchImportData":imports,"neighborMap":neighbors}));
-        }
+        batches.push(json!({"batchIndex":b["batchIndex"],"files":analysis_files,"batchImportData":imports,"neighborMap":neighbors}));
     }
     json!({"schemaVersion":1,"algorithm":algorithm,"totalFiles":files.len(),"totalBatches":batches.len(),"exportsByPath":exports,"batches":batches})
 }

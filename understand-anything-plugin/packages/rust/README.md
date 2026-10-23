@@ -250,3 +250,7 @@ Changed-file handoffs (`write_changed_files`, `compute_batches --changed-files`,
 analysis workflow passes these lists directly to batching. JSON preserves embedded
 newlines and filename whitespace. Readers still accept legacy newline- or
 NUL-delimited lists. Invalid JSON fails before batch output is replaced.
+
+With `compute_batches --changed-files`, only listed targets are emitted for
+analysis. Unchanged imports and importers remain available in `neighborMap`,
+with their full-graph batch identities; they do not become analysis targets.
