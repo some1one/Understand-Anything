@@ -193,6 +193,12 @@ pub fn run(command: &str, args: &[String]) -> Result<i32> {
             let dir = ua::persistence::data_dir(&root).join("partitions");
             fs::create_dir_all(&dir)?;
             let path = dir.join(ua::partition::part_to_filename(part));
+            if path.exists() {
+                let previous = read_json(&path)?;
+                ua::incremental_symbols::validate_part_replacement(&root, part, &previous, &graph, &scan)?;
+            } else if !ua::array(&scan, "failures").is_empty() {
+                return Err(Error::Invalid("Cannot publish a partition from an incomplete scan".into()));
+            }
             write_json(&path, &graph)?;
             for entry in fs::read_dir(&inter)? {
                 let entry = entry?;

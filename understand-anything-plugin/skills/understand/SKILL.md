@@ -221,6 +221,14 @@ For **each** part in `$PARTS_TO_PROCESS`, run steps 1–4. Parts are independent
    "$PLUGIN_ROOT/packages/rust/run.sh" assemble_part_graph "$PROJECT_ROOT" "<part>" "<commit hash>"
    ```
 
+Before overwriting an existing part, `assemble_part_graph` verifies its real symbols
+against the previous committed source and the current source for files still in
+that part. Boundary stubs do not prove symbol presence. On failure, inspect
+`intermediate/part-symbol-report-<encoded-part>.json`; preserve the saved part and
+batch evidence, report the missing or ambiguous identities, and stop dependent
+merge/SAVE steps. Do not bypass the gate by deleting the old part or editing its
+commit hash. Correct the affected analysis using the report, then rerun assembly.
+
 After all parts are processed, **merge the included parts** into the unified assembled graph — reused (unaffected) parts are read from `partitions/`, and boundary stubs resolve against the real nodes:
 ```bash
 "$PLUGIN_ROOT/packages/rust/run.sh" merge_parts "$PROJECT_ROOT"

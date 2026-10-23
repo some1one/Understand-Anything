@@ -651,3 +651,55 @@ mod candidate_tests {
         assert_eq!(array(&valid,"edges").len(),2);
     }
 }
+
+/// Partition publication must not bypass the source-evidence gate used by auto-update.
+pub fn validate_part_replacement(
+    root: &std::path::Path, part: &str, previous: &Value, current: &Value,
+    scan: &Value,
+) -> crate::Result<Value> {
+    if !scan["files"].is_array() || [previous, current].iter().any(|graph| !graph["nodes"].is_array() || !graph["edges"].is_array()) {
+        return Err(crate::Error::Invalid("Invalid graph or scan for partition symbol validation".into()));
+    }
+    if !array(scan, "failures").is_empty() {
+        return Err(crate::Error::Invalid("Cannot replace a partition from an incomplete scan".into()));
+    }
+    let real_graph = |graph: &Value| {
+        let mut graph = graph.clone();
+        graph["nodes"] = json!(array(&graph,"nodes").iter().filter(|node| node["stub"] != true).collect::<Vec<_>>());
+        graph
+    };
+    let previous = real_graph(previous);
+    let current = real_graph(current);
+    let old_paths: BTreeSet<_> = array(&previous,"nodes").iter()
+        .filter(|node| kind(node).is_some()).map(|node| s(node,"filePath").to_owned()).collect();
+    if old_paths.is_empty() { return Ok(json!({"ok":true,"files":[]})); }
+    let encoded = part.replace('/',"~");
+    let inventory = artifact(root,&format!("part-files/{encoded}.txt"));
+    let assigned: BTreeSet<String> = std::fs::read_to_string(&inventory)?.lines().map(str::to_owned).collect();
+    let scanned: BTreeSet<_> = array(scan,"files").iter().map(|file| s(file,"path")).collect();
+    if assigned.iter().any(|path| !scanned.contains(path.as_str())) {
+        return Err(crate::Error::Invalid("Partition inventory is inconsistent with the scan".into()));
+    }
+    let mut reports = vec![];
+    let mut errors = vec![];
+    for path in old_paths.intersection(&assigned) {
+        let evidence = (|| -> crate::Result<(Value,Value)> {
+            let base = revision_source(root,s(&previous["project"],"gitCommitHash"),path)?;
+            // Explicit analysis may include local edits; use the actual source analyzed.
+            let head = std::fs::read_to_string(root.join(path))?;
+            Ok((crate::structure::analyze_file_strict(path,&base),crate::structure::analyze_file_strict(path,&head)))
+        })();
+        let (base,head) = match evidence {
+            Ok(pair) => pair,
+            Err(error) => { errors.push(format!("{path}: {error}")); (Value::Null,Value::Null) }
+        };
+        reports.push(compare_file_symbols(path,&previous,&current,&base,&head));
+    }
+    let ok = errors.is_empty() && reports.iter().all(|report| report["ok"] == true);
+    let report = json!({"version":1,"part":part,"ok":ok,"baseCommit":previous["project"]["gitCommitHash"],"headCommit":current["project"]["gitCommitHash"],"files":reports,"errors":errors});
+    crate::persistence::write_json(&artifact(root,&format!("part-symbol-report-{encoded}.json")),&report)?;
+    if !ok {
+        return Err(crate::Error::Invalid(format!("Unresolved partition symbol loss: {part}; inspect part-symbol-report-{encoded}.json. Saved graph and batch evidence were preserved")));
+    }
+    Ok(report)
+}
