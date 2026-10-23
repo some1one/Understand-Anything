@@ -230,28 +230,82 @@ fn target_scope(node: &Node, content: &str, receiver: &Value, javascript: bool) 
     }
     json!({"kind":"unknown"})
 }
+fn object_keys(
+    object: Option<Node>,
+    content: &str,
+    owner: &Value,
+    context: &Node,
+    out: &mut Vec<Value>,
+) {
+    let Some(object) = object.filter(|n| ["object", "dictionary"].contains(&n.kind().as_str()))
+    else {
+        out.push(entry(
+            context,
+            owner,
+            None,
+            None,
+            "Unresolved property descriptor collection",
+        ));
+        return;
+    };
+    for field in named_children(&object) {
+        // Comments do not install properties; spreads and unknown key forms do.
+        if field.kind() == "comment" {
+            continue;
+        }
+        let key = field
+            .child_by_field_name("key")
+            .or_else(|| field.child_by_field_name("name"))
+            .or_else(|| (field.kind() == "shorthand_property_identifier").then(|| field.clone()));
+        let name = key.as_ref().and_then(|key| {
+            if key.kind() == "computed_property_name" {
+                key.named_child(0)
+                    .as_ref()
+                    .and_then(|n| literal(n, content))
+            } else {
+                crate::symbol_coverage::name(Some(key.clone()), content).or_else(|| {
+                    (key.kind() == "shorthand_property_identifier" && spelling(text(key, content)))
+                        .then(|| text(key, content).to_owned())
+                })
+            }
+        });
+        // Object-literal __proto__: changes inheritance rather than defining a
+        // normal own property; inherited callables are not enumerated here.
+        let name = if field.kind() == "pair"
+            && name.as_deref() == Some("__proto__")
+            && key
+                .as_ref()
+                .is_some_and(|key| key.kind() != "computed_property_name")
+        {
+            None
+        } else {
+            name
+        };
+        out.push(entry(
+            &field,
+            owner,
+            name,
+            None,
+            "Runtime property definition",
+        ));
+    }
+}
 fn assignment_effects(
     target: &Node,
     content: &str,
     scope: &Value,
     receiver: &Value,
     javascript: bool,
+    value: Option<Node>,
     out: &mut Vec<Value>,
 ) {
     if let Some((object, name)) = member(target, content) {
-        // Replacing a prototype can install any of the assigned object's keys.
-        let name = if javascript && name.as_deref() == Some("prototype") {
-            None
+        let owner = target_scope(&object, content, receiver, javascript);
+        if javascript && name.as_deref() == Some("prototype") {
+            object_keys(value, content, &owner, target, out);
         } else {
-            name
-        };
-        out.push(entry(
-            target,
-            &target_scope(&object, content, receiver, javascript),
-            name,
-            None,
-            "Property assignment",
-        ));
+            out.push(entry(target, &owner, name, None, "Property assignment"));
+        }
     } else if ["identifier", "shorthand_property_identifier_pattern"]
         .contains(&target.kind().as_str())
     {
@@ -280,7 +334,7 @@ fn assignment_effects(
             .map(|n| vec![n])
             .unwrap_or_else(|| named_children(target));
         for child in children {
-            assignment_effects(&child, content, scope, receiver, javascript, out);
+            assignment_effects(&child, content, scope, receiver, javascript, None, out);
         }
     }
 }
@@ -309,7 +363,23 @@ pub(crate) fn javascript_python(
             .child_by_field_name("left")
             .or_else(|| node.child_by_field_name("name"))
         {
-            assignment_effects(&target, content, scope, receiver, javascript, &mut effects);
+            let value = if ["augmented_assignment_expression", "augmented_assignment"]
+                .contains(&kind.as_str())
+            {
+                None
+            } else {
+                node.child_by_field_name("right")
+                    .or_else(|| node.child_by_field_name("value"))
+            };
+            assignment_effects(
+                &target,
+                content,
+                scope,
+                receiver,
+                javascript,
+                value,
+                &mut effects,
+            );
         }
     }
     let js_installers = [
