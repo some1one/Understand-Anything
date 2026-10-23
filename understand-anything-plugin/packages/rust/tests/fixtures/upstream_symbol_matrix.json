@@ -1,0 +1,4464 @@
+{
+  "upstream": "e24fcf6",
+  "sourceSha256": "f32e28abb56e2be6d4a5486e5a5253e164d63eda4ce378adc1a342b9de617526",
+  "source": "tests/skill/understand/test_symbol_evidence_matrix.test.mjs",
+  "skipped": [
+    "uses AST ownership for same-line %s declarations",
+    "uses AST ownership for same-line %s declarations",
+    "requires valid versioned scope evidence before authorizing a deletion",
+    "private identifiers are concrete names and are distinct from runtime dot-prefixed keys",
+    "treats missing, malformed and unknown coverage profiles as unavailable evidence"
+  ],
+  "cases": [
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nA.prototype[\"run\"] = function() {};",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nA.prototype[\"other\"] = function() {};",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nA.prototype[(\"r\" + \"un\")] = function() {};",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nB.prototype[\"run\"] = function() {};",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nB.prototype[\"other\"] = function() {};",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nB.prototype[(\"r\" + \"un\")] = function() {};",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\ntarget.prototype[\"run\"] = function() {};",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\ntarget.prototype[\"other\"] = function() {};",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\ntarget.prototype[(\"r\" + \"un\")] = function() {};",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nObject.defineProperty(A.prototype, \"run\", { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nObject.defineProperty(A.prototype, \"other\", { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nObject.defineProperty(A.prototype, (\"r\" + \"un\"), { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nObject.defineProperty(B.prototype, \"run\", { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nObject.defineProperty(B.prototype, \"other\", { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nObject.defineProperty(B.prototype, (\"r\" + \"un\"), { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nObject.defineProperty(target.prototype, \"run\", { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nObject.defineProperty(target.prototype, \"other\", { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nObject.defineProperty(target.prototype, (\"r\" + \"un\"), { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nReflect.defineProperty(A.prototype, \"run\", { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nReflect.defineProperty(A.prototype, \"other\", { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nReflect.defineProperty(A.prototype, (\"r\" + \"un\"), { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nReflect.defineProperty(B.prototype, \"run\", { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nReflect.defineProperty(B.prototype, \"other\", { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nReflect.defineProperty(B.prototype, (\"r\" + \"un\"), { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nReflect.defineProperty(target.prototype, \"run\", { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nReflect.defineProperty(target.prototype, \"other\", { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nReflect.defineProperty(target.prototype, (\"r\" + \"un\"), { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nA.attr_reader(\"run\")",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nA.attr_reader(\"other\")",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nA.attr_reader((\"r\" + \"un\"))",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nB.attr_reader(\"run\")",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nB.attr_reader(\"other\")",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nB.attr_reader((\"r\" + \"un\"))",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\ntarget.attr_reader(\"run\")",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\ntarget.attr_reader(\"other\")",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\ntarget.attr_reader((\"r\" + \"un\"))",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nA.define_method(\"run\") { 1 }",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nA.define_method(\"other\") { 1 }",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nA.define_method((\"r\" + \"un\")) { 1 }",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nB.define_method(\"run\") { 1 }",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nB.define_method(\"other\") { 1 }",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nB.define_method((\"r\" + \"un\")) { 1 }",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\ntarget.define_method(\"run\") { 1 }",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\ntarget.define_method(\"other\") { 1 }",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\ntarget.define_method((\"r\" + \"un\")) { 1 }",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\nsetattr(A, \"run\", lambda self: None)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\nsetattr(A, \"other\", lambda self: None)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\nsetattr(A, (\"r\" + \"un\"), lambda self: None)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\nsetattr(B, \"run\", lambda self: None)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\nsetattr(B, \"other\", lambda self: None)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\nsetattr(B, (\"r\" + \"un\"), lambda self: None)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\nsetattr(target, \"run\", lambda self: None)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\nsetattr(target, \"other\", lambda self: None)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\nsetattr(target, (\"r\" + \"un\"), lambda self: None)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "$extension $form, owner=$owner, $label"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n attr :run\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass A\n attr :run\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n attr \"run\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass A\n attr \"run\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n attr :\"run\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass A\n attr :\"run\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n attr (\"r\" + \"un\").to_sym\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass A\n attr (\"r\" + \"un\").to_sym\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n attr_reader :run\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass A\n attr_reader :run\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n attr_reader \"run\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass A\n attr_reader \"run\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n attr_reader :\"run\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass A\n attr_reader :\"run\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n attr_reader (\"r\" + \"un\").to_sym\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass A\n attr_reader (\"r\" + \"un\").to_sym\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n attr_accessor :run\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass A\n attr_accessor :run\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n attr_accessor \"run\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass A\n attr_accessor \"run\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n attr_accessor :\"run\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass A\n attr_accessor :\"run\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n attr_accessor (\"r\" + \"un\").to_sym\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass A\n attr_accessor (\"r\" + \"un\").to_sym\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n attr_writer :run\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass A\n attr_writer :run\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n attr_writer \"run\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass A\n attr_writer \"run\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n attr_writer :\"run\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass A\n attr_writer :\"run\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n attr_writer (\"r\" + \"un\").to_sym\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass A\n attr_writer (\"r\" + \"un\").to_sym\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes lexical Ruby %s to B and keeps writer names distinct"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\n attr_writer :run\nend",
+      "beforeSource": "class A\n def run=(value); end\nend",
+      "name": "A.run=",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "protects a matching Ruby writer with %s"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\n attr_writer \"run\"\nend",
+      "beforeSource": "class A\n def run=(value); end\nend",
+      "name": "A.run=",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "protects a matching Ruby writer with %s"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\n attr_writer :\"run\"\nend",
+      "beforeSource": "class A\n def run=(value); end\nend",
+      "name": "A.run=",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "protects a matching Ruby writer with %s"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\n attr_writer (\"r\" + \"un\").to_sym\nend",
+      "beforeSource": "class A\n def run=(value); end\nend",
+      "name": "A.run=",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "protects a matching Ruby writer with %s"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nconsole.log(\"run\"); function log(run) { return run; } socket.send(\"data\");",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "ordinary %s reads, strings and parameters do not declare an old method"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nputs \"run\"\nobj.attr\nobj.run",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "ordinary %s reads, strings and parameters do not declare an old method"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\nprint(\"run\")\ndef log(run): return run\nsocket.send(\"data\")\ntype(A)\n",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "ordinary %s reads, strings and parameters do not declare an old method"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { run() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "a known different %s owner does not preserve A.run"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def run; end\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "a known different %s owner does not preserve A.run"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def run(self): pass",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "a known different %s owner does not preserve A.run"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nconst install = Object.defineProperty; install(A.prototype, \"r\" + \"un\", { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "unresolved %s installer aliases cannot authorize deletion"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nconst install = Object[\"define\" + \"Property\"]; install(A.prototype, \"r\" + \"un\", { value() {} });",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "unresolved %s installer aliases cannot authorize deletion"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nclass A\n install = method(:attr)\n install.call((\"r\" + \"un\").to_sym)\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "unresolved %s installer aliases cannot authorize deletion"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\ninstall = setattr\ninstall(A, \"r\" + \"un\", lambda self: None)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "unresolved %s installer aliases cannot authorize deletion"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { [\"r\" + \"un\"]() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} [\"r\" + \"un\"]() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { run = () => {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} run = () => {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { \"run\"() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} \"run\"() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { [\"r\" + \"un\"]() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} [\"r\" + \"un\"]() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { run = () => {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} run = () => {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { \"run\"() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} \"run\"() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} } class B { [\"r\" + \"un\"]() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} [\"r\" + \"un\"]() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} } class B { run = () => {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} run = () => {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} } class B { \"run\"() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} \"run\"() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "class A { keep() {} } class B { [\"r\" + \"un\"]() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "class A { keep() {} [\"r\" + \"un\"]() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "class A { keep() {} } class B { run = () => {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "class A { keep() {} run = () => {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "class A { keep() {} } class B { \"run\"() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "class A { keep() {} \"run\"() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes computed declarations and unextracted fields in %s"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "function keep() {}",
+      "beforeSource": "const run = () => {};",
+      "name": "run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "does not let baseline-only supplemental declarations taint a confirmed current deletion"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }",
+      "beforeSource": "class A { run() {} }\nclass A { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "does not turn a same-name class collision into a unique method identity"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class \\u0041 { run() {} keep() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "does not treat escaped class ownership as a confirmed method deletion"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { run() {} keep() {} }",
+      "beforeSource": "class \\u0041 { run() {} }",
+      "name": "\\u0041.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "does not treat escaped class ownership as a confirmed method deletion"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "function run() {} class Keep {}",
+      "beforeSource": "function run() {}\nfunction run() {}",
+      "name": "run",
+      "newNodes": [],
+      "oldExtra": {
+        "lineRange": [
+          1,
+          1
+        ]
+      },
+      "expected": "unknown",
+      "test": "rejects duplicate old source identities even when a line locates one declaration"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nfunction install(B) { Object.defineProperty(B.prototype, \"run\", {value() {}}); } install(A);",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "a shadowed or reassigned %s class reference has unknown ownership"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nfunction install({B}) { Object.defineProperty(B.prototype, \"run\", {value() {}}); } install({B: A});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "a shadowed or reassigned %s class reference has unknown ownership"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nfunction install(\\u0042) { Object.defineProperty(B.prototype, \"run\", {value() {}}); } install(A);",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "a shadowed or reassigned %s class reference has unknown ownership"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nB = A; Object.defineProperty(B.prototype, \"run\", {value() {}});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "a shadowed or reassigned %s class reference has unknown ownership"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\ndef install(B): setattr(B, \"run\", lambda self: None)\ninstall(A)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "a shadowed or reassigned %s class reference has unknown ownership"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\nB = A\nsetattr(B, \"run\", lambda self: None)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "a shadowed or reassigned %s class reference has unknown ownership"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nfunction unrelated(B) {} Object.defineProperty(B.prototype, \"run\", {value() {}});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "an unrelated local %s binding does not erase known global ownership"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nconst unrelated = function B() {}; Object.defineProperty(B.prototype, \"run\", {value() {}});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "an unrelated local %s binding does not erase known global ownership"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nimport { B as unrelated } from \"pkg\"; Object.defineProperty(B.prototype, \"run\", {value() {}});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "an unrelated local %s binding does not erase known global ownership"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\ndef unrelated(B): pass\nsetattr(B, \"run\", lambda self: None)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "an unrelated local %s binding does not erase known global ownership"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\nfrom pkg import B as unrelated\nsetattr(B, \"run\", lambda self: None)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "an unrelated local %s binding does not erase known global ownership"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { B() {} install() { Object.defineProperty(B.prototype, \"run\", {value() {}}); } }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "class member names do not create JavaScript lexical bindings"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nfunction install(Object) { Object.defineProperty(B.prototype, \"other\", {}); }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "unresolved %s installer identity cannot authorize deletion based on its arguments"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nObject = custom; Object.defineProperty(B.prototype, \"other\", {});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "unresolved %s installer identity cannot authorize deletion based on its arguments"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\ndef install(setattr): setattr(B, \"other\", value)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "unresolved %s installer identity cannot authorize deletion based on its arguments"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nReflect.get(B.prototype, \"run\"); const get = Reflect.get;",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "standard reflection reads do not declare a method"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "function run() {} class A { keep() { return { \"run\"() {}, [\"r\" + \"un\"]() {} }; } }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "object-literal methods do not become methods of the lexically enclosing class"
+    },
+    {
+      "extension": "rs",
+      "currentSource": "struct A; impl Trait for A { fn run(&self) {} }",
+      "beforeSource": "struct A; impl A { fn run(&self) {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "a currently unresolved Rust receiver cannot prove an old inherent method disappeared"
+    },
+    {
+      "extension": "rs",
+      "currentSource": "struct A<T>{value:T} impl<T> A< T > { fn run(&self) {} }",
+      "beforeSource": "struct A<T>{value:T} impl<T> A<T> { fn run(&self) {} }",
+      "name": "A<T>.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "receiver type formatting is not proof of deletion"
+    },
+    {
+      "extension": "py",
+      "currentSource": "def keep(): pass\nclass A:\n def run(self): pass",
+      "beforeSource": "def run(): pass\nclass A:\n def run(self): pass",
+      "name": "run",
+      "newNodes": [],
+      "oldExtra": {
+        "lineRange": [
+          1,
+          1
+        ]
+      },
+      "expected": "deleted",
+      "test": "keeps Python file-level functions distinct from methods"
+    },
+    {
+      "extension": "cpp",
+      "currentSource": "struct A { void keep() {} std::function<void()> run; }; struct B {};",
+      "beforeSource": "struct A { void run() {} }; struct B {};",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "keeps C++ function-valued field uncertainty scoped to %s"
+    },
+    {
+      "extension": "cpp",
+      "currentSource": "struct A { void keep() {} }; struct B { std::function<void()> run; };",
+      "beforeSource": "struct A { void run() {} }; struct B {};",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps C++ function-valued field uncertainty scoped to %s"
+    },
+    {
+      "extension": "cpp",
+      "currentSource": "void N::A::run() {} void keep() {}",
+      "beforeSource": "namespace N { class A { void run() {} }; }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "cannot prove deletion when C++ qualification moves to %s"
+    },
+    {
+      "extension": "cpp",
+      "currentSource": "void keep() {}",
+      "beforeSource": "void N::A::run() {}",
+      "name": "N::A::run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "cannot prove deletion when C++ qualification moves to %s",
+      "rustExpected": "deleted",
+      "difference": "Rust retains the exact N::A receiver qualifier in scoped callable evidence; its removal is verifiable."
+    },
+    {
+      "extension": "cpp",
+      "currentSource": "void ::N::A::run() {} void keep() {}",
+      "beforeSource": "namespace N { class A { void run() {} }; }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "cannot prove deletion when C++ qualification moves to %s"
+    },
+    {
+      "extension": "cpp",
+      "currentSource": "void keep() {}",
+      "beforeSource": "void ::N::A::run() {}",
+      "name": "N::A::run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "cannot prove deletion when C++ qualification moves to %s"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const A = class A { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const A = class A { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const A = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const A = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const A = class { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const A = class { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const B = class A { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const B = class A { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const B = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const B = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const B = class { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const B = class { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const A = (class Named { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "ts",
+      "currentSource": "A = class Named { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const A = class A { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const A = class A { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const A = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const A = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const A = class { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const A = class { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const B = class A { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const B = class A { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const B = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const B = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const B = class { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const B = class { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const A = (class Named { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "A = class Named { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "js",
+      "currentSource": "const A = class A { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "js",
+      "currentSource": "const A = class A { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "js",
+      "currentSource": "const A = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "js",
+      "currentSource": "const A = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "js",
+      "currentSource": "const A = class { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "js",
+      "currentSource": "const A = class { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "js",
+      "currentSource": "const B = class A { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "js",
+      "currentSource": "const B = class A { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "js",
+      "currentSource": "const B = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "js",
+      "currentSource": "const B = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "js",
+      "currentSource": "const B = class { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "js",
+      "currentSource": "const B = class { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "js",
+      "currentSource": "const A = (class Named { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "js",
+      "currentSource": "A = class Named { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const A = class A { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const A = class A { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const A = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const A = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const A = class { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const A = class { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const B = class A { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const B = class A { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const B = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const B = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const B = class { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const B = class { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "retains classes and methods rewritten as %s class expressions"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const A = (class Named { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "A = class Named { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "retains classes and methods rewritten as %s class expressions",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories directly bound class expressions and their methods."
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nclass A\n alias run keep\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes Ruby alias %s to its declaring class"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nclass B\n alias run keep\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes Ruby alias %s to its declaring class"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nclass A\n alias :run :keep\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes Ruby alias %s to its declaring class"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nclass B\n alias :run :keep\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes Ruby alias %s to its declaring class"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nclass A\n alias :\"run\" :\"keep\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes Ruby alias %s to its declaring class"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nclass B\n alias :\"run\" :\"keep\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes Ruby alias %s to its declaring class"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nclass A\n alias :\"r#{suffix}\" :keep\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "scopes Ruby alias %s to its declaring class"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nclass B\n alias :\"r#{suffix}\" :keep\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "scopes Ruby alias %s to its declaring class"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "consume(class A { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "consume(class A { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "(class A { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "(class A { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "consume(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "consume(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "consume(class { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "consume(class { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "(class { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "(class { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const A = consume(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const A = consume(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "target.A = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "target.A = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "consume(class A { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "consume(class A { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "(class A { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "(class A { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "consume(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "consume(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "consume(class { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "consume(class { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "(class { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "(class { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const A = consume(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const A = consume(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "target.A = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "target.A = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "js",
+      "currentSource": "consume(class A { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "js",
+      "currentSource": "consume(class A { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "js",
+      "currentSource": "(class A { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "js",
+      "currentSource": "(class A { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "js",
+      "currentSource": "consume(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "js",
+      "currentSource": "consume(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "js",
+      "currentSource": "(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "js",
+      "currentSource": "(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "js",
+      "currentSource": "consume(class { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "js",
+      "currentSource": "consume(class { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "js",
+      "currentSource": "(class { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "js",
+      "currentSource": "(class { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "js",
+      "currentSource": "const A = consume(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "js",
+      "currentSource": "const A = consume(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "js",
+      "currentSource": "target.A = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "js",
+      "currentSource": "target.A = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "consume(class A { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "consume(class A { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "(class A { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "(class A { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "consume(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "consume(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "consume(class { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "consume(class { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "(class { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "(class { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "deleted",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const A = consume(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const A = consume(class B { run() {} }); function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "target.A = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "target.A = class B { run() {} }; function keep() {}",
+      "beforeSource": "class A {}",
+      "name": "A",
+      "newNodes": [],
+      "oldExtra": {
+        "type": "class"
+      },
+      "expected": "unknown",
+      "test": "keeps unbound %s class expressions separate from external class bindings"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nclass A\n alias keep run\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes Ruby alias writer names, source names and global-variable aliases"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nclass A\n alias :\"run=\" :\"keep=\"\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes Ruby alias writer names, source names and global-variable aliases"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\nend\nclass B\n def keep; end\nend\nclass A\n alias $run $keep\nend",
+      "beforeSource": "class A\n def run; end\nend\nclass B\n def keep; end\nend",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes Ruby alias writer names, source names and global-variable aliases"
+    },
+    {
+      "extension": "rb",
+      "currentSource": "class A\n def keep; end\n alias :\"run=\" :\"keep=\"\nend",
+      "beforeSource": "class A\n def run=(value); end\nend",
+      "name": "A.run=",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes Ruby alias writer names, source names and global-variable aliases"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class B { static Nested = class { run() {} }; } function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class B { static Nested = class A { run() {} }; } function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class B { static Nested = class B { run() {} }; } function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const B = class { static Nested = class { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const B = class { static Nested = class A { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const B = class { static Nested = class B { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const B = class Named { static Nested = class { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const B = class Named { static Nested = class A { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const B = class Named { static Nested = class B { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const B = wrap(class Named { static Nested = class { run() {} }; }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const B = wrap(class Named { static Nested = class A { run() {} }; }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "const B = wrap(class Named { static Nested = class B { run() {} }; }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B {} const C = class A {}; Object.defineProperty(B.prototype, \"run\", {});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B {} const C = class B {}; Object.defineProperty(B.prototype, \"run\", {});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B {} const C = class  {}; Object.defineProperty(B.prototype, \"run\", {});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "function f() { class B {}; Object.defineProperty(B.prototype, \"run\", {}); }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "function f() { B = class Named { run() {} }; let B; } function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class B { static Nested = class { run() {} }; } function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class B { static Nested = class A { run() {} }; } function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class B { static Nested = class B { run() {} }; } function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const B = class { static Nested = class { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const B = class { static Nested = class A { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const B = class { static Nested = class B { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const B = class Named { static Nested = class { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const B = class Named { static Nested = class A { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const B = class Named { static Nested = class B { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const B = wrap(class Named { static Nested = class { run() {} }; }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const B = wrap(class Named { static Nested = class A { run() {} }; }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "const B = wrap(class Named { static Nested = class B { run() {} }; }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B {} const C = class A {}; Object.defineProperty(B.prototype, \"run\", {});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B {} const C = class B {}; Object.defineProperty(B.prototype, \"run\", {});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B {} const C = class  {}; Object.defineProperty(B.prototype, \"run\", {});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "function f() { class B {}; Object.defineProperty(B.prototype, \"run\", {}); }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "function f() { B = class Named { run() {} }; let B; } function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class B { static Nested = class { run() {} }; } function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class B { static Nested = class A { run() {} }; } function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class B { static Nested = class B { run() {} }; } function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "js",
+      "currentSource": "const B = class { static Nested = class { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "js",
+      "currentSource": "const B = class { static Nested = class A { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "js",
+      "currentSource": "const B = class { static Nested = class B { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "js",
+      "currentSource": "const B = class Named { static Nested = class { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "js",
+      "currentSource": "const B = class Named { static Nested = class A { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "js",
+      "currentSource": "const B = class Named { static Nested = class B { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "js",
+      "currentSource": "const B = wrap(class Named { static Nested = class { run() {} }; }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "js",
+      "currentSource": "const B = wrap(class Named { static Nested = class A { run() {} }; }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "js",
+      "currentSource": "const B = wrap(class Named { static Nested = class B { run() {} }; }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} } class B {} const C = class A {}; Object.defineProperty(B.prototype, \"run\", {});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} } class B {} const C = class B {}; Object.defineProperty(B.prototype, \"run\", {});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "js",
+      "currentSource": "class A { keep() {} } class B {} const C = class  {}; Object.defineProperty(B.prototype, \"run\", {});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "js",
+      "currentSource": "function f() { class B {}; Object.defineProperty(B.prototype, \"run\", {}); }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "js",
+      "currentSource": "function f() { B = class Named { run() {} }; let B; } function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "class B { static Nested = class { run() {} }; } function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "class B { static Nested = class A { run() {} }; } function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "class B { static Nested = class B { run() {} }; } function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const B = class { static Nested = class { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const B = class { static Nested = class A { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const B = class { static Nested = class B { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const B = class Named { static Nested = class { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const B = class Named { static Nested = class A { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const B = class Named { static Nested = class B { run() {} }; }; function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const B = wrap(class Named { static Nested = class { run() {} }; }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const B = wrap(class Named { static Nested = class A { run() {} }; }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "const B = wrap(class Named { static Nested = class B { run() {} }; }); function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "class A { keep() {} } class B {} const C = class A {}; Object.defineProperty(B.prototype, \"run\", {});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "class A { keep() {} } class B {} const C = class B {}; Object.defineProperty(B.prototype, \"run\", {});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "class A { keep() {} } class B {} const C = class  {}; Object.defineProperty(B.prototype, \"run\", {});",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "function f() { class B {}; Object.defineProperty(B.prototype, \"run\", {}); }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "jsx",
+      "currentSource": "function f() { B = class Named { run() {} }; let B; } function keep() {}",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "keeps nested/local %s scope composition independent of unrelated names"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\nfor (const B of items) { Object.defineProperty(B.prototype, \"run\", {}); }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "an unresolved %s binding cannot inherit an outer class identity"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} }\nclass B { keep() {} }\ntry {} catch (B) { Object.defineProperty(B.prototype, \"run\", {}); }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "an unresolved %s binding cannot inherit an outer class identity"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\nfor B in items: setattr(B, \"run\", value)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "an unresolved %s binding cannot inherit an outer class identity"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\nwith lock() as B: setattr(B, \"run\", value)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "an unresolved %s binding cannot inherit an outer class identity"
+    },
+    {
+      "extension": "py",
+      "currentSource": "class A:\n def keep(self): pass\nclass B:\n def keep(self): pass\ntry: pass\nexcept Exception as B: setattr(B, \"run\", value)",
+      "beforeSource": "class A:\n def run(self): pass\nclass B:\n def keep(self): pass\n",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "an unresolved %s binding cannot inherit an outer class identity"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "function* run() {} function keep() {}",
+      "beforeSource": "function run() {}",
+      "name": "run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "reports an unextracted declaration as a coverage gap rather than runtime evidence",
+      "rustExpected": "still-present",
+      "difference": "Rust inventories generator function declarations."
+    },
+    {
+      "extension": "java",
+      "currentSource": "class A { void keep() {} }",
+      "beforeSource": "class A { void run() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "requires an audited coverage adapter even when a grammar parses successfully"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class A { constructor(public run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { constructor(public run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class A { constructor(public run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { constructor(public run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class A { constructor(public other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { constructor(public other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class A { constructor(protected run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { constructor(protected run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class A { constructor(protected run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { constructor(protected run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class A { constructor(protected other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { constructor(protected other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class A { constructor(private run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { constructor(private run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class A { constructor(private run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { constructor(private run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class A { constructor(private other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { constructor(private other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class A { constructor(readonly run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { constructor(readonly run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class A { constructor(readonly run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { constructor(readonly run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class A { constructor(readonly other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { constructor(readonly other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class A { constructor(public readonly run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { constructor(public readonly run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class A { constructor(public readonly run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { constructor(public readonly run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class A { constructor(public readonly other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { keep() {} } class B { constructor(public readonly other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class A { constructor(run = () => {}) {} keep() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "ts",
+      "currentSource": "class B { static Nested = class { constructor(public run = () => {}) {} } }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class A { constructor(public run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { constructor(public run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class A { constructor(public run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { constructor(public run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class A { constructor(public other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { constructor(public other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class A { constructor(protected run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { constructor(protected run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class A { constructor(protected run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { constructor(protected run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class A { constructor(protected other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { constructor(protected other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class A { constructor(private run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { constructor(private run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class A { constructor(private run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { constructor(private run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class A { constructor(private other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { constructor(private other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class A { constructor(readonly run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { constructor(readonly run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class A { constructor(readonly run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { constructor(readonly run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class A { constructor(readonly other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { constructor(readonly other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class A { constructor(public readonly run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { constructor(public readonly run = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class A { constructor(public readonly run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "unknown",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { constructor(public readonly run?: () => void) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class A { constructor(public readonly other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { keep() {} } class B { constructor(public readonly other = () => {}) {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class A { constructor(run = () => {}) {} keep() {} }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    },
+    {
+      "extension": "tsx",
+      "currentSource": "class B { static Nested = class { constructor(public run = () => {}) {} } }",
+      "beforeSource": "class A { run() {} }\nclass B { keep() {} }",
+      "name": "A.run",
+      "newNodes": [],
+      "oldExtra": {},
+      "expected": "deleted",
+      "test": "distinguishes %s parameter properties from ordinary parameters and other owners"
+    }
+  ]
+}

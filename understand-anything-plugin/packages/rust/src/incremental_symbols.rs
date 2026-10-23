@@ -250,17 +250,15 @@ pub fn compare_file_symbols(
                     .enumerate()
                     .filter(|(_, candidate)| candidate.as_ref() == Some(identity))
                     .collect();
+                let owner_count = |source: &[Symbol]| source.iter().filter(|symbol| {
+                    symbol.identity.kind == "class" && symbol.identity.name == identity.owner
+                }).count();
+                // Duplicate owners prevent a unique baseline or replacement binding.
+                // When the method is absent from every current owner, deletion still
+                // depends on the normal scoped gap/effect checks below.
                 let ambiguous_owner = !identity.owner.is_empty()
-                    && [&old_source, &new_source].iter().any(|source| {
-                        source
-                            .iter()
-                            .filter(|symbol| {
-                                symbol.identity.kind == "class"
-                                    && symbol.identity.name == identity.owner
-                            })
-                            .count()
-                            > 1
-                    });
+                    && (owner_count(&old_source) > 1
+                        || source_count > 0 && owner_count(&new_source) > 1);
                 if ambiguous_owner {
                     reason = "Declaring class is ambiguous";
                 } else if source_count == 1 && matches.len() == 1 {

@@ -307,3 +307,14 @@ merged changed-file list with each saved partition's revision and assigned scope
 A stale, ahead-of-HEAD, newly scoped, or unverifiable part is selected even when
 absent from that changed-file list. Calls without scan artifacts retain the
 legacy affected-path/missing-part selection behavior.
+
+The `upstream_symbol_matrix` test runs 426 source/status cases captured from
+upstream `e24fcf6`'s scoped symbol-evidence matrix. The fixture preserves upstream
+expectations and separately records native differences: Rust inventories directly
+bound class expressions, generator functions, and exact C++ receiver qualifiers.
+Native tests also exercise retained same-line symbols and malformed scope records;
+the upstream metadata-mutating cases use a different evidence schema.
+To regenerate the fixture from that trusted upstream test file, run
+`node reference/capture_upstream_symbol_matrix.cjs <upstream-test.mjs> tests/fixtures/upstream_symbol_matrix.json`
+inside this package. The capture script checks the source hash before applying
+explicit native expectation differences.
