@@ -541,18 +541,11 @@ fn rust_public(n: &N) -> bool {
     n.child("visibility_modifier")
         .is_some_and(|v| v.text().starts_with("pub"))
 }
-fn rust_function(n: &N, a: &mut Value) {
+fn rust_function(n: &N, a: &mut Value, owner: Option<&str>) {
     if let Some(name) = n.name() {
-        push(
-            a,
-            "functions",
-            function(
-                n,
-                name,
-                params(n.field("parameters"), "rust"),
-                n.field("return_type").map(|n| n.text()),
-            ),
-        );
+        let mut extracted = function(n, name, params(n.field("parameters"), "rust"), n.field("return_type").map(|n| n.text()));
+        extracted["owner"] = json!(owner);
+        push(a, "functions", extracted);
         if rust_public(n) {
             export(a, name, n.row(), None);
         }
@@ -562,7 +555,7 @@ fn rust(root: &N, a: &mut Value) {
     let mut methods = BTreeMap::<String, Vec<String>>::new();
     for n in root.children() {
         match n.ty().as_str() {
-            "function_item" => rust_function(&n, a),
+            "function_item" => rust_function(&n, a, Some("")),
             "struct_item" | "enum_item" | "trait_item" => {
                 if let Some(name) = n.name() {
                     let mut props = vec![];
@@ -612,7 +605,8 @@ fn rust(root: &N, a: &mut Value) {
             "impl_item" => {
                 if let Some(body) = n.field("body") {
                     for f in body.of("function_item") {
-                        rust_function(&f, a);
+                        let owner = crate::receivers::rust(&n.raw, n.source);
+                        rust_function(&f, a, owner.as_deref());
                         if let (Some(t), Some(name)) = (n.field("type"), f.name()) {
                             methods
                                 .entry(t.text().into())

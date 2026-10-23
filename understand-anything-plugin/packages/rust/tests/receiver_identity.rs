@@ -35,3 +35,43 @@ fn go_receivers_survive_extraction_seeding_and_symbol_comparison() {
     assert_eq!(comparison["ok"], true, "{comparison}");
     assert_eq!(comparison["replacements"].as_array().unwrap().len(), 1);
 }
+
+#[test]
+#[ignore = "requires pinned Rust grammar; run with UA_TEST_PARSER_CACHE"]
+fn rust_impl_owners_are_distinct_and_trait_owners_stay_unresolved() {
+    if let Ok(cache) = std::env::var("UA_TEST_PARSER_CACHE") { parsers::configure(Some(std::path::Path::new(&cache))).unwrap(); }
+    let source = "pub struct A; pub struct B; impl A { pub fn run(&self) {} } impl B { pub fn run(&self) {} } pub fn run() {}";
+    let evidence = structure::analyze_file_strict("file.rs", source);
+    assert_eq!(evidence["status"], "succeeded", "{evidence}");
+    let owners: Vec<_> = evidence["structure"]["functions"].as_array().unwrap().iter().map(|f| f["owner"].clone()).collect();
+    assert_eq!(owners, vec![json!("A"),json!("B"),json!("")]);
+    let file = json!({"path":"file.rs","language":"rust","fileCategory":"code"});
+    let result = structure::build_result(&file, 1, 1, Some(&evidence["structure"]), None, &json!({}));
+    let seed = understand_anything::seed::build_seed(&json!({"batchIndex":0,"batchFiles":[file]}), &json!({"results":[result]}));
+    for name in ["A.run","B.run","run"] {
+        assert!(seed["nodes"].as_array().unwrap().iter().any(|n| n["id"] == format!("function:file.rs:{name}")), "{seed}");
+    }
+    let graph = |id: &str| json!({"nodes":[{"id":id,"name":"A.run","type":"function","filePath":"file.rs"}],"edges":[]});
+    let comparison = understand_anything::incremental_symbols::compare_file_symbols("file.rs", &graph("function:file.rs:A.run"), &graph("func:file.rs:A.run"), &evidence, &evidence);
+    assert_eq!(comparison["ok"], true, "{comparison}");
+    let trait_source = "struct A; trait Job { fn run(&self); } impl Job for A { fn run(&self) {} }";
+    let trait_evidence = structure::analyze_file_strict("file.rs", trait_source);
+    assert_eq!(trait_evidence["status"], "succeeded", "{trait_evidence}");
+    assert!(trait_evidence["structure"]["functions"][0]["owner"].is_null());
+    assert_eq!(trait_evidence["declarationScopes"]["functions"][0]["scope"]["kind"], "unknown");
+    let old = extract_file_fingerprint("file.rs", trait_source, Some(&trait_evidence["structure"]));
+    let new = extract_file_fingerprint("file.rs", &format!("{trait_source}\n"), Some(&trait_evidence["structure"]));
+    assert_eq!(compare_fingerprints(&old, &new).0, "STRUCTURAL");
+}
+
+#[test]
+#[ignore = "requires pinned Rust grammar; run with UA_TEST_PARSER_CACHE"]
+fn receiver_whitespace_changes_are_not_treated_as_proven_deletions() {
+    if let Ok(cache) = std::env::var("UA_TEST_PARSER_CACHE") { parsers::configure(Some(std::path::Path::new(&cache))).unwrap(); }
+    let before = structure::analyze_file_strict("file.rs", "struct Box<T>(T); impl<T> Box<T> { fn run(&self) {} } fn keep() {}");
+    let after = structure::analyze_file_strict("file.rs", "struct Box<T>(T); impl<T> Box <T> { fn run(&self) {} } fn keep() {}");
+    let old = json!({"nodes":[{"id":"function:file.rs:Box<T>.run","type":"function","name":"Box<T>.run","filePath":"file.rs"}],"edges":[]});
+    let result = understand_anything::incremental_symbols::compare_file_symbols("file.rs", &old, &json!({"nodes":[],"edges":[]}), &before, &after);
+    assert_eq!(result["ok"], false, "{result}");
+    assert_eq!(result["missing"][0]["status"], "unknown", "{result}");
+}

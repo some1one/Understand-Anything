@@ -15,6 +15,7 @@ const CLASSES: &[&str] = &[
     "struct_item",
     "enum_item",
     "interface_declaration",
+    "trait_item",
 ];
 const FUNCTIONS: &[&str] = &[
     "method",
@@ -81,6 +82,7 @@ struct Inventory<'a> {
     ruby: bool,
     python: bool,
     go: bool,
+    rust: bool,
     effects: Vec<Value>,
     javascript: bool,
     functions: Vec<Value>,
@@ -229,6 +231,11 @@ impl Inventory<'_> {
             }
             children_receiver = owner;
             children_scope = self.local();
+        } else if self.rust && kind == "impl_item" {
+            children_scope = crate::receivers::rust(&node, self.content)
+                .map(Scope::Class)
+                .unwrap_or(Scope::Unknown);
+            children_receiver = children_scope.clone();
         } else if [
             "namespace_definition",
             "namespace_declaration",
@@ -298,6 +305,7 @@ pub fn collect(root: Node, content: &str, language: &str, structure: &Value) -> 
         ruby: language == "ruby",
         python: language == "python",
         go: language == "go",
+        rust: language == "rust",
         effects: vec![],
         javascript: ["typescript", "javascript", "tsx"].contains(&language),
         functions: vec![],

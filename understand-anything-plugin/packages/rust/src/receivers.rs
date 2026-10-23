@@ -18,3 +18,14 @@ pub(crate) fn go(node: &Node, source: &str) -> Option<String> {
     let name = source.get(ty.start_byte()..ty.end_byte())?;
     crate::symbol_coverage::spelling(name).then(|| name.to_owned())
 }
+
+pub(crate) fn rust(node: &Node, source: &str) -> Option<String> {
+    // A trait method needs both trait and receiver identity. Do not silently
+    // equate it with an inherent method on the same type.
+    if node.child_by_field_name("trait").is_some() {
+        return None;
+    }
+    let ty = node.child_by_field_name("type")?;
+    let name = source.get(ty.start_byte()..ty.end_byte())?;
+    (!name.is_empty() && crate::symbol_coverage::spelling(name)).then(|| name.to_owned())
+}

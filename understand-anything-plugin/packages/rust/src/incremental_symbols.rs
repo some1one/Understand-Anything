@@ -276,6 +276,17 @@ pub fn compare_file_symbols(
                     reason = "Current source identity is ambiguous";
                 } else if new_source.is_empty() {
                     reason = "Empty structural extraction is not proof of deletion";
+                } else if new_source.iter().any(|symbol| {
+                    symbol.identity.kind == identity.kind
+                        && symbol.identity.name == identity.name
+                        && qualified(&symbol.identity.owner)
+                            .split_whitespace()
+                            .collect::<String>()
+                            == qualified(&identity.owner)
+                                .split_whitespace()
+                                .collect::<String>()
+                }) {
+                    reason = "Receiver formatting may describe the old identity; type equivalence is not verified";
                 } else if new_nodes
                     .iter()
                     .any(|candidate| candidate["id"] == node["id"])
