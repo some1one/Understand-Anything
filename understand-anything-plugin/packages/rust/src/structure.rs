@@ -704,7 +704,12 @@ fn java_class(n: &N, a: &mut Value, cs: bool) {
                 }
             }
         } else {
-            for m in body.children() {
+            let members: Vec<_> = body.children().into_iter().flat_map(|member| {
+                if !cs && member.ty() == "enum_body_declarations" {
+                    member.children()
+                } else { vec![member] }
+            }).collect();
+            for m in members {
                 match m.ty().as_str() {
                     "method_declaration" | "constructor_declaration" => {
                         if let Some(name) = m.name() {
@@ -776,7 +781,9 @@ fn java_class(n: &N, a: &mut Value, cs: bool) {
 fn java(root: &N, a: &mut Value, cs: bool, namespace: bool) {
     for n in root.children() {
         match n.ty().as_str() {
-            "class_declaration" | "interface_declaration" => java_class(&n, a, cs),
+            "class_declaration" | "interface_declaration" | "record_declaration" => java_class(&n, a, cs),
+            "enum_declaration" if !cs => java_class(&n, a, cs),
+            "struct_declaration" if cs => java_class(&n, a, cs),
             "namespace_declaration" if cs => {
                 if let Some(body) = n.field("body") {
                     java(&body, a, true, true);
