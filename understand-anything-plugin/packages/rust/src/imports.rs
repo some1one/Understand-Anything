@@ -758,7 +758,8 @@ pub fn extract_import_map(input: &Value) -> Result<Value> {
             }
         } else {
             let extraction = match lang {
-                "tsx" | "jsx" | "vue" => "typescript",
+                "jsx" => "javascript",
+                "vue" => "typescript",
                 s => s,
             };
             // Unsupported languages have no structural import extractor. A supported

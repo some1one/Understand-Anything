@@ -1833,7 +1833,7 @@ pub fn try_extract_import_sources(language: &str, content: &str) -> Result<Vec<V
         out
     }
     match language {
-        "typescript" | "javascript" => {
+        "typescript" | "javascript" | "tsx" => {
             for n in root.children() {
                 if ["import_statement", "export_statement"].contains(&n.ty().as_str())
                     && let Some(s) = n.child("string")

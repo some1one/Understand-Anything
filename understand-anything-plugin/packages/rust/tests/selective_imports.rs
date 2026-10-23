@@ -53,3 +53,25 @@ fn selection_preserves_unix_literal_backslashes_and_drive_like_names() {
     assert_eq!(selected[0]["path"], "a\\b.ts");
     assert_eq!(selected[1]["path"], "C:\\a.ts");
 }
+
+#[test]
+#[ignore = "requires pinned grammars; run with UA_TEST_PARSER_CACHE"]
+fn tsx_imports_survive_jsx_expressions() {
+    if let Ok(cache) = std::env::var("UA_TEST_PARSER_CACHE") {
+        understand_anything::parsers::configure(Some(std::path::Path::new(&cache))).unwrap();
+    }
+    let temp = tempfile::tempdir().unwrap();
+    let source = "export const View = () => <main><span /></main>;\nimport { value } from './value';\nexport { other } from './other';";
+    std::fs::write(temp.path().join("view.tsx"), source).unwrap();
+    let files = json!([
+        {"path":"view.tsx", "language":"tsx", "fileCategory":"code"},
+        {"path":"value.ts", "language":"typescript", "fileCategory":"code"},
+        {"path":"other.ts", "language":"typescript", "fileCategory":"code"}
+    ]);
+    let result = extract_import_map(&json!({"projectRoot":temp.path(), "files":files, "analysisPaths":["view.tsx"]})).unwrap();
+    let imports = result["importMap"]["view.tsx"].as_array().unwrap();
+    assert_eq!(imports, &vec![json!("other.ts"), json!("value.ts")], "{result}");
+    let evidence = understand_anything::structure::analyze_file_strict("view.tsx", &format!("{source}\nView.render = () => <aside />;"));
+    assert_eq!(evidence["status"], "succeeded", "{evidence}");
+    assert!(!evidence["declarationScopes"]["effects"].as_array().unwrap().is_empty(), "{evidence}");
+}
