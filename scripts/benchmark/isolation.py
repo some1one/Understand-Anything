@@ -8,17 +8,23 @@ import subprocess
 import tempfile
 
 from .contract import digest
-from .runner import StageError, ROOT, RUST
+from .runner import StageError, RUST
 
 
 def git_identity(root):
     def git(*args):
-        result = subprocess.run(['git', '-C', str(root), *args], capture_output=True)
+        result = subprocess.run(['git', '--no-optional-locks', '-C', str(root), *args], capture_output=True)
         return result.stdout if result.returncode == 0 else None
     commit = git('rev-parse', 'HEAD')
     status = git('status', '--porcelain=v1', '-z', '--untracked-files=all')
     return {'commit': commit.decode().strip() if commit else None,
             'dirty': bool(status) if status is not None else None}
+
+
+def git_state_digest(root):
+    result = subprocess.run(['git', '--no-optional-locks', '-C', str(root), 'status', '--porcelain=v1', '-z',
+                             '--untracked-files=all'], capture_output=True)
+    return hashlib.sha256(result.stdout).hexdigest() if result.returncode == 0 else None
 
 
 def output_path(subject, output):
@@ -37,6 +43,8 @@ def output_path(subject, output):
 
 
 def workspace(subject):
+    if Path(tempfile.gettempdir()).resolve().is_relative_to(subject):
+        raise ValueError('temporary-directory-inside-subject')
     path = Path(tempfile.mkdtemp(prefix='ua-benchmark-')).resolve()
     if path.is_relative_to(subject):
         # Empty owned directory only; no subject contents are touched.
@@ -73,10 +81,37 @@ def ignore_identity(subject, exclusions):
         path = subject / rel
         if path.is_file():
             user.append((rel, hash_file(path)))
+    enumeration = subprocess.run(['git', '--no-optional-locks', '-C', str(subject), 'ls-files', '-co', '--exclude-standard', '-z'], capture_output=True)
+    if enumeration.returncode == 0:
+        # An ignore file can ignore its own filename and still affect siblings.
+        # Inspect ancestors of enumerated files instead of assuming the ignore
+        # files themselves appear in ls-files output.
+        directories = {Path('.')}
+        for name in set(enumeration.stdout.decode().split('\0')) - {''}:
+            directories.update(Path(name).parents)
+        for directory in sorted(directories):
+            path = subject / directory / '.gitignore'
+            if path.is_file() and directory != Path('.'):
+                user.append(((directory / '.gitignore').as_posix(), hash_file(path)))
+        # Worktrees can store info/exclude outside the subject; global rules can
+        # also influence production git enumeration. Hash contents, never paths.
+        for key, command in [('git-info-exclude', ['rev-parse', '--git-path', 'info/exclude']),
+                             ('git-global-exclude', ['config', '--path', '--get', 'core.excludesfile'])]:
+            value = subprocess.run(['git', '--no-optional-locks', '-C', str(subject), *command], capture_output=True, text=True)
+            if value.returncode == 0 and value.stdout.strip():
+                path = Path(value.stdout.strip()).expanduser()
+                if not path.is_absolute():
+                    path = subject / path
+                if path.is_file():
+                    user.append((key, hash_file(path)))
+            elif key == 'git-global-exclude':
+                path = Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config')) / 'git/ignore'
+                if path.is_file():
+                    user.append((key, hash_file(path)))
     return {'defaults': tables['languages']['DEFAULT_IGNORE_PATTERNS'] + ['.ua/', '.understand-anything/'],
             # User rules may contain identifying paths. Publish their content identity.
             'userFilesDigest': digest(user), 'invocation': exclusions,
-            'gitEnumeration': subprocess.run(['git', '-C', str(subject), 'rev-parse', '--is-inside-work-tree'], capture_output=True).returncode == 0}
+            'gitEnumeration': enumeration.returncode == 0}
 
 
 def input_identity(subject, files):

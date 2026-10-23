@@ -97,6 +97,39 @@
         ],
         "additionalProperties": false
       }
+    },
+    "coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "structure",
+          "callGraph"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "structure": {
+            "enum": [
+              "succeeded",
+              "unsupported",
+              "failed",
+              "unreadable"
+            ]
+          },
+          "callGraph": {
+            "enum": [
+              "succeeded",
+              "unsupported",
+              "failed",
+              "unreadable"
+            ]
+          }
+        }
+      }
     }
   },
   "required": [

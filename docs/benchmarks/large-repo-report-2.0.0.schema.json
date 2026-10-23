@@ -378,6 +378,13 @@
                 "string",
                 "null"
               ]
+            },
+            "counts": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
             }
           },
           "required": [
@@ -390,7 +397,8 @@
             "workers",
             "outputBytes",
             "outputDigest",
-            "error"
+            "error",
+            "counts"
           ]
         },
         "imports": {
@@ -451,6 +459,13 @@
                 "string",
                 "null"
               ]
+            },
+            "counts": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
             }
           },
           "required": [
@@ -463,7 +478,8 @@
             "workers",
             "outputBytes",
             "outputDigest",
-            "error"
+            "error",
+            "counts"
           ]
         },
         "batching": {
@@ -524,6 +540,13 @@
                 "string",
                 "null"
               ]
+            },
+            "counts": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
             }
           },
           "required": [
@@ -536,7 +559,8 @@
             "workers",
             "outputBytes",
             "outputDigest",
-            "error"
+            "error",
+            "counts"
           ]
         },
         "structure": {
@@ -597,6 +621,13 @@
                 "string",
                 "null"
               ]
+            },
+            "counts": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
             }
           },
           "required": [
@@ -609,7 +640,8 @@
             "workers",
             "outputBytes",
             "outputDigest",
-            "error"
+            "error",
+            "counts"
           ]
         }
       },
@@ -982,6 +1014,13 @@
                           "string",
                           "null"
                         ]
+                      },
+                      "counts": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
                       }
                     },
                     "required": [
@@ -994,7 +1033,8 @@
                       "workers",
                       "outputBytes",
                       "outputDigest",
-                      "error"
+                      "error",
+                      "counts"
                     ]
                   },
                   {
@@ -1069,6 +1109,13 @@
                           "string",
                           "null"
                         ]
+                      },
+                      "counts": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
                       }
                     },
                     "required": [
@@ -1081,7 +1128,8 @@
                       "workers",
                       "outputBytes",
                       "outputDigest",
-                      "error"
+                      "error",
+                      "counts"
                     ]
                   },
                   {
@@ -1156,6 +1204,13 @@
                           "string",
                           "null"
                         ]
+                      },
+                      "counts": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
                       }
                     },
                     "required": [
@@ -1168,7 +1223,8 @@
                       "workers",
                       "outputBytes",
                       "outputDigest",
-                      "error"
+                      "error",
+                      "counts"
                     ]
                   },
                   {
@@ -1243,6 +1299,13 @@
                           "string",
                           "null"
                         ]
+                      },
+                      "counts": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
                       }
                     },
                     "required": [
@@ -1255,7 +1318,8 @@
                       "workers",
                       "outputBytes",
                       "outputDigest",
-                      "error"
+                      "error",
+                      "counts"
                     ]
                   },
                   {
@@ -1294,6 +1358,76 @@
           "error": {
             "type": "string",
             "minLength": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "ok"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "warningCount": {
+            "const": 0
+          },
+          "warnings": {
+            "maxItems": 0
+          },
+          "warningsTruncated": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "degraded"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "warningCount": {
+            "minimum": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "ok",
+              "degraded"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "secondaryErrors": {
+            "maxItems": 0
+          },
+          "coverage": {
+            "properties": {
+              "parseFailed": {
+                "const": 0
+              },
+              "unreadable": {
+                "const": 0
+              },
+              "invalidOutputs": {
+                "const": 0
+              }
+            }
           }
         }
       }

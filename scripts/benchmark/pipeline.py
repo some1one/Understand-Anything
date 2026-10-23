@@ -1,12 +1,12 @@
 """Run four production stages and independently check their integrity."""
 from concurrent.futures import ThreadPoolExecutor
+from collections import deque
 import json
-from pathlib import Path
 import time
 
 from .contract import digest, SAMPLE_LIMIT
 from .isolation import input_identity
-from .runner import StageError, worker
+from .runner import StageError, worker, unstarted_metric
 
 
 def write(path, value):
@@ -40,6 +40,26 @@ def check(condition):
         raise StageError('invalid-output')
 
 
+def warning_count(path):
+    with path.open('rb') as stream:
+        return sum(line.count(b'Warning:') for line in iter(lambda: stream.readline(8192), b''))
+
+
+def bounded_map(executor, function, jobs, concurrency):
+    """Keep only concurrency futures live, yielding in deterministic job order."""
+    source = iter(jobs)
+    pending = deque()
+    for _ in range(concurrency):
+        job = next(source, None)
+        if job is not None:
+            pending.append(executor.submit(function, job))
+    while pending:
+        yield pending.popleft().result()
+        job = next(source, None)
+        if job is not None:
+            pending.append(executor.submit(function, job))
+
+
 def combined_metrics(metrics, elapsed):
     def total(key):
         return sum(m[key] for m in metrics) if all(m[key] is not None for m in metrics) else None
@@ -48,9 +68,9 @@ def combined_metrics(metrics, elapsed):
                 durationMs=elapsed, userCpuTimeMicros=total('userCpuTimeMicros'),
                 systemCpuTimeMicros=total('systemCpuTimeMicros'),
                 maxWorkerPeakRssBytes=max(rss) if rss and all(v is not None for v in rss) else None,
-                aggregatePeakRssBytes=None, workers=len(metrics),
+                aggregatePeakRssBytes=None, workers=sum(m['workers'] for m in metrics),
                 outputBytes=sum(m['outputBytes'] for m in metrics), outputDigest=None,
-                error=next((m['error'] for m in metrics if m['error']), None))
+                counts={}, error=next((m['error'] for m in metrics if m['error']), None))
 
 
 def run(report, subject, directory, binary, cache, stop, timeout=300):
@@ -74,9 +94,7 @@ def run(report, subject, directory, binary, cache, stop, timeout=300):
         metric['outputDigest'] = digest(value)
         # Raw diagnostics stay private; publish only bounded fixed codes.
         log = directory / ((name or stage) + '.stderr')
-        with log.open('rb') as stream:
-            warnings = sum(line.count(b'Warning:') for line in iter(lambda: stream.readline(8192), b''))
-        warn(report, stage, 'worker-warning', warnings)
+        warn(report, stage, 'worker-warning', warning_count(log))
         return value
 
     try:
@@ -86,6 +104,8 @@ def run(report, subject, directory, binary, cache, stop, timeout=300):
         files = scan['files']
         paths = [f['path'] for f in files]
         check(len(set(paths)) == len(paths))
+        check(all(isinstance(f.get('sizeLines'), int) and f['sizeLines'] >= 0 and isinstance(f.get('language'), str) and isinstance(f.get('fileCategory'), str) for f in files))
+        report['stages']['scan']['counts'] = dict(files=len(files), filteredByIgnore=scan['filteredByIgnore'])
         coverage['files'] = len(files)
         failures = scan.get('failures', [])
         coverage['unreadable'] = len(failures)
@@ -105,6 +125,10 @@ def run(report, subject, directory, binary, cache, stop, timeout=300):
         check(isinstance(imports.get('importMap'), dict) and imports.get('stats', {}).get('filesScanned') == len(files))
         check(set(imports['importMap']) == set(paths))
         check(all(isinstance(targets, list) and set(targets) <= set(paths) for targets in imports['importMap'].values()))
+        edge_count = sum(len(targets) for targets in imports['importMap'].values())
+        check(imports['stats'].get('totalEdges') == edge_count)
+        check(imports['stats'].get('filesWithImports') == sum(bool(v) for v in imports['importMap'].values()))
+        report['stages']['imports']['counts'] = dict(files=len(files), edges=edge_count, filesWithImports=imports['stats']['filesWithImports'])
 
         current = 'batching'
         batch_path = directory / 'batches.json'
@@ -113,11 +137,13 @@ def run(report, subject, directory, binary, cache, stop, timeout=300):
         check(isinstance(batches.get('batches'), list))
         grouped = [file['path'] for batch in batches['batches'] for file in batch['files']]
         check(sorted(grouped) == sorted(paths))
+        check(batches.get('totalBatches') == len(batches['batches']) and batches.get('totalFiles') == len(files))
+        report['stages']['batching']['counts'] = dict(files=len(files), batches=len(batches['batches']))
 
         current = 'structure'
         start = time.monotonic()
-        lookup = {f['path']: f for f in files}
-        metrics, results = [], []
+        metrics, summaries = [], []
+        entities = {key: 0 for key in ('functions', 'classes', 'exports', 'callGraph', 'sections', 'definitions', 'services', 'endpoints', 'steps', 'resources')}
         first_error = None
         jobs = []
         for index, batch in enumerate(batches['batches']):
@@ -135,6 +161,8 @@ def run(report, subject, directory, binary, cache, stop, timeout=300):
                 metric = error.metric
                 if not output.exists():
                     return metric, None, expected, error.code
+            except OSError:
+                return unstarted_metric('worker-start-failed'), None, expected, 'worker-start-failed'
             try:
                 value = read(output)
                 metric['outputBytes'] = output.stat().st_size
@@ -145,6 +173,9 @@ def run(report, subject, directory, binary, cache, stop, timeout=300):
                 for entry in value['coverage']:
                     check(entry['structure'] in ('succeeded', 'unsupported', 'failed', 'unreadable'))
                     check(entry['callGraph'] in ('succeeded', 'unsupported', 'failed', 'unreadable'))
+                for entry in value['results']:
+                    check(isinstance(entry.get('totalLines'), int) and isinstance(entry.get('nonEmptyLines'), int))
+                    check(0 <= entry['nonEmptyLines'] <= entry['totalLines'] and isinstance(entry.get('metrics'), dict))
                 metric['outputDigest'] = digest(value)
                 return metric, value, expected, metric['error']
             except (StageError, KeyError, TypeError, ValueError):
@@ -152,16 +183,24 @@ def run(report, subject, directory, binary, cache, stop, timeout=300):
                 return metric, None, expected, 'invalid-output'
 
         with ThreadPoolExecutor(max_workers=report['configuration']['concurrency']) as executor:
-            # map returns in deterministic batch order, including failures.
-            for metric, value, expected, error in executor.map(structure_job, jobs):
+            # Retain at most concurrency batch results, rather than the entire
+            # monorepo's structural model, even if an early batch is slow.
+            for index, (metric, value, expected, error) in enumerate(bounded_map(executor, structure_job, jobs, report['configuration']['concurrency'])):
                 if metric:
                     metrics.append(metric)
+                log = directory / (jobs[index][0] + '.stderr')
+                if log.exists():
+                    warn(report, 'structure', 'worker-warning', warning_count(log))
                 if error:
                     first_error = first_error or error
                     coverage['invalidOutputs'] += int(error == 'invalid-output')
                 if value is None:
                     continue
-                results.extend(value['results'])
+                summaries.append(dict(pathsDigest=digest(sorted(expected)),
+                    outputDigest=digest(sorted(value['results'], key=lambda f: f['path'])),
+                    coverageDigest=digest(sorted(value['coverage'], key=lambda f: f['path']))))
+                for key in entities:
+                    entities[key] += sum(len(f.get(key, [])) for f in value['results'])
                 for entry in value['coverage']:
                     key = {'succeeded': 'structureSucceeded', 'unsupported': 'structureUnsupported',
                            'failed': 'parseFailed', 'unreadable': 'unreadable'}[entry['structure']]
@@ -171,14 +210,14 @@ def run(report, subject, directory, binary, cache, stop, timeout=300):
                     elif entry['callGraph'] == 'unsupported':
                         coverage['callGraphUnsupported'] += 1
         report['stages']['structure'] = combined_metrics(metrics, (time.monotonic() - start) * 1000)
+        report['stages']['structure']['counts'] = entities
         for key, code in [('structureUnsupported', 'unsupported-structure'), ('callGraphUnsupported', 'unsupported-call-graph'), ('parseFailed', 'parse-failed'), ('invalidOutputs', 'invalid-output')]:
             warn(report, 'structure', code, coverage[key])
         if first_error or coverage['parseFailed'] or coverage['unreadable']:
             raise StageError(first_error or 'parse-failed')
         check(coverage['structureSucceeded'] + coverage['structureUnsupported'] == len(files))
         check(input_identity(subject, files) == initial)
-        results.sort(key=lambda f: f['path'])
-        semantic = dict(scan=scan, imports=imports, batching=batches, structure=results)
+        semantic = dict(scan=scan, imports=imports, batching=batches, structure=summaries, coverage=coverage)
         # Native batch outputs include projectRoot. Exclude it from public digests.
         def normalize(value):
             if isinstance(value, dict):
@@ -187,7 +226,7 @@ def run(report, subject, directory, binary, cache, stop, timeout=300):
                 return [normalize(v) for v in value]
             return value
         report['stages']['batching']['outputDigest'] = digest(normalize(batches))
-        report['stages']['structure']['outputDigest'] = digest(results)
+        report['stages']['structure']['outputDigest'] = digest(summaries)
         report['determinism']['outputDigest'] = digest(normalize(semantic))
         report['status'] = 'degraded' if report['warningCount'] else 'ok'
         report['error'] = None
@@ -195,7 +234,7 @@ def run(report, subject, directory, binary, cache, stop, timeout=300):
         code = error.code if isinstance(error, StageError) else 'invalid-output'
         if code == 'input-unreadable':
             coverage['unreadable'] += error.count
-        if code == 'invalid-output':
+        if code == 'invalid-output' and (current != 'structure' or coverage['invalidOutputs'] == 0):
             coverage['invalidOutputs'] += 1
         if current in report['stages']:
             report['stages'][current].update(status='failed', error=code)

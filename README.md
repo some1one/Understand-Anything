@@ -175,3 +175,10 @@ snapshot. To migrate manually, stop analysis and dashboard processes, move the
 whole legacy directory to `.ua`, and update any custom dictionary paths in your
 configuration. Project-specific data and caches stay inside the selected directory;
 shared dictionaries and the plugin installation home keep their existing locations.
+
+## Native stage benchmarks
+
+The optional [large-repository benchmark](docs/benchmarks/large-monorepo.md)
+measures deterministic Rust stages with isolated artifacts and versioned reports.
+Use `make help` for the explicit target; normal builds and tests do not run scale
+benchmarks.

@@ -1,7 +1,10 @@
 # Benchmark migration plan
 
-Status: deferred. This document plans the migration; it does not enable or run
-benchmarks. Figma analysis and the standalone viewer are outside this work.
+Status: implemented. The opt-in native harness and reproduction guide are in
+[docs/benchmarks/large-monorepo.md](docs/benchmarks/large-monorepo.md). Large
+repository execution remains a separate explicit action; implementation checks
+use tiny offline fixtures. Figma analysis and the standalone viewer are outside
+this work.
 
 ## Source and scope
 

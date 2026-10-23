@@ -3,15 +3,47 @@ on:
   pull_request:
     paths:
       - 'understand-anything-plugin/packages/rust/**'
+      - 'scripts/benchmark/**'
+      - 'scripts/benchmark_large_repo.py'
+      - 'scripts/tests/test_benchmark*'
+      - 'scripts/tests/requirements.txt'
+      - 'docs/benchmarks/**'
+      - 'Makefile'
       - '.github/workflows/rust-engine.yml'
   push:
     paths:
       - 'understand-anything-plugin/packages/rust/**'
+      - 'scripts/benchmark/**'
+      - 'scripts/benchmark_large_repo.py'
+      - 'scripts/tests/test_benchmark*'
+      - 'scripts/tests/requirements.txt'
+      - 'docs/benchmarks/**'
+      - 'Makefile'
       - '.github/workflows/rust-engine.yml'
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
+  benchmark-contract:
+    runs-on: ubuntu-24.04
+    env:
+      TSLP_OFFLINE: '1'
+      UA_TEST_PARSER_CACHE: ${{ runner.temp }}/ua-benchmark-parsers
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Prepare test dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/ua-benchmark-tests"
+          "$RUNNER_TEMP/ua-benchmark-tests/bin/python" -m pip install -r scripts/tests/requirements.txt
+      - name: Build native engine and prepare three pinned grammars outside measurements
+        working-directory: understand-anything-plugin/packages/rust
+        run: |
+          cargo build --locked
+          target/debug/understand-anything-rs --parser-cache-dir "$UA_TEST_PARSER_CACHE" parsers fetch python rust typescript
+      - name: Tiny offline report contracts (no large repository clone or benchmark)
+        run: |
+          "$RUNNER_TEMP/ua-benchmark-tests/bin/python" -m pytest scripts/tests/test_benchmark*.py -q
   native:
     strategy:
       fail-fast: false

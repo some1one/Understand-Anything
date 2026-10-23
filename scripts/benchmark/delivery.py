@@ -82,7 +82,7 @@ def publish(report, output, subject):
             failure = None
             try:
                 for path in paths:
-                    backups[path] = staged(path, path.read_bytes()) if path.exists() else None
+                    backups[path] = path.read_bytes() if path.exists() else None
                 for path, data in zip(paths, (json.dumps(report, indent=2).encode() + b'\n', markdown(report).encode())):
                     pending.append(staged(path, data))
                 for path, temp in zip(paths, pending):
@@ -96,14 +96,17 @@ def publish(report, output, subject):
                         if backup is None:
                             path.unlink(missing_ok=True)
                         else:
-                            os.replace(backup, path)
+                            restored = staged(path, backup)
+                            pending.append(restored)
+                            os.replace(restored, path)
                     except OSError:
                         failures += 1
                 failure = DeliveryError(failures)
             finally:
-                for path in pending + [p for p in backups.values() if p]:
+                for path in pending:
                     try:
-                        path.unlink(missing_ok=True)
+                        if path.exists():
+                            path.unlink()
                     except OSError:
                         failure = failure or DeliveryError()
                         failure.cleanup_failures += 1

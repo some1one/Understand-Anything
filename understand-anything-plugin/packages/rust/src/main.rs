@@ -125,7 +125,7 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
     ua::parsers::configure(cache.as_deref())?;
     if args.is_empty() || ["--help", "-h"].contains(&args[0].as_str()) {
         println!(
-            "understand-anything-rs — native engine port\n\nImplemented commands:\n  {}\n  parsers list | fetch [languages…]\n\nGlobal option: --parser-cache-dir PATH\nSee reference/coverage.json for parity status.",
+            "understand-anything-rs — native engine port\n\nImplemented commands:\n  {}\n  parsers list | fetch [languages…]\n\nGlobal options: --parser-cache-dir PATH, --offline-parsers\nSee reference/coverage.json for parity status.",
             IMPLEMENTED.join("\n  ")
         );
         return Ok(0);
@@ -489,17 +489,24 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
             println!("{}",serde_json::to_string_pretty(&result)?);
         }
         "compute_batches" => {
-            require(&args, 1, command, "<project-root> [--changed-files PATH]")?;
+            require(&args, 1, command, "<project-root> [--changed-files PATH] [--scan-result PATH] [--output PATH]")?;
             let root = absolute(&args[0])?;
             let mut changed_files = None;
             let mut scan_path = ua::persistence::data_dir(&root).join("intermediate/scan-result.json");
             let mut output = ua::persistence::data_dir(&root).join("intermediate/batches.json");
             let mut i = 1;
             while i < args.len() {
-                if ["--scan-result", "--output"].contains(&args[i].as_str()) && i + 1 < args.len() {
+                if ["--scan-result", "--output"].contains(&args[i].as_str()) {
+                    if i + 1 >= args.len() {
+                        return Err(Error::Invalid(format!("{} requires a path", args[i])));
+                    }
                     let target = if args[i] == "--scan-result" { &mut scan_path } else { &mut output };
                     i += 1;
                     *target = PathBuf::from(&args[i]);
+                } else if let Some(p) = args[i].strip_prefix("--scan-result=") {
+                    scan_path = PathBuf::from(p);
+                } else if let Some(p) = args[i].strip_prefix("--output=") {
+                    output = PathBuf::from(p);
                 } else if let Some(p) = args[i].strip_prefix("--changed-files=") {
                     changed_files = Some(changed(Path::new(p))?.into_iter().collect());
                 } else if args[i] == "--changed-files" && i + 1 < args.len() {

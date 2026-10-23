@@ -117,4 +117,66 @@ def test_simulated_structure_worker_failures(tmp_path, engine, monkeypatch, fail
     report = execute(tmp_path, engine, tmp_path / 'missing-cache', {'README.md': '# Heading'})
     assert report['status'] == 'failed'
     assert '/never/publish' not in json.dumps(report)
-    assert report['error'] in ('worker-exit', 'invalid-output')
+    assert report['error'] in ('worker-exit', 'invalid-output', 'worker-start-failed')
+
+
+def test_digests_ignore_temporary_locations(tmp_path, engine, cache):
+    contents = {'a.py': 'from b import work\n\ndef call():\n    return work()\n', 'b.py': 'def work():\n    return 1\n'}
+    first = tmp_path / 'first'
+    second = tmp_path / 'second'
+    first.mkdir()
+    second.mkdir()
+    a = execute(first, engine, cache, contents)
+    b = execute(second, engine, cache, contents)
+    assert a['status'] == b['status'] == 'ok'
+    assert a['pairId'] != b['pairId']
+    assert a['determinism'] == b['determinism']
+    assert a['stages']['imports']['counts']['edges'] == 1
+    for stage in a['stages']:
+        assert a['stages'][stage]['outputDigest'] == b['stages'][stage]['outputDigest']
+
+
+def test_scan_permission_failure_is_counted(tmp_path, engine):
+    subject = tmp_path / 'subject'
+    subject.mkdir()
+    private = subject / 'private.py'
+    private.write_text('def private():\n    pass\n')
+    private.chmod(0)
+    try:
+        if os.access(private, os.R_OK):
+            pytest.skip('permission-denied fixture requires an unprivileged test user')
+        report = execute(tmp_path, engine, tmp_path / 'missing-cache', {})
+        assert report['status'] == 'failed'
+        assert report['error'] == 'scan-unreadable'
+        assert report['coverage']['unreadable'] == 1
+        assert report['stages']['scan']['status'] == 'failed'
+    finally:
+        private.chmod(0o600)
+
+
+def test_structure_concurrency_is_bounded_across_batches(tmp_path, engine, monkeypatch):
+    import benchmark.pipeline as pipeline
+    import time
+    original = pipeline.worker
+    active = peak = 0
+    guard = threading.Lock()
+    def observed(command, directory, name, stop, timeout):
+        nonlocal active, peak
+        if not name.startswith('structure-'):
+            return original(command, directory, name, stop, timeout)
+        with guard:
+            active += 1
+            peak = max(peak, active)
+        try:
+            time.sleep(.01)  # force overlap without asserting performance
+            return original(command, directory, name, stop, timeout)
+        finally:
+            with guard:
+                active -= 1
+    monkeypatch.setattr(pipeline, 'worker', observed)
+    report = execute(tmp_path, engine, tmp_path / 'missing-cache', {f'f{i:03}.unknown': 'text' for i in range(50)})
+    assert report['status'] == 'degraded', report
+    assert report['stages']['structure']['workers'] >= 2
+    assert peak == 2
+    assert report['coverage']['structureUnsupported'] == 50
+    assert len(report['warnings']) <= 5

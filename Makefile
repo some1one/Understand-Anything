@@ -73,7 +73,7 @@ UNINSTALL_TARGETS := $(addprefix uninstall-,$(INSTALL_PLATFORMS))
         build build-core build-dashboard test test-core test-dashboard \
         lint lint-dashboard dev dev-dashboard preview package deb update-dictionaries configure-dictionaries \
         install install-local uninstall-local test-integration engine-help \
-        clean clean-local clean-cache clean-build clean-stamps
+        clean clean-local clean-cache clean-build clean-stamps benchmark-large-repo
 
 help:
 	@grep -E '^[a-zA-Z0-9_-]+:.*?##' $(MAKEFILE_LIST) | \
@@ -153,6 +153,18 @@ test-integration: ## Run installer and plugin integration regression checks
 
 engine-help: ## List deterministic engine commands (builds engine on first use)
 	@$(RUST)/run.sh --help
+
+# Opt-in only; independent of test, build, package, and the default goal.
+# Paths travel through the environment, preserving spaces and shell metacharacters.
+BENCHMARK_SUBJECT ?=
+BENCHMARK_OUTPUT ?=
+BENCHMARK_PARSER_CACHE ?=
+override BENCHMARK_SUBJECT := $(value BENCHMARK_SUBJECT)
+override BENCHMARK_OUTPUT := $(value BENCHMARK_OUTPUT)
+override BENCHMARK_PARSER_CACHE := $(value BENCHMARK_PARSER_CACHE)
+export BENCHMARK_SUBJECT BENCHMARK_OUTPUT BENCHMARK_PARSER_CACHE
+benchmark-large-repo: ## Benchmark native stages (BENCHMARK_SUBJECT, BENCHMARK_OUTPUT, BENCHMARK_PARSER_CACHE required)
+	@$(PYTHON) scripts/benchmark_large_repo.py "$$BENCHMARK_SUBJECT" --output "$$BENCHMARK_OUTPUT" --parser-cache-dir "$$BENCHMARK_PARSER_CACHE"
 
 ## ---- lint ----------------------------------------------------------------
 lint: lint-dashboard ## Lint the dashboard

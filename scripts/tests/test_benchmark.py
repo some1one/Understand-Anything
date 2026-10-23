@@ -1,5 +1,4 @@
 """Small offline contracts for the opt-in native benchmark."""
-import importlib.util
 import json
 from pathlib import Path
 import sys
@@ -53,3 +52,22 @@ def test_worker_cancellation_and_timeout(tmp_path):
         worker([sys.executable, '-c', 'import time; time.sleep(60)'], tmp_path, 'cancel', stop)
     with pytest.raises(StageError, match='worker-timeout'):
         worker([sys.executable, '-c', 'import time; time.sleep(60)'], tmp_path, 'timeout', threading.Event(), timeout=.03)
+
+
+def test_run_warnings_are_bounded_and_worker_cpu_is_summed():
+    from benchmark.pipeline import warn, combined_metrics
+    report = new_report()
+    for stage in ('scan', 'imports', 'batching', 'structure'):
+        for code in ('worker-warning', 'invalid-output'):
+            warn(report, stage, code, 3)
+    assert len(report['warnings']) == 5
+    assert report['warningCount'] == 24
+    assert report['warningsTruncated']
+    one = dict(status='ok', userCpuTimeMicros=10, systemCpuTimeMicros=2,
+               maxWorkerPeakRssBytes=1024, outputBytes=10, error=None, workers=1)
+    two = {**one, 'userCpuTimeMicros': 30, 'maxWorkerPeakRssBytes': 2048}
+    metric = combined_metrics([one, two], 100)
+    assert metric['userCpuTimeMicros'] == 40
+    assert metric['systemCpuTimeMicros'] == 4
+    assert metric['maxWorkerPeakRssBytes'] == 2048
+    assert metric['aggregatePeakRssBytes'] is None

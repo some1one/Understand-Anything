@@ -318,3 +318,15 @@ To regenerate the fixture from that trusted upstream test file, run
 `node reference/capture_upstream_symbol_matrix.cjs <upstream-test.mjs> tests/fixtures/upstream_symbol_matrix.json`
 inside this package. The capture script checks the source hash before applying
 explicit native expectation differences.
+
+## Isolated benchmark invocations
+
+`compute_batches ROOT --scan-result INPUT --output OUTPUT` keeps intermediate
+artifacts outside the subject. `extract_structure` accepts `includeCoverage: true`
+in its JSON input to emit per-file structure and call-graph outcomes from the
+production parse tree. Recovered syntax errors are failed coverage, while normal
+structural output is preserved. `--offline-parsers` prevents implicit parser
+downloads and fails if an advertised grammar is not already loadable.
+
+See the checkout-only [benchmark guide](../../../docs/benchmarks/large-monorepo.md)
+for the runner, report contract, and reproduction protocol.

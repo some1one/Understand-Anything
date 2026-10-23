@@ -71,3 +71,23 @@ def test_output_write_failure_preserves_pair(tmp_path, monkeypatch):
     with pytest.raises(DeliveryError):
         publish(new_report(), output, tmp_path / 'subject')
     assert read_pair(output) == report
+
+
+def test_failed_rollback_is_counted_and_mismatched_pair_rejected(tmp_path, monkeypatch):
+    import benchmark.delivery as delivery
+    output = tmp_path / 'report.json'
+    publish(new_report(), output, tmp_path / 'subject')
+    original = delivery.os.replace
+    count = 0
+    def fail(source, destination):
+        nonlocal count
+        count += 1
+        if count in (2, 3):
+            raise OSError('replacement unavailable')
+        return original(source, destination)
+    monkeypatch.setattr(delivery.os, 'replace', fail)
+    with pytest.raises(DeliveryError) as error:
+        publish(new_report(), output, tmp_path / 'subject')
+    assert error.value.rollback_failures == 1
+    with pytest.raises(ValueError, match='report-pair-mismatch'):
+        read_pair(output)

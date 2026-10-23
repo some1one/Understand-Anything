@@ -73,6 +73,11 @@
       },
       "title": "Batchimportdata",
       "type": "object"
+    },
+    "includeCoverage": {
+      "type": "boolean",
+      "default": false,
+      "description": "Emit strict per-file capability and parse outcomes using the production syntax tree."
     }
   },
   "required": [
