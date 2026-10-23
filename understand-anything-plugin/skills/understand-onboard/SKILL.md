@@ -38,5 +38,5 @@ Read [host integration](../../HOSTS.md) for invocation, argument handling, and a
    - **Complexity Hotspots**: areas to approach carefully (from complexity values)
 
 4. Format as clean markdown.
-5. Offer to save to `docs/ONBOARDING.md` in the project.
+5. Offer to save to `docs/UA_ONBOARDING.md` in the project.
 6. Suggest the user commit it to the repo for the team.
