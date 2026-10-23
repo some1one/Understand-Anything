@@ -42,11 +42,15 @@ pub fn generate_starter_ignore_file(root: &Path) -> String {
                 ".storybook",
                 "unittests",
                 "integrationtests",
+                "unittest",
+                "bench",
+                "benchmark",
+                "benchmarks",
+                "benches",
+                "spec",
             ]
             .contains(&low.as_str())
-                || [".tests", ".unittests", ".integrationtests"]
-                    .iter()
-                    .any(|s| low.ends_with(s))
+                || ["tests", "specs"].iter().any(|s| low.ends_with(s))
             {
                 detected.push(format!("{name}/"));
             }
@@ -80,6 +84,52 @@ pub fn generate_starter_ignore_file(root: &Path) -> String {
             ],
         ),
         ("Go", vec!["**/*_test.go"]),
+        (
+            "C++",
+            vec![
+                "**/*_test.cc",
+                "**/*_test.cpp",
+                "**/*_test.cxx",
+                "**/*Test.cc",
+                "**/*Test.cpp",
+                "**/*_unittest.cc",
+                "**/*_unittest.cpp",
+                "**/*_browsertest.cc",
+                "**/*_benchmark.cc",
+                "**/*Benchmark.cpp",
+            ],
+        ),
+        (
+            "Python",
+            vec![
+                "**/test_*.py",
+                "**/*_test.py",
+                "**/tests.py",
+                "**/conftest.py",
+            ],
+        ),
+        (
+            "Rust",
+            vec![
+                "**/tests.rs",
+                "**/test_*.rs",
+                "**/*_test.rs",
+                "**/bench_*.rs",
+                "**/*_bench.rs",
+            ],
+        ),
+        (
+            "Ruby",
+            vec![
+                "**/*_spec.rb",
+                "**/*_test.rb",
+                "**/test_*.rb",
+                "**/spec_helper.rb",
+                "**/test_helper.rb",
+                "**/rails_helper.rb",
+            ],
+        ),
+        ("Swift", vec!["**/Tests/**/*.swift", "**/Specs/**/*.swift"]),
     ] {
         out.push(format!("# {label}"));
         out.extend(patterns.iter().map(|p| format!("# {p}")));
