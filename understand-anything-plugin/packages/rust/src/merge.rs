@@ -63,6 +63,29 @@ fn number(v: &Value) -> f64 {
         .unwrap_or(0.)
 }
 pub fn merge_graphs(graphs: &[Value]) -> (Value, Vec<String>) {
+    let (graph, report, _) = merge_graphs_with_diagnostics(graphs);
+    (graph, report)
+}
+
+pub fn is_structural_edge(edge: &Value) -> bool {
+    ["contains_flow", "flow_step", "cross_domain"].contains(&text(edge, "type"))
+}
+
+pub fn pending_structural_edges(report: &Value) -> Vec<Value> {
+    array(report, "droppedEdges")
+        .iter()
+        .filter(|edge| is_structural_edge(edge))
+        .map(|edge| {
+            let mut edge = edge.clone();
+            if let Some(object) = edge.as_object_mut() {
+                object.remove("missing");
+            }
+            edge
+        })
+        .collect()
+}
+
+pub fn merge_graphs_with_diagnostics(graphs: &[Value]) -> (Value, Vec<String>, Vec<Value>) {
     let mut nodes = Map::new();
     let mut edges: Vec<Value> = vec![];
     let mut edge_index: BTreeMap<(String, String, String), usize> = BTreeMap::new();
@@ -124,6 +147,8 @@ pub fn merge_graphs(graphs: &[Value]) -> (Value, Vec<String>) {
             }
         }
     }
+    let mut dropped_edges = vec![];
+    let mut structural_warnings = vec![];
     edges.retain(|e| {
         let src = text(e, "source");
         let tgt = text(e, "target");
@@ -135,6 +160,16 @@ pub fn merge_graphs(graphs: &[Value]) -> (Value, Vec<String>) {
             missing.push(format!("target '{tgt}'"));
         }
         if !missing.is_empty() {
+            let mut dropped_edge = e.as_object().cloned().unwrap_or_default();
+            dropped_edge.insert("missing".into(), json!(missing));
+            dropped_edges.push(Value::Object(dropped_edge));
+            if is_structural_edge(e) {
+                structural_warnings.push(format!(
+                    "Warning: dropped structural edge {src} → {tgt} ({}), missing {}",
+                    text(e, "type"),
+                    missing.join(", ")
+                ));
+            }
             unfixable.push(format!(
                 "Edge {src} → {tgt} ({}): dropped, missing {}",
                 e["type"].as_str().unwrap_or("?"),
@@ -222,6 +257,7 @@ pub fn merge_graphs(graphs: &[Value]) -> (Value, Vec<String>) {
             ));
         }
     }
+    report.extend(structural_warnings);
     if !unfixable.is_empty() {
         report.push(String::new());
         report.push(format!(
@@ -240,6 +276,7 @@ pub fn merge_graphs(graphs: &[Value]) -> (Value, Vec<String>) {
     (
         json!({"version":"1.0.0","project":{"name":name,"languages":languages,"frameworks":frameworks,"description":descriptions.join(" | "),"analyzedAt":at,"gitCommitHash":hash},"nodes":nodes.into_values().collect::<Vec<_>>(),"edges":edges,"layers":layers.into_values().collect::<Vec<_>>()}),
         report,
+        dropped_edges,
     )
 }
 pub fn select_partition_graphs(root: &Path) -> Vec<PathBuf> {

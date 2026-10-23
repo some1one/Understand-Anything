@@ -831,10 +831,42 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
                 );
                 graphs.insert(0, base);
             }
-            let (merged, report) = ua::merge::merge_graphs(&graphs);
+            let report_path = dir.join("merge-report.json");
+            let pending = if !is_parts && report_path.exists() {
+                // Preserve an unreadable recovery record rather than overwriting it.
+                ua::merge::pending_structural_edges(&read_json(&report_path)?)
+            } else {
+                vec![]
+            };
+            if !pending.is_empty() {
+                graphs.insert(0, json!({"nodes":[], "edges":pending}));
+            }
+            let (merged, report, dropped) = ua::merge::merge_graphs_with_diagnostics(&graphs);
+            let recovered = pending
+                .iter()
+                .filter(|edge| {
+                    ua::array(&merged, "edges").iter().any(|candidate| {
+                        ["source", "target", "type"]
+                            .iter()
+                            .all(|key| edge[key] == candidate[key])
+                    })
+                })
+                .count();
             fs::create_dir_all(output.parent().unwrap())?;
             write_json(&output, &merged)?;
             if !is_parts {
+                write_json(
+                    &report_path,
+                    &json!({
+                        "generatedBy":"merge_subdomain_graphs",
+                        "output":{"nodes":ua::array(&merged,"nodes").len(),"edges":ua::array(&merged,"edges").len(),"layers":ua::array(&merged,"layers").len()},
+                        "recoveredStructuralEdges":recovered,
+                        "droppedEdges":dropped
+                    }),
+                )?;
+                if recovered > 0 {
+                    eprintln!("Recovered {recovered} previously dropped structural edges");
+                }
                 ua::query_dictionary::refresh(&output)?;
             }
             if !is_parts {
