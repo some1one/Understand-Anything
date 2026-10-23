@@ -143,6 +143,17 @@ fn splitname(path: &str) -> (&str, &str) {
 }
 pub fn is_test_path(path: &str) -> bool {
     let (stem, ext) = splitname(path);
+    let lower_ext = ext.to_ascii_lowercase();
+    let ext = lower_ext.as_str();
+    if [".swift", ".rs", ".php"].contains(&ext)
+        && path
+            .split('/')
+            .rev()
+            .skip(1)
+            .any(|part| part.eq_ignore_ascii_case("tests"))
+    {
+        return true;
+    }
     if JS.contains(&ext) {
         return stem.ends_with(".test") || stem.ends_with(".spec");
     }
@@ -151,6 +162,18 @@ pub fn is_test_path(path: &str) -> bool {
         ".py" | ".c" | ".cpp" | ".cc" => stem.starts_with("test_") || stem.ends_with("_test"),
         ".java" => ["Test", "Tests", "IT"].iter().any(|s| stem.ends_with(s)),
         ".kt" | ".cs" => stem.ends_with("Test") || stem.ends_with("Tests"),
+        ".scala" => ["Spec", "Suite", "Test", "Tests"]
+            .iter()
+            .any(|s| stem.ends_with(s)),
+        ".swift" => ["Tests", "Test", "Spec"].iter().any(|s| stem.ends_with(s)),
+        ".rs" => stem.starts_with("test_") || stem.ends_with("_test"),
+        ".rb" => {
+            stem == "spec_helper"
+                || stem.starts_with("test_")
+                || stem.ends_with("_test")
+                || stem.ends_with("_spec")
+        }
+        ".php" => stem.ends_with("Test"),
         _ => false,
     }
 }
