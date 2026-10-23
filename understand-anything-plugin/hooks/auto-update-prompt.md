@@ -58,6 +58,12 @@ Read `auto-update-state.json`. On `STOP`, report its reason and stop.
 `GENERATED_ONLY` also stops without advancing metadata: graph artifacts are not
 evidence of newly analyzed source. Changes to user ignore rules still require
 inventory reconciliation even when the rules live inside the data directory.
+`DIRTY_WORKTREE` stops without changing the baseline. Report `dirtyPaths`; the
+user must commit or stash those changes before an incremental update. Do not
+stage, commit, stash, or discard their work automatically. Generated graph data
+and ignored files do not block the update; ignore-rule changes do. Preparation
+and finalization recheck HEAD and relevant worktree changes, so source drift
+requires a new preflight instead of publishing against the old revision.
 On `CONTINUE / PROCEED`, continue.
 
 ### 2. Compare structural fingerprints

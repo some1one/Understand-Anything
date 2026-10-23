@@ -76,6 +76,7 @@ pub fn is_source_file(path: &str) -> bool {
 pub trait GitClient {
     fn head(&self, root: &Path) -> Option<String>;
     fn changed_files(&self, root: &Path, previous: &str, current: &str) -> Option<Vec<String>>;
+    fn worktree_changes(&self, _root: &Path) -> Option<Vec<String>> { Some(vec![]) }
 }
 pub struct ProcessGit;
 impl GitClient for ProcessGit {
@@ -95,7 +96,47 @@ impl GitClient for ProcessGit {
     fn changed_files(&self, root: &Path, prev: &str, head: &str) -> Option<Vec<String>> {
         crate::context_helpers::changed_paths(root, &format!("{prev}..{head}")).ok()
     }
+    fn worktree_changes(&self, root: &Path) -> Option<Vec<String>> {
+        let mut paths = BTreeSet::new();
+        for args in [
+            vec!["diff", "--cached", "--no-ext-diff", "--no-renames", "--name-only", "-z", "--relative", "--", "."],
+            vec!["diff", "--no-ext-diff", "--no-renames", "--name-only", "-z", "--relative", "--", "."],
+            vec!["ls-files", "--others", "--exclude-standard", "-z", "--", "."],
+        ] {
+            let out = Command::new("git").args(args).current_dir(root).output().ok()?;
+            if !out.status.success() { return None; }
+            let text = String::from_utf8(out.stdout).ok()?;
+            paths.extend(text.split('\0').filter(|path| !path.is_empty()).map(str::to_owned));
+        }
+        Some(paths.into_iter().collect())
+    }
 }
+pub fn relevant_worktree_changes(root: &Path, git: &dyn GitClient) -> Result<Vec<String>> {
+    let paths = git.worktree_changes(root).ok_or_else(|| Error::Invalid("Cannot inspect Git working tree".into()))?;
+    let filter = crate::scan::create_ignore_filter(root)?;
+    Ok(paths.into_iter().filter(|path| {
+        let name = path.rsplit('/').next().unwrap_or(path);
+        if name == ".understandignore" { return true; }
+        if path.starts_with(".ua/") || path.starts_with(".understand-anything/") { return false; }
+        if name == ".gitignore" { return true; }
+        ![".ps1", ".psm1", ".psd1", ".bat", ".cmd"].contains(&crate::scan::extension(path).as_str())
+            && !filter.is_ignored(path)
+    }).collect())
+}
+fn verify_prepared_revision(root: &Path) -> Result<()> {
+    let state = read(&inter(root, "auto-update-state.json"));
+    let expected = s(&state, "currentCommit");
+    if expected.is_empty() { return Ok(()); }
+    if ProcessGit.head(root).as_deref() != Some(expected) {
+        return Err(Error::Invalid("HEAD changed since incremental preflight; prepare the update again".into()));
+    }
+    let dirty = relevant_worktree_changes(root, &ProcessGit)?;
+    if !dirty.is_empty() {
+        return Err(Error::Invalid(format!("Relevant uncommitted changes prevent incremental analysis: {}", dirty.join(", "))));
+    }
+    Ok(())
+}
+
 pub fn write_meta(root: &Path, commit: &str, analyzed: Option<usize>) -> Result<()> {
     let path = ua(root, "meta.json");
     let mut meta = read(&path);
@@ -133,6 +174,13 @@ pub fn preflight_with_git(root: &Path, force: bool, git: &dyn GitClient) -> Resu
         return Ok(state);
     };
     state["currentCommit"] = json!(current);
+    let dirty = relevant_worktree_changes(root, git)?;
+    if !dirty.is_empty() {
+        state["action"] = json!("DIRTY_WORKTREE");
+        state["reason"] = json!("Commit or stash relevant uncommitted changes before incremental analysis.");
+        state["dirtyPaths"] = json!(dirty);
+        return Ok(state);
+    }
     if current == previous && !force {
         state["action"] = json!("UP_TO_DATE");
         state["reason"] = json!("Knowledge graph is already up to date.");
@@ -269,6 +317,7 @@ pub fn fingerprint_check(root: &Path) -> Result<Value> {
     Ok(analysis)
 }
 pub fn prepare_batches(root: &Path) -> Result<Value> {
+    verify_prepared_revision(root)?;
     let analysis = required(&inter(root, "change-analysis.json"))?;
     let changed = strings(&analysis["filesToReanalyze"]);
     let baseline = read(&inter(root, "scan-result.json"));
@@ -580,6 +629,7 @@ pub fn clean_graph(graph: &mut Value) {
     graph["edges"] = json!(edges);
 }
 pub fn finalize(root: &Path) -> Result<Value> {
+    verify_prepared_revision(root)?;
     let analysis = read(&inter(root, "change-analysis.json"));
     let mut merged = required(&inter(root, "merged-graph.json"))?;
     validate_analyzed_file_coverage(array(&merged, "nodes"), &strings(&analysis["filesToReanalyze"]))?;
