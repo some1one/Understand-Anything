@@ -1,0 +1,1302 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Rust deterministic repository benchmark 2.0.0",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "2.0.0"
+    },
+    "schemaUrl": {
+      "const": "large-repo-report-2.0.0.schema.json"
+    },
+    "pairId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "mode": {
+      "const": "rust-deterministic"
+    },
+    "status": {
+      "enum": [
+        "ok",
+        "degraded",
+        "failed"
+      ]
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "startedAt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "finishedAt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "durationMs": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "startedAt",
+        "finishedAt",
+        "durationMs"
+      ]
+    },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "commit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dirty": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "packageVersion": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "binaryDigest": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "commit",
+        "dirty",
+        "packageVersion",
+        "binaryDigest"
+      ]
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "commit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dirty": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "commit",
+        "dirty"
+      ]
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "os": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "release": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "arch": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cpuModel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rustc": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "parserVersion": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "logicalCores": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "totalMemoryBytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "parserAssetsDigest": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "dictionary": {
+          "const": "unused"
+        }
+      },
+      "required": [
+        "os",
+        "release",
+        "arch",
+        "cpuModel",
+        "rustc",
+        "parserVersion",
+        "logicalCores",
+        "totalMemoryBytes",
+        "parserAssetsDigest",
+        "dictionary"
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "concurrency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "buildMode": {
+          "enum": [
+            "release",
+            "debug"
+          ]
+        },
+        "parserCache": {
+          "const": "cold-process; warm-within-batch"
+        },
+        "filesystemCache": {
+          "enum": [
+            "potentially-cold",
+            "warm-requested"
+          ]
+        },
+        "ignoreRules": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "defaults": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "userFilesDigest": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "invocation": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "gitEnumeration": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "defaults",
+                "userFilesDigest",
+                "invocation",
+                "gitEnumeration"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "concurrency",
+        "buildMode",
+        "parserCache",
+        "filesystemCache",
+        "ignoreRules"
+      ]
+    },
+    "scale": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "files": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "bytes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "lines": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "filteredByIgnore": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "byLanguage": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "byCategory": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "required": [
+            "files",
+            "bytes",
+            "lines",
+            "filteredByIgnore",
+            "byLanguage",
+            "byCategory"
+          ]
+        }
+      ]
+    },
+    "stages": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scan": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "enum": [
+                "ok",
+                "failed"
+              ]
+            },
+            "durationMs": {
+              "type": "number",
+              "minimum": 0
+            },
+            "userCpuTimeMicros": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "systemCpuTimeMicros": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "maxWorkerPeakRssBytes": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "aggregatePeakRssBytes": {
+              "type": "null"
+            },
+            "workers": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "outputBytes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "outputDigest": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "error": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "status",
+            "durationMs",
+            "userCpuTimeMicros",
+            "systemCpuTimeMicros",
+            "maxWorkerPeakRssBytes",
+            "aggregatePeakRssBytes",
+            "workers",
+            "outputBytes",
+            "outputDigest",
+            "error"
+          ]
+        },
+        "imports": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "enum": [
+                "ok",
+                "failed"
+              ]
+            },
+            "durationMs": {
+              "type": "number",
+              "minimum": 0
+            },
+            "userCpuTimeMicros": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "systemCpuTimeMicros": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "maxWorkerPeakRssBytes": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "aggregatePeakRssBytes": {
+              "type": "null"
+            },
+            "workers": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "outputBytes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "outputDigest": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "error": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "status",
+            "durationMs",
+            "userCpuTimeMicros",
+            "systemCpuTimeMicros",
+            "maxWorkerPeakRssBytes",
+            "aggregatePeakRssBytes",
+            "workers",
+            "outputBytes",
+            "outputDigest",
+            "error"
+          ]
+        },
+        "batching": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "enum": [
+                "ok",
+                "failed"
+              ]
+            },
+            "durationMs": {
+              "type": "number",
+              "minimum": 0
+            },
+            "userCpuTimeMicros": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "systemCpuTimeMicros": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "maxWorkerPeakRssBytes": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "aggregatePeakRssBytes": {
+              "type": "null"
+            },
+            "workers": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "outputBytes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "outputDigest": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "error": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "status",
+            "durationMs",
+            "userCpuTimeMicros",
+            "systemCpuTimeMicros",
+            "maxWorkerPeakRssBytes",
+            "aggregatePeakRssBytes",
+            "workers",
+            "outputBytes",
+            "outputDigest",
+            "error"
+          ]
+        },
+        "structure": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "enum": [
+                "ok",
+                "failed"
+              ]
+            },
+            "durationMs": {
+              "type": "number",
+              "minimum": 0
+            },
+            "userCpuTimeMicros": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "systemCpuTimeMicros": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "maxWorkerPeakRssBytes": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "aggregatePeakRssBytes": {
+              "type": "null"
+            },
+            "workers": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "outputBytes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "outputDigest": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "error": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "status",
+            "durationMs",
+            "userCpuTimeMicros",
+            "systemCpuTimeMicros",
+            "maxWorkerPeakRssBytes",
+            "aggregatePeakRssBytes",
+            "workers",
+            "outputBytes",
+            "outputDigest",
+            "error"
+          ]
+        }
+      },
+      "required": []
+    },
+    "coverage": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "files": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "structureSucceeded": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "structureUnsupported": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "parseFailed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "unreadable": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "invalidOutputs": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "callGraphSupported": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "callGraphUnsupported": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "files",
+            "structureSucceeded",
+            "structureUnsupported",
+            "parseFailed",
+            "unreadable",
+            "invalidOutputs",
+            "callGraphSupported",
+            "callGraphUnsupported"
+          ]
+        }
+      ]
+    },
+    "determinism": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "inputDigest": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "outputDigest": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "required": [
+            "inputDigest",
+            "outputDigest"
+          ]
+        }
+      ]
+    },
+    "warnings": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "stage": {
+            "enum": [
+              "scan",
+              "imports",
+              "batching",
+              "structure",
+              "delivery"
+            ]
+          },
+          "code": {
+            "enum": [
+              "unsupported-structure",
+              "unsupported-call-graph",
+              "worker-warning",
+              "scan-unreadable",
+              "parse-failed",
+              "invalid-output"
+            ]
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "stage",
+          "code",
+          "count"
+        ]
+      }
+    },
+    "warningCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "warningsTruncated": {
+      "type": "boolean"
+    },
+    "secondaryErrors": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "enum": [
+          "cleanup-failed",
+          "delivery-failed",
+          "rollback-failed"
+        ]
+      }
+    },
+    "error": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "schemaUrl",
+    "pairId",
+    "mode",
+    "status",
+    "run",
+    "tool",
+    "subject",
+    "environment",
+    "configuration",
+    "scale",
+    "stages",
+    "coverage",
+    "determinism",
+    "warnings",
+    "warningCount",
+    "warningsTruncated",
+    "secondaryErrors",
+    "error"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "ok",
+              "degraded"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "error": {
+            "type": "null"
+          },
+          "coverage": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "structureSucceeded": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "structureUnsupported": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "parseFailed": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "unreadable": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "invalidOutputs": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "callGraphSupported": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "callGraphUnsupported": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "files",
+              "structureSucceeded",
+              "structureUnsupported",
+              "parseFailed",
+              "unreadable",
+              "invalidOutputs",
+              "callGraphSupported",
+              "callGraphUnsupported"
+            ]
+          },
+          "scale": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "lines": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "filteredByIgnore": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "byLanguage": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "byCategory": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            "required": [
+              "files",
+              "bytes",
+              "lines",
+              "filteredByIgnore",
+              "byLanguage",
+              "byCategory"
+            ]
+          },
+          "determinism": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "inputDigest": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "outputDigest": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "required": [
+              "inputDigest",
+              "outputDigest"
+            ]
+          },
+          "stages": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "scan": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "status": {
+                        "enum": [
+                          "ok",
+                          "failed"
+                        ]
+                      },
+                      "durationMs": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "userCpuTimeMicros": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0
+                      },
+                      "systemCpuTimeMicros": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0
+                      },
+                      "maxWorkerPeakRssBytes": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0
+                      },
+                      "aggregatePeakRssBytes": {
+                        "type": "null"
+                      },
+                      "workers": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "outputBytes": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "outputDigest": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "error": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "durationMs",
+                      "userCpuTimeMicros",
+                      "systemCpuTimeMicros",
+                      "maxWorkerPeakRssBytes",
+                      "aggregatePeakRssBytes",
+                      "workers",
+                      "outputBytes",
+                      "outputDigest",
+                      "error"
+                    ]
+                  },
+                  {
+                    "properties": {
+                      "status": {
+                        "const": "ok"
+                      },
+                      "error": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                ]
+              },
+              "imports": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "status": {
+                        "enum": [
+                          "ok",
+                          "failed"
+                        ]
+                      },
+                      "durationMs": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "userCpuTimeMicros": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0
+                      },
+                      "systemCpuTimeMicros": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0
+                      },
+                      "maxWorkerPeakRssBytes": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0
+                      },
+                      "aggregatePeakRssBytes": {
+                        "type": "null"
+                      },
+                      "workers": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "outputBytes": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "outputDigest": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "error": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "durationMs",
+                      "userCpuTimeMicros",
+                      "systemCpuTimeMicros",
+                      "maxWorkerPeakRssBytes",
+                      "aggregatePeakRssBytes",
+                      "workers",
+                      "outputBytes",
+                      "outputDigest",
+                      "error"
+                    ]
+                  },
+                  {
+                    "properties": {
+                      "status": {
+                        "const": "ok"
+                      },
+                      "error": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                ]
+              },
+              "batching": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "status": {
+                        "enum": [
+                          "ok",
+                          "failed"
+                        ]
+                      },
+                      "durationMs": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "userCpuTimeMicros": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0
+                      },
+                      "systemCpuTimeMicros": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0
+                      },
+                      "maxWorkerPeakRssBytes": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0
+                      },
+                      "aggregatePeakRssBytes": {
+                        "type": "null"
+                      },
+                      "workers": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "outputBytes": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "outputDigest": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "error": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "durationMs",
+                      "userCpuTimeMicros",
+                      "systemCpuTimeMicros",
+                      "maxWorkerPeakRssBytes",
+                      "aggregatePeakRssBytes",
+                      "workers",
+                      "outputBytes",
+                      "outputDigest",
+                      "error"
+                    ]
+                  },
+                  {
+                    "properties": {
+                      "status": {
+                        "const": "ok"
+                      },
+                      "error": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                ]
+              },
+              "structure": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "status": {
+                        "enum": [
+                          "ok",
+                          "failed"
+                        ]
+                      },
+                      "durationMs": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "userCpuTimeMicros": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0
+                      },
+                      "systemCpuTimeMicros": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0
+                      },
+                      "maxWorkerPeakRssBytes": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0
+                      },
+                      "aggregatePeakRssBytes": {
+                        "type": "null"
+                      },
+                      "workers": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "outputBytes": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "outputDigest": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "error": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "durationMs",
+                      "userCpuTimeMicros",
+                      "systemCpuTimeMicros",
+                      "maxWorkerPeakRssBytes",
+                      "aggregatePeakRssBytes",
+                      "workers",
+                      "outputBytes",
+                      "outputDigest",
+                      "error"
+                    ]
+                  },
+                  {
+                    "properties": {
+                      "status": {
+                        "const": "ok"
+                      },
+                      "error": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "required": [
+              "scan",
+              "imports",
+              "batching",
+              "structure"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "failed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "error": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  ]
+}
