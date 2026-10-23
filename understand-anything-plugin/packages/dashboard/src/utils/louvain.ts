@@ -36,8 +36,13 @@ export function detectCommunities(
   // Defensive: reassign any -1 sentinels to unique ids past the max.
   // See the JSDoc on detectCommunities for why this is kept despite the
   // current library already producing unique ids for disconnected nodes.
-  let next =
-    Math.max(...Array.from(map.values()).filter((v) => v >= 0), -1) + 1;
+  // Avoid spreading node IDs into arguments: large graphs exceed the engine's
+  // argument limit. A loop also avoids allocating a filtered copy.
+  let maxCommunity = -1;
+  for (const v of map.values()) {
+    if (v >= 0 && v > maxCommunity) maxCommunity = v;
+  }
+  let next = maxCommunity + 1;
   for (const [id, c] of map) {
     if (c === -1) {
       map.set(id, next++);
