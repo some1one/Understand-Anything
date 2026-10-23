@@ -26,6 +26,7 @@ const IMPLEMENTED: &[&str] = &[
     "auto_update_preflight",
     "auto_update_fingerprint_check",
     "auto_update_prepare_batches",
+    "auto_update_prepare_symbol_retry",
     "auto_update_apply_batches",
     "auto_update_finalize",
     "extract_import_map",
@@ -171,6 +172,7 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
         }
         "auto_update_preflight"
         | "auto_update_fingerprint_check"
+        | "auto_update_prepare_symbol_retry"
         | "auto_update_prepare_batches"
         | "auto_update_apply_batches"
         | "auto_update_finalize" => {

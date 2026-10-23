@@ -450,6 +450,45 @@ pub fn validate_prepared(
         }
         reports.push(report);
     }
+    let retry_path = artifact(root, "incremental-symbol-retry.json");
+    let retry = if retry_path.exists() {
+        crate::persistence::read_json(&retry_path)?
+    } else {
+        Value::Null
+    };
+    let active_retry = retry.is_object()
+        && retry["baseCommit"] == baseline["baseCommit"]
+        && retry["headCommit"] == baseline["headCommit"];
+    if active_retry {
+        let paths: BTreeSet<_> = crate::strings(&retry["files"]).into_iter().collect();
+        if retry["status"] != "ready"
+            || !paths.is_subset(&selected)
+            || !retry["graph"]["nodes"].is_array()
+            || !retry["graph"]["edges"].is_array()
+        {
+            return Err(crate::Error::Invalid(
+                "Invalid or interrupted symbol retry state".into(),
+            ));
+        }
+        // A repair must not lose new symbols discovered by the first attempt.
+        for path in &paths {
+            let evidence = revision_source(root, s(&baseline, "headCommit"), path)
+                .map(|source| crate::structure::analyze_file_strict(path, &source));
+            let head = match evidence {
+                Ok(value) => value,
+                Err(error) => {
+                    errors.push(error.to_string());
+                    Value::Null
+                }
+            };
+            let mut result = compare_file_symbols(path, &retry["graph"], current, &head, &head);
+            result["phase"] = json!("repair");
+            if result["ok"] != true && !unresolved.contains(path) {
+                unresolved.push(path.clone());
+            }
+            reports.push(result);
+        }
+    }
     // An old ID cannot silently acquire another file's symbol identity.
     for old in array(previous, "nodes")
         .iter()
@@ -467,8 +506,19 @@ pub fn validate_prepared(
             }
         }
     }
+    let mut replacement_targets = std::collections::BTreeMap::new();
+    for replacement in reports.iter().flat_map(|file| array(file, "replacements")) {
+        let old = s(replacement, "oldId");
+        let new = s(replacement, "newId");
+        if replacement_targets
+            .insert(old, new)
+            .is_some_and(|previous| previous != new)
+        {
+            errors.push(format!("Conflicting symbol replacements for {old}"));
+        }
+    }
     let ok = unresolved.is_empty() && errors.is_empty();
-    let report = json!({"version":1,"ok":ok,"baseCommit":baseline["baseCommit"],"headCommit":baseline["headCommit"],"files":reports,"unresolvedFiles":unresolved,"errors":errors});
+    let report = json!({"version":1,"ok":ok,"baseCommit":baseline["baseCommit"],"headCommit":baseline["headCommit"],"graphHash":crate::fingerprints::content_hash(&serde_json::to_string(current)?),"files":reports,"unresolvedFiles":unresolved,"errors":errors});
     crate::persistence::write_json(&artifact(root, "incremental-symbol-report.json"), &report)?;
     if !ok {
         return Err(crate::Error::Invalid("Unresolved incremental symbol loss; inspect incremental-symbol-report.json. Graph and baseline were not published".into()));
@@ -479,19 +529,26 @@ pub fn validate_prepared(
         .flat_map(|file| array(file, "replacements"))
         .map(|item| (s(item, "oldId"), s(item, "newId")))
         .collect();
-    let mut remapped = previous.clone();
-    for node in remapped["nodes"].as_array_mut().unwrap() {
-        if let Some(id) = remaps.get(s(node, "id")) {
-            node["id"] = json!(id);
-        }
-    }
-    for edge in remapped["edges"].as_array_mut().unwrap() {
-        for key in ["source", "target"] {
-            if let Some(id) = remaps.get(s(edge, key)) {
-                edge[key] = json!(id);
+    let remap = |source: &Value| {
+        let mut graph = source.clone();
+        for node in graph["nodes"].as_array_mut().unwrap() {
+            if let Some(id) = remaps.get(s(node, "id")) {
+                node["id"] = json!(id);
             }
         }
+        for edge in graph["edges"].as_array_mut().unwrap() {
+            for key in ["source", "target"] {
+                if let Some(id) = remaps.get(s(edge, key)) {
+                    edge[key] = json!(id);
+                }
+            }
+        }
+        graph
+    };
+    if active_retry {
+        let paths = crate::strings(&retry["files"]).into_iter().collect();
+        crate::updates::restore_inbound_edges(&remap(&retry["graph"]), current, &paths)?;
     }
-    crate::updates::restore_inbound_edges(&remapped, current, &selected)?;
+    crate::updates::restore_inbound_edges(&remap(previous), current, &selected)?;
     Ok(report)
 }

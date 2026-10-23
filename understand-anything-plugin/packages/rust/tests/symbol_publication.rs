@@ -54,6 +54,17 @@ fn finalization_blocks_symbol_loss_and_recovers_inbound_edges_after_verified_id_
     // an interrupted finalization has already persisted a replacement graph.
     capture_baseline(root, &state, &analysis, &repaired).unwrap();
     assert_eq!(read_json(&inter.join("incremental-symbol-baseline.json")).unwrap()["graph"], previous);
+    let mut first_attempt = repaired.clone();
+    let keep = json!({"id":"function:file.ts:keep","type":"function","filePath":"file.ts","name":"keep"});
+    first_attempt["nodes"].as_array_mut().unwrap().push(keep.clone());
+    write_json(&inter.join("incremental-symbol-retry.json"), &json!({"version":1,"status":"ready","baseCommit":base,"headCommit":head,"files":["file.ts"],"graph":first_attempt})).unwrap();
+    let lost_fresh_symbol = run();
+    assert!(!lost_fresh_symbol.status.success());
+    let report = read_json(&inter.join("incremental-symbol-report.json")).unwrap();
+    assert!(report["files"].as_array().unwrap().iter().any(|file| file["phase"] == "repair" && file["missing"].as_array().unwrap().iter().any(|node| node["name"] == "keep" && node["status"] == "still-present")), "{report}");
+    let mut repaired = repaired;
+    repaired["nodes"].as_array_mut().unwrap().push(keep);
+    write_json(&inter.join("merged-graph.json"), &repaired).unwrap();
     let success = run(); assert!(success.status.success(), "{}", String::from_utf8_lossy(&success.stderr));
     let saved = read_json(&data.join("knowledge-graph.json")).unwrap();
     assert!(saved["edges"].as_array().unwrap().iter().any(|e| e["source"]=="file:caller.ts" && e["target"]=="func:file.ts:run" && e["description"]=="preserve this"));

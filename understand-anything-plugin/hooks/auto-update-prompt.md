@@ -125,7 +125,21 @@ Finalization compares reanalyzed symbols with the prepared source revisions befo
 publishing. On unresolved symbol loss, read `incremental-symbol-report.json` and
 report the affected files and reasons. Keep `incremental-symbol-baseline.json`
 and the batch outputs for repair; do not remove old symbols or edit the report to
-force success. Parser failures, empty extraction, ambiguous identities, and
+force success. If the report identifies unresolved files without source/identity
+errors, run the bounded repair command once:
+
+```bash
+"$PLUGIN_ROOT/packages/rust/run.sh" auto_update_prepare_symbol_retry "$PROJECT_ROOT"
+```
+
+Use its new `dispatch-summary.json` and `batches.json` to analyze only the listed
+files, passing the symbol report to the file analyzer. Successful files and prior
+batch outputs are preserved. Apply the new batches, rerun architecture if requested,
+and finalize again using the same steps above. If preparation rejects the retry or
+validation still fails, stop and preserve the diagnostics; do not restart preparation
+to obtain another attempt. The repair must retain newly discovered symbols as well
+as the original baseline symbols. Parser failures, empty extraction, ambiguous
+identities, and
 compatible dynamic definitions do not establish deletion. Verified ID replacements
 preserve inbound relationships from unchanged files.
 

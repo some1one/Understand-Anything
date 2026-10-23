@@ -479,14 +479,72 @@ pub fn restore_inbound_edges(previous: &Value, assembled: &mut Value, changed: &
     Ok(())
 }
 
+pub fn prepare_symbol_retry(root: &Path) -> Result<Value> {
+    verify_prepared_revision(root)?;
+    let _lock = crate::batch_files::lock(&inter(root, ""))?;
+    let state = required(&inter(root, "auto-update-state.json"))?;
+    let analysis = required(&inter(root, "change-analysis.json"))?;
+    let report = required(&inter(root, "incremental-symbol-report.json"))?;
+    let graph = required(&inter(root, "merged-graph.json"))?;
+    let hash = fingerprints::content_hash(&serde_json::to_string(&graph)?);
+    if report["version"] != 1 || !report["errors"].is_array() || report["ok"] != false || report["baseCommit"] != state["previousCommit"] || report["headCommit"] != state["currentCommit"] || report["graphHash"] != hash {
+        return Err(Error::Invalid("Symbol report does not match this failed graph and source revision".into()));
+    }
+    if !array(&report, "errors").is_empty() {
+        return Err(Error::Invalid("Symbol validation reported source or identity errors; repair those before retrying analysis".into()));
+    }
+    let paths: BTreeSet<_> = strings(&report["unresolvedFiles"]).into_iter().collect();
+    let original: BTreeSet<_> = strings(&analysis["filesToReanalyze"]).into_iter().collect();
+    if paths.is_empty() || !paths.is_subset(&original) {
+        return Err(Error::Invalid("Invalid symbol retry file inventory".into()));
+    }
+    let retry_path = inter(root, "incremental-symbol-retry.json");
+    let old = if retry_path.exists() { required(&retry_path)? } else { Value::Null };
+    if old.is_object() && old["version"] != 1 { return Err(Error::Invalid("Invalid symbol retry marker; preserve the recovery files".into())); }
+    if old["baseCommit"] == state["previousCommit"] && old["headCommit"] == state["currentCommit"] {
+        return Err(Error::Invalid("The single symbol repair attempt for this revision has already been used".into()));
+    }
+    let scan = required(&inter(root, "scan-result.json"))?;
+    let known: BTreeSet<_> = array(&scan, "files").iter().filter_map(|f| f["path"].as_str().map(str::to_owned)).collect();
+    if !paths.is_subset(&known) { return Err(Error::Invalid("Retry paths are missing from the prepared scan".into())); }
+    let batches = crate::batching::compute_batches(root, &scan, Some(&paths));
+    let summaries: Vec<_> = array(&batches,"batches").iter().map(|b| json!({"batchIndex":b["batchIndex"],"outputPath":inter(root,&format!("batch-{}.json",b["batchIndex"])),"files":b["files"]})).collect();
+    let summary = json!({"projectName":graph["project"]["name"],"projectDescription":graph["project"]["description"],"languages":graph["project"]["languages"],"frameworks":graph["project"]["frameworks"],"totalBatches":summaries.len(),"filesToReanalyze":paths,"allProjectFiles":known,"batches":summaries,"symbolRepair":true,"symbolReport":report});
+    let mut retry = json!({"version":1,"baseCommit":state["previousCommit"],"headCommit":state["currentCommit"],"files":paths,"graph":graph,"status":"preparing"});
+    // Consume the attempt before touching batches: a crash cannot buy a retry.
+    write(&retry_path, &retry)?;
+    let archive = inter(root, &format!("symbol-retry-originals-{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_nanos()));
+    fs::create_dir(&archive)?;
+    let pattern = regex::Regex::new(r"^batch-\d+(?:-part-\d+)?\.json$").unwrap();
+    for entry in fs::read_dir(inter(root, ""))? {
+        let entry = entry?;
+        if pattern.is_match(&entry.file_name().to_string_lossy()) {
+            fs::rename(entry.path(), archive.join(entry.file_name()))?;
+        }
+    }
+    write(&inter(root,"batches.json"), &batches)?;
+    write(&inter(root,"dispatch-summary.json"), &summary)?;
+    retry["status"] = json!("ready");
+    write(&retry_path, &retry)?;
+    Ok(summary)
+}
+
 pub fn apply_batches(root: &Path) -> Result<Value> {
     let _lock = crate::batch_files::lock(&inter(root, ""))?;
     let analysis = required(&inter(root, "change-analysis.json"))?;
-    let graph = required(&ua(root, "knowledge-graph.json"))?;
-    let targets: BTreeSet<_> = strings(&analysis["filesToReanalyze"])
-        .into_iter()
-        .chain(strings(&analysis["deletedFiles"]))
-        .collect();
+    let state = read(&inter(root, "auto-update-state.json"));
+    let retry_path = inter(root, "incremental-symbol-retry.json");
+    let retry = if retry_path.exists() { required(&retry_path)? } else { Value::Null };
+    if retry.is_object() && retry["version"] != 1 { return Err(Error::Invalid("Invalid symbol retry marker".into())); }
+    let active_retry = retry.is_object() && retry["baseCommit"] == state["previousCommit"] && retry["headCommit"] == state["currentCommit"];
+    let (graph, targets): (Value, BTreeSet<String>) = if active_retry {
+        if retry["status"] != "ready" || !retry["graph"]["nodes"].is_array() || !retry["graph"]["edges"].is_array() {
+            return Err(Error::Invalid("Symbol retry preparation is incomplete; preserve the recovery files".into()));
+        }
+        (retry["graph"].clone(), strings(&retry["files"]).into_iter().collect())
+    } else {
+        (required(&ua(root, "knowledge-graph.json"))?, strings(&analysis["filesToReanalyze"]).into_iter().chain(strings(&analysis["deletedFiles"])).collect())
+    };
     let kept: Vec<_> = array(&graph, "nodes")
         .iter()
         .filter(|n| node_file_path(n).is_none_or(|p| !targets.contains(&p)))
@@ -723,6 +781,7 @@ pub fn run_command(command: &str, root: &Path, force: bool) -> Result<Value> {
             );
             Ok(v)
         }
+        "auto_update_prepare_symbol_retry" => prepare_symbol_retry(root),
         "auto_update_apply_batches" => {
             let v = apply_batches(root)?;
             Ok(
