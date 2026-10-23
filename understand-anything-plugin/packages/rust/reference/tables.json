@@ -717,6 +717,7 @@
       "jenkinsfile": "jenkinsfile"
     },
     "_EXT_TO_ID": {
+      ".swift": "swift",
       ".ts": "typescript",
       ".tsx": "tsx",
       ".js": "javascript",

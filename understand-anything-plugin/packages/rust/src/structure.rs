@@ -6,6 +6,7 @@ use std::{
     fs,
     path::Path,
 };
+mod swift;
 #[derive(Clone)]
 struct N<'a> {
     raw: tree_sitter_language_pack::Node,
@@ -1360,6 +1361,7 @@ fn cpp(root: &N, a: &mut Value) {
     }
 }
 fn call_graph(root: &N, lang: &str) -> Vec<Value> {
+    if lang == "swift" { return swift::calls(root); }
     fn walk(n: &N, lang: &str, stack: &mut Vec<String>, out: &mut Vec<Value>) {
         let t = n.ty();
         let name = match lang {
@@ -1633,6 +1635,7 @@ fn extract_tree_structure(n: &N, lang: &str, a: &mut Value) {
         "python" => python(n, a),
         "go" => go(n, a),
         "rust" => rust(n, a),
+        "swift" => swift::extract(n, a),
         "java" => java(n, a, false, false),
         "kotlin" => kotlin(n, a),
         "csharp" => java(n, a, true, false),
@@ -1841,6 +1844,7 @@ pub fn try_extract_import_sources(language: &str, content: &str) -> Result<Vec<V
         out
     }
     match language {
+        "swift" => { for n in descendants(&root, "import_declaration") { swift::import_node(&n, &mut a); } }
         "typescript" | "javascript" | "tsx" => {
             for n in root.children() {
                 if ["import_statement", "export_statement"].contains(&n.ty().as_str())

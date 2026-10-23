@@ -48,8 +48,8 @@ embedded schemas; it does not regenerate the checked-in schema files.
 ./target/release/understand-anything-rs --parser-cache-dir /tmp/ua-parsers parsers fetch rust python tsx
 ```
 
-The 13 supported grammar IDs are `typescript`, `tsx`, `javascript`, `python`,
-`go`, `rust`, `java`, `kotlin`, `csharp`, `php`, `ruby`, `c`, and `cpp`.
+The 14 supported grammar IDs are `typescript`, `tsx`, `javascript`, `python`,
+`go`, `rust`, `java`, `kotlin`, `csharp`, `php`, `ruby`, `c`, `cpp`, and `swift`.
 `tree-sitter-language-pack` and its release/cache version are pinned to **1.20.0**.
 Parsers download on first use into the language pack's versioned platform cache;
 `--parser-cache-dir` changes its base directory. Predownload the needed grammars

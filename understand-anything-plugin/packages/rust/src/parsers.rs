@@ -1,4 +1,4 @@
-//! Version-locked parser management. Only the baseline's thirteen grammars are supported.
+//! Version-locked parser management. Supported grammars are explicitly allowlisted.
 use crate::{Error, Result};
 use std::{cell::RefCell, collections::HashMap, path::Path, sync::atomic::{AtomicU64, Ordering}};
 
@@ -29,6 +29,7 @@ pub const LANGUAGES: &[&str] = &[
     "ruby",
     "c",
     "cpp",
+    "swift",
 ];
 pub fn configure(cache_dir: Option<&Path>) -> Result<()> {
     if let Some(dir) = cache_dir {
