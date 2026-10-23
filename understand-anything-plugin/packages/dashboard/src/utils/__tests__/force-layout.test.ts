@@ -38,6 +38,28 @@ describe("computeForceLayout", () => {
       computeForceLayout(nodes, edges),
     );
   });
+
+  it("normalizes sparse community IDs before assigning cluster angles", () => {
+    const denseNodes: ForceLayoutNode[] = Array.from({ length: 80 }, (_, index) => ({
+      id: `node-${index}`,
+      width: 80,
+      height: 40,
+      community: index % 2,
+    }));
+    const denseLayout = computeForceLayout(denseNodes, []);
+
+    for (const [firstCommunity, secondCommunity] of [
+      [0, 2],
+      [10, 20],
+    ] as const) {
+      const sparseNodes = denseNodes.map((node, index) => ({
+        ...node,
+        community: index % 2 === 0 ? firstCommunity : secondCommunity,
+      }));
+
+      expect(computeForceLayout(sparseNodes, [])).toEqual(denseLayout);
+    }
+  });
 });
 
 describe("createFallbackGrid", () => {

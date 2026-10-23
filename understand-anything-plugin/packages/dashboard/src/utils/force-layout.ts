@@ -71,14 +71,19 @@ export function computeForceLayout(
     .filter((edge) => nodeIds.has(edge.source) && nodeIds.has(edge.target))
     .map((edge) => ({ source: edge.source, target: edge.target }));
 
-  const communities = new Set(
-    simulationNodes
-      .map((node) => node.community)
-      .filter((community): community is number => community !== undefined),
+  const communityIds = [
+    ...new Set(
+      simulationNodes
+        .map((node) => node.community)
+        .filter((community): community is number => community !== undefined),
+    ),
+  ].sort((left, right) => left - right);
+  const communityIndexById = new Map(
+    communityIds.map((community, index) => [community, index]),
   );
-  const communityCount = Math.max(1, communities.size);
+  const communityCount = Math.max(1, communityIds.length);
   const communityAngle = (community: number) =>
-    (2 * Math.PI * community) / communityCount;
+    (2 * Math.PI * (communityIndexById.get(community) ?? 0)) / communityCount;
   const clusterRadius = Math.max(600, nodes.length * 5);
   const isLarge = nodes.length > 100;
   const chargeStrength = isLarge ? -600 : -350;
