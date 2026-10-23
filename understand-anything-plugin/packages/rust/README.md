@@ -254,3 +254,9 @@ NUL-delimited lists. Invalid JSON fails before batch output is replaced.
 With `compute_batches --changed-files`, only listed targets are emitted for
 analysis. Unchanged imports and importers remain available in `neighborMap`,
 with their full-graph batch identities; they do not become analysis targets.
+
+Incremental preparation preserves the original scan and import map in
+`intermediate/incremental-scan-baseline.json`, keyed by the analyzed base commit.
+Retries against another HEAD reuse this baseline instead of an abandoned
+attempt's `scan-result.json`. Keep the baseline with failed-update artifacts;
+successful finalization removes it with the other recovery intermediates.

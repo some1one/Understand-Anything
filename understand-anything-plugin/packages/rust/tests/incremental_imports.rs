@@ -92,3 +92,50 @@ fn preparation_reuses_published_scope_instead_of_an_abandoned_scan_scope() {
     assert!(scan(&temp).get("excludePatterns").is_none());
     assert_eq!(scan(&temp)["importMap"]["main.rb"],json!(["docs/hidden.rb"]));
 }
+
+#[test]
+fn replacement_head_uses_original_scan_instead_of_abandoned_imports() {
+    use std::process::Command;
+    let temp = setup();
+    let root = temp.path();
+    let git = |args: &[&str]| {
+        let output = Command::new("git").args(args).current_dir(root).output().unwrap();
+        assert!(output.status.success(), "{}", String::from_utf8_lossy(&output.stderr));
+        String::from_utf8(output.stdout).unwrap().trim().to_owned()
+    };
+    git(&["init", "-q"]);
+    git(&["config", "user.name", "Test"]);
+    git(&["config", "user.email", "test@example.com"]);
+    fs::write(root.join("main.rb"), "require_relative 'a'\n").unwrap();
+    for name in ["a.rb", "b.rb", "c.rb"] { fs::write(root.join(name), "puts 'base'\n").unwrap(); }
+    git(&["add", "*.rb"]); git(&["commit", "-qm", "base"]);
+    let base = git(&["rev-parse", "HEAD"]);
+    let original = json!({"files":[{"path":"main.rb"},{"path":"a.rb"},{"path":"b.rb"},{"path":"c.rb"}],
+        "importMap":{"main.rb":["a.rb"],"a.rb":[],"b.rb":[],"c.rb":[]}});
+    save(&temp, "scan-result.json", original.clone());
+    fs::write(root.join("main.rb"), "require_relative 'b'\n").unwrap();
+    git(&["add", "main.rb"]); git(&["commit", "-qm", "abandoned"]);
+    save(&temp, "auto-update-state.json", json!({"previousCommit":base,"currentCommit":git(&["rev-parse","HEAD"])}));
+    save(&temp, "change-analysis.json", json!({"filesToReanalyze":["main.rb"]}));
+    prepare_batches(root).unwrap();
+    assert_eq!(scan(&temp)["importMap"]["main.rb"], json!(["b.rb"]));
+    let snapshot_path = root.join(".ua/intermediate/incremental-scan-baseline.json");
+    let snapshot = fs::read(&snapshot_path).unwrap();
+    assert_eq!(read_json(&snapshot_path).unwrap()["scan"], original);
+    git(&["checkout", "-qb", "replacement", &base]);
+    fs::write(root.join("c.rb"), "puts 'changed'\n").unwrap();
+    git(&["add", "c.rb"]); git(&["commit", "-qm", "replacement"]);
+    save(&temp, "auto-update-state.json", json!({"previousCommit":base,"currentCommit":git(&["rev-parse","HEAD"])}));
+    save(&temp, "change-analysis.json", json!({"filesToReanalyze":["c.rb"]}));
+    prepare_batches(root).unwrap();
+    assert_eq!(scan(&temp)["importMap"]["main.rb"], json!(["a.rb"]));
+    assert_eq!(fs::read(&snapshot_path).unwrap(), snapshot);
+    prepare_batches(root).unwrap();
+    assert_eq!(scan(&temp)["importMap"]["main.rb"], json!(["a.rb"]));
+    assert_eq!(fs::read(&snapshot_path).unwrap(), snapshot);
+    // A malformed saved baseline must not silently fall back to mutable output.
+    fs::write(&snapshot_path, "{").unwrap();
+    let before = fs::read(root.join(".ua/intermediate/scan-result.json")).unwrap();
+    assert!(prepare_batches(root).is_err());
+    assert_eq!(fs::read(root.join(".ua/intermediate/scan-result.json")).unwrap(), before);
+}

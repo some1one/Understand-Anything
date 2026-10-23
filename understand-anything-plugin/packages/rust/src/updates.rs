@@ -362,7 +362,18 @@ pub fn prepare_batches(root: &Path) -> Result<Value> {
     verify_prepared_revision(root)?;
     let analysis = required(&inter(root, "change-analysis.json"))?;
     let changed = strings(&analysis["filesToReanalyze"]);
-    let baseline = read(&inter(root, "scan-result.json"));
+    let state = read(&inter(root, "auto-update-state.json"));
+    let baseline_path = inter(root, "incremental-scan-baseline.json");
+    let previous_commit = s(&state, "previousCommit");
+    let saved = if baseline_path.exists() { required(&baseline_path)? } else { Value::Null };
+    if saved.is_object() && (saved["version"] != 1 || saved.get("scan").is_none()) {
+        return Err(Error::Invalid("Invalid incremental scan baseline; preserve recovery artifacts".into()));
+    }
+    // Keep the published scan across retries, including a replacement HEAD.
+    // scan-result.json may already describe an abandoned preparation attempt.
+    let reuse = !previous_commit.is_empty() && saved["baseCommit"] == previous_commit;
+    let baseline = if reuse { saved["scan"].clone() } else { read(&inter(root, "scan-result.json")) };
+    let snapshot = json!({"version":1,"baseCommit":previous_commit,"scan":baseline});
     let current = scoped_scan(root)?;
     if !array(&current, "failures").is_empty() {
         return Err(Error::Invalid(format!(
@@ -414,12 +425,14 @@ pub fn prepare_batches(root: &Path) -> Result<Value> {
     let batches =
         crate::batching::compute_batches(root, &scan, Some(&changed.iter().cloned().collect()));
     let graph = read(&ua(root, "knowledge-graph.json"));
-    let state = read(&inter(root, "auto-update-state.json"));
     if graph["nodes"].is_array() {
         crate::incremental_symbols::capture_baseline(root, &state, &analysis, &graph)?;
     }
     // Do not publish any preparation output until both scanning and import
     // extraction have succeeded.
+    if !previous_commit.is_empty() && !reuse {
+        write(&baseline_path, &snapshot)?;
+    }
     write(&inter(root, "scan-result.json"), &scan)?;
     write(&inter(root, "batches.json"), &batches)?;
     let project = &graph["project"];
