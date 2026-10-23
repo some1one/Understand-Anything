@@ -201,6 +201,7 @@ pub struct ResolutionContext {
     pub go_files_by_dir: BTreeMap<String, Vec<String>>,
     pub suffix_index: BTreeMap<String, Vec<String>>,
     pub swift_modules: BTreeMap<String, Vec<String>>,
+    scala: crate::scala_imports::Index,
     failures: Vec<String>,
     warned_go: BTreeSet<String>,
     warned_rust: BTreeSet<String>,
@@ -219,10 +220,12 @@ impl ResolutionContext {
             go_files_by_dir: BTreeMap::new(),
             suffix_index: BTreeMap::new(),
             swift_modules: BTreeMap::new(),
+            scala: crate::scala_imports::Index::default(),
             failures: Vec::new(),
             warned_go: BTreeSet::new(),
             warned_rust: BTreeSet::new(),
         };
+        c.scala = crate::scala_imports::Index::new(&c.file_set);
         c.swift_modules = crate::swift_imports::build(root, &c.file_set, &mut c.failures);
         for name in ["tsconfig.json", "go.mod", "composer.json"] {
             for f in files {
@@ -528,6 +531,7 @@ pub fn resolve_import(imp: &Value, file: &Value, c: &mut ResolutionContext) -> V
     let lang = file["language"].as_str().unwrap_or("");
     match lang {
         "swift" => crate::swift_imports::resolve(src, &path, &c.swift_modules),
+        "scala" => c.scala.resolve(src, &strings(&imp["specifiers"])),
         "typescript" | "javascript" | "tsx" | "jsx" | "vue" => {
             resolve_ts_js_import(src, &path, c).into_iter().collect()
         }
@@ -798,6 +802,8 @@ pub fn extract_import_map(input: &Value) -> Result<Value> {
             count += 1;
             edges += resolved.len();
         }
+        let mut resolved: Vec<_> = resolved.into_iter().collect();
+        if lang == "scala" { resolved.sort_by(|a, b| crate::scala_imports::compare_members(a, b)); }
         map[path] = json!(resolved);
     }
     Ok(

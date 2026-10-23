@@ -87,3 +87,4 @@ pub mod incremental_symbols;
 mod receivers;
 
 mod swift_imports;
+mod scala_imports;
