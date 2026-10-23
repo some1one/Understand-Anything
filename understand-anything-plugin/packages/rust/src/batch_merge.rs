@@ -430,6 +430,17 @@ fn total(counts: &Map<String, Value>) -> u64 {
     counts.values().filter_map(Value::as_u64).sum()
 }
 pub fn merge_and_normalize(batches: &[Value]) -> (Value, Vec<String>) {
+    let (graph, report, _) = merge_with_edge_candidates(batches, &BTreeSet::new());
+    (graph, report)
+}
+
+/// Retain normalized current-analyzer evidence separately from the valid graph.
+/// Batch indices must identify fresh fragments, never the saved baseline.
+/// Candidates still require symbol identity verification before restoration.
+pub fn merge_with_edge_candidates(
+    batches: &[Value],
+    current_batches: &BTreeSet<usize>,
+) -> (Value, Vec<String>, Vec<Value>) {
     let all: Vec<_> = batches
         .iter()
         .flat_map(|b| array(b, "nodes"))
@@ -506,6 +517,30 @@ pub fn merge_and_normalize(batches: &[Value]) -> (Value, Vec<String>) {
     for n in normalized {
         if nodes.insert(s(&n, "id").into(), n).is_some() {
             duplicates += 1;
+        }
+    }
+    let current = batches.iter().enumerate().flat_map(|(index, batch)| {
+        std::iter::repeat_n(current_batches.contains(&index), array(batch, "edges").len())
+    });
+    let mut candidate_indices: BTreeMap<(String, String, String, String), usize> = BTreeMap::new();
+    let mut candidates: Vec<Value> = vec![];
+    for (edge, is_current) in edges.iter().zip(current).take(if current_batches.is_empty() { 0 } else { edges.len() }) {
+        let (src, tgt, ty) = (s(edge, "source"), s(edge, "target"), s(edge, "type"));
+        // The test linker deliberately rejects orphan tested_by relationships.
+        if !is_current || ty == "tested_by" || !nodes.contains_key(src) || nodes.contains_key(tgt) {
+            continue;
+        }
+        let direction = normalize_direction(&edge["direction"]);
+        let key = (src.to_owned(), tgt.to_owned(), ty.to_owned(), direction.clone());
+        let mut candidate = edge.clone();
+        candidate["direction"] = json!(direction);
+        if let Some(&index) = candidate_indices.get(&key) {
+            if num(&candidate["weight"]) > num(&candidates[index]["weight"]) {
+                candidates[index] = candidate;
+            }
+        } else {
+            candidate_indices.insert(key, candidates.len());
+            candidates.push(candidate);
         }
     }
     let (added, dropped, tagged, swapped) = link_tests(&mut nodes, &mut edges);
@@ -605,6 +640,7 @@ pub fn merge_and_normalize(batches: &[Value]) -> (Value, Vec<String>) {
     (
         json!({"nodes":nodes.into_iter().map(|(_,v)|v).collect::<Vec<_>>(),"edges":clean}),
         report,
+        candidates,
     )
 }
 /// Index canonical whole-file nodes without selecting child tables or endpoints.
