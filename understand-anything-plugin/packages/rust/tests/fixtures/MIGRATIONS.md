@@ -35,3 +35,15 @@ record with its exact graph hash. The two command fixtures with a nonexistent
 prepared HEAD now assert failure and byte-preserved input artifacts instead of
 allowing fingerprint/finalization writes. Real-repository publication behavior
 is covered by the dedicated symbol and dirty-update tests.
+
+`updates.json` now expects README changes to proceed and ignore-rule changes to
+reconcile the old graph with the current inventory. Neither path advances the
+metadata before analysis. Batch application expects coordination locks and
+snapshot-bound edge candidates; its retained fragment no longer contains edges
+whose endpoints were removed. Missing-input failures may create only the lock.
+Seven fingerprint/finalization fixtures contain prepared revisions absent from
+their temporary checkout. They now assert the revision-guard error and unchanged
+input files, with historical responses retained as `legacyExpected`. Successful
+publication and symbol repair continue to run against real temporary Git commits
+in `symbol_publication.rs`; worktree and HEAD drift are tested in
+`dirty_updates.rs`, and fingerprint corruption is covered by `runtime.rs`.

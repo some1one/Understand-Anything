@@ -148,18 +148,20 @@
       "b.py": "def bar():\n    return 1\n",
       "a.py": "def foo(a, b):\n    return a + b\n",
       ".understand-anything/fingerprints.json": "{\"version\": \"1.0.0\", \"gitCommitHash\": \"b4cdd0f9c6f513b2e75bb5c465a4ec5778bf3de5\", \"generatedAt\": \"<TIME>\", \"files\": {\"a.py\": {\"filePath\": \"a.py\", \"contentHash\": \"8a9512a12c9f19b691224d1db996382129cb25098437520dd7261ba2c0bb4a21\", \"functions\": [{\"name\": \"foo\", \"params\": [\"a\", \"b\"], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"foo\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"b.py\": {\"filePath\": \"b.py\", \"contentHash\": \"4fade50a8bde42f21d5590123974dc80ba7ea45e62b3fca054e40e3be9b5c9fc\", \"functions\": [{\"name\": \"bar\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"bar\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}}}",
-      ".understand-anything/meta.json": "{\"gitCommitHash\": \"925df972e6b7aa3a0d0f45fbabc4d3ced9f42729\", \"version\": \"1.0.0\", \"analyzedFiles\": 2, \"lastAnalyzedAt\": \"<TIME>\"}",
+      ".understand-anything/meta.json": "{\"gitCommitHash\": \"b4cdd0f9c6f513b2e75bb5c465a4ec5778bf3de5\", \"version\": \"1.0.0\", \"analyzedFiles\": 2}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"t\"}, \"nodes\": [{\"id\": \"file:a.py\", \"type\": \"file\", \"filePath\": \"a.py\"}], \"edges\": [], \"layers\": []}"
     },
     "expected": {
-      "status": "STOP",
-      "action": "NO_SOURCE_CHANGES",
-      "reason": "Only non-source files changed. Metadata updated.",
+      "status": "CONTINUE",
+      "action": "PROCEED",
+      "reason": "1 changed project file(s) to inspect.",
       "projectRoot": "<ROOT>",
       "previousCommit": "b4cdd0f9c6f513b2e75bb5c465a4ec5778bf3de5",
       "currentCommit": "925df972e6b7aa3a0d0f45fbabc4d3ced9f42729",
-      "changedSourceFiles": [],
-      "metadataUpdated": true
+      "changedSourceFiles": [
+        "README.md"
+      ],
+      "metadataUpdated": false
     },
     "error": null
   },
@@ -193,18 +195,22 @@
       "ignored/x.py": "def x():\n    return 1\n",
       ".understand-anything/.understandignore": "ignored/\n",
       ".understand-anything/fingerprints.json": "{\"version\": \"1.0.0\", \"gitCommitHash\": \"b4cdd0f9c6f513b2e75bb5c465a4ec5778bf3de5\", \"generatedAt\": \"<TIME>\", \"files\": {\"a.py\": {\"filePath\": \"a.py\", \"contentHash\": \"8a9512a12c9f19b691224d1db996382129cb25098437520dd7261ba2c0bb4a21\", \"functions\": [{\"name\": \"foo\", \"params\": [\"a\", \"b\"], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"foo\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"b.py\": {\"filePath\": \"b.py\", \"contentHash\": \"4fade50a8bde42f21d5590123974dc80ba7ea45e62b3fca054e40e3be9b5c9fc\", \"functions\": [{\"name\": \"bar\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"bar\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}}}",
-      ".understand-anything/meta.json": "{\"gitCommitHash\": \"c2c4fd0d83476812ed33192d1138c924c9e29abf\", \"version\": \"1.0.0\", \"analyzedFiles\": 2, \"lastAnalyzedAt\": \"<TIME>\"}",
+      ".understand-anything/meta.json": "{\"gitCommitHash\": \"b4cdd0f9c6f513b2e75bb5c465a4ec5778bf3de5\", \"version\": \"1.0.0\", \"analyzedFiles\": 2}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"t\"}, \"nodes\": [{\"id\": \"file:a.py\", \"type\": \"file\", \"filePath\": \"a.py\"}], \"edges\": [], \"layers\": []}"
     },
     "expected": {
-      "status": "STOP",
-      "action": "ALL_IGNORED",
-      "reason": "All changed source files are in ignored paths. Metadata updated.",
+      "status": "CONTINUE",
+      "action": "PROCEED",
+      "reason": "3 changed project file(s) to inspect.",
       "projectRoot": "<ROOT>",
       "previousCommit": "b4cdd0f9c6f513b2e75bb5c465a4ec5778bf3de5",
       "currentCommit": "c2c4fd0d83476812ed33192d1138c924c9e29abf",
-      "changedSourceFiles": [],
-      "metadataUpdated": true
+      "changedSourceFiles": [
+        "README.md",
+        "a.py",
+        "b.py"
+      ],
+      "metadataUpdated": false
     },
     "error": null
   },
@@ -239,7 +245,7 @@
     "expected": {
       "status": "CONTINUE",
       "action": "PROCEED",
-      "reason": "1 changed source file(s) to inspect.",
+      "reason": "1 changed project file(s) to inspect.",
       "projectRoot": "<ROOT>",
       "previousCommit": "b4cdd0f9c6f513b2e75bb5c465a4ec5778bf3de5",
       "currentCommit": "951db16f1c37f86190dc794e8facf82f453d813f",
@@ -292,7 +298,7 @@
     "expected": {
       "status": "CONTINUE",
       "action": "PROCEED",
-      "reason": "3 changed source file(s) to inspect.",
+      "reason": "3 changed project file(s) to inspect.",
       "projectRoot": "<ROOT>",
       "previousCommit": "a53f40dde8edde15fa0a9a9bd8bcbf6ef6e03f1d",
       "currentCommit": "96c0918423a877e7c77c118f29cfb685c4d35b3c",
@@ -335,7 +341,8 @@
       ".understand-anything/intermediate/auto-update-state.json": "{\"status\": \"CONTINUE\", \"action\": \"PROCEED\", \"reason\": \"3 changed source file(s) to inspect.\", \"projectRoot\": \"<ROOT>\", \"previousCommit\": \"a53f40dde8edde15fa0a9a9bd8bcbf6ef6e03f1d\", \"currentCommit\": \"96c0918423a877e7c77c118f29cfb685c4d35b3c\", \"changedSourceFiles\": [\"src/f0.py\", \"src/f1.py\", \"src/f6.py\"], \"metadataUpdated\": false}",
       ".understand-anything/intermediate/scan-result.json": "{\"files\": [{\"path\": \"src/f0.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f1.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f2.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f3.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f4.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f5.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}], \"importMap\": {\"src/f0.py\": [\"src/f1.py\"]}}"
     },
-    "expected": {
+    "error": "HEAD changed since incremental preflight; prepare the update again",
+    "legacyExpected": {
       "action": "PARTIAL_UPDATE",
       "rerunArchitecture": false,
       "reason": "3 file(s) have localized structural changes.",
@@ -379,8 +386,7 @@
         }
       ],
       "metadataUpdated": false
-    },
-    "error": null
+    }
   },
   {
     "function": "apply_batches",
@@ -412,11 +418,13 @@
       "src/f2.py": "def fn2():\n    return 1\n",
       "src/f0.py": "def fn0():\n    return 1\n\ndef extra():\n    return 2\n",
       ".understand-anything/intermediate/merged-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"t\", \"languages\": [\"Python\"], \"frameworks\": [], \"description\": \"x\"}, \"nodes\": [{\"id\": \"file:src/f2.py\", \"type\": \"file\", \"name\": \"f2.py\", \"summary\": \"file src/f2.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f2.py\"}, {\"id\": \"file:src/f3.py\", \"type\": \"file\", \"name\": \"f3.py\", \"summary\": \"file src/f3.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f3.py\"}, {\"id\": \"file:src/f4.py\", \"type\": \"file\", \"name\": \"f4.py\", \"summary\": \"file src/f4.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f4.py\"}, {\"id\": \"file:src/f5.py\", \"type\": \"file\", \"name\": \"f5.py\", \"summary\": \"file src/f5.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f5.py\"}, {\"id\": \"file:src/f0.py\", \"type\": \"file\", \"name\": \"f0.py\", \"summary\": \"file src/f0.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f0.py\"}, {\"id\": \"file:src/f6.py\", \"type\": \"file\", \"name\": \"f6.py\", \"summary\": \"file src/f6.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f6.py\"}], \"edges\": [], \"layers\": [{\"id\": \"layer:core\", \"name\": \"Core\", \"description\": \"core\", \"nodeIds\": [\"file:src/f0.py\", \"file:src/f1.py\", \"file:src/f2.py\", \"file:src/f3.py\", \"file:src/f4.py\", \"file:src/f5.py\"]}]}",
-      ".understand-anything/intermediate/batch-existing.json": "{\"nodes\": [{\"id\": \"file:src/f2.py\", \"type\": \"file\", \"name\": \"f2.py\", \"summary\": \"file src/f2.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f2.py\"}, {\"id\": \"file:src/f3.py\", \"type\": \"file\", \"name\": \"f3.py\", \"summary\": \"file src/f3.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f3.py\"}, {\"id\": \"file:src/f4.py\", \"type\": \"file\", \"name\": \"f4.py\", \"summary\": \"file src/f4.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f4.py\"}, {\"id\": \"file:src/f5.py\", \"type\": \"file\", \"name\": \"f5.py\", \"summary\": \"file src/f5.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f5.py\"}], \"edges\": [{\"source\": \"file:src/f0.py\", \"target\": \"file:src/f1.py\", \"type\": \"imports\", \"direction\": \"forward\", \"weight\": 0.7}]}",
+      ".understand-anything/intermediate/batch-existing.json": "{\n  \"nodes\": [\n    {\n      \"id\": \"file:src/f2.py\",\n      \"type\": \"file\",\n      \"name\": \"f2.py\",\n      \"summary\": \"file src/f2.py\",\n      \"tags\": [],\n      \"complexity\": \"simple\",\n      \"filePath\": \"src/f2.py\"\n    },\n    {\n      \"id\": \"file:src/f3.py\",\n      \"type\": \"file\",\n      \"name\": \"f3.py\",\n      \"summary\": \"file src/f3.py\",\n      \"tags\": [],\n      \"complexity\": \"simple\",\n      \"filePath\": \"src/f3.py\"\n    },\n    {\n      \"id\": \"file:src/f4.py\",\n      \"type\": \"file\",\n      \"name\": \"f4.py\",\n      \"summary\": \"file src/f4.py\",\n      \"tags\": [],\n      \"complexity\": \"simple\",\n      \"filePath\": \"src/f4.py\"\n    },\n    {\n      \"id\": \"file:src/f5.py\",\n      \"type\": \"file\",\n      \"name\": \"f5.py\",\n      \"summary\": \"file src/f5.py\",\n      \"tags\": [],\n      \"complexity\": \"simple\",\n      \"filePath\": \"src/f5.py\"\n    }\n  ],\n  \"edges\": []\n}",
       ".understand-anything/intermediate/batch-1.json": "{\"nodes\": [{\"id\": \"file:src/f0.py\", \"type\": \"file\", \"name\": \"f0.py\", \"summary\": \"file src/f0.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f0.py\"}, {\"id\": \"file:src/f6.py\", \"type\": \"file\", \"name\": \"f6.py\", \"summary\": \"file src/f6.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f6.py\"}], \"edges\": []}",
       ".understand-anything/intermediate/change-analysis.json": "{\"action\": \"PARTIAL_UPDATE\", \"rerunArchitecture\": false, \"reason\": \"3 file(s) have localized structural changes.\", \"filesToReanalyze\": [\"src/f0.py\", \"src/f6.py\"], \"newFiles\": [\"src/f6.py\"], \"deletedFiles\": [\"src/f1.py\"], \"cosmeticOnlyFiles\": [], \"unchangedFiles\": [], \"fileChanges\": [{\"filePath\": \"src/f0.py\", \"changeLevel\": \"STRUCTURAL\", \"status\": \"modified\", \"details\": [\"new function: extra\", \"exports changed\"]}, {\"filePath\": \"src/f1.py\", \"changeLevel\": \"STRUCTURAL\", \"status\": \"deleted\", \"details\": [\"file deleted\"]}, {\"filePath\": \"src/f6.py\", \"changeLevel\": \"STRUCTURAL\", \"status\": \"new\", \"details\": [\"new file\"]}], \"metadataUpdated\": false}",
       ".understand-anything/intermediate/auto-update-state.json": "{\"status\": \"CONTINUE\", \"action\": \"PROCEED\", \"reason\": \"3 changed source file(s) to inspect.\", \"projectRoot\": \"<ROOT>\", \"previousCommit\": \"a53f40dde8edde15fa0a9a9bd8bcbf6ef6e03f1d\", \"currentCommit\": \"96c0918423a877e7c77c118f29cfb685c4d35b3c\", \"changedSourceFiles\": [\"src/f0.py\", \"src/f1.py\", \"src/f6.py\"], \"metadataUpdated\": false}",
-      ".understand-anything/intermediate/scan-result.json": "{\"files\": [{\"path\": \"src/f0.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f1.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f2.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f3.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f4.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f5.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}], \"importMap\": {\"src/f0.py\": [\"src/f1.py\"]}}"
+      ".understand-anything/intermediate/scan-result.json": "{\"files\": [{\"path\": \"src/f0.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f1.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f2.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f3.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f4.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f5.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}], \"importMap\": {\"src/f0.py\": [\"src/f1.py\"]}}",
+      ".understand-anything/.batch-files.lock": "",
+      ".understand-anything/intermediate/incremental-edge-candidates.json": "{\n  \"version\": 1,\n  \"baseCommit\": \"a53f40dde8edde15fa0a9a9bd8bcbf6ef6e03f1d\",\n  \"headCommit\": \"96c0918423a877e7c77c118f29cfb685c4d35b3c\",\n  \"graphHash\": \"1d5d2cb997cd530f6b1d9c0845396b55cc6d0ceb64856052b92b87fac8502e28\",\n  \"edges\": [],\n  \"nodes\": [\n    {\n      \"id\": \"file:src/f2.py\",\n      \"type\": \"file\",\n      \"name\": \"f2.py\",\n      \"summary\": \"file src/f2.py\",\n      \"tags\": [],\n      \"complexity\": \"simple\",\n      \"filePath\": \"src/f2.py\"\n    },\n    {\n      \"id\": \"file:src/f3.py\",\n      \"type\": \"file\",\n      \"name\": \"f3.py\",\n      \"summary\": \"file src/f3.py\",\n      \"tags\": [],\n      \"complexity\": \"simple\",\n      \"filePath\": \"src/f3.py\"\n    },\n    {\n      \"id\": \"file:src/f4.py\",\n      \"type\": \"file\",\n      \"name\": \"f4.py\",\n      \"summary\": \"file src/f4.py\",\n      \"tags\": [],\n      \"complexity\": \"simple\",\n      \"filePath\": \"src/f4.py\"\n    },\n    {\n      \"id\": \"file:src/f5.py\",\n      \"type\": \"file\",\n      \"name\": \"f5.py\",\n      \"summary\": \"file src/f5.py\",\n      \"tags\": [],\n      \"complexity\": \"simple\",\n      \"filePath\": \"src/f5.py\"\n    },\n    {\n      \"id\": \"file:src/f0.py\",\n      \"type\": \"file\",\n      \"name\": \"f0.py\",\n      \"summary\": \"file src/f0.py\",\n      \"tags\": [],\n      \"complexity\": \"simple\",\n      \"filePath\": \"src/f0.py\"\n    },\n    {\n      \"id\": \"file:src/f6.py\",\n      \"type\": \"file\",\n      \"name\": \"f6.py\",\n      \"summary\": \"file src/f6.py\",\n      \"tags\": [],\n      \"complexity\": \"simple\",\n      \"filePath\": \"src/f6.py\"\n    }\n  ]\n}"
     },
     "expected": {
       "version": "1.0.0",
@@ -525,19 +533,24 @@
       ".understand-anything/intermediate/scan-result.json": "{\"files\": [{\"path\": \"src/f0.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f1.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f2.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f3.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f4.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f5.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}], \"importMap\": {\"src/f0.py\": [\"src/f1.py\"]}}"
     },
     "after": {
-      ".understand-anything/fingerprints.json": "{\"version\": \"1.0.0\", \"gitCommitHash\": \"96c0918423a877e7c77c118f29cfb685c4d35b3c\", \"generatedAt\": \"<TIME>\", \"files\": {\"src/f0.py\": {\"filePath\": \"src/f0.py\", \"contentHash\": \"efd12b6985440ba7992e6cb39c19b192cecc72695856b785b88f2f1f8ed6c928\", \"functions\": [{\"name\": \"fn0\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}, {\"name\": \"extra\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn0\", \"extra\"], \"totalLines\": 6, \"hasStructuralAnalysis\": true}, \"src/f2.py\": {\"filePath\": \"src/f2.py\", \"contentHash\": \"6c0eeeec0ebc8d907219a63d007c574665deeba1ca83c910aee6ed3fb24607e8\", \"functions\": [{\"name\": \"fn2\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn2\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"src/f3.py\": {\"filePath\": \"src/f3.py\", \"contentHash\": \"333e47f4c1fa48c180a09e8a2068730c1c7e274ca76ad0f94b1ef958c3d45891\", \"functions\": [{\"name\": \"fn3\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn3\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"src/f4.py\": {\"filePath\": \"src/f4.py\", \"contentHash\": \"158ccec83e8e2ea3fc5f2754384973e83d6a0ee9d9f13c29fecbe3c8805f7bb2\", \"functions\": [{\"name\": \"fn4\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn4\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"src/f5.py\": {\"filePath\": \"src/f5.py\", \"contentHash\": \"9b157061ceb00807ea9ca70cedd35d7c6da219072c22221321301f71f81db4be\", \"functions\": [{\"name\": \"fn5\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn5\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"src/f6.py\": {\"filePath\": \"src/f6.py\", \"contentHash\": \"a40e1c6c8f5ea0d6f5a4b195ebc4db6c43e49b4d59e34fb8c091ab474c75607b\", \"functions\": [{\"name\": \"fn6\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn6\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}}}",
-      ".understand-anything/meta.json": "{\"gitCommitHash\": \"96c0918423a877e7c77c118f29cfb685c4d35b3c\", \"version\": \"1.0.0\", \"analyzedFiles\": 6, \"lastAnalyzedAt\": \"<TIME>\"}",
-      ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"t\", \"languages\": [\"Python\"], \"frameworks\": [], \"description\": \"x\"}, \"nodes\": [{\"id\": \"file:src/f2.py\", \"type\": \"file\", \"name\": \"f2.py\", \"summary\": \"file src/f2.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f2.py\"}, {\"id\": \"file:src/f3.py\", \"type\": \"file\", \"name\": \"f3.py\", \"summary\": \"file src/f3.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f3.py\"}, {\"id\": \"file:src/f4.py\", \"type\": \"file\", \"name\": \"f4.py\", \"summary\": \"file src/f4.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f4.py\"}, {\"id\": \"file:src/f5.py\", \"type\": \"file\", \"name\": \"f5.py\", \"summary\": \"file src/f5.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f5.py\"}, {\"id\": \"file:src/f0.py\", \"type\": \"file\", \"name\": \"f0.py\", \"summary\": \"file src/f0.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f0.py\"}, {\"id\": \"file:src/f6.py\", \"type\": \"file\", \"name\": \"f6.py\", \"summary\": \"file src/f6.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f6.py\"}], \"edges\": [], \"layers\": [{\"id\": \"layer:core\", \"name\": \"Core\", \"description\": \"core\", \"nodeIds\": [\"file:src/f0.py\", \"file:src/f2.py\", \"file:src/f3.py\", \"file:src/f4.py\", \"file:src/f5.py\", \"file:src/f6.py\"]}]}",
+      ".understand-anything/fingerprints.json": "{\"version\": \"1.0.0\", \"gitCommitHash\": \"a53f40dde8edde15fa0a9a9bd8bcbf6ef6e03f1d\", \"generatedAt\": \"<TIME>\", \"files\": {\"src/f0.py\": {\"filePath\": \"src/f0.py\", \"contentHash\": \"38fba21c36e88d89efb9afd0bca52d80d220701e0e127d0964a3874336155e44\", \"functions\": [{\"name\": \"fn0\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn0\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"src/f1.py\": {\"filePath\": \"src/f1.py\", \"contentHash\": \"b8115ce5664eaf6a5679c8627ad4268f17822b323ebcc7b089760e29bea88bf9\", \"functions\": [{\"name\": \"fn1\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn1\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"src/f2.py\": {\"filePath\": \"src/f2.py\", \"contentHash\": \"6c0eeeec0ebc8d907219a63d007c574665deeba1ca83c910aee6ed3fb24607e8\", \"functions\": [{\"name\": \"fn2\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn2\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"src/f3.py\": {\"filePath\": \"src/f3.py\", \"contentHash\": \"333e47f4c1fa48c180a09e8a2068730c1c7e274ca76ad0f94b1ef958c3d45891\", \"functions\": [{\"name\": \"fn3\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn3\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"src/f4.py\": {\"filePath\": \"src/f4.py\", \"contentHash\": \"158ccec83e8e2ea3fc5f2754384973e83d6a0ee9d9f13c29fecbe3c8805f7bb2\", \"functions\": [{\"name\": \"fn4\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn4\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"src/f5.py\": {\"filePath\": \"src/f5.py\", \"contentHash\": \"9b157061ceb00807ea9ca70cedd35d7c6da219072c22221321301f71f81db4be\", \"functions\": [{\"name\": \"fn5\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn5\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}}}",
+      ".understand-anything/meta.json": "{\"gitCommitHash\": \"a53f40dde8edde15fa0a9a9bd8bcbf6ef6e03f1d\", \"version\": \"1.0.0\", \"analyzedFiles\": 6}",
+      ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"t\", \"languages\": [\"Python\"], \"frameworks\": [], \"description\": \"x\"}, \"nodes\": [{\"id\": \"file:src/f0.py\", \"type\": \"file\", \"name\": \"f0.py\", \"summary\": \"file src/f0.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f0.py\"}, {\"id\": \"file:src/f1.py\", \"type\": \"file\", \"name\": \"f1.py\", \"summary\": \"file src/f1.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f1.py\"}, {\"id\": \"file:src/f2.py\", \"type\": \"file\", \"name\": \"f2.py\", \"summary\": \"file src/f2.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f2.py\"}, {\"id\": \"file:src/f3.py\", \"type\": \"file\", \"name\": \"f3.py\", \"summary\": \"file src/f3.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f3.py\"}, {\"id\": \"file:src/f4.py\", \"type\": \"file\", \"name\": \"f4.py\", \"summary\": \"file src/f4.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f4.py\"}, {\"id\": \"file:src/f5.py\", \"type\": \"file\", \"name\": \"f5.py\", \"summary\": \"file src/f5.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f5.py\"}], \"edges\": [{\"source\": \"file:src/f0.py\", \"target\": \"file:src/f1.py\", \"type\": \"imports\", \"direction\": \"forward\", \"weight\": 0.7}], \"layers\": [{\"id\": \"layer:core\", \"name\": \"Core\", \"description\": \"core\", \"nodeIds\": [\"file:src/f0.py\", \"file:src/f1.py\", \"file:src/f2.py\", \"file:src/f3.py\", \"file:src/f4.py\", \"file:src/f5.py\"]}]}",
       "src/f6.py": "def fn6():\n    return 6\n",
       "src/f5.py": "def fn5():\n    return 1\n",
       "src/f4.py": "def fn4():\n    return 1\n",
       "src/f3.py": "def fn3():\n    return 1\n",
       "src/f2.py": "def fn2():\n    return 1\n",
       "src/f0.py": "def fn0():\n    return 1\n\ndef extra():\n    return 2\n",
-      ".understand-anything/intermediate/auto-update-summary.json": "{\"status\": \"UPDATED\", \"action\": \"PARTIAL_UPDATE\", \"reason\": \"3 file(s) have localized structural changes.\", \"filesChecked\": 3, \"structuralChanges\": 3, \"cosmeticOnly\": 0, \"newFiles\": 1, \"deletedFiles\": 1, \"nodesUpdated\": 6, \"totalNodes\": 6, \"totalEdges\": 0, \"metadataUpdated\": true, \"outputPath\": \"<ROOT>/.understand-anything/knowledge-graph.json\"}",
+      ".understand-anything/intermediate/merged-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"t\", \"languages\": [\"Python\"], \"frameworks\": [], \"description\": \"x\"}, \"nodes\": [{\"id\": \"file:src/f2.py\", \"type\": \"file\", \"name\": \"f2.py\", \"summary\": \"file src/f2.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f2.py\"}, {\"id\": \"file:src/f3.py\", \"type\": \"file\", \"name\": \"f3.py\", \"summary\": \"file src/f3.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f3.py\"}, {\"id\": \"file:src/f4.py\", \"type\": \"file\", \"name\": \"f4.py\", \"summary\": \"file src/f4.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f4.py\"}, {\"id\": \"file:src/f5.py\", \"type\": \"file\", \"name\": \"f5.py\", \"summary\": \"file src/f5.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f5.py\"}, {\"id\": \"file:src/f0.py\", \"type\": \"file\", \"name\": \"f0.py\", \"summary\": \"file src/f0.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f0.py\"}, {\"id\": \"file:src/f6.py\", \"type\": \"file\", \"name\": \"f6.py\", \"summary\": \"file src/f6.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f6.py\"}], \"edges\": [], \"layers\": [{\"id\": \"layer:core\", \"name\": \"Core\", \"description\": \"core\", \"nodeIds\": [\"file:src/f0.py\", \"file:src/f1.py\", \"file:src/f2.py\", \"file:src/f3.py\", \"file:src/f4.py\", \"file:src/f5.py\"]}]}",
+      ".understand-anything/intermediate/batch-existing.json": "{\"nodes\": [{\"id\": \"file:src/f2.py\", \"type\": \"file\", \"name\": \"f2.py\", \"summary\": \"file src/f2.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f2.py\"}, {\"id\": \"file:src/f3.py\", \"type\": \"file\", \"name\": \"f3.py\", \"summary\": \"file src/f3.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f3.py\"}, {\"id\": \"file:src/f4.py\", \"type\": \"file\", \"name\": \"f4.py\", \"summary\": \"file src/f4.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f4.py\"}, {\"id\": \"file:src/f5.py\", \"type\": \"file\", \"name\": \"f5.py\", \"summary\": \"file src/f5.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f5.py\"}], \"edges\": [{\"source\": \"file:src/f0.py\", \"target\": \"file:src/f1.py\", \"type\": \"imports\", \"direction\": \"forward\", \"weight\": 0.7}]}",
+      ".understand-anything/intermediate/batch-1.json": "{\"nodes\": [{\"id\": \"file:src/f0.py\", \"type\": \"file\", \"name\": \"f0.py\", \"summary\": \"file src/f0.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f0.py\"}, {\"id\": \"file:src/f6.py\", \"type\": \"file\", \"name\": \"f6.py\", \"summary\": \"file src/f6.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f6.py\"}], \"edges\": []}",
+      ".understand-anything/intermediate/change-analysis.json": "{\"action\": \"PARTIAL_UPDATE\", \"rerunArchitecture\": false, \"reason\": \"3 file(s) have localized structural changes.\", \"filesToReanalyze\": [\"src/f0.py\", \"src/f6.py\"], \"newFiles\": [\"src/f6.py\"], \"deletedFiles\": [\"src/f1.py\"], \"cosmeticOnlyFiles\": [], \"unchangedFiles\": [], \"fileChanges\": [{\"filePath\": \"src/f0.py\", \"changeLevel\": \"STRUCTURAL\", \"status\": \"modified\", \"details\": [\"new function: extra\", \"exports changed\"]}, {\"filePath\": \"src/f1.py\", \"changeLevel\": \"STRUCTURAL\", \"status\": \"deleted\", \"details\": [\"file deleted\"]}, {\"filePath\": \"src/f6.py\", \"changeLevel\": \"STRUCTURAL\", \"status\": \"new\", \"details\": [\"new file\"]}], \"metadataUpdated\": false}",
+      ".understand-anything/intermediate/auto-update-state.json": "{\"status\": \"CONTINUE\", \"action\": \"PROCEED\", \"reason\": \"3 changed source file(s) to inspect.\", \"projectRoot\": \"<ROOT>\", \"previousCommit\": \"a53f40dde8edde15fa0a9a9bd8bcbf6ef6e03f1d\", \"currentCommit\": \"96c0918423a877e7c77c118f29cfb685c4d35b3c\", \"changedSourceFiles\": [\"src/f0.py\", \"src/f1.py\", \"src/f6.py\"], \"metadataUpdated\": false}",
       ".understand-anything/intermediate/scan-result.json": "{\"files\": [{\"path\": \"src/f0.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f1.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f2.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f3.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f4.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f5.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}], \"importMap\": {\"src/f0.py\": [\"src/f1.py\"]}}"
     },
-    "expected": {
+    "error": "HEAD changed since incremental preflight; prepare the update again",
+    "legacyExpected": {
       "status": "UPDATED",
       "action": "PARTIAL_UPDATE",
       "reason": "3 file(s) have localized structural changes.",
@@ -551,8 +564,7 @@
       "totalEdges": 0,
       "metadataUpdated": true,
       "outputPath": "<ROOT>/.understand-anything/knowledge-graph.json"
-    },
-    "error": null
+    }
   },
   {
     "function": "preflight",
@@ -594,7 +606,7 @@
     "expected": {
       "status": "CONTINUE",
       "action": "PROCEED",
-      "reason": "1 changed source file(s) to inspect.",
+      "reason": "1 changed project file(s) to inspect.",
       "projectRoot": "<ROOT>",
       "previousCommit": "a53f40dde8edde15fa0a9a9bd8bcbf6ef6e03f1d",
       "currentCommit": "adfb2f6f1ee51893824c75155f87747bd87a9f31",
@@ -624,7 +636,7 @@
     },
     "after": {
       ".understand-anything/fingerprints.json": "{\"version\": \"1.0.0\", \"gitCommitHash\": \"a53f40dde8edde15fa0a9a9bd8bcbf6ef6e03f1d\", \"generatedAt\": \"<TIME>\", \"files\": {\"src/f0.py\": {\"filePath\": \"src/f0.py\", \"contentHash\": \"38fba21c36e88d89efb9afd0bca52d80d220701e0e127d0964a3874336155e44\", \"functions\": [{\"name\": \"fn0\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn0\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"src/f1.py\": {\"filePath\": \"src/f1.py\", \"contentHash\": \"b8115ce5664eaf6a5679c8627ad4268f17822b323ebcc7b089760e29bea88bf9\", \"functions\": [{\"name\": \"fn1\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn1\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"src/f2.py\": {\"filePath\": \"src/f2.py\", \"contentHash\": \"6c0eeeec0ebc8d907219a63d007c574665deeba1ca83c910aee6ed3fb24607e8\", \"functions\": [{\"name\": \"fn2\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn2\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"src/f3.py\": {\"filePath\": \"src/f3.py\", \"contentHash\": \"333e47f4c1fa48c180a09e8a2068730c1c7e274ca76ad0f94b1ef958c3d45891\", \"functions\": [{\"name\": \"fn3\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn3\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"src/f4.py\": {\"filePath\": \"src/f4.py\", \"contentHash\": \"158ccec83e8e2ea3fc5f2754384973e83d6a0ee9d9f13c29fecbe3c8805f7bb2\", \"functions\": [{\"name\": \"fn4\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn4\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"src/f5.py\": {\"filePath\": \"src/f5.py\", \"contentHash\": \"9b157061ceb00807ea9ca70cedd35d7c6da219072c22221321301f71f81db4be\", \"functions\": [{\"name\": \"fn5\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"fn5\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}}}",
-      ".understand-anything/meta.json": "{\"gitCommitHash\": \"adfb2f6f1ee51893824c75155f87747bd87a9f31\", \"version\": \"1.0.0\", \"analyzedFiles\": 6, \"lastAnalyzedAt\": \"<TIME>\"}",
+      ".understand-anything/meta.json": "{\"gitCommitHash\": \"a53f40dde8edde15fa0a9a9bd8bcbf6ef6e03f1d\", \"version\": \"1.0.0\", \"analyzedFiles\": 6}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"t\", \"languages\": [\"Python\"], \"frameworks\": [], \"description\": \"x\"}, \"nodes\": [{\"id\": \"file:src/f0.py\", \"type\": \"file\", \"name\": \"f0.py\", \"summary\": \"file src/f0.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f0.py\"}, {\"id\": \"file:src/f1.py\", \"type\": \"file\", \"name\": \"f1.py\", \"summary\": \"file src/f1.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f1.py\"}, {\"id\": \"file:src/f2.py\", \"type\": \"file\", \"name\": \"f2.py\", \"summary\": \"file src/f2.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f2.py\"}, {\"id\": \"file:src/f3.py\", \"type\": \"file\", \"name\": \"f3.py\", \"summary\": \"file src/f3.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f3.py\"}, {\"id\": \"file:src/f4.py\", \"type\": \"file\", \"name\": \"f4.py\", \"summary\": \"file src/f4.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f4.py\"}, {\"id\": \"file:src/f5.py\", \"type\": \"file\", \"name\": \"f5.py\", \"summary\": \"file src/f5.py\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/f5.py\"}], \"edges\": [{\"source\": \"file:src/f0.py\", \"target\": \"file:src/f1.py\", \"type\": \"imports\", \"direction\": \"forward\", \"weight\": 0.7}], \"layers\": [{\"id\": \"layer:core\", \"name\": \"Core\", \"description\": \"core\", \"nodeIds\": [\"file:src/f0.py\", \"file:src/f1.py\", \"file:src/f2.py\", \"file:src/f3.py\", \"file:src/f4.py\", \"file:src/f5.py\"]}]}",
       "src/f5.py": "def fn5():\n    return 1\n",
       "src/f4.py": "def fn4():\n    return 1\n",
@@ -635,7 +647,8 @@
       ".understand-anything/intermediate/auto-update-state.json": "{\"status\": \"CONTINUE\", \"action\": \"PROCEED\", \"reason\": \"1 changed source file(s) to inspect.\", \"projectRoot\": \"<ROOT>\", \"previousCommit\": \"a53f40dde8edde15fa0a9a9bd8bcbf6ef6e03f1d\", \"currentCommit\": \"adfb2f6f1ee51893824c75155f87747bd87a9f31\", \"changedSourceFiles\": [\"src/f0.py\"], \"metadataUpdated\": false}",
       ".understand-anything/intermediate/scan-result.json": "{\"files\": [{\"path\": \"src/f0.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f1.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f2.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f3.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f4.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}, {\"path\": \"src/f5.py\", \"language\": \"Python\", \"sizeLines\": 2, \"fileCategory\": \"code\"}], \"importMap\": {\"src/f0.py\": [\"src/f1.py\"]}}"
     },
-    "expected": {
+    "error": "HEAD changed since incremental preflight; prepare the update again",
+    "legacyExpected": {
       "action": "SKIP",
       "rerunArchitecture": false,
       "reason": "No structural changes detected.",
@@ -657,8 +670,7 @@
         }
       ],
       "metadataUpdated": true
-    },
-    "error": null
+    }
   },
   {
     "function": "preflight",
@@ -792,18 +804,20 @@
     },
     "after": {
       ".understand-anything/.understandignore": "src/\n",
-      ".understand-anything/meta.json": "{\"gitCommitHash\": \"new\", \"lastAnalyzedAt\": \"<TIME>\", \"version\": \"1.0.0\"}",
+      ".understand-anything/meta.json": "{\"gitCommitHash\": \"old\"}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}"
     },
     "expected": {
-      "status": "STOP",
-      "action": "NO_SOURCE_CHANGES",
-      "reason": "Only non-source files changed. Metadata updated.",
+      "status": "CONTINUE",
+      "action": "PROCEED",
+      "reason": "1 changed project file(s) to inspect.",
       "projectRoot": "<ROOT>",
       "previousCommit": "old",
       "currentCommit": "new",
-      "changedSourceFiles": [],
-      "metadataUpdated": true
+      "changedSourceFiles": [
+        "README.md"
+      ],
+      "metadataUpdated": false
     },
     "error": null
   },
@@ -829,7 +843,7 @@
     "expected": {
       "status": "STOP",
       "action": "ALL_IGNORED",
-      "reason": "All changed source files are in ignored paths. Metadata updated.",
+      "reason": "All changed project files are in ignored paths. Metadata updated.",
       "projectRoot": "<ROOT>",
       "previousCommit": "old",
       "currentCommit": "new",
@@ -852,7 +866,9 @@
     "force": false,
     "git": {},
     "before": {},
-    "after": {},
+    "after": {
+      ".ua/.batch-files.lock": ""
+    },
     "expected": null,
     "error": "change-analysis.json missing or unreadable"
   },
@@ -873,7 +889,8 @@
       ".understand-anything/intermediate/change-analysis.json": "{}"
     },
     "after": {
-      ".understand-anything/intermediate/change-analysis.json": "{}"
+      ".understand-anything/intermediate/change-analysis.json": "{}",
+      ".understand-anything/.batch-files.lock": ""
     },
     "expected": null,
     "error": "knowledge-graph.json missing or unreadable"
@@ -897,7 +914,9 @@
       ".understand-anything/intermediate/batch-existing.json": "{\"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": []}",
       ".understand-anything/intermediate/batch-stale.json": "{\"nodes\": [{\"id\": \"file:ignore.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": []}",
       ".understand-anything/intermediate/batch-2-part-1.json": "{\"nodes\": [{\"id\": \"file:new/b.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"new/b.py\"}], \"edges\": []}",
-      ".understand-anything/intermediate/change-analysis.json": "{\"action\": \"ARCHITECTURE_UPDATE\", \"rerunArchitecture\": true, \"filesToReanalyze\": [], \"deletedFiles\": [\"src/old.py\"], \"newFiles\": [], \"fileChanges\": [], \"reason\": \"Architecture changed\"}"
+      ".understand-anything/intermediate/change-analysis.json": "{\"action\": \"ARCHITECTURE_UPDATE\", \"rerunArchitecture\": true, \"filesToReanalyze\": [], \"deletedFiles\": [\"src/old.py\"], \"newFiles\": [], \"fileChanges\": [], \"reason\": \"Architecture changed\"}",
+      ".understand-anything/.batch-files.lock": "",
+      ".understand-anything/intermediate/incremental-edge-candidates.json": "{\n  \"version\": 1,\n  \"baseCommit\": null,\n  \"headCommit\": null,\n  \"graphHash\": \"2d600ebdeb49e60f4dd50a2904a2f217939227b3095b0d23967606cb358d69f6\",\n  \"edges\": [],\n  \"nodes\": [\n    {\n      \"id\": \"file:src/a.py\",\n      \"type\": \"file\",\n      \"name\": \"a.py\",\n      \"summary\": \"Useful\",\n      \"tags\": [],\n      \"complexity\": \"simple\",\n      \"filePath\": \"src/a.py\"\n    },\n    {\n      \"id\": \"file:new/b.py\",\n      \"type\": \"file\",\n      \"name\": \"a.py\",\n      \"summary\": \"Useful\",\n      \"tags\": [],\n      \"complexity\": \"simple\",\n      \"filePath\": \"new/b.py\"\n    }\n  ]\n}"
     },
     "expected": {
       "version": "1.0.0",
@@ -950,14 +969,18 @@
       ".understand-anything/intermediate/nested/keep.txt": "retained"
     },
     "after": {
-      ".understand-anything/fingerprints.json": "{\"version\": \"1.0.0\", \"files\": {}, \"gitCommitHash\": \"new\"}",
-      ".understand-anything/meta.json": "{\"gitCommitHash\": \"new\", \"lastAnalyzedAt\": \"<TIME>\", \"version\": \"1.0.0\", \"analyzedFiles\": 2}",
-      ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}, {\"id\": \"file:other/b.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"other/b.py\"}], \"edges\": [], \"layers\": [{\"id\": \"layer:misc\", \"name\": \"Miscellaneous\", \"description\": \"Files not assigned to a specific architecture layer.\", \"nodeIds\": [\"file:src/a.py\", \"file:other/b.py\"]}]}",
-      ".understand-anything/intermediate/auto-update-summary.json": "{\"status\": \"UPDATED\", \"action\": \"ARCHITECTURE_UPDATE\", \"reason\": \"Architecture changed\", \"filesChecked\": 0, \"structuralChanges\": 0, \"cosmeticOnly\": 0, \"newFiles\": 0, \"deletedFiles\": 1, \"nodesUpdated\": 2, \"totalNodes\": 2, \"totalEdges\": 0, \"metadataUpdated\": true, \"outputPath\": \"<ROOT>/.understand-anything/knowledge-graph.json\"}",
+      ".understand-anything/meta.json": "{\"gitCommitHash\": \"old\"}",
+      ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}",
+      ".understand-anything/intermediate/scratch.txt": "temporary",
       ".understand-anything/intermediate/scan-result.json": "{}",
+      ".understand-anything/intermediate/layers.json": "[]",
+      ".understand-anything/intermediate/auto-update-state.json": "{\"currentCommit\": \"new\"}",
+      ".understand-anything/intermediate/change-analysis.json": "{\"action\": \"ARCHITECTURE_UPDATE\", \"rerunArchitecture\": true, \"filesToReanalyze\": [], \"deletedFiles\": [\"src/old.py\"], \"newFiles\": [], \"fileChanges\": [], \"reason\": \"Architecture changed\"}",
+      ".understand-anything/intermediate/merged-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}, {\"id\": \"file:other/b.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"other/b.py\"}], \"edges\": [{\"source\": \"gone\", \"target\": \"file:src/a.py\"}], \"layers\": []}",
       ".understand-anything/intermediate/nested/keep.txt": "retained"
     },
-    "expected": {
+    "error": "HEAD changed since incremental preflight; prepare the update again",
+    "legacyExpected": {
       "status": "UPDATED",
       "action": "ARCHITECTURE_UPDATE",
       "reason": "Architecture changed",
@@ -971,8 +994,7 @@
       "totalEdges": 0,
       "metadataUpdated": true,
       "outputPath": "<ROOT>/.understand-anything/knowledge-graph.json"
-    },
-    "error": null
+    }
   },
   {
     "function": "finalize",
@@ -990,14 +1012,18 @@
       ".understand-anything/intermediate/nested/keep.txt": "retained"
     },
     "after": {
-      ".understand-anything/fingerprints.json": "{\"version\": \"1.0.0\", \"files\": {}, \"gitCommitHash\": \"new\"}",
-      ".understand-anything/meta.json": "{\"gitCommitHash\": \"new\", \"lastAnalyzedAt\": \"<TIME>\", \"version\": \"1.0.0\", \"analyzedFiles\": 2}",
-      ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}, {\"id\": \"file:other/b.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"other/b.py\"}], \"edges\": [], \"layers\": [{\"id\": \"layer:core\", \"name\": \"Core\", \"description\": \"Core code\", \"nodeIds\": [\"file:src/a.py\"]}, {\"id\": \"layer:misc\", \"name\": \"Miscellaneous\", \"description\": \"Files not assigned to a specific architecture layer.\", \"nodeIds\": [\"file:other/b.py\"]}]}",
-      ".understand-anything/intermediate/auto-update-summary.json": "{\"status\": \"UPDATED\", \"action\": \"ARCHITECTURE_UPDATE\", \"reason\": \"Architecture changed\", \"filesChecked\": 0, \"structuralChanges\": 0, \"cosmeticOnly\": 0, \"newFiles\": 0, \"deletedFiles\": 1, \"nodesUpdated\": 2, \"totalNodes\": 2, \"totalEdges\": 0, \"metadataUpdated\": true, \"outputPath\": \"<ROOT>/.understand-anything/knowledge-graph.json\"}",
+      ".understand-anything/meta.json": "{\"gitCommitHash\": \"old\"}",
+      ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}",
+      ".understand-anything/intermediate/scratch.txt": "temporary",
       ".understand-anything/intermediate/scan-result.json": "{}",
+      ".understand-anything/intermediate/layers.json": "[{\"id\": \"layer:core\", \"name\": \"Core\", \"description\": \"Core code\", \"nodeIds\": [\"file:src/a.py\", \"file:gone.py\", \"file:src/a.py\"]}]",
+      ".understand-anything/intermediate/auto-update-state.json": "{\"currentCommit\": \"new\"}",
+      ".understand-anything/intermediate/change-analysis.json": "{\"action\": \"ARCHITECTURE_UPDATE\", \"rerunArchitecture\": true, \"filesToReanalyze\": [], \"deletedFiles\": [\"src/old.py\"], \"newFiles\": [], \"fileChanges\": [], \"reason\": \"Architecture changed\"}",
+      ".understand-anything/intermediate/merged-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}, {\"id\": \"file:other/b.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"other/b.py\"}], \"edges\": [{\"source\": \"gone\", \"target\": \"file:src/a.py\"}], \"layers\": []}",
       ".understand-anything/intermediate/nested/keep.txt": "retained"
     },
-    "expected": {
+    "error": "HEAD changed since incremental preflight; prepare the update again",
+    "legacyExpected": {
       "status": "UPDATED",
       "action": "ARCHITECTURE_UPDATE",
       "reason": "Architecture changed",
@@ -1011,8 +1037,7 @@
       "totalEdges": 0,
       "metadataUpdated": true,
       "outputPath": "<ROOT>/.understand-anything/knowledge-graph.json"
-    },
-    "error": null
+    }
   },
   {
     "function": "finalize",
@@ -1030,14 +1055,18 @@
       ".understand-anything/intermediate/nested/keep.txt": "retained"
     },
     "after": {
-      ".understand-anything/fingerprints.json": "{\"version\": \"1.0.0\", \"files\": {}, \"gitCommitHash\": \"new\"}",
-      ".understand-anything/meta.json": "{\"gitCommitHash\": \"new\", \"lastAnalyzedAt\": \"<TIME>\", \"version\": \"1.0.0\", \"analyzedFiles\": 2}",
-      ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}, {\"id\": \"file:other/b.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"other/b.py\"}], \"edges\": [], \"layers\": [{\"id\": \"layer:misc\", \"name\": \"Miscellaneous\", \"description\": \"Files not assigned to a specific architecture layer.\", \"nodeIds\": [\"file:src/a.py\", \"file:other/b.py\"]}]}",
-      ".understand-anything/intermediate/auto-update-summary.json": "{\"status\": \"UPDATED\", \"action\": \"ARCHITECTURE_UPDATE\", \"reason\": \"Architecture changed\", \"filesChecked\": 0, \"structuralChanges\": 0, \"cosmeticOnly\": 0, \"newFiles\": 0, \"deletedFiles\": 1, \"nodesUpdated\": 2, \"totalNodes\": 2, \"totalEdges\": 0, \"metadataUpdated\": true, \"outputPath\": \"<ROOT>/.understand-anything/knowledge-graph.json\"}",
+      ".understand-anything/meta.json": "{\"gitCommitHash\": \"old\"}",
+      ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}",
+      ".understand-anything/intermediate/scratch.txt": "temporary",
       ".understand-anything/intermediate/scan-result.json": "{}",
+      ".understand-anything/intermediate/layers.json": "null",
+      ".understand-anything/intermediate/auto-update-state.json": "{\"currentCommit\": \"new\"}",
+      ".understand-anything/intermediate/change-analysis.json": "{\"action\": \"ARCHITECTURE_UPDATE\", \"rerunArchitecture\": true, \"filesToReanalyze\": [], \"deletedFiles\": [\"src/old.py\"], \"newFiles\": [], \"fileChanges\": [], \"reason\": \"Architecture changed\"}",
+      ".understand-anything/intermediate/merged-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}, {\"id\": \"file:other/b.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"other/b.py\"}], \"edges\": [{\"source\": \"gone\", \"target\": \"file:src/a.py\"}], \"layers\": []}",
       ".understand-anything/intermediate/nested/keep.txt": "retained"
     },
-    "expected": {
+    "error": "HEAD changed since incremental preflight; prepare the update again",
+    "legacyExpected": {
       "status": "UPDATED",
       "action": "ARCHITECTURE_UPDATE",
       "reason": "Architecture changed",
@@ -1051,8 +1080,7 @@
       "totalEdges": 0,
       "metadataUpdated": true,
       "outputPath": "<ROOT>/.understand-anything/knowledge-graph.json"
-    },
-    "error": null
+    }
   },
   {
     "function": "finalize",
@@ -1069,12 +1097,12 @@
     "after": {
       ".understand-anything/fingerprints.json": "{}",
       ".understand-anything/meta.json": "{\"gitCommitHash\": \"old\"}",
-      ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": [{\"id\": \"layer:misc\", \"name\": \"Miscellaneous\", \"description\": \"Files not assigned to a specific architecture layer.\", \"nodeIds\": [\"file:src/a.py\"]}]}",
+      ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}",
       ".understand-anything/intermediate/auto-update-state.json": "{\"currentCommit\": \"new\"}",
       ".understand-anything/intermediate/change-analysis.json": "{\"action\": \"ARCHITECTURE_UPDATE\", \"rerunArchitecture\": true, \"filesToReanalyze\": [], \"deletedFiles\": [\"src/old.py\"], \"newFiles\": [], \"fileChanges\": [], \"reason\": \"Architecture changed\"}",
       ".understand-anything/intermediate/merged-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}"
     },
-    "expected": null,
-    "error": "fingerprints.json existed and was non-empty but loaded as {} \u2014 refusing to overwrite"
+    "error": "HEAD changed since incremental preflight; prepare the update again",
+    "legacyExpected": null
   }
 ]
