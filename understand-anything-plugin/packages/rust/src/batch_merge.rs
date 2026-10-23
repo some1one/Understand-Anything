@@ -750,6 +750,10 @@ pub fn merge_batch_directory(root: &Path) -> Result<Value> {
     if files.is_empty() && empty_plan {
         let graph = json!({"nodes":[], "edges":[]});
         crate::persistence::write_json(&dir.join("assembled-graph.json"), &graph)?;
+        std::fs::write(
+            dir.join("batch-merge-report.txt"),
+            "No batches planned; empty graph assembled.\n",
+        )?;
         return Ok(graph);
     }
     if files.is_empty() {
@@ -809,6 +813,7 @@ pub fn merge_batch_directory(root: &Path) -> Result<Value> {
         }
     }
     let mut batches = vec![];
+    let mut empty_warnings = vec![];
     for p in files {
         let name = p.file_name().unwrap().to_string_lossy();
         if unrecognized.iter().any(|s| s == &name) {
@@ -820,6 +825,13 @@ pub fn merge_batch_directory(root: &Path) -> Result<Value> {
                 array(&b, "nodes").len(),
                 array(&b, "edges").len()
             );
+            if array(&b, "nodes").is_empty() && array(&b, "edges").is_empty() {
+                let warning = format!(
+                    "{name} loaded but contributed 0 nodes and 0 edges; inspect the analyzer output before publishing"
+                );
+                eprintln!("Warning: {warning}");
+                empty_warnings.push(warning);
+            }
             batches.push(b);
         }
     }
@@ -842,6 +854,17 @@ pub fn merge_batch_directory(root: &Path) -> Result<Value> {
     }
     let (mut graph, mut report) = merge_and_normalize(&[combined]);
     let (_, recovery) = recover_imports_from_scan(&mut graph, &dir.join("scan-result.json"));
+    if !empty_warnings.is_empty() {
+        report.push(format!(
+            "Warning: {} batch file(s) contributed no nodes or edges:",
+            empty_warnings.len()
+        ));
+        report.extend(
+            empty_warnings
+                .into_iter()
+                .map(|warning| format!("  - {warning}")),
+        );
+    }
     if !missing_warnings.is_empty() {
         report.extend([
             String::new(),
@@ -859,6 +882,7 @@ pub fn merge_batch_directory(root: &Path) -> Result<Value> {
         report.extend([String::new(), "Imports edge recovery:".into()]);
         report.extend(recovery);
     }
+    std::fs::write(dir.join("batch-merge-report.txt"), report.join("\n"))?;
     eprintln!();
     for line in report {
         eprintln!("{line}");

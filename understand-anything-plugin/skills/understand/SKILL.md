@@ -202,7 +202,7 @@ For **each** part in `$PARTS_TO_PROCESS`, run steps 1–4. Parts are independent
    ```bash
    "$PLUGIN_ROOT/packages/rust/run.sh" merge_batch_graphs "$PROJECT_ROOT"
    ```
-   An explicitly empty batch plan produces an empty assembled graph without dispatching analyzers. It creates scan-backed boundary stubs before normalization, combines nodes/edges, normalizes IDs and complexity values, rewrites edge refs, dedupes, drops dangling edges, and canonicalizes `tested_by` edges (all resulting edges run `production → test`; sourced production nodes get a `"tested"` tag). Add its warnings to `$PHASE_WARNINGS`.
+   An explicitly empty batch plan produces an empty assembled graph without dispatching analyzers. It creates scan-backed boundary stubs before normalization, combines nodes/edges, normalizes IDs and complexity values, rewrites edge refs, dedupes, drops dangling edges, and canonicalizes `tested_by` edges (all resulting edges run `production → test`; sourced production nodes get a `"tested"` tag). Add its warnings to `$PHASE_WARNINGS`. Read `$UA_DIR/intermediate/batch-merge-report.txt` if stderr was truncated; investigate any loaded batch that contributed no nodes or edges before publishing.
 
 4. **Persist the part graph** (adds boundary stubs for cross-part edges, tags it with the part name, writes `partitions/<part>.knowledge-graph.json`, and clears this part's `batch-*.json` + `assembled-graph.json` scratch):
    ```bash
