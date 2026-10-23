@@ -1,7 +1,7 @@
 ---
 name: understand
 description: Analyze a codebase to produce or refresh a knowledge graph of architecture, components, and relationships. For plugin installation, first-run setup instructions, or usage help, use understand-help.
-argument-hint: "[path] [--split=<depth>] [--source=<dir>] [--all] [--full] [--auto-update|--no-auto-update] [--review] [--no-domain]"
+argument-hint: "[path] [--split=<depth>] [--source=<dir>] [--all] [--full] [--auto-update|--no-auto-update] [--review] [--no-domain] [--exclude=patterns]"
 ---
 
 # /understand
@@ -36,6 +36,7 @@ and merged into the full `knowledge-graph.json`.
 - `--full` — force a full rebuild of the included parts, ignoring any existing graph
 - `--auto-update` / `--no-auto-update` — set `autoUpdate` in `$UA_DIR/config.json`
 - `--review` — run the full LLM graph-reviewer instead of inline deterministic validation
+- `--exclude=<pattern>[,<pattern>]` — invocation-scoped gitignore patterns, applied after defaults and user ignore files; `!` re-includes an enumerated path. Quote the value. Omission means no extra patterns for this explicit analysis; auto-update retains the last published scope.
 - `--no-domain` — skip Phase 7 (business-domain graph); by default a domain flow graph is derived
 - A directory path — analyze that directory instead of the cwd
 
@@ -88,11 +89,13 @@ Decide full analysis vs. incremental update.
 
 5. If `$UA_DIR/knowledge-graph.json` exists, read it.
 6. If `$UA_DIR/meta.json` exists, read it for `gitCommitHash`.
-7. **Decision:**
+7. **Resolve exclusion scope before deciding whether to stop:** parse all `--exclude` values into an ordered list `$EXCLUDE_PATTERNS` (split on commas, trim whitespace, drop empty entries; default `[]`). Compare this list with `meta.json.excludePatterns` (missing means `[]`). If they differ, set `$SCOPE_CHANGED=true`: continue through SCAN and refresh every included part, even if HEAD or the changed-file list is unchanged. Do not change `includedParts` or write ignore files. Review-only requests stay read-only; disclose that exclusion changes require an analysis run.
+
+   **Decision:**
 
    | Condition | Action |
    |---|---|
-   | `--full`, or no existing graph/meta | Full analysis (all phases) |
+   | `--full`, exclusion scope changed (unless review-only), or no existing graph/meta | Full analysis (all phases) |
    | `--review` + existing graph + unchanged hash | Skip to Phase 5 (review-only) |
    | Existing graph + unchanged hash | Ask: "(a) full rebuild, (b) LLM reviewer, (c) nothing?" — follow choice; (c) STOP |
    | Existing graph + changed files | Incremental (re-analyze only the **affected parts** — see Phase 1.6/2) |
@@ -103,7 +106,7 @@ Decide full analysis vs. incremental update.
    ```bash
    python3 "$SKILL_DIR/scripts/write_changed_files.py" "$PROJECT_ROOT" "<lastCommitHash>"
    ```
-   If `changed-files.txt` is empty, skip analysis. With `--review`, follow the
+   If `changed-files.txt` is empty and exclusion scope is unchanged, skip analysis. With `--review`, follow the
    review-only path above even when the commit hash changed (for example, a
    sibling monorepo project changed). Otherwise report "Graph is up to date"
    and STOP. Do not advance the saved baseline for a review-only run.
@@ -138,7 +141,7 @@ Decide full analysis vs. incremental update.
 
 ## Phase 1 — SCAN (Full and incremental analysis)
 
-Dispatch a subagent using the `project-scanner` agent (`$PLUGIN_ROOT/agents/project-scanner.md`) and template `$SKILL_DIR/prompts/project-scanner-dispatch.md`. Fill args from Phase 0: `PROJECT_ROOT`, `README_CONTENT`, `MANIFEST_CONTENT`.
+Dispatch a subagent using the `project-scanner` agent (`$PLUGIN_ROOT/agents/project-scanner.md`) and template `$SKILL_DIR/prompts/project-scanner-dispatch.md`. Fill args from Phase 0: `PROJECT_ROOT`, `README_CONTENT`, `MANIFEST_CONTENT`, `EXCLUDE_PATTERNS_JSON` (the ordered list, including `[]` when omitted).
 
 After it completes, read `$UA_DIR/intermediate/scan-result.json` for: project name/description, languages, frameworks, file list (line counts + `fileCategory`: `code`|`config`|`docs`|`infra`|`data`|`script`|`markup`), complexity, and `importMap` (pre-resolved internal imports per file).
 
@@ -182,7 +185,7 @@ Split the scanned repo into folder-parts and decide which to analyze. Load `$UA_
 "$PLUGIN_ROOT/packages/rust/run.sh" parts_to_process "$PROJECT_ROOT" \
   [--full] [--changed="$UA_DIR/tmp/changed-files.txt"]
 ```
-- Pass `--full` for `--full`/`--all`/first-run → every included part.
+- Pass `--full` for `--full`/`--all`/first-run or `$SCOPE_CHANGED=true` → every included part. This replaces newly empty part graphs and restores newly included files. Partitioning, import resolution, batching, and fingerprints must all use the filtered scan inventory; do not rescan without the invocation patterns.
 - Otherwise pass `--changed=…` → **affected** parts plus any included part that has no partition graph yet (e.g. one just added via `/understand-add-part`).
 - If the output is empty, skip analysis. With `--review`, follow Phase 0's
   review-only path using the saved graph; retain warnings about changed files

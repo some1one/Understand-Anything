@@ -34,6 +34,18 @@ def main(argv: list[str] | None = None) -> int:
         "version": "1.0.0",
         "analyzedFiles": analyzed_files,
     }
+    scan_path = data_dir(project_root) / "intermediate" / "scan-result.json"
+    if scan_path.exists():
+        try:
+            scan = json.loads(scan_path.read_text(encoding="utf-8"))
+            patterns = scan.get("excludePatterns", [])
+            if not isinstance(patterns, list) or not all(isinstance(p, str) for p in patterns):
+                raise ValueError("excludePatterns must be an array of strings")
+        except (OSError, ValueError, AttributeError) as err:
+            sys.stderr.write(f"Cannot read analysis scope: {err}\n")
+            return 1
+        if patterns:
+            payload["excludePatterns"] = patterns
     path = data_dir(project_root) / "meta.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")

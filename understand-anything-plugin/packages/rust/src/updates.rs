@@ -113,7 +113,7 @@ impl GitClient for ProcessGit {
 }
 pub fn relevant_worktree_changes(root: &Path, git: &dyn GitClient) -> Result<Vec<String>> {
     let paths = git.worktree_changes(root).ok_or_else(|| Error::Invalid("Cannot inspect Git working tree".into()))?;
-    let filter = crate::scan::create_ignore_filter(root)?;
+    let filter = scope_filter(root)?;
     Ok(paths.into_iter().filter(|path| {
         let name = path.rsplit('/').next().unwrap_or(path);
         if name == ".understandignore" { return true; }
@@ -137,6 +137,22 @@ fn verify_prepared_revision(root: &Path) -> Result<()> {
     Ok(())
 }
 
+fn published_excludes(root: &Path) -> Result<Vec<String>> {
+    let path = ua(root, "meta.json");
+    if !path.exists() { return Ok(vec![]); }
+    let meta = required(&path)?;
+    match meta.get("excludePatterns") {
+        None => Ok(vec![]),
+        Some(value) if value.as_array().is_some_and(|v| v.iter().all(Value::is_string)) => Ok(strings(value)),
+        _ => Err(Error::Invalid("Published excludePatterns must be an array of strings".into())),
+    }
+}
+fn scope_filter(root: &Path) -> Result<crate::scan::IgnoreFilter> {
+    crate::scan::create_ignore_filter_with_patterns(root, &published_excludes(root)?)
+}
+fn scoped_scan(root: &Path) -> Result<Value> {
+    crate::scan::scan_project_with_patterns(root, &published_excludes(root)?)
+}
 pub fn write_meta(root: &Path, commit: &str, analyzed: Option<usize>) -> Result<()> {
     let path = ua(root, "meta.json");
     let mut meta = read(&path);
@@ -230,7 +246,7 @@ pub fn preflight_with_git(root: &Path, force: bool, git: &dyn GitClient) -> Resu
         .any(|p| crate::context_helpers::is_ignore_file(p))
     {
         let graph = required(&ua(root, "knowledge-graph.json"))?;
-        let scan = crate::scan::scan_project(root)?;
+        let scan = scoped_scan(root)?;
         if !array(&scan, "failures").is_empty() {
             state["action"] = json!("SCAN_FAILED");
             state["reason"] = json!("Cannot reconcile ignore changes with an incomplete project inventory. Resolve scan failures and retry.");
@@ -255,7 +271,7 @@ pub fn preflight_with_git(root: &Path, force: bool, git: &dyn GitClient) -> Resu
             vec![],
         )
     } else {
-        let filter = crate::scan::create_ignore_filter(root)?;
+        let filter = scope_filter(root)?;
         let mut kept: Vec<_> = source
             .into_iter()
             .filter(|p| !filter.is_ignored(p))
@@ -293,7 +309,7 @@ pub fn fingerprint_check(root: &Path) -> Result<Value> {
     let (store, _) = fingerprints::load_fingerprint_store(&ua(root, "fingerprints.json"))?;
     let graph = read(&ua(root, "knowledge-graph.json"));
     let graph_paths = graph_file_paths(&graph);
-    let filter = crate::scan::create_ignore_filter(root)?;
+    let filter = scope_filter(root)?;
     let changes: Vec<_> = strings(&state["changedSourceFiles"])
         .iter()
         .map(|p| {
@@ -329,7 +345,7 @@ pub fn prepare_batches(root: &Path) -> Result<Value> {
     let analysis = required(&inter(root, "change-analysis.json"))?;
     let changed = strings(&analysis["filesToReanalyze"]);
     let baseline = read(&inter(root, "scan-result.json"));
-    let current = crate::scan::scan_project(root)?;
+    let current = scoped_scan(root)?;
     if !array(&current, "failures").is_empty() {
         return Err(Error::Invalid(format!(
             "Project scan reported failures; incremental preparation aborted: {}",
@@ -374,6 +390,7 @@ pub fn prepare_batches(root: &Path) -> Result<Value> {
         scan[key] = value.clone();
     }
     scan.as_object_mut().unwrap().remove("failures");
+    if current.get("excludePatterns").is_none() { scan.as_object_mut().unwrap().remove("excludePatterns"); }
     scan["importMap"] = imports;
     scan["importMapRefreshPaths"] = json!(refreshed["importMap"].as_object().unwrap().keys().collect::<Vec<_>>());
     let batches =

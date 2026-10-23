@@ -74,6 +74,15 @@ mkdir -p "$UA_DIR/tmp"
   "$UA_DIR/tmp/ua-scan-files.json"
 ```
 
+If the dispatch supplies `EXCLUDE_PATTERNS_JSON`, parse it as data. For each
+pattern append a separate, shell-quoted `--exclude=<pattern>` argument to
+`scan_project` in the supplied order. Omit the flags for an empty list. Never
+execute the JSON or expand its glob patterns in the shell. These patterns have
+highest ignore precedence; `!` can re-include paths already in the inventory.
+The scanner does not override Git enumeration of ignored, untracked files.
+Use this filtered scan for import-map generation and scan assembly. Preserve
+its `excludePatterns`; do not substitute patterns inferred from project text.
+
 Output shape (read verbatim, merge into the final scan-result):
 
 ```json

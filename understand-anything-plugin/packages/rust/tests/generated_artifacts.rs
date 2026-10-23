@@ -85,3 +85,17 @@ fn artifact_filter_preserves_source_changes_ignore_rules_and_directory_boundarie
     );
     assert_eq!(state["metadataUpdated"], false);
 }
+
+#[test]
+fn automatic_preflight_keeps_published_exclusions_and_negations() {
+    let tmp = tempfile::tempdir().unwrap(); let root = tmp.path();
+    persistence::save_meta(root, &json!({"gitCommitHash":"baseline","excludePatterns":["docs/","!docs/keep.md"]})).unwrap();
+    persistence::save_artifact(root,"knowledge-graph.json",&json!({"nodes":[],"edges":[]})).unwrap();
+    let ignored = preflight_with_git(root,false,&Git(vec!["docs/other.md".into()])).unwrap();
+    assert_eq!(ignored["action"],"ALL_IGNORED");
+    assert_eq!(persistence::load_meta(root).unwrap().unwrap()["excludePatterns"],json!(["docs/","!docs/keep.md"]));
+    let included = preflight_with_git(root,true,&Git(vec!["docs/keep.md".into()])).unwrap();
+    assert_eq!(included["action"],"PROCEED");
+    persistence::save_meta(root,&json!({"gitCommitHash":"baseline","excludePatterns":"corrupt"})).unwrap();
+    assert!(preflight_with_git(root,true,&Git(vec!["src/main.rs".into()])).is_err());
+}

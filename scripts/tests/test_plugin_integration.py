@@ -303,3 +303,20 @@ cmd_install claude
 '''
     subprocess.run(["bash", "-e", "-c", script, "test", str(REPO / "install.sh"),
                     str(tmp_path), native_mode], check=True, capture_output=True, text=True)
+
+
+def test_published_metadata_retains_analysis_exclusion_scope(tmp_path):
+    root = tmp_path / "scope"
+    scan = root / ".ua/intermediate/scan-result.json"
+    write_json(scan, {"excludePatterns": ["docs/", "!docs/keep.md"]})
+    writer = load_module(SCRIPTS / "write_meta.py")
+    assert writer.main([str(root), "head", "2"]) == 0
+    meta = root / ".ua/meta.json"
+    assert json.loads(meta.read_text())["excludePatterns"] == ["docs/", "!docs/keep.md"]
+    previous = meta.read_bytes()
+    write_json(scan, {"excludePatterns": "invalid"})
+    assert writer.main([str(root), "other", "2"]) == 1
+    assert meta.read_bytes() == previous
+    write_json(scan, {"files": []})
+    assert writer.main([str(root), "other", "0"]) == 0
+    assert "excludePatterns" not in json.loads(meta.read_text())

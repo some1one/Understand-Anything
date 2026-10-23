@@ -46,7 +46,7 @@ first-run setup, requirements, commands, and troubleshooting (native Claude:
 | `understand-framework` | Load one framework analysis reference |
 
 Analysis supports a target path and `--source=<dir>[,<dir>]`, `--split=<depth>`,
-`--all`, `--full`, `--review`, `--no-domain`, and
+`--all`, `--full`, `--review`, `--no-domain`, `--exclude=<patterns>`, and
 `--auto-update` / `--no-auto-update`. It saves the partition selection in
 `.ua/config.json`. `--all` selects all detected parts; ignore
 review still applies when needed.
@@ -274,3 +274,10 @@ snapshot. To migrate manually, stop analysis and dashboard processes, move the
 whole legacy directory to `.ua`, and update any custom dictionary paths in your
 configuration. Project-specific data and caches stay inside the selected directory;
 shared dictionaries and the plugin installation home keep their existing locations.
+
+For invocation-specific exclusions, use `/understand --exclude='docs/,e2e/,!e2e/keep.ts'`.
+Patterns are evaluated in order after user ignore files. Changing or removing
+these extra patterns refreshes all included parts; it does not change which
+parts are included. Omitting `--exclude` on a later explicit analysis removes
+extra exclusions. Automatic updates retain the last published patterns from
+`meta.json`. Use `.understandignore` for permanent repository rules.

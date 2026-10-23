@@ -113,6 +113,13 @@ Explain that the workflow reviews ignore rules and selects folder parts before
 analysis. `--all` selects every detected part, while `--full` rebuilds the selected
 parts from scratch. Existing selection is saved in
 `$UA_DIR/config.json`; normal later runs update changed parts.
+For temporary extra exclusions, show `/understand --exclude='docs/,e2e/,!e2e/keep.ts'`.
+These gitignore patterns have highest priority. Changing or omitting them on the
+next explicit analysis refreshes all included parts, even without new commits.
+Auto-update retains the last published scope; permanent rules belong in
+`.understandignore`. Negation can restore an enumerated file, but cannot make
+Git-ignored untracked files appear in the inventory.
+
 Recommend `/understand /absolute/path/to/project --full` after plugin or dictionary
 library updates. A recommendation does not start that rebuild automatically.
 

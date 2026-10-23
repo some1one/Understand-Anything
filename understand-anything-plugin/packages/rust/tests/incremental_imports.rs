@@ -74,3 +74,21 @@ fn unchanged_inventory_reuses_unchanged_imports_but_refreshes_changed_sources() 
     prepare_batches(temp.path()).unwrap();
     assert_eq!(scan(&temp)["importMap"], json!({"unchanged.rb":["changed.rb"],"changed.rb":["unchanged.rb"]}));
 }
+
+#[test]
+fn preparation_reuses_published_scope_instead_of_an_abandoned_scan_scope() {
+    let temp = setup();
+    fs::create_dir(temp.path().join("docs")).unwrap();
+    fs::write(temp.path().join("main.rb"),"require_relative 'docs/hidden'\n").unwrap();
+    fs::write(temp.path().join("docs/hidden.rb"),"puts 'hidden'\n").unwrap();
+    write_json(&temp.path().join(".ua/meta.json"),&json!({"excludePatterns":["docs/"]})).unwrap();
+    save(&temp,"scan-result.json",json!({"excludePatterns":["other/"],"files":[],"importMap":{}}));
+    save(&temp,"change-analysis.json",json!({"filesToReanalyze":["main.rb"]}));
+    prepare_batches(temp.path()).unwrap();
+    assert_eq!(scan(&temp)["excludePatterns"],json!(["docs/"]));
+    assert_eq!(scan(&temp)["importMap"],json!({"main.rb":[]}));
+    write_json(&temp.path().join(".ua/meta.json"),&json!({})).unwrap();
+    prepare_batches(temp.path()).unwrap();
+    assert!(scan(&temp).get("excludePatterns").is_none());
+    assert_eq!(scan(&temp)["importMap"]["main.rb"],json!(["docs/hidden.rb"]));
+}
