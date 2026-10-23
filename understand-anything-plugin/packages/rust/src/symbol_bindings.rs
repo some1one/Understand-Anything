@@ -16,6 +16,27 @@ fn children(n: &Node) -> Vec<Node> {
         .filter(Node::is_named)
         .collect()
 }
+fn unwrap(mut node: Node) -> Node {
+    while node.kind() == "parenthesized_expression" && node.named_child_count() == 1 {
+        node = node.named_child(0).unwrap();
+    }
+    node
+}
+#[derive(Clone)]
+enum Target {
+    Known(Value),
+    Assignment {
+        scope: usize,
+        name: Option<String>,
+        id: usize,
+    },
+    Indirect(Box<Target>),
+}
+#[derive(Clone)]
+struct Region {
+    target: Target,
+    direct: Key,
+}
 fn identifier(n: &Node, source: &str) -> Option<String> {
     if [
         "identifier",
@@ -90,6 +111,8 @@ pub(crate) struct Index {
     scopes: Vec<Scope>,
     facts: BTreeMap<Key, usize>,
     declarations: BTreeSet<Key>,
+    expressions: BTreeMap<Key, Target>,
+    internal_names: Vec<(usize, String, Node, Target)>,
     python: bool,
 }
 impl Index {
@@ -101,10 +124,12 @@ impl Index {
             }],
             facts: BTreeMap::new(),
             declarations: BTreeSet::new(),
+            expressions: BTreeMap::new(),
+            internal_names: vec![],
             python,
         };
         let mut writes = vec![];
-        result.scan(root, source, 0, "", true, &mut writes);
+        result.scan(root, source, 0, "", true, None, &mut writes);
         // Writes are resolved after later/hoisted declarations have been indexed.
         for (node, scope) in writes {
             for name in targets(node.child_by_field_name("left"), source) {
@@ -115,7 +140,13 @@ impl Index {
                         .flatten()
                         .map(|(i, _)| i)
                         .unwrap_or(0);
-                    result.bind(destination, Some(name), &node, unknown());
+                    let target = node
+                        .child_by_field_name("right")
+                        .map(unwrap)
+                        .filter(|n| n.kind() == "class")
+                        .map(|n| result.expression_target(&n))
+                        .unwrap_or_else(unknown);
+                    result.bind(destination, Some(name), &node, target);
                 } else {
                     let mut current = Some(scope);
                     while let Some(i) = current {
@@ -125,7 +156,46 @@ impl Index {
                 }
             }
         }
+        for (scope, name, node, target) in std::mem::take(&mut result.internal_names) {
+            let target = result.resolve(&target);
+            result.bind(scope, Some(name), &node, target);
+        }
         result
+    }
+    fn resolve(&self, target: &Target) -> Value {
+        match target {
+            Target::Known(value) => value.clone(),
+            Target::Assignment {
+                scope,
+                name: Some(name),
+                id,
+            } => match self.lookup(*scope, name) {
+                Err(_) => unknown(),
+                Ok(found) => {
+                    let destination = found.map(|(scope, _)| scope).unwrap_or(0);
+                    match self.scopes[destination].kind {
+                        "root" => json!({"kind":"class","name":name}),
+                        "namespace" => unknown(),
+                        _ => json!({"kind":"local","id":id}),
+                    }
+                }
+            },
+            Target::Assignment { .. } => unknown(),
+            Target::Indirect(target) => {
+                let target = self.resolve(target);
+                if target["kind"] == "local" {
+                    target
+                } else {
+                    unknown()
+                }
+            }
+        }
+    }
+    pub(crate) fn expression_target(&self, node: &Node) -> Value {
+        self.expressions
+            .get(&key(node))
+            .map(|target| self.resolve(target))
+            .unwrap_or_else(unknown)
     }
     pub(crate) fn is_binding(&self, node: &Node) -> bool {
         self.declarations.contains(&key(node))
@@ -261,6 +331,7 @@ impl Index {
         enclosing: usize,
         parent_kind: &str,
         root: bool,
+        region: Option<Region>,
         writes: &mut Vec<(Node, usize)>,
     ) {
         let kind = node.kind();
@@ -286,25 +357,41 @@ impl Index {
         ]
         .contains(&kind.as_str());
         if class {
-            let target = self.class_target(
+            let declared_target = self.class_target(
                 enclosing,
                 name.as_ref().and_then(|n| identifier(n, source)),
                 node,
             );
+            let target = if kind == "class" && !self.python {
+                match &region {
+                    Some(region) if region.direct == key(node) => region.target.clone(),
+                    Some(region) => Target::Indirect(Box::new(region.target.clone())),
+                    None => Target::Known(json!({"kind":"local","id":node.start_byte()})),
+                }
+            } else {
+                Target::Known(declared_target)
+            };
+            if kind == "class" && !self.python {
+                self.expressions.insert(key(node), target.clone());
+            }
             if kind != "class" {
                 if let Some(name) = &name {
-                    self.bind(enclosing, identifier(name, source), node, target.clone());
+                    self.bind(
+                        enclosing,
+                        identifier(name, source),
+                        node,
+                        self.resolve(&target),
+                    );
                 }
             }
             scope = self.scope(enclosing, "class");
             if !self.python {
                 if let Some(name) = &name {
-                    self.bind(
-                        scope,
-                        identifier(name, source),
-                        node,
-                        if kind == "class" { unknown() } else { target },
-                    );
+                    if let Some(name) = identifier(name, source) {
+                        self.bind(scope, Some(name.clone()), node, self.resolve(&target));
+                        self.internal_names
+                            .push((scope, name, node.clone(), target.clone()));
+                    }
                 }
             }
         } else if function {
@@ -397,6 +484,7 @@ impl Index {
                 self.bind(scope, name, node, unknown());
             }
         }
+        let mut value_region: Option<(Key, Region)> = None;
         if kind == "variable_declarator" {
             let mut destination = scope;
             if parent_kind == "variable_declaration" {
@@ -404,15 +492,50 @@ impl Index {
                     destination = self.scopes[destination].parent.unwrap();
                 }
             }
-            // Class-valued bindings are deliberately unresolved until their value
-            // regions can be proven; they still shadow builtins correctly.
-            for name in targets(name.clone(), source) {
-                self.bind(destination, name, node, unknown());
+            let binding_name = name.as_ref().and_then(|n| identifier(n, source));
+            let target = self.class_target(destination, binding_name.clone(), node);
+            let value = node.child_by_field_name("value");
+            let direct = value.clone().map(unwrap);
+            for binding in targets(name.clone(), source) {
+                let value = if direct.as_ref().is_some_and(|n| n.kind() == "class")
+                    && binding == binding_name
+                {
+                    target.clone()
+                } else {
+                    unknown()
+                };
+                self.bind(destination, binding, node, value);
+            }
+            if let (Some(value), Some(direct)) = (value, direct) {
+                value_region = Some((
+                    key(&value),
+                    Region {
+                        target: Target::Known(target),
+                        direct: key(&direct),
+                    },
+                ));
             }
         } else if !self.python
             && ["assignment_expression", "augmented_assignment_expression"].contains(&kind.as_str())
         {
             writes.push((node.clone(), scope));
+            if let Some(value) = node.child_by_field_name("right") {
+                let target = Target::Assignment {
+                    scope,
+                    name: node
+                        .child_by_field_name("left")
+                        .as_ref()
+                        .and_then(|n| identifier(n, source)),
+                    id: node.start_byte(),
+                };
+                value_region = Some((
+                    key(&value),
+                    Region {
+                        target,
+                        direct: key(&unwrap(value)),
+                    },
+                ));
+            }
         } else if self.python
             && ["assignment", "augmented_assignment", "named_expression"].contains(&kind.as_str())
         {
@@ -508,8 +631,33 @@ impl Index {
                 }
             }
         }
+        let fence = class
+            || function
+            || [
+                "public_field_definition",
+                "field_definition",
+                "pair",
+                "object",
+                "return_statement",
+                "expression_statement",
+                "class_static_block",
+            ]
+            .contains(&kind.as_str());
         for child in children(node) {
-            self.scan(&child, source, scope, &kind, false, writes);
+            let child_region = if let Some((value, value_scope)) = &value_region {
+                if *value == key(&child) {
+                    Some(value_scope.clone())
+                } else if fence {
+                    None
+                } else {
+                    region.clone()
+                }
+            } else if fence {
+                None
+            } else {
+                region.clone()
+            };
+            self.scan(&child, source, scope, &kind, false, child_region, writes);
         }
     }
 }

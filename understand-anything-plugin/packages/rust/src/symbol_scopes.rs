@@ -154,12 +154,14 @@ impl Inventory<'_> {
         let mut children_scope = enclosing.clone();
         if is_class {
             let expression = self.javascript && kind == "class";
-            let name = if expression { binding } else { declared };
-            let declaration_scope = if expression && name.is_none() {
-                self.local()
-            } else {
-                enclosing.clone()
-            };
+            let target = expression.then(|| self.bindings.expression_target(&node));
+            let (name, declaration_scope) = if let Some(target) = target {
+                match target["kind"].as_str() {
+                    Some("class") => (target["name"].as_str().map(str::to_owned), Scope::File),
+                    Some("local") => (None, Scope::Local(target["id"].as_u64().unwrap_or(0) as usize)),
+                    _ => (None, Scope::Unknown),
+                }
+            } else { (declared, enclosing.clone()) };
             let entry = record(&node, name.clone(), &declaration_scope);
             if name.is_some() {
                 self.classes.push(entry);
@@ -292,7 +294,7 @@ impl Inventory<'_> {
             None
         };
         for i in 0..node.child_count() {
-            if let Some(child) = node.child(i as u32) {
+            if let Some(child) = node.child(i as u32).filter(Node::is_named) {
                 let direct_value = value.as_ref().is_some_and(|v| {
                     v.start_byte() == child.start_byte() && v.end_byte() == child.end_byte()
                 });
@@ -335,7 +337,7 @@ pub fn collect(root: Node, content: &str, language: &str, structure: &Value) -> 
     // Python's root is named `module`, the same node kind Ruby uses for a
     // declaring module. The parse root always establishes file scope.
     for i in 0..root.child_count() {
-        if let Some(child) = root.child(i as u32) {
+        if let Some(child) = root.child(i as u32).filter(Node::is_named) {
             inventory.visit(child, Scope::File, None, false, Scope::File);
         }
     }
