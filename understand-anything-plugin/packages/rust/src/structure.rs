@@ -1681,13 +1681,14 @@ pub fn analyze_file_strict(path: &str, content: &str) -> Value {
     }
     let mut structure = empty();
     extract_tree_structure(&root, &lang, &mut structure);
+    let scopes = crate::symbol_scopes::collect(root.raw.clone(), content, &lang);
     let mut leaves = BTreeSet::new();
     let mut pending = vec![root];
     while let Some(node) = pending.pop() {
         if node.raw.child_count() == 0 { leaves.insert(node.text()); }
         else { pending.extend(node.children()); }
     }
-    json!({"status":"succeeded","structure":structure,"leafTexts":leaves})
+    json!({"status":"succeeded","language":lang,"structure":structure,"leafTexts":leaves,"declarationScopes":scopes})
 }
 
 pub fn extract_call_graph(path: &str, content: &str) -> Option<Vec<Value>> {

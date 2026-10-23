@@ -75,3 +75,5 @@ pub mod dictionary_data;
 pub mod query_dictionary;
 pub mod query_graph;
 pub mod query_terms;
+
+pub mod symbol_scopes;

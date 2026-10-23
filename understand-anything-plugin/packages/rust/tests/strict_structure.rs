@@ -29,3 +29,45 @@ fn strict_evidence_distinguishes_empty_valid_sources_from_syntax_failures() {
         assert!(failed["leafTexts"].as_array().unwrap().is_empty());
     }
 }
+
+#[test]
+#[ignore = "requires pinned grammars; run with UA_TEST_PARSER_CACHE"]
+fn lexical_scopes_separate_same_name_methods_free_functions_and_locals() {
+    if let Ok(cache) = std::env::var("UA_TEST_PARSER_CACHE") {
+        parsers::configure(Some(std::path::Path::new(&cache))).unwrap();
+    }
+    for (path, source) in [
+        ("file.ts", "class Worker { run() { function run() {} } } function run() {}"),
+        ("file.py", "class Worker:\n    def run(self):\n        def run(): pass\ndef run(): pass\n"),
+    ] {
+        let evidence = analyze_file_strict(path, source);
+        assert_eq!(evidence["status"], "succeeded", "{evidence}");
+        let functions = evidence["declarationScopes"]["functions"].as_array().unwrap();
+        let runs: Vec<_> = functions.iter().filter(|f| f["name"] == "run").collect();
+        assert_eq!(runs.len(), 3, "{evidence}");
+        assert!(runs.iter().any(|f| f["scope"]["kind"] == "file"));
+        assert!(runs.iter().any(|f| f["scope"]["kind"] == "local"));
+        assert!(runs.iter().any(|f| f["scope"]["kind"] == "class" && f["scope"]["name"] == "Worker"));
+    }
+}
+
+#[test]
+#[ignore = "requires pinned grammars; run with UA_TEST_PARSER_CACHE"]
+fn expression_bindings_and_nested_types_do_not_claim_wrong_public_owners() {
+    if let Ok(cache) = std::env::var("UA_TEST_PARSER_CACHE") {
+        parsers::configure(Some(std::path::Path::new(&cache))).unwrap();
+    }
+    let evidence = analyze_file_strict("file.ts", "const Worker = class Internal { run() {} }; const task = function privateName() {}; const arrow = () => 1; const obj = { run() {} }; function outer() { class Nested { run() {} } }");
+    assert_eq!(evidence["status"], "succeeded", "{evidence}");
+    let functions = evidence["declarationScopes"]["functions"].as_array().unwrap();
+    for name in ["task", "arrow"] {
+        assert!(functions.iter().any(|f| f["name"] == name && f["scope"]["kind"] == "file"), "{evidence}");
+    }
+    assert!(!functions.iter().any(|f| f["name"] == "privateName"));
+    let runs: Vec<_> = functions.iter().filter(|f| f["name"] == "run").collect();
+    assert_eq!(runs.iter().filter(|f| f["scope"]["kind"] == "local").count(), 2, "{evidence}");
+    assert!(runs.iter().any(|f| f["scope"]["kind"] == "class" && f["scope"]["name"] == "Worker"), "{evidence}");
+    let classes = evidence["declarationScopes"]["classes"].as_array().unwrap();
+    assert!(classes.iter().any(|c| c["name"] == "Worker" && c["scope"]["kind"] == "file"));
+    assert!(!classes.iter().any(|c| c["name"] == "Internal"));
+}
