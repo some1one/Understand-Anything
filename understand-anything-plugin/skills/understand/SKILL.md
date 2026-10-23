@@ -101,7 +101,10 @@ Decide full analysis vs. incremental update.
    ```bash
    python3 "$SKILL_DIR/scripts/write_changed_files.py" "$PROJECT_ROOT" "<lastCommitHash>"
    ```
-   If `changed-files.txt` is empty, report "Graph is up to date" and STOP.
+   If `changed-files.txt` is empty, skip analysis. With `--review`, follow the
+   review-only path above even when the commit hash changed (for example, a
+   sibling monorepo project changed). Otherwise report "Graph is up to date"
+   and STOP. Do not advance the saved baseline for a review-only run.
 
 8. **Capture project context** (writes `intermediate/project-context.json`, prints the same JSON). Use its `readmeContent`, `manifestContent`, `dirTree`, `entryPoint` as `$README_CONTENT`, `$MANIFEST_CONTENT`, `$DIR_TREE`, `$ENTRY_POINT`:
    ```bash
@@ -179,7 +182,11 @@ Split the scanned repo into folder-parts and decide which to analyze. Load `$UA_
 ```
 - Pass `--full` for `--full`/`--all`/first-run → every included part.
 - Otherwise pass `--changed=…` → **affected** parts plus any included part that has no partition graph yet (e.g. one just added via `/understand-add-part`).
-- If the output is empty, report "Graph is up to date" and STOP.
+- If the output is empty, skip analysis. With `--review`, follow Phase 0's
+  review-only path using the saved graph; retain warnings about changed files
+  outside the selected parts and distinguish that saved scope from the fresh
+  scan. Otherwise report "Graph is up to date" and STOP. Do not assemble or save
+  a replacement graph just to perform the requested review.
 
 ---
 
