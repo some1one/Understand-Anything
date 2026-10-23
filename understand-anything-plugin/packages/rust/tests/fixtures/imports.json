@@ -1668,7 +1668,8 @@
       "src/other.ts": "export const thing = 1;\n",
       "src/real.ts": "import { thing } from './other';\nexport const x = 1;\n"
     },
-    "expected": {
+    "errorContains": "Import extraction failed for src/missing.ts (read error:",
+    "legacyExpected": {
       "scriptCompleted": true,
       "stats": {
         "filesScanned": 3,
@@ -2033,7 +2034,8 @@
       "src/Models/User.php": "<?php\nnamespace App\\Models;\nclass User { }\n",
       "src/Http/Controller.php": "<?php\nnamespace App\\Http;\n\nuse App\\Models\\User;\n\nclass Controller { }\n"
     },
-    "expected": {
+    "errorContains": "Import extraction failed: composer.json: resolver configuration parse failed",
+    "legacyExpected": {
       "scriptCompleted": true,
       "stats": {
         "filesScanned": 3,
@@ -2079,7 +2081,8 @@
       "src/sibling.ts": "export const bar = 1;\n",
       "src/index.ts": "import { foo } from '@/utils';\nimport { bar } from './sibling';\n"
     },
-    "expected": {
+    "errorContains": "Import extraction failed: tsconfig.json: resolver configuration parse failed",
+    "legacyExpected": {
       "scriptCompleted": true,
       "stats": {
         "filesScanned": 4,

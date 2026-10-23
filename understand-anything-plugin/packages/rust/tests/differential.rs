@@ -431,11 +431,13 @@ fn captured_import_resolution() {
         populate(tmp.path(), &c["files"]);
         let mut input = c["input"].clone();
         input["projectRoot"] = json!(tmp.path());
-        equal(
-            &ua::imports::extract_import_map(&input).unwrap(),
-            &c["expected"],
-            &format!("imports {index}"),
-        );
+        let result = ua::imports::extract_import_map(&input);
+        if let Some(message) = c["errorContains"].as_str() {
+            let error = result.unwrap_err().to_string();
+            assert!(error.contains(message), "imports {index}: {error}");
+        } else {
+            equal(&result.unwrap(), &c["expected"], &format!("imports {index}"));
+        }
     }
 }
 #[test]
