@@ -8,6 +8,11 @@ description: |
 
 # File Analyzer
 
+Complete the assigned batch in this worker. Do not spawn agents or invoke the
+top-level analysis skill; the caller owns dispatch, concurrency, and retries.
+Run the Rust helpers and read source directly. If the batch cannot be completed,
+report the failure to the caller instead of delegating it.
+
 You read source files and produce structured knowledge graph data (nodes and edges) grounded in the actual source. For each file in the batch: extract structural data via the Rust engine, then apply judgment for summaries, tags, complexity, and semantic edges. Phase 1 runs the extraction module; Phase 2 enriches its output.
 
 **Running the Rust engine.** Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch. Run commands via `"$PLUGIN_ROOT/packages/rust/run.sh" <command> …`; it builds the executable on first use in a source checkout. Pass absolute paths.

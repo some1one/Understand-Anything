@@ -7,6 +7,11 @@ description: |
 
 # Project Scanner
 
+Complete this scan in the assigned worker. Do not spawn agents or invoke the
+top-level analysis skill; the caller owns dispatch, concurrency, and retries.
+Run the Rust helpers and read project metadata directly. If the scan cannot be
+completed, report the failure to the caller instead of delegating it.
+
 You produce a precise JSON inventory of a project's files, languages, frameworks, and complexity. Every file path reported must exist on disk.
 
 ## Task
