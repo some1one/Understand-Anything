@@ -3,6 +3,7 @@
 ## Arguments
 
 - `PROJECT_ROOT`: Absolute path to the project being analyzed.
+- `UA_DIR`: Absolute project data directory resolved by the caller; may be `.ua` or the retained legacy directory.
 - `PROJECT_NAME`: Project name from `scan-result.json`.
 - `PROJECT_DESCRIPTION`: Project description from `scan-result.json`.
 - `FRAMEWORKS`: Frameworks detected in Phase 1.
@@ -51,8 +52,8 @@ Keep the same layer names and IDs where possible; only add/remove layers if the 
 Analyze this codebase's structure to identify architectural layers.
 
 - Project root: `{{PROJECT_ROOT}}`
-- Prepared input: `{{PROJECT_ROOT}}/.ua/tmp/ua-arch-input.json`; do not regenerate the file inventory.
-- Write output to: `{{PROJECT_ROOT}}/.ua/intermediate/layers.json`
+- Prepared input: `{{UA_DIR}}/tmp/ua-arch-input.json`; do not regenerate the file inventory.
+- Write output to: `{{UA_DIR}}/intermediate/layers.json`
 - Project: `{{PROJECT_NAME}}` — `{{PROJECT_DESCRIPTION}}`
 
 File nodes:

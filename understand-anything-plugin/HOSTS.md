@@ -68,7 +68,7 @@ Read the specified `agents/<name>.md` and dispatch its body and the filled
 template through the host's available subagent tool. If delegation is unavailable,
 execute the same instructions sequentially in the current session.
 
-Pass `PROJECT_ROOT`, `PLUGIN_ROOT`, the relevant skill directory, input paths,
+Pass `PROJECT_ROOT`, `PLUGIN_ROOT`, the resolved `UA_DIR`, the relevant skill directory, input paths,
 and the required output paths in each dispatch. Use the host's configured model;
 the agent definitions intentionally omit provider-specific model names.
 Limit parallel batches to the host's available concurrency and keep part merges

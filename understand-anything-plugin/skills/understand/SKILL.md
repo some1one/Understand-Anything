@@ -14,6 +14,8 @@ UA_DIR=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
 ```
 
 Use this absolute directory throughout the workflow and pass it to workers.
+Fill `UA_DIR` in every dispatch template with this resolved path; never derive
+worker output paths by appending `.ua` to the project root.
 It selects `.ua` for new projects and retains an existing legacy directory;
 see [host integration](../../HOSTS.md) for the selection rules.
 
