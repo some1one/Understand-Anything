@@ -704,3 +704,25 @@ pub fn validate_part_replacement(
     }
     Ok(report)
 }
+
+/// Reconcile partition edges only after the normal symbol gate has verified IDs.
+pub fn restore_part_edges(previous: &Value, current: &mut Value, report: &Value, selected: &BTreeSet<String>, candidates: &Value) -> crate::Result<()> {
+    let mut remaps = std::collections::BTreeMap::new();
+    for replacement in array(report,"files").iter().flat_map(|f|array(f,"replacements")) {
+        let (old,new)=(s(replacement,"oldId"),s(replacement,"newId"));
+        if remaps.insert(old,new).is_some_and(|existing|existing!=new) {
+            return Err(crate::Error::Invalid(format!("Conflicting partition symbol replacements for {old}")));
+        }
+    }
+    restore_current_candidates(candidates,previous,current,&remaps,&BTreeSet::new());
+    let mut remapped=previous.clone();
+    for node in remapped["nodes"].as_array_mut().unwrap() {
+        if let Some(new)=remaps.get(s(node,"id")) {node["id"]=json!(new);}
+    }
+    for edge in remapped["edges"].as_array_mut().unwrap() {
+        for field in ["source","target"] {
+            if let Some(new)=remaps.get(s(edge,field)) {edge[field]=json!(new);}
+        }
+    }
+    crate::updates::restore_inbound_edges(&remapped,current,selected)
+}

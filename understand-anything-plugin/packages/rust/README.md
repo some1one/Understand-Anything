@@ -187,6 +187,7 @@ data; normal builds and runtime do not need the old Python package.
 | `partition_files` |  |
 | `parts_to_process` |  |
 | `prepare_file_analysis_batch` | `prepare-batch` |
+| `prepare_part_batches` |  |
 | `scan_project` | `scan` |
 | `seed_file_batch_graph` | `seed-file-batch` |
 | `validate_assembled_graph` | `validate-assembled-graph` |
@@ -266,3 +267,11 @@ baseline alongside numeric analyzer batches. It loads the baseline first so fres
 nodes override duplicate IDs, and retains it even when no analyzer batches are
 planned. An invalid baseline stops merging without replacing the assembled graph.
 The caller must prune replaced/deleted files from the baseline before merging.
+
+`prepare_part_batches <project-root> <part> [--full]` prepares a partition update
+from that part's saved commit, including local tracked changes and untracked
+assigned files. It archives previous batch scratch, writes a pruned baseline and
+selected batch plan, and records the graph/scan/source snapshot. Partition
+publication rejects changed snapshots and missing assigned-file coverage, then
+uses verified symbol replacements to recover incoming and fresh candidate edges.
+Keep the preparation and recovery artifacts after a failed analysis.

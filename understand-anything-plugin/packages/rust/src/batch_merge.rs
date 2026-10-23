@@ -905,20 +905,31 @@ pub fn merge_batch_directory(root: &Path) -> Result<Value> {
             "Error: no valid batch files loaded".into(),
         ));
     }
+    let preparation = if dir.join("part-update.json").exists() { Some(crate::persistence::read_json(&dir.join("part-update.json"))?) } else { None };
     // Add scan-backed boundary nodes before normalization drops dangling edges.
     let mut combined = json!({
         "nodes": batches.iter().flat_map(|b| array(b, "nodes")).collect::<Vec<_>>(),
         "edges": batches.iter().flat_map(|b| array(b, "edges")).collect::<Vec<_>>()
     });
     if let Ok(scan) = crate::persistence::read_json(&dir.join("scan-result.json")) {
+        let assigned: BTreeSet<_> = preparation.as_ref().map(|p| crate::strings(&p["plan"]["assignedFiles"]).into_iter().collect()).unwrap_or_default();
         let known = array(&scan, "files")
             .iter()
             .filter_map(|f| f["path"].as_str().map(str::to_owned))
+            .filter(|path| !assigned.contains(path))
             .collect();
         combined = crate::merge::add_boundary_stubs(&combined, &known);
     }
-    let (mut graph, mut report) = merge_and_normalize(&[combined]);
+    let (mut graph, mut report, candidates) = if preparation.is_some() {
+        merge_with_edge_candidates(&[combined], &BTreeSet::from([0]))
+    } else {
+        let (graph,report)=merge_and_normalize(&[combined]); (graph,report,vec![])
+    };
     let (_, recovery) = recover_imports_from_scan(&mut graph, &dir.join("scan-result.json"));
+    if let Some(preparation) = preparation {
+        graph = crate::updates::refresh_graph_imports(&graph, &preparation["scan"]["importMap"], &crate::strings(&preparation["plan"]["assignedFiles"]))?;
+        crate::persistence::write_json(&dir.join("part-edge-candidates.json"),&json!({"version":1,"preparation":preparation,"graphHash":crate::incremental_symbols::edge_candidate_hash(&graph)?,"nodes":graph["nodes"],"edges":candidates}))?;
+    }
     if !empty_warnings.is_empty() {
         report.push(format!(
             "Warning: {} batch file(s) contributed no nodes or edges:",

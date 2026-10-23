@@ -41,6 +41,7 @@ const IMPLEMENTED: &[&str] = &[
     "compute_batches",
     "seed_file_batch_graph",
     "prepare_file_analysis_batch",
+    "prepare_part_batches",
     "validate_structure_output",
     "validate_layers",
     "finalize_file_batch_output",
@@ -463,6 +464,12 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
                     review["stats"]["totalNodes"], review["stats"]["totalEdges"]
                 );
             }
+        }
+        "prepare_part_batches" => {
+            require(&args,2,command,"<project-root> <part> [--full]")?;
+            if args.len()>3 || args.get(2).is_some_and(|a| a!="--full") { return Err(usage(command,"<project-root> <part> [--full]")); }
+            let result=ua::partition_updates::prepare(&absolute(&args[0])?,&args[1],args.len()==3)?;
+            println!("{}",serde_json::to_string_pretty(&result)?);
         }
         "compute_batches" => {
             require(&args, 1, command, "<project-root> [--changed-files PATH]")?;

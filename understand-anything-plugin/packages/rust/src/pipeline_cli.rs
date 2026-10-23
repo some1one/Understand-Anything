@@ -189,22 +189,35 @@ pub fn run(command: &str, args: &[String]) -> Result<i32> {
                         .map(str::to_owned)
                 })
                 .collect();
-            let graph = ua::assembly::build_part_graph(&assembled, part, &known, &scan, commit);
+            let mut graph = ua::assembly::build_part_graph(&assembled, part, &known, &scan, commit);
             let dir = ua::persistence::data_dir(&root).join("partitions");
             fs::create_dir_all(&dir)?;
             let path = dir.join(ua::partition::part_to_filename(part));
-            if path.exists() {
-                let previous = read_json(&path)?;
-                ua::incremental_symbols::validate_part_replacement(&root, part, &previous, &graph, &scan)?;
+            let previous = if path.exists() { read_json(&path)? } else { serde_json::Value::Null };
+            let preparation = ua::partition_updates::verify_preparation(&root,part,&previous)?;
+            if !previous.is_null() {
+                let report=ua::incremental_symbols::validate_part_replacement(&root, part, &previous, &graph, &scan)?;
+                if let Some(preparation)=&preparation {
+                    let candidates=read_json(&inter.join("part-edge-candidates.json"))?;
+                    if candidates["version"]!=1 || candidates["preparation"]!=*preparation || candidates["graphHash"]!=ua::incremental_symbols::edge_candidate_hash(&assembled)? {
+                        return Err(Error::Invalid("Partition edge evidence is stale; rerun batch merging".into()));
+                    }
+                    let selected=ua::strings(&preparation["plan"]["filesToAnalyze"]).into_iter().collect();
+                    ua::incremental_symbols::restore_part_edges(&previous,&mut graph,&report,&selected,&candidates)?;
+                }
             } else if !ua::array(&scan, "failures").is_empty() {
                 return Err(Error::Invalid("Cannot publish a partition from an incomplete scan".into()));
+            }
+            if let Some(preparation)=&preparation {
+                graph = ua::updates::refresh_graph_imports(&graph,&preparation["scan"]["importMap"],&ua::strings(&preparation["plan"]["assignedFiles"]))?;
+                ua::updates::validate_analyzed_file_coverage(ua::array(&graph,"nodes"),&ua::strings(&preparation["plan"]["assignedFiles"]))?;
             }
             write_json(&path, &graph)?;
             for entry in fs::read_dir(&inter)? {
                 let entry = entry?;
                 let name = entry.file_name().to_string_lossy().into_owned();
                 if (name.starts_with("batch-") && name.ends_with(".json"))
-                    || name == "assembled-graph.json"
+                    || ["assembled-graph.json", "part-update.json", "part-edge-candidates.json"].contains(&name.as_str())
                 {
                     fs::remove_file(entry.path())?;
                 }

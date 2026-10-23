@@ -52,7 +52,7 @@ Read [host integration](../../HOSTS.md) for invocation, argument handling, and a
    ```
    If `$ARGUMENTS` matches no files, report that and stop.
 
-4. **Analyze the new part(s).** For each new part, run **`/understand` Phase 2 steps 1–4** (compute_batches `--changed-files=intermediate/part-files/<part>.json` → dispatch `file-analyzer` agents → `merge_batch_graphs` → `assemble_part_graph "$PWD" "<part>" "<commit hash>"`).
+4. **Analyze the new part(s).** For each new part, run **`/understand` Phase 2 steps 1–4** (`prepare_part_batches "$PROJECT_ROOT" "<part>"` → dispatch `file-analyzer` agents → `merge_batch_graphs` → `assemble_part_graph "$PWD" "<part>" "<commit hash>"`).
 
 5. **Merge + finalize.** Recombine all included parts and re-run architecture so the new nodes get layers:
    ```bash

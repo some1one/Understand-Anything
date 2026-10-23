@@ -199,11 +199,18 @@ Split the scanned repo into folder-parts and decide which to analyze. Load `$UA_
 
 For **each** part in `$PARTS_TO_PROCESS`, run steps 1–4. Parts are independent; process them one at a time (each part's file-analyzers still run up to **5 concurrently**). A part's file list is `intermediate/part-files/<part>.json` (the part name with `/` written as `~`).
 
-1. **Batch the part's files** (scoped via the part file list; `neighborMap` still references files in other parts so cross-part edges stay emittable):
+1. **Prepare the part's batches** using its saved revision and the refreshed part inventory:
    ```bash
-   "$PLUGIN_ROOT/packages/rust/run.sh" compute_batches "$PROJECT_ROOT" \
-     --changed-files="$UA_DIR/intermediate/part-files/<part-encoded>.json"
+   "$PLUGIN_ROOT/packages/rust/run.sh" prepare_part_batches "$PROJECT_ROOT" "<part>" [--full]
    ```
+   Pass `--full` for explicit full/all analysis or `$SCOPE_CHANGED=true`. New parts
+   and unverifiable baselines automatically select every assigned file. Otherwise,
+   only changed and newly included files become analyzer targets. The command
+   writes `batches.json`, a pruned `batch-existing.json`, and `part-update.json`;
+   previous scratch outputs are archived in the reported recovery directory.
+   Keep the preparation record and baseline intact. `neighborMap` still includes
+   unchanged files and other parts as context. Do not dispatch analyzers when
+   `totalBatches` is zero; continue merging the retained baseline.
    Append `Warning:` stderr lines to `$PHASE_WARNINGS`; a non-zero exit is a hard failure.
 
 2. **Dispatch file-analyzers.** Load `intermediate/batches.json`; for each entry in `batches[]` dispatch a subagent using the `file-analyzer` agent (`$PLUGIN_ROOT/agents/file-analyzer.md`) and template `$SKILL_DIR/prompts/file-analyzer-batch-dispatch.md`, up to **5 concurrently**. Fill args from `scan-result.json`, `batches.json[i]`, and Phase 0 context: `PROJECT_ROOT`, `PROJECT_NAME`, `PROJECT_DESCRIPTION`, `LANGUAGES`, `BATCH_INDEX`, `TOTAL_BATCHES`, `SKILL_DIR`, `OUTPUT_PATH`, `BATCH_IMPORT_DATA_JSON`, `NEIGHBOR_MAP_JSON`, `BATCH_FILES`.
@@ -214,12 +221,18 @@ For **each** part in `$PARTS_TO_PROCESS`, run steps 1–4. Parts are independent
    ```bash
    "$PLUGIN_ROOT/packages/rust/run.sh" merge_batch_graphs "$PROJECT_ROOT"
    ```
-   An explicitly empty batch plan produces an empty assembled graph without dispatching analyzers. It creates scan-backed boundary stubs before normalization, combines nodes/edges, normalizes IDs and complexity values, rewrites edge refs, dedupes, drops dangling edges, and canonicalizes `tested_by` edges (all resulting edges run `production → test`; sourced production nodes get a `"tested"` tag). Add its warnings to `$PHASE_WARNINGS`. Read `$UA_DIR/intermediate/batch-merge-report.txt` if stderr was truncated; investigate any loaded batch that contributed no nodes or edges before publishing.
+   An empty batch plan reuses the prepared baseline without dispatching analyzers; an empty assigned part produces an empty graph. It creates scan-backed boundary stubs for references outside the prepared part before normalization, combines nodes/edges, normalizes IDs and complexity values, rewrites edge refs, dedupes, drops dangling edges, and canonicalizes `tested_by` edges (all resulting edges run `production → test`; sourced production nodes get a `"tested"` tag). Add its warnings to `$PHASE_WARNINGS`. Read `$UA_DIR/intermediate/batch-merge-report.txt` if stderr was truncated; investigate any loaded batch that contributed no nodes or edges before publishing.
 
 4. **Persist the part graph** (adds boundary stubs for cross-part edges, tags it with the part name, writes `partitions/<part>.knowledge-graph.json`, and clears this part's `batch-*.json` + `assembled-graph.json` scratch):
    ```bash
    "$PLUGIN_ROOT/packages/rust/run.sh" assemble_part_graph "$PROJECT_ROOT" "<part>" "<commit hash>"
    ```
+
+Before publication, `assemble_part_graph` verifies that the saved graph, scan,
+assigned inventory, and source bytes still match preparation. Source drift is a
+hard stop: preserve the archived and current evidence, then prepare the part
+again. After symbol validation it restores incoming edges and fresh missing-target
+candidates only through verified identities.
 
 Before overwriting an existing part, `assemble_part_graph` verifies its real symbols
 against the previous committed source and the current source for files still in
