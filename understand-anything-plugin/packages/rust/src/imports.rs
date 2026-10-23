@@ -8,7 +8,10 @@ use std::{
     path::Path,
 };
 pub fn to_posix(s: &str) -> String {
-    s.split(['\\', '/'])
+    // Backslashes are filename characters on Unix, not directory separators.
+    // Namespace separators (for example PHP FQNs) are converted explicitly by
+    // their language resolver, independently of filesystem path handling.
+    s.split(|ch| ch == '/' || (std::path::MAIN_SEPARATOR == '\\' && ch == '\\'))
         .filter(|s| !s.is_empty())
         .collect::<Vec<_>>()
         .join("/")
