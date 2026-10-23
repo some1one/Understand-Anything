@@ -607,6 +607,31 @@ pub fn merge_and_normalize(batches: &[Value]) -> (Value, Vec<String>) {
         report,
     )
 }
+/// Index canonical whole-file nodes without selecting child tables or endpoints.
+/// A `file:` node wins an ambiguous path; otherwise retain stable graph order.
+pub fn whole_file_node_index(nodes: &[Value]) -> (BTreeMap<String, String>, Vec<String>) {
+    let mut index = BTreeMap::<String, String>::new();
+    let mut warnings = vec![];
+    for node in nodes {
+        let kind = s(node, "type");
+        let path = s(node, "filePath");
+        let id = s(node, "id");
+        if !["file", "config", "document", "service", "pipeline", "schema", "resource"].contains(&kind)
+            || path.is_empty() || id != format!("{kind}:{path}") {
+            continue;
+        }
+        if let Some(previous) = index.get(path) {
+            if previous == id { continue; }
+            let selected = if kind == "file" { id.to_owned() } else { previous.clone() };
+            warnings.push(format!("  Warning: multiple whole-file nodes for {path}; selected {selected}"));
+            index.insert(path.to_owned(), selected);
+        } else {
+            index.insert(path.to_owned(), id.to_owned());
+        }
+    }
+    (index, warnings)
+}
+
 pub fn recover_imports_from_scan(assembled: &mut Value, path: &Path) -> (usize, Vec<String>) {
     let name = path.file_name().unwrap_or_default().to_string_lossy();
     if !path.is_file() {
@@ -638,16 +663,10 @@ pub fn recover_imports_from_scan(assembled: &mut Value, path: &Path) -> (usize, 
         .iter()
         .filter_map(|f| f["path"].as_str().map(str::to_owned))
         .collect();
-    let ids: BTreeSet<_> = array(assembled, "nodes")
-        .iter()
-        .filter(|n| n["type"] == "file")
-        .map(|n| s(n, "id").to_owned())
-        .collect();
+    let (index, mut report) = whole_file_node_index(array(assembled, "nodes"));
     let sources: BTreeSet<_> = array(assembled, "nodes")
-        .iter()
-        .filter(|n| n["type"] == "file" && n["stub"] != true)
-        .map(|n| s(n, "id").to_owned())
-        .collect();
+        .iter().filter(|n| n["stub"] != true)
+        .map(|n| s(n, "id").to_owned()).collect();
     let mut existing: BTreeSet<_> = array(assembled, "edges")
         .iter()
         .filter(|e| e["type"] == "imports")
@@ -658,37 +677,39 @@ pub fn recover_imports_from_scan(assembled: &mut Value, path: &Path) -> (usize, 
         if !targets.is_array() {
             continue;
         }
-        let src = format!("file:{src}");
-        if !sources.contains(&src) {
+        let src = index.get(src).filter(|id| sources.contains(*id));
+        let Some(src) = src else {
             if !targets.as_array().unwrap().is_empty() {
                 no_src += 1;
             }
             continue;
-        }
+        };
         for target in strings(targets).into_iter().filter(|s| !s.is_empty()) {
-            let tgt = format!("file:{target}");
-            if !ids.contains(&tgt) && !known.contains(&target) {
+            let tgt = index.get(&target).cloned().or_else(|| {
+                known.contains(&target).then(|| format!("file:{target}"))
+            });
+            let Some(tgt) = tgt else {
                 no_tgt += 1;
                 continue;
-            }
-            if src != tgt && existing.insert((src.clone(), tgt.clone())) {
+            };
+            if *src != tgt && existing.insert((src.clone(), tgt.clone())) {
                 assembled["edges"].as_array_mut().unwrap().push(json!({"source":src,"target":tgt,"type":"imports","direction":"forward","weight":0.7,"recoveredFromImportMap":true}));
                 recovered += 1;
             }
         }
     }
-    let mut report = vec![format!(
+    report.push(format!(
         "  Recovered {recovered} `imports` edges from importMap ({} entries scanned)",
         map.len()
-    )];
+    ));
     if no_src > 0 {
         report.push(format!(
-            "  Skipped {no_src} importMap source files with no `file:` node in graph"
+            "  Skipped {no_src} importMap source files with no whole-file node in graph"
         ));
     }
     if no_tgt > 0 {
         report.push(format!(
-            "  Skipped {no_tgt} importMap target paths with no `file:` node in graph"
+            "  Skipped {no_tgt} importMap target paths with no whole-file node in graph"
         ));
     }
     *assembled = crate::merge::add_boundary_stubs(assembled, &known);
