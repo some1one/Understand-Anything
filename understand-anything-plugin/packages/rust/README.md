@@ -188,6 +188,7 @@ data; normal builds and runtime do not need the old Python package.
 | `parts_to_process` |  |
 | `prepare_file_analysis_batch` | `prepare-batch` |
 | `prepare_part_batches` |  |
+| `prepare_architecture_update` |  |
 | `prepare_part_symbol_retry` |  |
 | `scan_project` | `scan` |
 | `seed_file_batch_graph` | `seed-file-batch` |
@@ -284,3 +285,12 @@ the reported files. The limit is tied to the saved graph and source snapshot;
 repreparing that snapshot does not reset it. Source or identity errors block
 repair. If repaired assembly fails, stop and retain the saved graph and recovery
 artifacts. Successful publication removes the repair marker.
+
+`prepare_architecture_update <project-root> [--full]` plans architecture work after
+partition merging using the selected graph inventory and saved fingerprints.
+Localized updates reuse layers with deterministic placement by common parent
+directory, distinct graph neighbors, then original layer order. Directory changes,
+major restructuring, full runs, and unusable baselines require architecture analysis.
+The command writes `architecture-update-plan.json` and, only when reusing layers,
+`layers.json`. Incremental assemble-review dispatch can be skipped as directed by
+the plan; graph validation and an explicit user review remain required.

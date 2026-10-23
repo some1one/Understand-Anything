@@ -95,3 +95,5 @@ pub mod file_lists;
 mod symbol_bindings;
 
 pub mod partition_updates;
+
+pub mod architecture_updates;

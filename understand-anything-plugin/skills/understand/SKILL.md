@@ -261,9 +261,26 @@ After all parts are processed, **merge the included parts** into the unified ass
 ```
 This writes `intermediate/assembled-graph.json` — the input to Phases 3–7, exactly as in a monolithic run.
 
+Plan the remaining architecture work before dispatching review or architecture agents:
+```bash
+"$PLUGIN_ROOT/packages/rust/run.sh" prepare_architecture_update "$PROJECT_ROOT" [--full]
+```
+Pass `--full` for an explicit full/all run, first analysis, or changed scope. Read
+`intermediate/architecture-update-plan.json`. The helper compares saved fingerprints
+with the current selected inventory; it never adds files outside the merged parts.
+For localized changes it writes reconciled `layers.json`, preserving surviving
+assignments and placing new files by directory, graph connections, then prior
+layer order. Directory changes, major restructuring, or a missing baseline require
+fresh architecture analysis. On failure, stop dependent phases and retain evidence.
+
+
 ---
 
 ## Phase 3 — ASSEMBLE REVIEW
+
+Skip this dispatch when `architecture-update-plan.json` has
+`skipAssembleReviewer: true`: the incremental merge and publication gates already
+checked the affected parts. Keep Phase 5 validation and an explicit `--review` request.
 
 Dispatch a subagent using the `assemble-reviewer` agent (`$PLUGIN_ROOT/agents/assemble-reviewer.md`) and template `$SKILL_DIR/prompts/assemble-review-dispatch.md`. Fill args: `PROJECT_ROOT`, `MERGE_REPORT`, `IMPORT_MAP_JSON`.
 
@@ -272,6 +289,9 @@ After it completes, read `intermediate/assemble-review.json` and add any notes t
 ---
 
 ## Phase 4 — ARCHITECTURE
+
+If the plan has `rerunArchitecture: false`, reuse the helper's `layers.json` and
+continue to Phase 5. Otherwise run this phase on the complete merged node set.
 
 Prepare deterministic template args (loads language addenda via `/understand-language` and framework addenda via `/understand-framework`; writes `intermediate/architecture-template-args.json`):
 ```bash
@@ -285,7 +305,7 @@ After it completes, normalize the layers:
 python3 "$SKILL_DIR/scripts/normalize_layers.py" "$PROJECT_ROOT"
 ```
 
-**Incremental updates:** always re-run architecture on the full merged node set (layer assignments may shift); pass prior layers via `PREVIOUS_LAYERS_JSON` for naming consistency.
+**Architecture updates:** pass prior layers via `PREVIOUS_LAYERS_JSON` for naming consistency. Ordinary partial updates use the deterministic reconciliation above.
 
 ---
 
