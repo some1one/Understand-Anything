@@ -380,6 +380,23 @@ pub fn refresh_graph_imports(graph: &Value, import_map: &Value, paths: &[String]
     Ok(graph)
 }
 
+pub fn validate_analyzed_file_coverage(nodes: &[Value], paths: &[String]) -> Result<()> {
+    let real: Vec<_> = nodes.iter().filter(|n| n["stub"] != true).cloned().collect();
+    let (index, _) = batch_merge::whole_file_node_index(&real);
+    let missing: Vec<_> = paths.iter().filter(|path| {
+        !index.contains_key(*path) && !real.iter().any(|node| {
+            let kind = s(node, "type");
+            let prefix = format!("{kind}:{path}:");
+            ["table", "endpoint"].contains(&kind) && s(node, "filePath") == path.as_str()
+                && s(node, "id").strip_prefix(&prefix).is_some_and(|suffix| !suffix.is_empty())
+        })
+    }).collect();
+    if missing.is_empty() { Ok(()) } else {
+        Err(Error::Invalid(format!("Assembled graph lacks analyzed-file coverage for: {}",
+            missing.iter().map(|p| p.as_str()).collect::<Vec<_>>().join(", "))))
+    }
+}
+
 pub fn apply_batches(root: &Path) -> Result<Value> {
     let _lock = crate::batch_files::lock(&inter(root, ""))?;
     let analysis = required(&inter(root, "change-analysis.json"))?;
@@ -403,10 +420,10 @@ pub fn apply_batches(root: &Path) -> Result<Value> {
         })
         .collect();
     let existing = json!({"nodes":kept,"edges":edges});
-    write(&inter(root, "batch-existing.json"), &existing)?;
     let re = regex::Regex::new(r"^batch-(\d+)(?:-part-(\d+))?\.json$").unwrap();
     let mut files: Vec<_> = fs::read_dir(inter(root, ""))?
-        .filter_map(|e| e.ok())
+        .collect::<std::io::Result<Vec<_>>>()?
+        .into_iter()
         .filter_map(|e| {
             let name = e.file_name().to_string_lossy().to_string();
             let c = re.captures(&name)?;
@@ -419,12 +436,20 @@ pub fn apply_batches(root: &Path) -> Result<Value> {
         })
         .collect();
     files.sort_by(|a, b| a.0.cmp(&b.0));
-    let mut batches = vec![existing];
-    batches.extend(files.iter().map(|(_, p)| read(p)));
+    let mut batches = vec![existing.clone()];
+    for (_, path) in &files {
+        let batch = required(path)?;
+        if !batch["nodes"].is_array() || !batch["edges"].is_array() {
+            return Err(Error::Invalid(format!("Invalid batch fragment: {}", path.display())));
+        }
+        batches.push(batch);
+    }
     let (assembled, report) = batch_merge::merge_and_normalize(&batches);
+    validate_analyzed_file_coverage(array(&assembled, "nodes"), &strings(&analysis["filesToReanalyze"]))?;
     let scan = read(&inter(root, "scan-result.json"));
     let assembled = refresh_graph_imports(&assembled, &scan["importMap"], &strings(&scan["importMapRefreshPaths"]))?;
     let merged = json!({"version":graph.get("version").cloned().unwrap_or(json!("1.0.0")),"project":graph.get("project").cloned().unwrap_or(json!({})),"nodes":assembled["nodes"],"edges":assembled["edges"],"layers":graph.get("layers").cloned().unwrap_or(json!([]))});
+    write(&inter(root, "batch-existing.json"), &existing)?;
     write(&inter(root, "merged-graph.json"), &merged)?;
     if analysis["rerunArchitecture"] == true {
         write(
@@ -527,6 +552,7 @@ pub fn clean_graph(graph: &mut Value) {
 pub fn finalize(root: &Path) -> Result<Value> {
     let analysis = read(&inter(root, "change-analysis.json"));
     let mut merged = required(&inter(root, "merged-graph.json"))?;
+    validate_analyzed_file_coverage(array(&merged, "nodes"), &strings(&analysis["filesToReanalyze"]))?;
     let state = read(&inter(root, "auto-update-state.json"));
     let current = if s(&state, "currentCommit").is_empty() {
         s(&analysis, "currentCommit")
