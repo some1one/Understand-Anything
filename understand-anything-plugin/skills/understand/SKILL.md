@@ -106,7 +106,7 @@ Decide full analysis vs. incremental update.
    ```bash
    python3 "$SKILL_DIR/scripts/write_changed_files.py" "$PROJECT_ROOT" "<lastCommitHash>"
    ```
-   If `changed-files.txt` is empty and exclusion scope is unchanged, skip analysis. With `--review`, follow the
+   If `changed-files.json` contains an empty array (`[]`) and exclusion scope is unchanged, skip analysis. With `--review`, follow the
    review-only path above even when the commit hash changed (for example, a
    sibling monorepo project changed). Otherwise report "Graph is up to date"
    and STOP. Do not advance the saved baseline for a review-only run.
@@ -127,7 +127,7 @@ Decide full analysis vs. incremental update.
 
 2. **Decide whether to prompt for review:**
    - **New/full run:** always prompt and wait (step 3).
-   - **Incremental update:** skip the prompt silently — **unless** `changed-files.txt` includes any of these (ignore rules likely need revisiting → prompt and wait):
+   - **Incremental update:** skip the prompt silently — **unless** `changed-files.json` includes any of these (ignore rules likely need revisiting → prompt and wait):
      - a **dot-prefixed** path (`.eslintrc`, `.github/…`, `.env`, …);
      - **workspace tooling** — dependency manifests/lockfiles, `tsconfig*.json`, `Makefile`, or CI config;
      - an obvious **framework/domain** change — new framework or new top-level domain/service dirs.
@@ -183,7 +183,7 @@ Split the scanned repo into folder-parts and decide which to analyze. Load `$UA_
 **Determine `$PARTS_TO_PROCESS`** (prints part names, one per line):
 ```bash
 "$PLUGIN_ROOT/packages/rust/run.sh" parts_to_process "$PROJECT_ROOT" \
-  [--full] [--changed="$UA_DIR/tmp/changed-files.txt"]
+  [--full] [--changed="$UA_DIR/tmp/changed-files.json"]
 ```
 - Pass `--full` for `--full`/`--all`/first-run or `$SCOPE_CHANGED=true` → every included part. This replaces newly empty part graphs and restores newly included files. Partitioning, import resolution, batching, and fingerprints must all use the filtered scan inventory; do not rescan without the invocation patterns.
 - Otherwise pass `--changed=…` → **affected** parts plus any included part that has no partition graph yet (e.g. one just added via `/understand-add-part`).
@@ -197,12 +197,12 @@ Split the scanned repo into folder-parts and decide which to analyze. Load `$UA_
 
 ## Phase 2 — ANALYZE (per part)
 
-For **each** part in `$PARTS_TO_PROCESS`, run steps 1–4. Parts are independent; process them one at a time (each part's file-analyzers still run up to **5 concurrently**). A part's file list is `intermediate/part-files/<part>.txt` (the part name with `/` written as `~`).
+For **each** part in `$PARTS_TO_PROCESS`, run steps 1–4. Parts are independent; process them one at a time (each part's file-analyzers still run up to **5 concurrently**). A part's file list is `intermediate/part-files/<part>.json` (the part name with `/` written as `~`).
 
 1. **Batch the part's files** (scoped via the part file list; `neighborMap` still references files in other parts so cross-part edges stay emittable):
    ```bash
    "$PLUGIN_ROOT/packages/rust/run.sh" compute_batches "$PROJECT_ROOT" \
-     --changed-files="$UA_DIR/intermediate/part-files/<part-encoded>.txt"
+     --changed-files="$UA_DIR/intermediate/part-files/<part-encoded>.json"
    ```
    Append `Warning:` stderr lines to `$PHASE_WARNINGS`; a non-zero exit is a hard failure.
 

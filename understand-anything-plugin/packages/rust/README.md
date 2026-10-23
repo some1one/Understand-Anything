@@ -243,3 +243,10 @@ Quote patterns so the shell does not expand them. This filters the scanner's
 existing file inventory; it does not make Git-ignored, untracked files enumerable.
 Nonempty patterns are retained as `excludePatterns` in scan and assembled scan
 output. They do not modify ignore files.
+
+Changed-file handoffs (`write_changed_files`, `compute_batches --changed-files`,
+`affected_parts`, and `parts_to_process --changed`) use JSON arrays of paths.
+`partition_files` writes `intermediate/part-files/<encoded-part>.json`; the
+analysis workflow passes these lists directly to batching. JSON preserves embedded
+newlines and filename whitespace. Readers still accept legacy newline- or
+NUL-delimited lists. Invalid JSON fails before batch output is replaced.

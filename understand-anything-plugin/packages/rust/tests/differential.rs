@@ -93,7 +93,7 @@ fn captured_python_api_cases() {
     for (index, case) in cases.iter().enumerate() {
         equal(
             &run(case),
-            &case["expected"],
+            if cfg!(windows) && case.get("expectedWindows").is_some() { &case["expectedWindows"] } else { &case["expected"] },
             &format!("case {index} ({})", case["function"]),
         );
     }

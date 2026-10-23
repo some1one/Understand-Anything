@@ -7,8 +7,8 @@ use std::{
 };
 
 pub fn posix(path: &str) -> String {
-    let p = path.replace('\\', "/");
-    let mut p = p.trim();
+    let normalized = crate::imports::to_posix(path);
+    let mut p = normalized.as_str();
     while let Some(rest) = p.strip_prefix("./") {
         p = rest;
     }

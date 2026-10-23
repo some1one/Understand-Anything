@@ -674,8 +674,9 @@ pub fn validate_part_replacement(
         .filter(|node| kind(node).is_some()).map(|node| s(node,"filePath").to_owned()).collect();
     if old_paths.is_empty() { return Ok(json!({"ok":true,"files":[]})); }
     let encoded = part.replace('/',"~");
-    let inventory = artifact(root,&format!("part-files/{encoded}.txt"));
-    let assigned: BTreeSet<String> = std::fs::read_to_string(&inventory)?.lines().map(str::to_owned).collect();
+    let json_inventory = artifact(root,&format!("part-files/{encoded}.json"));
+    let inventory = if json_inventory.exists() { json_inventory } else { artifact(root,&format!("part-files/{encoded}.txt")) };
+    let assigned: BTreeSet<String> = crate::file_lists::read(&inventory)?.into_iter().collect();
     let scanned: BTreeSet<_> = array(scan,"files").iter().map(|file| s(file,"path")).collect();
     if assigned.iter().any(|path| !scanned.contains(path.as_str())) {
         return Err(crate::Error::Invalid("Partition inventory is inconsistent with the scan".into()));

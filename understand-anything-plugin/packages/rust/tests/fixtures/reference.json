@@ -18,6 +18,25 @@
     },
     "expected": {
       "_root": [
+        " src\\api\\foo.rs ",
+        "README.md"
+      ],
+      "apps": [
+        "apps/shop/package.json"
+      ],
+      "packages": [
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/api/lib.ts",
+        "src/api/main.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "src/élève.py"
+      ]
+    },
+    "legacyExpected": {
+      "_root": [
         "README.md"
       ],
       "apps": [
@@ -34,6 +53,27 @@
         "src/root.ts",
         "src/élève.py"
       ]
+    },
+    "expectedWindows": {
+      "_root": [
+        "README.md"
+      ],
+      "apps": [
+        "apps/shop/package.json"
+      ],
+      "packages": [
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/api/lib.ts",
+        "src/api/main.ts",
+        "src/lib/x.ts",
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      " src": [
+        " src/api/foo.rs "
+      ]
     }
   },
   {
@@ -55,6 +95,29 @@
     },
     "expected": {
       "_root": [
+        " src\\api\\foo.rs ",
+        "README.md"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "packages/core": [
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "legacyExpected": {
+      "_root": [
         "README.md"
       ],
       "apps/shop": [
@@ -74,6 +137,31 @@
       ],
       "src/lib": [
         "src/lib/x.ts"
+      ]
+    },
+    "expectedWindows": {
+      "_root": [
+        "README.md"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "packages/core": [
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ],
+      " src/api": [
+        " src/api/foo.rs "
       ]
     }
   },
@@ -96,6 +184,29 @@
     },
     "expected": {
       "_root": [
+        " src\\api\\foo.rs ",
+        "README.md"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "packages/core": [
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "legacyExpected": {
+      "_root": [
         "README.md"
       ],
       "apps/shop": [
@@ -116,6 +227,31 @@
       "src/lib": [
         "src/lib/x.ts"
       ]
+    },
+    "expectedWindows": {
+      "_root": [
+        "README.md"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "packages/core": [
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ],
+      " src/api": [
+        " src/api/foo.rs "
+      ]
     }
   },
   {
@@ -139,6 +275,25 @@
     },
     "expected": {
       "_root": [
+        " src\\api\\foo.rs ",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "legacyExpected": {
+      "_root": [
         "README.md",
         "apps/shop/package.json",
         "packages/core/Cargo.toml"
@@ -149,6 +304,25 @@
       ],
       "src/api": [
         "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "expectedWindows": {
+      "_root": [
+        " src/api/foo.rs ",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
         "src/api/lib.ts",
         "src/api/main.ts"
       ],
@@ -178,6 +352,25 @@
     },
     "expected": {
       "_root": [
+        " src\\api\\foo.rs ",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "legacyExpected": {
+      "_root": [
         "README.md",
         "apps/shop/package.json",
         "packages/core/Cargo.toml"
@@ -188,6 +381,25 @@
       ],
       "src/api": [
         "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "expectedWindows": {
+      "_root": [
+        " src/api/foo.rs ",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
         "src/api/lib.ts",
         "src/api/main.ts"
       ],
@@ -217,6 +429,25 @@
     },
     "expected": {
       "_root": [
+        " src\\api\\foo.rs ",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "legacyExpected": {
+      "_root": [
         "README.md",
         "apps/shop/package.json",
         "packages/core/Cargo.toml"
@@ -227,6 +458,25 @@
       ],
       "src/api": [
         "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "expectedWindows": {
+      "_root": [
+        " src/api/foo.rs ",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
         "src/api/lib.ts",
         "src/api/main.ts"
       ],
@@ -256,6 +506,25 @@
     },
     "expected": {
       "_root": [
+        " src\\api\\foo.rs ",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "legacyExpected": {
+      "_root": [
         "README.md",
         "apps/shop/package.json",
         "packages/core/Cargo.toml"
@@ -266,6 +535,25 @@
       ],
       "src/api": [
         "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "expectedWindows": {
+      "_root": [
+        " src/api/foo.rs ",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
         "src/api/lib.ts",
         "src/api/main.ts"
       ],
@@ -296,6 +584,25 @@
     },
     "expected": {
       "_root": [
+        " src\\api\\foo.rs ",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "legacyExpected": {
+      "_root": [
         "README.md",
         "apps/shop/package.json",
         "packages/core/Cargo.toml"
@@ -306,6 +613,25 @@
       ],
       "src/api": [
         "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "expectedWindows": {
+      "_root": [
+        " src/api/foo.rs ",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
         "src/api/lib.ts",
         "src/api/main.ts"
       ],
@@ -336,6 +662,25 @@
     },
     "expected": {
       "_root": [
+        " src\\api\\foo.rs ",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "legacyExpected": {
+      "_root": [
         "README.md",
         "apps/shop/package.json",
         "packages/core/Cargo.toml"
@@ -346,6 +691,25 @@
       ],
       "src/api": [
         "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "expectedWindows": {
+      "_root": [
+        " src/api/foo.rs ",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
         "src/api/lib.ts",
         "src/api/main.ts"
       ],
@@ -376,6 +740,25 @@
     },
     "expected": {
       "_root": [
+        " src\\api\\foo.rs ",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "legacyExpected": {
+      "_root": [
         "README.md",
         "apps/shop/package.json",
         "packages/core/Cargo.toml"
@@ -386,6 +769,25 @@
       ],
       "src/api": [
         "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "expectedWindows": {
+      "_root": [
+        " src/api/foo.rs ",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
         "src/api/lib.ts",
         "src/api/main.ts"
       ],
@@ -416,6 +818,25 @@
     },
     "expected": {
       "_root": [
+        " src\\api\\foo.rs ",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "legacyExpected": {
+      "_root": [
         "README.md",
         "apps/shop/package.json",
         "packages/core/Cargo.toml"
@@ -426,6 +847,25 @@
       ],
       "src/api": [
         "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "expectedWindows": {
+      "_root": [
+        " src/api/foo.rs ",
+        "README.md",
+        "apps/shop/package.json",
+        "packages/core/Cargo.toml"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
         "src/api/lib.ts",
         "src/api/main.ts"
       ],
@@ -456,6 +896,27 @@
     },
     "expected": {
       "_root": [
+        " src\\api\\foo.rs ",
+        "README.md",
+        "packages/core/Cargo.toml"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "legacyExpected": {
+      "_root": [
         "README.md",
         "packages/core/Cargo.toml"
       ],
@@ -468,6 +929,27 @@
       ],
       "src/api": [
         "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "expectedWindows": {
+      "_root": [
+        " src/api/foo.rs ",
+        "README.md",
+        "packages/core/Cargo.toml"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
         "src/api/lib.ts",
         "src/api/main.ts"
       ],
@@ -498,6 +980,27 @@
     },
     "expected": {
       "_root": [
+        " src\\api\\foo.rs ",
+        "README.md",
+        "packages/core/Cargo.toml"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "legacyExpected": {
+      "_root": [
         "README.md",
         "packages/core/Cargo.toml"
       ],
@@ -510,6 +1013,27 @@
       ],
       "src/api": [
         "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "expectedWindows": {
+      "_root": [
+        " src/api/foo.rs ",
+        "README.md",
+        "packages/core/Cargo.toml"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
         "src/api/lib.ts",
         "src/api/main.ts"
       ],
@@ -540,6 +1064,27 @@
     },
     "expected": {
       "_root": [
+        " src\\api\\foo.rs ",
+        "README.md",
+        "packages/core/Cargo.toml"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "legacyExpected": {
+      "_root": [
         "README.md",
         "packages/core/Cargo.toml"
       ],
@@ -552,6 +1097,27 @@
       ],
       "src/api": [
         "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "expectedWindows": {
+      "_root": [
+        " src/api/foo.rs ",
+        "README.md",
+        "packages/core/Cargo.toml"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
         "src/api/lib.ts",
         "src/api/main.ts"
       ],
@@ -582,6 +1148,27 @@
     },
     "expected": {
       "_root": [
+        " src\\api\\foo.rs ",
+        "README.md",
+        "packages/core/Cargo.toml"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "legacyExpected": {
+      "_root": [
         "README.md",
         "packages/core/Cargo.toml"
       ],
@@ -594,6 +1181,27 @@
       ],
       "src/api": [
         "src/api/foo.rs",
+        "src/api/lib.ts",
+        "src/api/main.ts"
+      ],
+      "src/lib": [
+        "src/lib/x.ts"
+      ]
+    },
+    "expectedWindows": {
+      "_root": [
+        " src/api/foo.rs ",
+        "README.md",
+        "packages/core/Cargo.toml"
+      ],
+      "apps/shop": [
+        "apps/shop/package.json"
+      ],
+      "src": [
+        "src/root.ts",
+        "src/élève.py"
+      ],
+      "src/api": [
         "src/api/lib.ts",
         "src/api/main.ts"
       ],

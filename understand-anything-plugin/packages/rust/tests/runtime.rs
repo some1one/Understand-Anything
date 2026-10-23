@@ -534,8 +534,8 @@ fn deleted_part_runs_through_empty_batch_assembly() {
     };
     let root_str = root.to_str().unwrap();
     run(&["partition_files", root_str, "--depth=1"]);
-    let list = inter.join("part-files/deleted.txt");
-    assert!(fs::read_to_string(&list).unwrap().trim().is_empty());
+    let list = inter.join("part-files/deleted.json");
+    assert_eq!(serde_json::from_str::<serde_json::Value>(&fs::read_to_string(&list).unwrap()).unwrap(), json!([]));
     fs::write(root.join("changed.txt"), "deleted/last.txt\n").unwrap();
     let selection = run(&[
         "parts_to_process",

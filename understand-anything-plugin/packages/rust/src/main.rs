@@ -86,12 +86,7 @@ fn scan_paths(root: &Path) -> Result<Vec<String>> {
         .collect())
 }
 fn changed(path: &Path) -> Result<Vec<String>> {
-    let raw = fs::read_to_string(path)?;
-    Ok(raw
-        .split(if raw.contains('\0') { '\0' } else { '\n' })
-        .filter(|s| !s.is_empty())
-        .map(str::to_owned)
-        .collect())
+    ua::file_lists::read(path)
 }
 fn absolute(p: &str) -> Result<PathBuf> {
     let p = PathBuf::from(p);
@@ -707,14 +702,14 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
             fs::create_dir_all(&lists)?;
             for entry in fs::read_dir(&lists)? {
                 let p = entry?.path();
-                if p.extension().is_some_and(|s| s == "txt") {
+                if p.extension().is_some_and(|s| s == "txt" || s == "json") {
                     fs::remove_file(p)?;
                 }
             }
             for (name, files) in &parts {
-                fs::write(
-                    lists.join(format!("{}.txt", name.replace('/', "~"))),
-                    format!("{}\n", files.join("\n")),
+                write_json(
+                    &lists.join(format!("{}.json", name.replace('/', "~"))),
+                    &json!(files),
                 )?;
             }
             eprintln!(
@@ -727,7 +722,7 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
             }
         }
         "affected_parts" => {
-            require(&args, 2, command, "<project-root> <changed-files.txt>")?;
+            require(&args, 2, command, "<project-root> <changed-files.json>")?;
             let root = absolute(&args[0])?;
             let config = ua::persistence::load_config(&root);
             for name in partition::affected_parts(

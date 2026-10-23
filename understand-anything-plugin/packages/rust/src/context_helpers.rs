@@ -96,20 +96,9 @@ pub fn diff_files(root: &Path, base: Option<&str>) -> Result<(Vec<String>, Strin
 }
 pub fn write_changed_files(root: &Path, previous: &str) -> Result<Value> {
     let files = changed_paths(root, &format!("{previous}..HEAD"))?;
-    let separator = if files.iter().any(|p| p.contains(['\n', '\r'])) {
-        "\0"
-    } else {
-        "\n"
-    };
-    let output = crate::persistence::data_dir(&root).join("tmp/changed-files.txt");
+    let output = crate::persistence::data_dir(&root).join("tmp/changed-files.json");
     fs::create_dir_all(output.parent().unwrap())?;
-    fs::write(
-        &output,
-        files
-            .iter()
-            .map(|p| format!("{p}{separator}"))
-            .collect::<String>(),
-    )?;
+    write_json(&output, &json!(files))?;
     Ok(json!(output))
 }
 fn node_path(node: &Value, pruning: bool) -> Option<&str> {
@@ -132,11 +121,7 @@ fn node_path(node: &Value, pruning: bool) -> Option<&str> {
     parts.next()
 }
 pub fn prune_incremental_batch(root: &Path, changed: &Path) -> Result<Value> {
-    let raw = fs::read_to_string(changed)?;
-    let paths: BTreeSet<_> = raw
-        .split(if raw.contains('\0') { '\0' } else { '\n' })
-        .filter(|p| !p.is_empty())
-        .collect();
+    let paths: BTreeSet<_> = crate::file_lists::read(changed)?.into_iter().collect();
     let graph = read_json(&crate::persistence::data_dir(&root).join("knowledge-graph.json"))?;
     let removed: BTreeSet<_> = array(&graph, "nodes")
         .iter()

@@ -47,3 +47,9 @@ input files, with historical responses retained as `legacyExpected`. Successful
 publication and symbol repair continue to run against real temporary Git commits
 in `symbol_publication.rs`; worktree and HEAD drift are tested in
 `dirty_updates.rs`, and fingerprint corruption is covered by `runtime.rs`.
+
+JSON filename handoffs replace `partition_files` text outputs in `commands.json`.
+The partition cases in `reference.json` retain historical outputs as
+`legacyExpected`: filename whitespace is now preserved, and literal backslashes
+remain filename characters on Unix. `expectedWindows` records native Windows
+separator conversion without trimming filename whitespace.

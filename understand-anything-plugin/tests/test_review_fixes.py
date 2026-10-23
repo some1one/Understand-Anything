@@ -77,8 +77,8 @@ def test_rename_helpers_preserve_both_paths_and_unusual_names(tmp_path, capsys):
     assert git('diff', '--name-status', previous, 'HEAD').startswith('R100')
     collector = module('understand', 'write_changed_files')
     assert collector.main([str(tmp_path), previous]) == 0
-    changed = tmp_path / '.ua/tmp/changed-files.txt'
-    assert set(changed.read_bytes().decode().split('\0')) == {old, new, ''}
+    changed = tmp_path / '.ua/tmp/changed-files.json'
+    assert set(json.loads(changed.read_text())) == {old, new}
     diff = module('understand-diff', 'diff_context')
     assert set(diff.changed_files(tmp_path, previous)[0]) == {old, new}
     graph = {'nodes': [{'id': 'old', 'filePath': old}, {'id': 'keep', 'filePath': 'keep.py'}],
