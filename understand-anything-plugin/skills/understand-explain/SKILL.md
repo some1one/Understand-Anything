@@ -23,6 +23,11 @@ Read [host integration](../../HOSTS.md) for invocation, argument handling, and a
 
 ## Instructions
 
+Before using graph-derived claims, follow the [graph freshness check](../../HOSTS.md#graph-freshness-when-answering-questions)
+for the snapshot loaded by this skill. Disclose dirty, stale, or unknown status
+briefly and continue with current-source verification; do not automatically
+rebuild or modify the graph.
+
 1. Set `SKILL_DIR` to the directory containing this `SKILL.md`.
 
 2. Run the helper (finds the target node, connected edges, neighboring nodes, layer membership, and a source excerpt):

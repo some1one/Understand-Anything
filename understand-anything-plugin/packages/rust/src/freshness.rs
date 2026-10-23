@@ -289,3 +289,10 @@ mod tests {
         assert!(run(cmd, Duration::from_secs(2)).is_err());
     }
 }
+
+/// Read identity from the graph being consumed, never from another snapshot's metadata.
+pub fn input_for_graph(graph: &Value) -> Value {
+    let mut input = json!({"graphCommitHash":graph["project"]["gitCommitHash"]});
+    if let Some(time) = graph["project"].get("analyzedAt") { input["lastAnalyzedAt"] = time.clone(); }
+    input
+}

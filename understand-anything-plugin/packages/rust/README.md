@@ -226,7 +226,8 @@ With no input file, it uses the commit and analysis time stored in the selected
 project data directory's `knowledge-graph.json`. It does not substitute a newer
 metadata watermark or start analysis.
 
-An input object can supply `graphCommitHash` and optional `lastAnalyzedAt`.
+An input object can supply `graphCommitHash` and optional `lastAnalyzedAt`, or
+be the saved graph itself (including a selected partition graph).
 For multiple snapshots, use `{"graphs":{"name":{"graphCommitHash":"…"}}}`;
 all entries share one HEAD/worktree snapshot. Results distinguish `fresh`,
 `dirty`, `stale` (with `behind`, `ahead`, or `diverged`), and `unknown`.

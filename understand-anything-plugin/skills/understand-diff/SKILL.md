@@ -34,6 +34,11 @@ Read [host integration](../../HOSTS.md) for invocation, argument handling, and a
 
 ## Instructions
 
+Before using graph-derived claims, follow the [graph freshness check](../../HOSTS.md#graph-freshness-when-answering-questions)
+for the snapshot loaded by this skill. Disclose dirty, stale, or unknown status
+briefly and continue with current-source verification; do not automatically
+rebuild or modify the graph.
+
 1. Set `SKILL_DIR` to the directory containing this `SKILL.md`.
 
 2. Run the helper. Pass a base branch as the optional second argument if the user specified one, else omit it. The helper compares feature branches against the local origin default-branch reference or an available main/master branch. On the default branch, or without a usable base, it includes staged and unstaged changes against HEAD. Gathers changed files, extracts changed/affected nodes, finds touched layers, and writes `$UA_DIR/diff-overlay.json`.

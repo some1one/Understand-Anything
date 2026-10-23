@@ -165,13 +165,14 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
             let root = Path::new(&args[0]);
             let input = if let Some(path) = args.get(1) { read_json(Path::new(path))? } else {
                 let graph = read_json(&ua::persistence::data_dir(root).join("knowledge-graph.json")).unwrap_or(json!({}));
-                let mut input = json!({"graphCommitHash":graph["project"]["gitCommitHash"]});
-                if let Some(time) = graph["project"].get("analyzedAt") { input["lastAnalyzedAt"] = time.clone(); }
-                input
+                ua::freshness::input_for_graph(&graph)
             };
             if !input.is_object() || input.get("graphs").is_some_and(|v| !v.is_object()) {
                 return Err(Error::Invalid("Freshness input must be an object; graphs must be an object when present".into()));
             }
+            let input = if input.get("project").is_some() && input.get("graphCommitHash").is_none() {
+                ua::freshness::input_for_graph(&input)
+            } else { input };
             let result = if input.get("graphs").is_some() { ua::freshness::batch(root, &input["graphs"]) } else { ua::freshness::check(root, &input) };
             println!("{}", serde_json::to_string(&result)?);
         }

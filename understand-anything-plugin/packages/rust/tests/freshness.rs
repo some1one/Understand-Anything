@@ -143,3 +143,38 @@ fn unknown_states_and_cli_use_graph_identity_not_a_newer_metadata_watermark() {
     assert_eq!(batch["current"]["status"], "fresh");
     assert_eq!(batch["missing"]["status"], "unknown");
 }
+
+#[test]
+fn explicit_partition_snapshot_does_not_inherit_merged_graph_freshness() {
+    let tmp = setup();
+    let root = tmp.path();
+    let base = git(root, &["rev-parse", "HEAD"]);
+    fs::write(root.join("sub/source.txt"), "new revision").unwrap();
+    let next = commit(root);
+    fs::create_dir_all(root.join(".ua/partitions")).unwrap();
+    let part = root.join(".ua/partitions/sub.knowledge-graph.json");
+    fs::write(&part, json!({"project":{"gitCommitHash":base,"analyzedAt":"old partition"},"nodes":[],"edges":[]}).to_string()).unwrap();
+    fs::write(
+        root.join(".ua/knowledge-graph.json"),
+        json!({"project":{"gitCommitHash":next}}).to_string(),
+    )
+    .unwrap();
+    for (path, status) in [(None, "fresh"), (Some(&part), "stale")] {
+        let mut command = Command::new(env!("CARGO_BIN_EXE_understand-anything-rs"));
+        command.arg("graph_freshness").arg(root);
+        if let Some(path) = path {
+            command.arg(path);
+        }
+        let output = command.output().unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let result: Value = serde_json::from_slice(&output.stdout).unwrap();
+        assert_eq!(result["status"], status, "{result}");
+        if path.is_some() {
+            assert_eq!(result["lastAnalyzedAt"], "old partition");
+        }
+    }
+}

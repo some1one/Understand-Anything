@@ -59,6 +59,39 @@ Use the [repository instruction template](README.md#recommended-repository-instr
 when helping users configure their own agent. Follow the selected skill when a
 workflow is needed; this routing guidance does not silently skip its required steps.
 
+## Graph freshness when answering questions
+
+Before relying on a loaded snapshot in chat, explanation, diff analysis, or
+onboarding, check that graph's freshness. Set `PROJECT_ROOT` to the same project
+passed to the context helper, resolve `PLUGIN_ROOT` and `UA_DIR` as above, and
+set `GRAPH_PATH` to the exact graph file being consumed. Then run:
+
+```bash
+"$PLUGIN_ROOT/packages/rust/run.sh" graph_freshness "$PROJECT_ROOT" "$GRAPH_PATH"
+```
+
+For merged context, `GRAPH_PATH` is `$UA_DIR/knowledge-graph.json`. For selected
+parts, check each loaded `$UA_DIR/partitions/<encoded-part>.knowledge-graph.json`
+(`/` in a part name is encoded as `~`). Do not substitute the merged graph's
+commit or `meta.json` for a selected part's identity. If a snapshot has no commit,
+report its freshness as unknown. Reuse a recent check already in context only
+while the selected snapshot, HEAD, and relevant worktree state are unchanged.
+
+- `fresh`: continue without a warning. Freshness describes source revision
+  alignment, not proof that every graph claim is correct.
+- `dirty`: briefly note that local edits may be absent from the graph; inspect
+  current source for the requested behavior.
+- `stale`: briefly report whether the snapshot is behind, ahead, or diverged,
+  its analysis time when present, and the changed-file count. Treat relationships
+  as historical context and verify relevant changes against current source.
+- `unknown`, a failed command, or unreadable output: say freshness could not be
+  verified. Never treat a Git error, timeout, or missing commit as fresh.
+
+Continue the requested answer using the available evidence; offer an explicit
+analysis refresh when useful. A freshness warning does not authorize indexing,
+rewriting graphs, updating metadata, or changing the user's worktree. For a diff
+request, a dirty worktree is expected evidence to inspect, not a reason to stop.
+
 ## Agent dispatch
 
 Claude native installations discover the Markdown definitions in `agents/`.
