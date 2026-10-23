@@ -173,7 +173,8 @@ def test_distribution_contains_native_engine_and_shared_references(tmp_path):
     for relative in [".claude-plugin/plugin.json", ".codex-plugin/plugin.json",
                      "HOSTS.md", "hooks/auto_update.py", "scripts/create_marketplace.py",
                      "packages/rust/run.sh", "packages/rust/bin/understand-anything-rs",
-                     "packages/rust/schemas/knowledge-graph.schema.json"]:
+                     "packages/rust/schemas/knowledge-graph.schema.json",
+                     "packages/dashboard/freshness-server.mjs"]:
         assert (payload / relative).is_file(), relative
     assert (payload / "AGENTS.md").read_text() == (PLUGIN / "AGENTS.md").read_text()
     assert len(list((payload / "skills").glob("*/SKILL.md"))) == 13

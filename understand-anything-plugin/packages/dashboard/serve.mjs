@@ -3,7 +3,7 @@
 //
 // Serves the production build in ./dist and the same token-gated data
 // endpoints the Vite dev server exposed (knowledge-graph.json, domain-graph.json,
-// diff-overlay.json, meta.json, config.json, file-content.json). Zero runtime
+// diff-overlay.json, meta.json, config.json, file-content.json, staleness.json). Zero runtime
 // dependencies — only Node's stdlib — so it runs from a bundled plugin without
 // `pnpm install`.
 //
@@ -11,6 +11,7 @@
 //   GRAPH_DIR                 project root that holds .ua/ (or legacy data)
 //   UNDERSTAND_ACCESS_TOKEN   fixed access token (else a random one is generated)
 //   PORT / HOST               listen address (default 127.0.0.1:0 → random port)
+import { createFreshnessReader } from "./freshness-server.mjs";
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
@@ -65,6 +66,8 @@ function graphFileCandidates(fileName) {
 function findGraphFile(fileName) {
   return graphFileCandidates(fileName).find((c) => fs.existsSync(c)) ?? null;
 }
+
+const readFreshness = createFreshnessReader(findGraphFile);
 
 function projectRootFromGraphFile(candidate) {
   return path.dirname(path.dirname(candidate));
@@ -255,6 +258,7 @@ function serveStatic(res, pathname) {
 }
 
 const PROTECTED = new Set([
+  "/staleness.json",
   "/knowledge-graph.json",
   "/domain-graph.json",
   "/diff-overlay.json",
@@ -278,7 +282,14 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (pathname === "/file-content.json") {
+  if (pathname === "/staleness.json") {
+            res.setHeader("Cache-Control", "no-store");
+            void readFreshness().then((report) => sendJson(res, 200, report))
+              .catch(() => sendJson(res, 500, { error: "Failed to check freshness" }));
+            return;
+          }
+
+          if (pathname === "/file-content.json") {
     const result = readSourceFile(url);
     sendJson(res, result.statusCode, result.payload);
     return;

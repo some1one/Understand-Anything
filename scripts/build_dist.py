@@ -95,7 +95,7 @@ def assemble_payload(payload: Path, binary: Path) -> None:
     shutil.copy2(PKGS / "rust/README.md", rust / "README.md")
     dash = pkgs / "dashboard"
     dash.mkdir()
-    for name in ("serve.mjs", "package.json"):
+    for name in ("serve.mjs", "freshness-server.mjs", "package.json"):
         shutil.copy2(PKGS / "dashboard" / name, dash / name)
 
 

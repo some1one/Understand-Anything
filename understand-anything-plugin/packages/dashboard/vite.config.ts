@@ -1,3 +1,4 @@
+import { createFreshnessReader } from "./freshness-server.mjs";
 /// <reference types="vitest" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
@@ -34,6 +35,8 @@ function graphFileCandidates(fileName: string): string[] {
 function findGraphFile(fileName: string): string | null {
   return graphFileCandidates(fileName).find((candidate) => fs.existsSync(candidate)) ?? null;
 }
+
+const readFreshness = createFreshnessReader(findGraphFile);
 
 function projectRootFromGraphFile(candidate: string): string {
   return path.dirname(path.dirname(candidate));
@@ -256,6 +259,7 @@ export default defineConfig({
           const url = new URL(req.url ?? "/", "http://127.0.0.1:5173");
           const pathname = url.pathname;
           const isProtectedEndpoint =
+            pathname === "/staleness.json" ||
             pathname === "/knowledge-graph.json" ||
             pathname === "/domain-graph.json" ||
             pathname === "/diff-overlay.json" ||
@@ -273,6 +277,13 @@ export default defineConfig({
           // Requests without a matching ?token= get a 403.
           if (url.searchParams.get("token") !== ACCESS_TOKEN) {
             sendJson(res, 403, { error: "Forbidden: missing or invalid token" });
+            return;
+          }
+
+          if (pathname === "/staleness.json") {
+            res.setHeader("Cache-Control", "no-store");
+            void readFreshness().then((report) => sendJson(res, 200, report))
+              .catch(() => sendJson(res, 500, { error: "Failed to check freshness" }));
             return;
           }
 

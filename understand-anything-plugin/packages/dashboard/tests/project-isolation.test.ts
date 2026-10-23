@@ -89,6 +89,14 @@ describe.each(["standalone", "vite"])("%s project isolation", (mode) => {
       const explicit = await start(mode, b, a);
       try {
         expect((await (await request(explicit.url, "knowledge-graph.json")).json()).project.name).toBe("A");
+        const unauthorized = await fetch(new URL("staleness.json", explicit.url));
+        expect(unauthorized.status).toBe(403);
+        const freshness = await request(explicit.url, "staleness.json");
+        expect(freshness.headers.get("cache-control")).toBe("no-store");
+        const report = await freshness.json();
+        expect(report.graphs.knowledge.status).toBe("unknown");
+        expect(report.graphs.domain).toBeUndefined();
+
         for (const name of ["domain-graph.json", "meta.json", "diff-overlay.json", "embeddings.json"])
           expect((await request(explicit.url, name)).status).toBe(404);
         expect(await (await request(explicit.url, "config.json")).json()).toEqual({ autoUpdate: false });
