@@ -129,7 +129,7 @@ A nonzero exit is a failed update; report the error and preserve diagnostic file
 Finalization compares reanalyzed symbols with the prepared source revisions before
 publishing. On unresolved symbol loss, read `incremental-symbol-report.json` and
 report the affected files and reasons. Keep `incremental-symbol-baseline.json`
-and the batch outputs for repair; do not remove old symbols or edit the report to
+and `incremental-edge-candidates.json` with the batch outputs for repair; do not remove old symbols or edit the report to
 force success. If the report identifies unresolved files without source/identity
 errors, run the bounded repair command once:
 

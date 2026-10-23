@@ -430,6 +430,7 @@ pub fn validate_prepared(
         ));
     }
     let previous = &baseline["graph"];
+    let edge_candidates = read_edge_candidates(root, state, current)?;
     let mut reports = vec![];
     let mut unresolved = vec![];
     let mut errors = vec![];
@@ -556,10 +557,97 @@ pub fn validate_prepared(
         }
         graph
     };
+    restore_current_candidates(&edge_candidates, previous, current, &remaps, &BTreeSet::new());
     if active_retry {
         let paths = crate::strings(&retry["files"]).into_iter().collect();
+        restore_current_candidates(&retry["edgeCandidates"], previous, current, &remaps, &paths);
+
         crate::updates::restore_inbound_edges(&remap(&retry["graph"]), current, &paths)?;
     }
     crate::updates::restore_inbound_edges(&remap(previous), current, &selected)?;
     Ok(report)
+}
+
+/// Bind edge evidence to its node/edge snapshot while allowing architecture metadata edits.
+pub fn edge_candidate_hash(graph: &Value) -> crate::Result<String> {
+    Ok(crate::fingerprints::content_hash(&serde_json::to_string(&json!({"nodes":graph["nodes"],"edges":graph["edges"]}))?))
+}
+
+/// Candidate evidence is bound to the assembled nodes and edges, not merely HEAD.
+pub fn read_edge_candidates(root: &std::path::Path, state: &Value, graph: &Value) -> crate::Result<Value> {
+    let path = artifact(root, "incremental-edge-candidates.json");
+    if !path.exists() { return Ok(json!({"nodes":[],"edges":[]})); }
+    let record = crate::persistence::read_json(&path)?;
+    if record["version"] != 1 || record["baseCommit"] != state["previousCommit"]
+        || record["headCommit"] != state["currentCommit"]
+        || record["graphHash"] != edge_candidate_hash(graph)?
+        || !record["nodes"].is_array() || !record["edges"].is_array() {
+        return Err(crate::Error::Invalid("Edge candidates do not match the assembled graph and source revision".into()));
+    }
+    Ok(record)
+}
+
+fn restore_current_candidates(
+    record: &Value, baseline: &Value, current: &mut Value,
+    remaps: &std::collections::BTreeMap<&str, &str>, replaced_sources: &BTreeSet<String>,
+) {
+    let node_map = |graph: &Value| -> std::collections::BTreeMap<String, Value> {
+        array(graph, "nodes").iter().map(|node| (s(node,"id").to_owned(), node.clone())).collect()
+    };
+    let sources = node_map(record);
+    let old = node_map(baseline);
+    let nodes = node_map(current);
+    let key = |edge: &Value| (s(edge,"source").to_owned(), s(edge,"target").to_owned(), s(edge,"type").to_owned(), crate::batch_merge::normalize_direction(&edge["direction"]));
+    let edges = current["edges"].as_array_mut().unwrap();
+    let mut seen: std::collections::BTreeMap<_,_> = edges.iter().enumerate().map(|(i,e)| (key(e),i)).collect();
+    for candidate in array(record,"edges") {
+        let source = s(candidate,"source");
+        let target = s(candidate,"target");
+        let Some(descriptor) = sources.get(source) else { continue; };
+        if replaced_sources.contains(s(descriptor,"filePath")) { continue; }
+        let Some(current_source) = nodes.get(source) else { continue; };
+        if descriptor["filePath"] != current_source["filePath"] || descriptor["type"] != current_source["type"] { continue; }
+        let mapped = remaps.get(target).copied().unwrap_or(target);
+        let (Some(before), Some(after)) = (old.get(target), nodes.get(mapped)) else { continue; };
+        if before["filePath"] != after["filePath"] || before["type"] != after["type"] { continue; }
+        // Non-identical IDs may be rebound only by strict symbol evidence.
+        let mut edge = candidate.clone();
+        edge["target"] = json!(mapped);
+        edge["direction"] = json!(crate::batch_merge::normalize_direction(&edge["direction"]));
+        let k = key(&edge);
+        if let Some(&index) = seen.get(&k) {
+            if edge["weight"].as_f64().unwrap_or(0.) > edges[index]["weight"].as_f64().unwrap_or(0.) { edges[index] = edge; }
+        } else { seen.insert(k,edges.len()); edges.push(edge); }
+    }
+}
+
+#[cfg(test)]
+mod candidate_tests {
+    use super::*;
+    #[test]
+    fn current_candidates_respect_source_reanalysis_identity_and_direction() {
+        let source = json!({"id":"file:caller","type":"file","filePath":"caller.ts"});
+        let target = json!({"id":"old","type":"function","filePath":"target.ts"});
+        let baseline = json!({"nodes":[target],"edges":[]});
+        let record = json!({"nodes":[source],"edges":[
+            {"source":"file:caller","target":"old","type":"calls","direction":"both","weight":3},
+            {"source":"file:caller","target":"old","type":"calls","direction":"forward","weight":1}
+        ]});
+        let current = json!({"nodes":[source,{"id":"new","type":"function","filePath":"target.ts"}],"edges":[]});
+        let remaps = std::collections::BTreeMap::from([("old","new")]);
+        let mut replaced = current.clone();
+        restore_current_candidates(&record,&baseline,&mut replaced,&remaps,&BTreeSet::from(["caller.ts".into()]));
+        assert!(array(&replaced,"edges").is_empty());
+        let mut wrong_owner = current.clone();
+        wrong_owner["nodes"][1]["filePath"] = json!("unrelated.ts");
+        restore_current_candidates(&record,&baseline,&mut wrong_owner,&remaps,&BTreeSet::new());
+        assert!(array(&wrong_owner,"edges").is_empty());
+        let mut valid = current;
+        restore_current_candidates(&record,&baseline,&mut valid,&remaps,&BTreeSet::new());
+        assert_eq!(array(&valid,"edges").len(),2);
+        assert_eq!(valid["edges"][0]["direction"],"bidirectional");
+        assert_eq!(valid["edges"][0]["target"],"new");
+        restore_current_candidates(&record,&baseline,&mut valid,&remaps,&BTreeSet::new());
+        assert_eq!(array(&valid,"edges").len(),2);
+    }
 }

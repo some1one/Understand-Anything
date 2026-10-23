@@ -518,7 +518,8 @@ pub fn prepare_symbol_retry(root: &Path) -> Result<Value> {
     let batches = crate::batching::compute_batches(root, &scan, Some(&paths));
     let summaries: Vec<_> = array(&batches,"batches").iter().map(|b| json!({"batchIndex":b["batchIndex"],"outputPath":inter(root,&format!("batch-{}.json",b["batchIndex"])),"files":b["files"]})).collect();
     let summary = json!({"projectName":graph["project"]["name"],"projectDescription":graph["project"]["description"],"languages":graph["project"]["languages"],"frameworks":graph["project"]["frameworks"],"totalBatches":summaries.len(),"filesToReanalyze":paths,"allProjectFiles":known,"batches":summaries,"symbolRepair":true,"symbolReport":report});
-    let mut retry = json!({"version":1,"baseCommit":state["previousCommit"],"headCommit":state["currentCommit"],"files":paths,"graph":graph,"status":"preparing"});
+    let edge_candidates = crate::incremental_symbols::read_edge_candidates(root, &state, &graph)?;
+    let mut retry = json!({"edgeCandidates":edge_candidates,"version":1,"baseCommit":state["previousCommit"],"headCommit":state["currentCommit"],"files":paths,"graph":graph,"status":"preparing"});
     // Consume the attempt before touching batches: a crash cannot buy a retry.
     write(&retry_path, &retry)?;
     let archive = inter(root, &format!("symbol-retry-originals-{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_nanos()));
@@ -592,13 +593,18 @@ pub fn apply_batches(root: &Path) -> Result<Value> {
         }
         batches.push(batch);
     }
-    let (mut assembled, report) = batch_merge::merge_and_normalize(&batches);
+    let (mut assembled, report, candidates) = batch_merge::merge_with_edge_candidates(&batches, &(1..batches.len()).collect());
     restore_inbound_edges(&graph, &mut assembled, &targets)?;
     validate_analyzed_file_coverage(array(&assembled, "nodes"), &strings(&analysis["filesToReanalyze"]))?;
     let scan = read(&inter(root, "scan-result.json"));
     let assembled = refresh_graph_imports(&assembled, &scan["importMap"], &strings(&scan["importMapRefreshPaths"]))?;
     let merged = json!({"version":graph.get("version").cloned().unwrap_or(json!("1.0.0")),"project":graph.get("project").cloned().unwrap_or(json!({})),"nodes":assembled["nodes"],"edges":assembled["edges"],"layers":graph.get("layers").cloned().unwrap_or(json!([]))});
     write(&inter(root, "batch-existing.json"), &existing)?;
+    write(&inter(root, "incremental-edge-candidates.json"), &json!({
+        "version":1,"baseCommit":state["previousCommit"],"headCommit":state["currentCommit"],
+        "graphHash":crate::incremental_symbols::edge_candidate_hash(&merged)?,
+        "edges":candidates,"nodes":merged["nodes"]
+    }))?;
     write(&inter(root, "merged-graph.json"), &merged)?;
     if analysis["rerunArchitecture"] == true {
         write(
