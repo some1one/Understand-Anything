@@ -163,7 +163,12 @@ pub fn preflight_with_git(root: &Path, force: bool, git: &dyn GitClient) -> Resu
     }
     let source: Vec<_> = changed
         .iter()
-        .filter(|p| is_source_file(p))
+        // Every category scanned by this fork can affect the graph, not only
+        // programming-language source files. Keep deleted paths in this set too.
+        .filter(|p| {
+            ![".ps1", ".psm1", ".psd1", ".bat", ".cmd"]
+                .contains(&crate::scan::extension(p).as_str())
+        })
         .cloned()
         .collect();
     let (action, reason, kept) = if changed.is_empty() {
@@ -180,18 +185,19 @@ pub fn preflight_with_git(root: &Path, force: bool, git: &dyn GitClient) -> Resu
         let scan = crate::scan::scan_project(root)?;
         let paths: BTreeSet<_> = graph_file_paths(&graph)
             .into_iter()
-            .chain(array(&scan, "files").iter().filter_map(|f| {
-                f["path"]
-                    .as_str()
-                    .filter(|p| is_source_file(p))
-                    .map(str::to_owned)
-            }))
+            .chain(
+                array(&scan, "files")
+                    .iter()
+                    .filter_map(|f| f["path"].as_str())
+                    .filter(|path| !crate::context_helpers::is_ignore_file(path))
+                    .map(str::to_owned),
+            )
             .collect();
         ("PROCEED", "", paths.into_iter().collect())
     } else if source.is_empty() {
         (
             "NO_SOURCE_CHANGES",
-            "Only non-source files changed. Metadata updated.",
+            "Only files outside the supported analysis scope changed. Metadata updated.",
             vec![],
         )
     } else {
@@ -204,7 +210,7 @@ pub fn preflight_with_git(root: &Path, force: bool, git: &dyn GitClient) -> Resu
         if kept.is_empty() {
             (
                 "ALL_IGNORED",
-                "All changed source files are in ignored paths. Metadata updated.",
+                "All changed project files are in ignored paths. Metadata updated.",
                 kept,
             )
         } else {
@@ -215,7 +221,10 @@ pub fn preflight_with_git(root: &Path, force: bool, git: &dyn GitClient) -> Resu
     if action == "PROCEED" {
         fs::create_dir_all(inter(root, ""))?;
         state["status"] = json!("CONTINUE");
-        state["reason"] = json!(format!("{} changed source file(s) to inspect.", kept.len()));
+        state["reason"] = json!(format!(
+            "{} changed project file(s) to inspect.",
+            kept.len()
+        ));
         state["changedSourceFiles"] = json!(kept);
     } else {
         write_meta(root, &current, None)?;

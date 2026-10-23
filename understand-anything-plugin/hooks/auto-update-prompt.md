@@ -41,6 +41,11 @@ result before proceeding. Fingerprinting avoids semantic analysis for unchanged
 structure, but does not prove that internal behavior is unchanged. This workflow
 uses the host's model context; do not claim it consumes zero tokens.
 
+The compatibility field `changedSourceFiles` includes all supported project
+categories, including configuration, documentation, infrastructure, and data.
+Do not narrow it to code extensions. Non-code content changes are conservative
+structural changes because code declaration signatures do not describe them.
+
 ### 1. Check the baseline
 
 ```bash

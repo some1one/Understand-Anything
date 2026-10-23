@@ -172,11 +172,15 @@ pub fn classify_update(changes: &[Value], graph_paths: &BTreeSet<String>) -> Val
     )
 }
 pub fn fingerprint_for_content(path: &str, content: &str) -> Value {
-    extract_file_fingerprint(
-        path,
-        content,
-        crate::structure::analyze_file(path, content).as_ref(),
-    )
+    // The signature stores code declarations/imports, not document sections,
+    // configuration values, infrastructure resources, or data records. Using
+    // those parsers here would turn meaningful edits into empty-signature matches.
+    let covered = crate::parsers::detect_registry_language(path)
+        .is_some_and(|language| crate::parsers::LANGUAGES.contains(&language.as_str()));
+    let analysis = covered
+        .then(|| crate::structure::analyze_file(path, content))
+        .flatten();
+    extract_file_fingerprint(path, content, analysis.as_ref())
 }
 pub fn fingerprint_for_path(root: &std::path::Path, rel: &str) -> Option<Value> {
     let content = std::fs::read_to_string(root.join(rel))
