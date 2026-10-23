@@ -157,6 +157,13 @@ pub fn check_structure_output(input: &Value, results: &Value) -> Vec<String> {
     }
     let rows = array(results, "results");
     let mut issues = vec![];
+    for failure in array(results, "filesUnreadable") {
+        issues.push(format!(
+            "batch file '{}' could not be read ({}); repair the input before analysis",
+            s(failure, "path"),
+            s(failure, "code")
+        ));
+    }
     if results["filesAnalyzed"].as_u64() != Some(rows.len() as u64) {
         issues.push(format!(
             "filesAnalyzed ({}) does not match the number of results ({})",

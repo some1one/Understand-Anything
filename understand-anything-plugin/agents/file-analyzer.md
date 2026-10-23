@@ -84,6 +84,7 @@ Read `$UA_DIR/tmp/ua-file-extract-results-<batchIndex>.json`:
   "scriptCompleted": true,
   "filesAnalyzed": 5,
   "filesSkipped": ["path/to/binary.wasm"],
+  "filesUnreadable": [],
   "results": [
     {
       "path": "src/index.ts",
@@ -113,6 +114,8 @@ Read `$UA_DIR/tmp/ua-file-extract-results-<batchIndex>.json`:
   ]
 }
 ```
+
+**Unreadable files.** `filesUnreadable` lists read failures as `{ "path": ..., "code": ... }`, also included in `filesSkipped` for coverage accounting. Check the project root, file paths, permissions, and encoding. If every file is unreadable, extraction writes its diagnostics and exits nonzero. For a mixed batch, the validator and seed command still reject unreadable inputs. Report the failure to the caller; do not treat it as an unsupported language or invent a stub node. Readable files without a parser retain this fork's basic-metrics fallback and require source-grounded enrichment.
 
 **Non-code structural fields.** For `config`/`docs`/`data`/`infra`/`markup` files, the script may populate these arrays. Emit a `<prefix>:<path>:<name>` sub-node for each significant entry:
 

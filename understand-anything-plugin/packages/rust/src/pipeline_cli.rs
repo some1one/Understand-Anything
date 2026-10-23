@@ -28,10 +28,11 @@ pub fn run(command: &str, args: &[String]) -> Result<i32> {
     }
     match command {
         "seed_file_batch_graph" => {
-            let seed = ua::seed::build_seed(
-                &read_json(Path::new(&args[0]))?,
-                &read_json(Path::new(&args[1]))?,
-            );
+            let extraction = read_json(Path::new(&args[1]))?;
+            if !ua::array(&extraction, "filesUnreadable").is_empty() {
+                return Err(Error::Invalid("Cannot seed a batch with unreadable source files; repair the extraction input first".into()));
+            }
+            let seed = ua::seed::build_seed(&read_json(Path::new(&args[0]))?, &extraction);
             let path = Path::new(&args[2]);
             write_json(path, &seed)?;
             let imports = ua::array(&seed, "edges")

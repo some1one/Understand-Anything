@@ -1766,13 +1766,22 @@ pub fn extract_structure(input: &Value) -> Result<Value> {
     })?;
     let mut results = vec![];
     let mut skipped = vec![];
+    let mut unreadable = vec![];
     for f in files {
         let path = f["path"]
             .as_str()
             .ok_or_else(|| Error::Invalid("batch file path must be a string".into()))?;
         let content = match fs::read_to_string(Path::new(root).join(path)) {
             Ok(s) => s,
-            Err(_) => {
+            Err(error) => {
+                let code = match error.kind() {
+                    std::io::ErrorKind::NotFound => "ENOENT",
+                    std::io::ErrorKind::PermissionDenied => "EACCES",
+                    std::io::ErrorKind::IsADirectory => "EISDIR",
+                    std::io::ErrorKind::InvalidData => "EILSEQ",
+                    _ => "IO_ERROR",
+                };
+                unreadable.push(json!({"path": path, "code": code}));
                 skipped.push(path);
                 continue;
             }
@@ -1795,7 +1804,7 @@ pub fn extract_structure(input: &Value) -> Result<Value> {
         ));
     }
     Ok(
-        json!({"scriptCompleted":true,"filesAnalyzed":results.len(),"filesSkipped":skipped,"results":results}),
+        json!({"scriptCompleted":true,"filesAnalyzed":results.len(),"filesSkipped":skipped,"filesUnreadable":unreadable,"results":results}),
     )
 }
 /// Import-map extraction intentionally has different traversal and alias rules

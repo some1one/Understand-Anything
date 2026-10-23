@@ -293,8 +293,19 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
         }
         "extract_structure" => {
             require(&args, 2, command, "<input.json> <output.json>")?;
-            let result = ua::structure::extract_structure(&read_json(Path::new(&args[0]))?)?;
+            let input = read_json(Path::new(&args[0]))?;
+            let result = ua::structure::extract_structure(&input)?;
             write_json(Path::new(&args[1]), &result)?;
+            let unreadable = ua::array(&result, "filesUnreadable");
+            if !unreadable.is_empty() {
+                eprintln!(
+                    "extract_structure: {} batch file(s) could not be read; check projectRoot and filesUnreadable in the output",
+                    unreadable.len()
+                );
+                if unreadable.len() == ua::array(&input, "batchFiles").len() {
+                    return Ok(1);
+                }
+            }
         }
         "generate_input" => {
             let invalid = |message: &str| Error::Usage {

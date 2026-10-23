@@ -78,6 +78,25 @@
       },
       "title": "Results",
       "type": "array"
+    },
+    "filesUnreadable": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "code"
+        ],
+        "additionalProperties": false
+      }
     }
   },
   "required": [
