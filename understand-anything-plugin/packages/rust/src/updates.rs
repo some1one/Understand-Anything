@@ -370,11 +370,15 @@ pub fn prepare_batches(root: &Path) -> Result<Value> {
     scan["importMapRefreshPaths"] = json!(refreshed["importMap"].as_object().unwrap().keys().collect::<Vec<_>>());
     let batches =
         crate::batching::compute_batches(root, &scan, Some(&changed.iter().cloned().collect()));
+    let graph = read(&ua(root, "knowledge-graph.json"));
+    let state = read(&inter(root, "auto-update-state.json"));
+    if graph["nodes"].is_array() {
+        crate::incremental_symbols::capture_baseline(root, &state, &analysis, &graph)?;
+    }
     // Do not publish any preparation output until both scanning and import
     // extraction have succeeded.
     write(&inter(root, "scan-result.json"), &scan)?;
     write(&inter(root, "batches.json"), &batches)?;
-    let graph = read(&ua(root, "knowledge-graph.json"));
     let project = &graph["project"];
     let summaries:Vec<_>=array(&batches,"batches").iter().map(|b|json!({"batchIndex":b["batchIndex"],"outputPath":inter(root,&format!("batch-{}.json",b["batchIndex"])),"files":array(b,"files").iter().map(|f|json!({"path":f["path"],"sizeLines":f["sizeLines"],"language":f["language"]})).collect::<Vec<_>>()})).collect();
     let summary = json!({"projectName":project["name"],"projectDescription":project["description"],"languages":project.get("languages").cloned().unwrap_or(json!([])),"frameworks":project.get("frameworks").cloned().unwrap_or(json!([])),"totalBatches":summaries.len(),"filesToReanalyze":changed,"allProjectFiles":known,"batches":summaries});
@@ -634,6 +638,11 @@ pub fn finalize(root: &Path) -> Result<Value> {
     let mut merged = required(&inter(root, "merged-graph.json"))?;
     validate_analyzed_file_coverage(array(&merged, "nodes"), &strings(&analysis["filesToReanalyze"]))?;
     let state = read(&inter(root, "auto-update-state.json"));
+    crate::incremental_symbols::validate_prepared(root, &state, &analysis, &mut merged)?;
+    // Symbol remapping restores inbound candidates; the refreshed import map
+    // remains authoritative for sources whose resolver context changed.
+    let scan = read(&inter(root, "scan-result.json"));
+    merged = refresh_graph_imports(&merged, &scan["importMap"], &strings(&scan["importMapRefreshPaths"]))?;
     let current = if s(&state, "currentCommit").is_empty() {
         s(&analysis, "currentCommit")
     } else {

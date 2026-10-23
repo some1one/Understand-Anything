@@ -121,6 +121,13 @@ Otherwise, finalization performs the deterministic layer adjustment.
 Read `intermediate/auto-update-summary.json`. Report files checked, structural
 changes, skipped cosmetic files, node/edge counts, action, and output path.
 A nonzero exit is a failed update; report the error and preserve diagnostic files.
+Finalization compares reanalyzed symbols with the prepared source revisions before
+publishing. On unresolved symbol loss, read `incremental-symbol-report.json` and
+report the affected files and reasons. Keep `incremental-symbol-baseline.json`
+and the batch outputs for repair; do not remove old symbols or edit the report to
+force success. Parser failures, empty extraction, ambiguous identities, and
+compatible dynamic definitions do not establish deletion. Verified ID replacements
+preserve inbound relationships from unchanged files.
 
 Fingerprints are initially built by the analysis skill's Phase 6. Finalization
 patches that store, preserving unaffected entries. The legacy flow updates the
