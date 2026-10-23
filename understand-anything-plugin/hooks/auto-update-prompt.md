@@ -50,6 +50,9 @@ uses the host's model context; do not claim it consumes zero tokens.
 Read `auto-update-state.json`. On `STOP`, report its reason and stop.
 `NO_GRAPH` or `NO_META` requires a normal analysis run; `UP_TO_DATE`,
 `NO_CHANGES`, `NO_SOURCE_CHANGES`, and `ALL_IGNORED` require no semantic work.
+`GENERATED_ONLY` also stops without advancing metadata: graph artifacts are not
+evidence of newly analyzed source. Changes to user ignore rules still require
+inventory reconciliation even when the rules live inside the data directory.
 On `CONTINUE / PROCEED`, continue.
 
 ### 2. Compare structural fingerprints

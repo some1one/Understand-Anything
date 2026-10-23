@@ -144,6 +144,23 @@ pub fn preflight_with_git(root: &Path, force: bool, git: &dyn GitClient) -> Resu
         ));
         return Ok(state);
     };
+    let had_changes = !changed.is_empty();
+    let changed: Vec<_> = changed
+        .into_iter()
+        .filter(|path| {
+            // Ignore generated snapshots in either directory, but retain user ignore
+            // rules: changing those must still refresh/prune the analyzed inventory.
+            crate::context_helpers::is_ignore_file(path)
+                || !(path.starts_with(".ua/") || path.starts_with(".understand-anything/"))
+        })
+        .collect();
+    if had_changes && changed.is_empty() {
+        state["action"] = json!("GENERATED_ONLY");
+        state["reason"] = json!(
+            "Only generated graph artifacts changed. The baseline remains associated with the analyzed source commit."
+        );
+        return Ok(state);
+    }
     let source: Vec<_> = changed
         .iter()
         .filter(|p| is_source_file(p))
