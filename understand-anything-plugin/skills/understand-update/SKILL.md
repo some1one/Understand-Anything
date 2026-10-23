@@ -6,6 +6,18 @@ argument-hint: "[--offline]"
 
 # Update plugin dictionary dependencies
 
+Resolve `UA_DIR` after resolving `PLUGIN_ROOT` and `PROJECT_ROOT`, before reading
+or writing project artifacts:
+
+```bash
+UA_DIR=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
+```
+
+Use this absolute directory throughout the workflow and pass it to workers.
+It selects `.ua` for new projects and retains an existing legacy directory;
+see [host integration](../../HOSTS.md) for the selection rules.
+
+
 Use this workflow when the user requests plugin maintenance or dictionary updates.
 Read [host integration](../../HOSTS.md) and resolve `PLUGIN_ROOT` from this skill's
 actual location. This is plugin maintenance, not the graph auto-update workflow.
@@ -27,7 +39,7 @@ shared storage and ask the user to choose:
 
 - **Shared OS directory (recommended):** reuse full downloads across repositories.
 - **Local repo:** keep downloads under the selected project's
-  `.understand-anything/dictionaries/`, ignored by Git.
+  `$UA_DIR/dictionaries/`, ignored by Git.
 
 Resolve `PROJECT_ROOT` to the user's intended repo, not the plugin installation.
 If the user already selected a location, honor it without asking again. Pass that
@@ -49,7 +61,7 @@ Rust reads compatible installed LemmInflect/CSpell files directly; do not upgrad
 or modify system packages. Only missing components are downloaded. Configuration
 is installation-local when writable, otherwise in the user config directory.
 Project graphs and filtered query caches remain under the analyzed project's
-`.understand-anything/`, regardless of full dictionary storage.
+`$UA_DIR/`, regardless of full dictionary storage.
 See [storage locations and shared-cache limitations](../../scripts/dictionaries.md).
 
 Report configured paths and any errors. Failed downloads retain the previous

@@ -51,8 +51,8 @@ Keep the same layer names and IDs where possible; only add/remove layers if the 
 Analyze this codebase's structure to identify architectural layers.
 
 - Project root: `{{PROJECT_ROOT}}`
-- Prepared input: `{{PROJECT_ROOT}}/.understand-anything/tmp/ua-arch-input.json`; do not regenerate the file inventory.
-- Write output to: `{{PROJECT_ROOT}}/.understand-anything/intermediate/layers.json`
+- Prepared input: `{{PROJECT_ROOT}}/.ua/tmp/ua-arch-input.json`; do not regenerate the file inventory.
+- Write output to: `{{PROJECT_ROOT}}/.ua/intermediate/layers.json`
 - Project: `{{PROJECT_NAME}}` — `{{PROJECT_DESCRIPTION}}`
 
 File nodes:

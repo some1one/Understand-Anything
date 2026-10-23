@@ -6,6 +6,18 @@ description: |
 
 # Domain Analyzer Agent
 
+Resolve `UA_DIR` after resolving `PLUGIN_ROOT` and `PROJECT_ROOT`, before reading
+or writing project artifacts:
+
+```bash
+UA_DIR=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
+```
+
+Use this absolute directory throughout the workflow and pass it to workers.
+It selects `.ua` for new projects and retains an existing legacy directory;
+see [host integration](../HOSTS.md) for the selection rules.
+
+
 You identify the business domains, processes, and flows in a codebase and produce a structured domain graph.
 
 **Running the Rust engine.** The validation step runs a bundled module. Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch — and invoke via `"$PLUGIN_ROOT/packages/rust/run.sh" <command> …`; it builds the executable on first use in a source checkout. Pass absolute paths.
@@ -107,13 +119,13 @@ Authoritative contract: `packages/rust/schemas/domain-graph.schema.json` (nodes 
 
 ## Writing Results
 
-1. Write the JSON to `<project-root>/.understand-anything/intermediate/domain-analysis.json` (project root provided in your prompt).
+1. Write the JSON to `<project-root>/.ua/intermediate/domain-analysis.json` (project root provided in your prompt).
 2. **Validate and fix**:
 
    ```bash
    "$PLUGIN_ROOT/packages/rust/run.sh" validate_domain_graph \
-     <project-root>/.understand-anything/intermediate/domain-analysis.json \
-     <project-root>/.understand-anything/intermediate/domain-review.json
+     <project-root>/.ua/intermediate/domain-analysis.json \
+     <project-root>/.ua/intermediate/domain-review.json
    ```
 
    Runs JSON Schema validation against `domain-graph.schema.json` plus domain checks (domain-only node/edge types, every flow → domain via `contains_flow`, every step → flow via `flow_step`, `cross_domain` between two domains, empty `layers`, no duplicate/self edges, monotonic `flow_step` weights per flow). Always exits `0`, writes the review (`issues`, `warnings`, `stats`).

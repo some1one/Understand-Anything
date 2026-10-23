@@ -1,6 +1,6 @@
 # generate-ignore
 
-Generate a starter `.understand-anything/.understandignore` — reads
+Generate a starter `.ua/.understandignore` — reads
 `.gitignore`, deduplicates against built-in defaults, and emits
 language-grouped test-file suggestions for review.
 

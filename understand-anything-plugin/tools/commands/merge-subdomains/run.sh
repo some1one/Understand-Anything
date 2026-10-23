@@ -4,7 +4,7 @@
 #
 # Usage: run.sh <project-root> [fragment.json ...]
 #   With no fragment args, auto-discovers *knowledge-graph*.json in
-#   <project-root>/.understand-anything/ (excluding knowledge-graph.json).
+#   the selected project data directory (excluding knowledge-graph.json).
 set -euo pipefail
 
 CMD_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)

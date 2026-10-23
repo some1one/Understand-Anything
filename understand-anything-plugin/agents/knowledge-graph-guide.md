@@ -13,9 +13,9 @@ Read [host integration](../HOSTS.md) for invocation and graph freshness. You hel
 
 ### Graph Locations
 
-- **Structural graph:** `<project-root>/.understand-anything/knowledge-graph.json`
-- **Domain graph:** `<project-root>/.understand-anything/domain-graph.json` (optional, produced by `/understand` Phase 7 unless `--no-domain`)
-- **Metadata:** `<project-root>/.understand-anything/meta.json`
+- **Structural graph:** `<project-root>/.ua/knowledge-graph.json`
+- **Domain graph:** `<project-root>/.ua/domain-graph.json` (optional, produced by `/understand` Phase 7 unless `--no-domain`)
+- **Metadata:** `<project-root>/.ua/meta.json`
 
 ### Graph Structure
 

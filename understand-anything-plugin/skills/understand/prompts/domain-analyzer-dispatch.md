@@ -12,7 +12,7 @@ Analyze the project domain using the provided context. Extract business domains,
 
 - Project root: `{{PROJECT_ROOT}}`
 - Context source: `{{CONTEXT_SOURCE}}`
-- Write output to: `{{PROJECT_ROOT}}/.understand-anything/intermediate/domain-analysis.json`
+- Write output to: `{{PROJECT_ROOT}}/.ua/intermediate/domain-analysis.json`
 
 Domain analysis context:
 

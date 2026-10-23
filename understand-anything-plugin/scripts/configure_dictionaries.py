@@ -19,6 +19,9 @@ NAMES = ('cpp csharp css dart docker golang html java kotlin lua node php powers
          'python ruby rust scala shell software-terms sql swift terraform typescript').split()
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from data_directory import data_dir
+
 def config_path():
     return Path(os.environ.get('UA_DICTIONARY_CONFIG',
         Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config')) /
@@ -41,7 +44,7 @@ def select_storage(args, existing):
         # The saved path is authoritative, including manual advanced-user edits.
         return Path(existing['snapshot']).expanduser().resolve(), existing.get('storage', 'custom')
     project = (args.project_root or Path.cwd()).expanduser().resolve()
-    locations = {'shared': shared_directory(), 'repo': project / '.understand-anything/dictionaries'}
+    locations = {'shared': shared_directory(), 'repo': data_dir(project) / 'dictionaries'}
     choice = args.storage
     if not choice:
         if not sys.stdin.isatty():
@@ -248,7 +251,7 @@ def main(argv=None):
     if args.inspect:
         print(json.dumps({**config, 'snapshot': existing.get('snapshot'), 'storage': existing.get('storage'),
                           'storageOptions': {'shared': str(shared_directory()),
-                              'repo': str((args.project_root or Path.cwd()).resolve() / '.understand-anything/dictionaries')}}, indent=2))
+                              'repo': str(data_dir((args.project_root or Path.cwd()).resolve()) / 'dictionaries')}}, indent=2))
         return 0
     # Preserve unrelated configuration fields.
     existing.update(config)

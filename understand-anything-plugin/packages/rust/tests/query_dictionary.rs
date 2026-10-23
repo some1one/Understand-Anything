@@ -17,7 +17,7 @@ fn publishing_scopes_prunes_and_restores_language_words() {
     }
     let temp = tempfile::tempdir().unwrap();
     let root = temp.path();
-    let dir = root.join(".understand-anything");
+    let dir = ua::persistence::data_dir(root);
     let graph = json!({"project":{"languages":["Rust"]},"nodes":[]});
     ua::persistence::save_graph(root, &graph).unwrap();
     let manifest_path = dir.join("query-dictionaries/manifest.json");
@@ -60,7 +60,7 @@ fn unknown_languages_use_only_shared_terms_and_file_detection_scopes_languages()
     }
     let temp = tempfile::tempdir().unwrap();
     let root = temp.path();
-    let manifest = root.join(".understand-anything/query-dictionaries/manifest.json");
+    let manifest = ua::persistence::data_dir(root).join("query-dictionaries/manifest.json");
     ua::persistence::save_graph(root, &json!({"nodes":[]})).unwrap();
     let initial = ua::persistence::read_json(&manifest).unwrap();
     assert_eq!(initial["dictionaries"].as_object().unwrap().len(), 1);
@@ -94,7 +94,7 @@ fn native_save_and_python_search_use_project_cache() {
     }
     let temp = tempfile::tempdir().unwrap();
     let root = temp.path();
-    let dir = root.join(".understand-anything");
+    let dir = ua::persistence::data_dir(root);
     fs::create_dir_all(dir.join("intermediate")).unwrap();
     let mut nodes: Vec<Value> = (0..30)
         .map(|i| json!({"id":format!("post:{i}"),"name":"POST", "summary":"Handles requests"}))

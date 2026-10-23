@@ -8,11 +8,11 @@
 
 ## Dispatch Prompt
 
-Review the assembled graph at `{{PROJECT_ROOT}}/.understand-anything/intermediate/assembled-graph.json`.
+Review the assembled graph at `{{PROJECT_ROOT}}/.ua/intermediate/assembled-graph.json`.
 
 - Project root: `{{PROJECT_ROOT}}`
-- Saved part graphs: `{{PROJECT_ROOT}}/.understand-anything/partitions/*.knowledge-graph.json`. Per-part batch scratch is cleared after assembly.
-- Write review output to: `{{PROJECT_ROOT}}/.understand-anything/intermediate/assemble-review.json`
+- Saved part graphs: `{{PROJECT_ROOT}}/.ua/partitions/*.knowledge-graph.json`. Per-part batch scratch is cleared after assembly.
+- Write review output to: `{{PROJECT_ROOT}}/.ua/intermediate/assemble-review.json`
 
 Merge script report:
 

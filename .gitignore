@@ -30,3 +30,7 @@ understand-anything-plugin/packages/rust/tests/fixtures/dictionaries/
 
 # Optional repository-local full dictionary downloads
 /.understand-anything/dictionaries/
+
+# Project artifacts downloaded or generated locally (current data directory)
+/.ua/query-dictionaries/
+/.ua/dictionaries/

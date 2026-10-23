@@ -13,6 +13,6 @@ no LLM.
 run.sh <project-root>
 ```
 
-- Validates `<project-root>/.understand-anything/knowledge-graph.json`.
-- Writes `<project-root>/.understand-anything/intermediate/review.json`.
+- Validates `<project-root>/.ua/knowledge-graph.json`.
+- Writes `<project-root>/.ua/intermediate/review.json`.
 - The graph is approved when `issues` is empty (warnings are acceptable).

@@ -12,7 +12,7 @@ const FILE_TYPES: &[&str] = &[
     "file", "config", "document", "service", "pipeline", "table", "schema", "resource", "endpoint",
 ];
 fn ua(root: &Path, name: &str) -> PathBuf {
-    root.join(".understand-anything").join(name)
+    crate::persistence::data_dir(&root).join(name)
 }
 fn inter(root: &Path, name: &str) -> PathBuf {
     ua(root, "intermediate").join(name)

@@ -6,7 +6,19 @@ argument-hint: "[path] [--split=<depth>] [--source=<dir>] [--all] [--full] [--au
 
 # /understand
 
-Analyze the current codebase and write `.understand-anything/knowledge-graph.json`, which powers the interactive dashboard.
+Resolve `UA_DIR` after resolving `PLUGIN_ROOT` and `PROJECT_ROOT`, before reading
+or writing project artifacts:
+
+```bash
+UA_DIR=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
+```
+
+Use this absolute directory throughout the workflow and pass it to workers.
+It selects `.ua` for new projects and retains an existing legacy directory;
+see [host integration](../../HOSTS.md) for the selection rules.
+
+
+Analyze the current codebase and write `$UA_DIR/knowledge-graph.json`, which powers the interactive dashboard.
 
 ## Options
 
@@ -20,13 +32,13 @@ and merged into the full `knowledge-graph.json`.
 - `--split=<depth>` — folder depth for parts (1 = top-level; 2 for monorepos). Overrides detection
 - `--all` — include every part and skip the inclusion prompt (builds the whole repo, part-wise)
 - `--full` — force a full rebuild of the included parts, ignoring any existing graph
-- `--auto-update` / `--no-auto-update` — set `autoUpdate` in `.understand-anything/config.json`
+- `--auto-update` / `--no-auto-update` — set `autoUpdate` in `$UA_DIR/config.json`
 - `--review` — run the full LLM graph-reviewer instead of inline deterministic validation
 - `--no-domain` — skip Phase 7 (business-domain graph); by default a domain flow graph is derived
 - A directory path — analyze that directory instead of the cwd
 
 Partition config (`sourceFolders`, `splitDepth`, `includedParts`) is persisted in
-`.understand-anything/config.json`. At least one of source / depth is always set.
+`$UA_DIR/config.json`. At least one of source / depth is always set.
 On an update run the saved config is reused silently (no prompts).
 
 Read [host integration](../../HOSTS.md) before running the workflow. It explains Claude/Codex invocation, argument handling, and how to load the bundled agent instructions. Give concise updates during long runs and report failures when they occur.
@@ -59,7 +71,7 @@ Decide full analysis vs. incremental update.
    Run later deterministic commands with `"$PLUGIN_ROOT/packages/rust/run.sh" <command> …`. Packaged installs ship the executable; source checkouts build it with stable Rust and Cargo on first use.
 
    **Three roots — never use bare relative paths** (the skill installs apart from the analyzed code, sometimes via symlink):
-   - `$PROJECT_ROOT` — analyzed codebase; all `.understand-anything/*`, source, and git state live here.
+   - `$PROJECT_ROOT` — analyzed codebase; all `$UA_DIR/*`, source, and git state live here.
    - `$SKILL_DIR` — this skill; bundled `scripts/`, `prompts/`, `frameworks/`, `languages/` are here.
    - `$PLUGIN_ROOT` — plugin root; `agents/` and `packages/rust/` (and its `schemas/`) are here.
 
@@ -72,8 +84,8 @@ Decide full analysis vs. incremental update.
 
 4. **Inventory existing graphs:** note legacy `*knowledge-graph*.json` fragments and `partitions/*.knowledge-graph.json`. Do not overwrite the saved graph during preflight. The normal part workflow merges selected parts in Phase 2; use the `understand-merge` skill for an explicitly requested standalone merge.
 
-5. If `$PROJECT_ROOT/.understand-anything/knowledge-graph.json` exists, read it.
-6. If `$PROJECT_ROOT/.understand-anything/meta.json` exists, read it for `gitCommitHash`.
+5. If `$UA_DIR/knowledge-graph.json` exists, read it.
+6. If `$UA_DIR/meta.json` exists, read it for `gitCommitHash`.
 7. **Decision:**
 
    | Condition | Action |
@@ -100,7 +112,7 @@ Decide full analysis vs. incremental update.
 
 ## Phase 0.5 — Ignore Configuration
 
-1. If `$PROJECT_ROOT/.understand-anything/.understandignore` does not exist, generate a starter:
+1. If `$UA_DIR/.understandignore` does not exist, generate a starter:
    ```bash
    "$PLUGIN_ROOT/packages/rust/run.sh" generate_ignore "$PROJECT_ROOT"
    ```
@@ -113,8 +125,8 @@ Decide full analysis vs. incremental update.
      - an obvious **framework/domain** change — new framework or new top-level domain/service dirs.
 
 3. **Prompt-and-wait** (only when step 2 requires it):
-   - Just generated: "Generated `.understand-anything/.understandignore` with suggested exclusions. Review it, uncomment patterns to exclude, then confirm to continue."
-   - Already existed: "Found `.understand-anything/.understandignore`. Review it if needed, then confirm to continue."
+   - Just generated: "Generated `$UA_DIR/.understandignore` with suggested exclusions. Review it, uncomment patterns to exclude, then confirm to continue."
+   - Already existed: "Found `$UA_DIR/.understandignore`. Review it if needed, then confirm to continue."
    - **Wait for confirmation before proceeding.**
 
 ---
@@ -123,7 +135,7 @@ Decide full analysis vs. incremental update.
 
 Dispatch a subagent using the `project-scanner` agent (`$PLUGIN_ROOT/agents/project-scanner.md`) and template `$SKILL_DIR/prompts/project-scanner-dispatch.md`. Fill args from Phase 0: `PROJECT_ROOT`, `README_CONTENT`, `MANIFEST_CONTENT`.
 
-After it completes, read `$PROJECT_ROOT/.understand-anything/intermediate/scan-result.json` for: project name/description, languages, frameworks, file list (line counts + `fileCategory`: `code`|`config`|`docs`|`infra`|`data`|`script`|`markup`), complexity, and `importMap` (pre-resolved internal imports per file).
+After it completes, read `$UA_DIR/intermediate/scan-result.json` for: project name/description, languages, frameworks, file list (line counts + `fileCategory`: `code`|`config`|`docs`|`infra`|`data`|`script`|`markup`), complexity, and `importMap` (pre-resolved internal imports per file).
 
 Store `importMap` as `$IMPORT_MAP` and the file list (with `fileCategory`) as `$FILE_LIST` for Phase 2 batching. The scan covers the **whole repo** (partitioning happens next); there is no file-count gate — large repos are handled by analyzing selected parts.
 
@@ -133,7 +145,7 @@ If `filteredByIgnore > 0`, note it for the final report.
 
 ## Phase 1.6 — PARTITION
 
-Split the scanned repo into folder-parts and decide which to analyze. Load `.understand-anything/config.json` first.
+Split the scanned repo into folder-parts and decide which to analyze. Load `$UA_DIR/config.json` first.
 
 **Resolve source / depth** (at least one required; flags override config, config overrides detection):
 - `--source=` / `--split=` given → use them.
@@ -163,7 +175,7 @@ Split the scanned repo into folder-parts and decide which to analyze. Load `.und
 **Determine `$PARTS_TO_PROCESS`** (prints part names, one per line):
 ```bash
 "$PLUGIN_ROOT/packages/rust/run.sh" parts_to_process "$PROJECT_ROOT" \
-  [--full] [--changed="$PROJECT_ROOT/.understand-anything/tmp/changed-files.txt"]
+  [--full] [--changed="$UA_DIR/tmp/changed-files.txt"]
 ```
 - Pass `--full` for `--full`/`--all`/first-run → every included part.
 - Otherwise pass `--changed=…` → **affected** parts plus any included part that has no partition graph yet (e.g. one just added via `/understand-add-part`).
@@ -178,7 +190,7 @@ For **each** part in `$PARTS_TO_PROCESS`, run steps 1–4. Parts are independent
 1. **Batch the part's files** (scoped via the part file list; `neighborMap` still references files in other parts so cross-part edges stay emittable):
    ```bash
    "$PLUGIN_ROOT/packages/rust/run.sh" compute_batches "$PROJECT_ROOT" \
-     --changed-files="$PROJECT_ROOT/.understand-anything/intermediate/part-files/<part-encoded>.txt"
+     --changed-files="$UA_DIR/intermediate/part-files/<part-encoded>.txt"
    ```
    Append `Warning:` stderr lines to `$PHASE_WARNINGS`; a non-zero exit is a hard failure.
 
@@ -244,9 +256,9 @@ python3 "$SKILL_DIR/scripts/normalize_layers.py" "$PROJECT_ROOT"
    **Default (no `--review`) — deterministic validation.** Runs referential-integrity, completeness, layer-coverage, uniqueness, quality, and (via `--scan-result`) scan-coverage checks; writes the review payload (`scriptCompleted`, `issues`, `warnings`, `stats`):
    ```bash
    "$PLUGIN_ROOT/packages/rust/run.sh" validate_graph \
-     "$PROJECT_ROOT/.understand-anything/intermediate/assembled-graph.json" \
-     "$PROJECT_ROOT/.understand-anything/intermediate/review.json" \
-     --scan-result "$PROJECT_ROOT/.understand-anything/intermediate/scan-result.json"
+     "$UA_DIR/intermediate/assembled-graph.json" \
+     "$UA_DIR/intermediate/review.json" \
+     --scan-result "$UA_DIR/intermediate/scan-result.json"
    ```
    On non-zero exit, diagnose from stderr (usually unreadable/malformed graph) and retry once. Approved when `issues` is empty (warnings are OK).
 
@@ -273,7 +285,7 @@ python3 "$SKILL_DIR/scripts/normalize_layers.py" "$PROJECT_ROOT"
    ```bash
    python3 "$SKILL_DIR/scripts/write_fingerprint_input.py" "$PROJECT_ROOT" "<commit hash>"
    "$PLUGIN_ROOT/packages/rust/run.sh" build_fingerprints \
-     "$PROJECT_ROOT/.understand-anything/intermediate/fingerprint-input.json"
+     "$UA_DIR/intermediate/fingerprint-input.json"
    ```
    **If it exits non-zero or stdout lacks `Fingerprints baseline:`, abort Phase 6 and report — do NOT write `meta.json`.**
 
@@ -287,7 +299,7 @@ python3 "$SKILL_DIR/scripts/normalize_layers.py" "$PROJECT_ROOT"
    "$SKILL_DIR/scripts/cleanup_intermediate.sh" "$PROJECT_ROOT"
    ```
 
-5. Report a final summary from `intermediate/save-summary.json`: project name/description, files analyzed, nodes (by type), edges (by type), layers (with names), reviewer warnings, and the output path `$PROJECT_ROOT/.understand-anything/knowledge-graph.json`.
+5. Report a final summary from `intermediate/save-summary.json`: project name/description, files analyzed, nodes (by type), edges (by type), layers (with names), reviewer warnings, and the output path `$UA_DIR/knowledge-graph.json`.
 
 6. Proceed to Phase 7 unless `--no-domain`. Do not auto-launch the dashboard.
 

@@ -10,6 +10,9 @@ from pathlib import Path
 from typing import Any
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+from data_directory import data_dir
+
 def load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -22,7 +25,7 @@ def main(argv: list[str] | None = None) -> int:
 
     project_root = Path(args[0]).resolve()
     commit_hash = args[1]
-    inter = project_root / ".understand-anything" / "intermediate"
+    inter = data_dir(project_root) / "intermediate"
     scan = load_json(inter / "scan-result.json")
     assembled = load_json(inter / "assembled-graph.json")
     layers_path = inter / "layers.json"

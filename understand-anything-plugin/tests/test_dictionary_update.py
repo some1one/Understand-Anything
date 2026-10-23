@@ -307,7 +307,7 @@ def test_inspection_and_noninteractive_setup_never_choose_silently(tmp_path, mon
     assert config.main([*args, '--inspect']) == 0
     result = json.loads(capsys.readouterr().out)
     assert result['missing'] and result['snapshot'] is None
-    assert result['storageOptions']['repo'] == str(tmp_path / 'project/.understand-anything/dictionaries')
+    assert result['storageOptions']['repo'] == str(tmp_path / 'project/.ua/dictionaries')
     assert not path.exists()
     with pytest.raises(ValueError, match='storage choice required'):
         config.main(args)
@@ -328,7 +328,7 @@ def test_prompt_choice_persists_and_manual_path_edit_is_respected(tmp_path, monk
     assert config.main(args) == 0
     value = json.loads(path.read_text())
     assert value['storage'] == storage
-    assert value['snapshot'] == str(tmp_path / ('shared' if storage == 'shared' else 'project/.understand-anything/dictionaries'))
+    assert value['snapshot'] == str(tmp_path / ('shared' if storage == 'shared' else 'project/.ua/dictionaries'))
     value['snapshot'] = str(tmp_path / 'manually changed path')
     path.write_text(json.dumps(value))
     monkeypatch.setattr(config.sys, 'stdin', io.StringIO(''))

@@ -95,7 +95,7 @@ def main():
     run('detect_layout', project)
     run('partition_files', project, '--depth=1')
     run('compute_batches', project)
-    inter = project/'.understand-anything/intermediate'
+    inter = project/'.ua/intermediate'
     batches = read(inter/'batches.json')['batches']
     assert batches
     covered = [f['path'] for b in batches for f in b['files']]
@@ -103,7 +103,7 @@ def main():
     def process_batch(batch):
         idx = batch['batchIndex']
         run('prepare_file_analysis_batch', project, idx)
-        tmp = project/'.understand-anything/tmp'
+        tmp = project/'.ua/tmp'
         batch_input = tmp/f'ua-file-analyzer-input-{idx}.json'
         context = tmp/f'ua-file-context-{idx}.json'
         structure = artifacts/f'structure-{idx}.json'
@@ -133,7 +133,7 @@ def main():
     run('assemble_part_graph', project, 'smoke', 'smoke-baseline')
     run('merge_parts', project)
     run('merge_subdomain_graphs', project)
-    graph_path = project/'.understand-anything/knowledge-graph.json'
+    graph_path = project/'.ua/knowledge-graph.json'
     graph = read(graph_path)
     assert graph['nodes'] and graph['edges']
     file_types = {'file', 'config', 'document', 'service', 'pipeline', 'table', 'schema', 'resource', 'endpoint'}
@@ -160,7 +160,7 @@ def main():
 
     fingerprint_input = write(artifacts/'fingerprint-input.json', dict(projectRoot=str(project), sourceFilePaths=[f['path'] for f in scan['files']], gitCommitHash='smoke-baseline'))
     run('build_fingerprints', fingerprint_input)
-    fingerprints = read(project/'.understand-anything/fingerprints.json')
+    fingerprints = read(project/'.ua/fingerprints.json')
     assert len(fingerprints['files']) == scan['totalFiles']
     # Exercise the metadata-only path without changing or creating Git history.
     run('auto_update_preflight', project)
@@ -189,7 +189,7 @@ def main():
     assert read(inter/'auto-update-summary.json')['structuralChanges'] == 1
     run('validate_graph', graph_path, artifacts/'updated-graph-review.json')
     assert not read(artifacts/'updated-graph-review.json')['issues']
-    updated = read(project/'.understand-anything/fingerprints.json')['files'][changed_source]
+    updated = read(project/'.ua/fingerprints.json')['files'][changed_source]
     assert updated['contentHash'] != fingerprints['files'][changed_source]['contentHash']
     expected_commands = {r['command'] for r in read(PACKAGE/'reference/baseline.json')['modules'] if r['command']}
     assert expected_commands <= {r['command'] for r in results}

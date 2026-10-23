@@ -24,6 +24,18 @@ plugin root is two levels above that directory. Keep it distinct from the
 absolute `PROJECT_ROOT` being analyzed. Pass those roots explicitly to agents;
 shell assignments do not necessarily persist between tool calls.
 
+## Project data directory
+
+Resolve `UA_DIR` with `python3 "$PLUGIN_ROOT/scripts/data_directory.py"
+"$PROJECT_ROOT"` before accessing project artifacts. New projects use `.ua`;
+when only `.understand-anything` exists, keep using it. If both directories exist,
+`.ua` wins for all artifacts, including missing optional files. Do not combine
+the two snapshots. Resolution is read-only and never moves existing data.
+To migrate a legacy project, move the whole directory to `.ua` while no analysis
+or dashboard process is running, and update any manually configured absolute
+dictionary paths. Keep project caches with their graph. The dashboard's
+`GRAPH_DIR` still denotes the project root, not this artifact directory.
+
 ## Setup and help routing
 
 Use [understand-help](skills/understand-help/SKILL.md) for plugin installation,

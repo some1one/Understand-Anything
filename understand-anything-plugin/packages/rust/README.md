@@ -36,7 +36,7 @@ GNU executable uses the operating system's standard dynamic libraries.
 
 The executable preserves the existing underscore command names and legacy aliases.
 Relative arguments resolve against the invoking working directory. Commands use
-their existing output locations under `.understand-anything` unless an explicit
+their existing output locations under `.ua` (or the existing legacy `.understand-anything` directory) unless an explicit
 output argument is supplied. Schema export defaults to `./schemas` and copies
 embedded schemas; it does not regenerate the checked-in schema files.
 

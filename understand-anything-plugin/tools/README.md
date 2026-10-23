@@ -6,7 +6,7 @@ executing a full prompted skill (`SKILL.md`). Each wraps existing project script
 helper) behind a single `run.sh` with a stable interface.
 
 Use a command for one deterministic step that produces or updates a **completed**
-artifact in `.understand-anything/` — the same files the skills write — rather
+artifact in `.ua/` — the same files the skills write — rather
 than a multi-phase LLM workflow. No subagents; pure scripts. Steps that only
 produce LLM *input* (scanning, domain context, graph queries) are intentionally
 **not** exposed as tools — they live only inside the skills.
@@ -32,9 +32,9 @@ command may take a moment. Packaged installs include the executable.
 
 | Command | Wraps | Canonical file it writes |
 |---------|-------|--------------------------|
-| `generate-ignore` | `understand-anything-rs generate_ignore` | `.understand-anything/.understandignore` |
-| `merge-subdomains` | `understand-anything-rs merge_subdomain_graphs` | `.understand-anything/knowledge-graph.json` (merged) |
-| `validate-graph` | `understand-anything-rs validate_graph` | `.understand-anything/intermediate/review.json` |
+| `generate-ignore` | `understand-anything-rs generate_ignore` | `.ua/.understandignore` |
+| `merge-subdomains` | `understand-anything-rs merge_subdomain_graphs` | `.ua/knowledge-graph.json` (merged) |
+| `validate-graph` | `understand-anything-rs validate_graph` | `.ua/intermediate/review.json` |
 
 Run any command with no arguments to see its usage.
 
@@ -42,13 +42,13 @@ Run any command with no arguments to see its usage.
 
 Any **scripted project-local** install (`install.sh <platform> --local <dir>`, and the deb
 linker's project path) drops a callable bash wrapper per command under
-`<project>/.understand-anything/tools/<command>`. Each wrapper self-resolves to
+`<project>/.ua/tools/<command>`. Each wrapper self-resolves to
 the copied payload's `run.sh` (surviving project moves) and forwards its args:
 
 ```bash
-.understand-anything/tools/generate-ignore .
-.understand-anything/tools/merge-subdomains .
-.understand-anything/tools/validate-graph .
+.ua/tools/generate-ignore .
+.ua/tools/merge-subdomains .
+.ua/tools/validate-graph .
 ```
 
 Scripted `--local` installs get these wrappers; native Claude project installs
@@ -63,3 +63,5 @@ generate `/understand-<command>` workflows into `.kilocode/workflows/` (project)
 or `~/.kilocode/workflows/` (global), baking in the plugin's absolute path. Every
 other target ignores `tools/` — agents invoke the `run.sh` scripts directly via
 their built-in bash tool.
+
+Existing projects keep their `.understand-anything/` directory when `.ua/` does not exist. Use that legacy prefix for the commands above on those projects.

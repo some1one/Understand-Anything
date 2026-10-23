@@ -6,7 +6,7 @@ description: Validate the saved knowledge graph and write the canonical review.j
 
 Runs referential-integrity, completeness, layer-coverage, uniqueness, and quality
 checks on the saved `knowledge-graph.json` and writes the review payload to the
-canonical `.understand-anything/intermediate/review.json` (the same file
+canonical `.ua/intermediate/review.json` (the same file
 `/understand` Phase 5 produces). No LLM required.
 
 Parse the supplied arguments into a project path; quote each path separately. Do not evaluate the raw argument text as shell code. The installer replaces `__PLUGIN_ROOT__` below.

@@ -23,6 +23,9 @@ VALID_EDGE_TYPES = {
 }
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+from data_directory import data_dir
+
 def main(argv: list[str] | None = None) -> int:
     args = sys.argv[1:] if argv is None else argv
     if len(args) != 1:
@@ -30,7 +33,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     project_root = Path(args[0]).resolve()
-    path = project_root / ".understand-anything" / "intermediate" / "assembled-graph.json"
+    path = data_dir(project_root) / "intermediate" / "assembled-graph.json"
     graph = json.loads(path.read_text(encoding="utf-8"))
     fixed: list[str] = []
 

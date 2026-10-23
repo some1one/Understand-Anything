@@ -11,6 +11,7 @@ use understand_anything::{
     persistence::{read_json, write_json},
 };
 const IMPLEMENTED: &[&str] = &[
+    "data_dir",
     "capture_project_context",
     "write_changed_files",
     "prune_incremental_batch",
@@ -71,7 +72,7 @@ fn require<'a>(
     }
 }
 fn scan_paths(root: &Path) -> Result<Vec<String>> {
-    let scan = read_json(&root.join(".understand-anything/intermediate/scan-result.json"))?;
+    let scan = read_json(&ua::persistence::data_dir(&root).join("intermediate/scan-result.json"))?;
     Ok(ua::array(&scan, "files")
         .iter()
         .filter_map(|f| {
@@ -157,6 +158,13 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
         return helper_cli::run(command, &args);
     }
     match command {
+        "data_dir" => {
+            require(&args, 1, command, "<project-root>")?;
+            println!(
+                "{}",
+                ua::persistence::data_dir(&absolute(&args[0])?).display()
+            );
+        }
         "merge_batch_graphs" => {
             require(&args, 1, command, "<project-root>")?;
             ua::batch_merge::merge_batch_directory(&absolute(&args[0])?)?;
@@ -232,7 +240,7 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
                 )));
             }
             let output = output.unwrap_or_else(|| {
-                root.join(".understand-anything/intermediate/domain-context.json")
+                ua::persistence::data_dir(&root).join("intermediate/domain-context.json")
             });
             if let Some(parent) = output.parent().filter(|p| !p.as_os_str().is_empty()) {
                 fs::create_dir_all(parent)?;
@@ -275,7 +283,7 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
                 &ua::strings(&input["sourceFilePaths"]),
                 input["gitCommitHash"].as_str().unwrap(),
             );
-            let dir = root.join(".understand-anything");
+            let dir = ua::persistence::data_dir(&root);
             fs::create_dir_all(&dir)?;
             write_json(&dir.join("fingerprints.json"), &store)?;
             println!(
@@ -445,7 +453,7 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
                 }
                 i += 1;
             }
-            let inter = root.join(".understand-anything/intermediate");
+            let inter = ua::persistence::data_dir(&root).join("intermediate");
             let result = ua::batching::compute_batches(
                 &root,
                 &read_json(&inter.join("scan-result.json"))?,
@@ -489,7 +497,7 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
             } else {
                 absolute(&args[0])?
             };
-            let dir = root.join(".understand-anything");
+            let dir = ua::persistence::data_dir(&root);
             let output = dir.join(".understandignore");
             if output.exists() {
                 eprintln!(
@@ -513,7 +521,7 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
                 "<project-root> <narrative.json> [--scan PATH] [--import-map PATH] [--output PATH]",
             )?;
             let root = absolute(&args[0])?;
-            let dir = root.join(".understand-anything");
+            let dir = ua::persistence::data_dir(&root);
             let mut scan = dir.join("tmp/ua-scan-files.json");
             let mut imports = dir.join("tmp/ua-import-map-output.json");
             let mut output = dir.join("intermediate/scan-result.json");
@@ -650,7 +658,7 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
                 .iter()
                 .map(|(k, v)| (k.clone(), json!(v.len())))
                 .collect();
-            let inter = root.join(".understand-anything/intermediate");
+            let inter = ua::persistence::data_dir(&root).join("intermediate");
             fs::create_dir_all(&inter)?;
             write_json(
                 &inter.join("partitions.json"),
@@ -738,7 +746,7 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
         "merge_parts" | "merge_subdomain_graphs" => {
             require(&args, 1, command, "<project-root> [files…]")?;
             let root = absolute(&args[0])?;
-            let dir = root.join(".understand-anything");
+            let dir = ua::persistence::data_dir(&root);
             let is_parts = command == "merge_parts";
             if !is_parts && !dir.is_dir() {
                 return Err(Error::Invalid(format!(

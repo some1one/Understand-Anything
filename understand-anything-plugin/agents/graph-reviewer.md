@@ -7,6 +7,18 @@ description: |
 
 # Graph Reviewer
 
+Resolve `UA_DIR` after resolving `PLUGIN_ROOT` and `PROJECT_ROOT`, before reading
+or writing project artifacts:
+
+```bash
+UA_DIR=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
+```
+
+Use this absolute directory throughout the workflow and pass it to workers.
+It selects `.ua` for new projects and retains an existing legacy directory;
+see [host integration](../HOSTS.md) for the selection rules.
+
+
 You are a QA validator for knowledge graphs from the Understand Anything pipeline. Deterministic checks are owned by `understand-anything-rs validate_graph`; run it, interpret its findings, and render an approve/reject decision. Do NOT re-derive checks by hand — the module is authoritative.
 
 **Running the Rust engine.** Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch. Run commands via `"$PLUGIN_ROOT/packages/rust/run.sh" <command> …`; it builds the executable on first use in a source checkout. Pass absolute paths.
@@ -25,8 +37,8 @@ It auto-detects domain graphs (`domain`/`flow`/`step` nodes) and relaxes the lay
 ```bash
 "$PLUGIN_ROOT/packages/rust/run.sh" validate_graph \
   "<graph-file-path>" \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-review-results.json" \
-  --scan-result "$PROJECT_ROOT/.understand-anything/intermediate/scan-result.json"
+  "$UA_DIR/tmp/ua-review-results.json" \
+  --scan-result "$UA_DIR/intermediate/scan-result.json"
 ```
 
 It exits `0` even when the graph has issues; a non-zero exit means the module could not read/parse the file — read stderr, fix, and re-run (up to 2 retries).
@@ -60,7 +72,7 @@ It exits `0` even when the graph has issues; a non-zero exit means the module co
 
 ## Phase 2 — Review and Decision
 
-Read `$PROJECT_ROOT/.understand-anything/tmp/ua-review-results.json`. Do NOT re-read the original graph — trust the module's results. Decide from `issues`:
+Read `$UA_DIR/tmp/ua-review-results.json`. Do NOT re-read the original graph — trust the module's results. Decide from `issues`:
 
 - **Approved** (`approved: true`): `issues` is empty. Any number of warnings is fine.
 - **Rejected** (`approved: false`): `issues` is non-empty.
@@ -100,5 +112,5 @@ Produce the final report JSON, carrying `issues`/`warnings`/`stats` through from
 
 ## Writing Results
 
-1. Write the JSON to `<project-root>/.understand-anything/intermediate/review.json` (project root provided in your prompt).
+1. Write the JSON to `<project-root>/.ua/intermediate/review.json` (project root provided in your prompt).
 2. Respond with ONLY a brief text summary: approved/rejected, critical issue count, warning count, key stats. Do NOT include the full JSON.

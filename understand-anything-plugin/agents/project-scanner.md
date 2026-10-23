@@ -7,6 +7,18 @@ description: |
 
 # Project Scanner
 
+Resolve `UA_DIR` after resolving `PLUGIN_ROOT` and `PROJECT_ROOT`, before reading
+or writing project artifacts:
+
+```bash
+UA_DIR=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
+```
+
+Use this absolute directory throughout the workflow and pass it to workers.
+It selects `.ua` for new projects and retains an existing legacy directory;
+see [host integration](../HOSTS.md) for the selection rules.
+
+
 Complete this scan in the assigned worker. Do not spawn agents or invoke the
 top-level analysis skill; the caller owns dispatch, concurrency, and retries.
 Run the Rust helpers and read project metadata directly. If the scan cannot be
@@ -52,10 +64,10 @@ If a manifest is missing/malformed, leave the field empty rather than guessing.
 Walks the project (prefers `git ls-files`, falls back to recursive walk), applies `.understandignore` filtering, assigns `language`/`fileCategory` per canonical tables, counts lines, writes deterministic JSON. You do not maintain those tables.
 
 ```bash
-mkdir -p "$PROJECT_ROOT/.understand-anything/tmp"
+mkdir -p "$UA_DIR/tmp"
 "$PLUGIN_ROOT/packages/rust/run.sh" scan_project \
   "$PROJECT_ROOT" \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-scan-files.json"
+  "$UA_DIR/tmp/ua-scan-files.json"
 ```
 
 Output shape (read verbatim, merge into the final scan-result):
@@ -98,7 +110,7 @@ Behavior: `files` sorted by `path.localeCompare`; `fileCategory ∈ {code, confi
 
 **Priority:** most-specific wins — filename/path rules fire before extension rules (`docker-compose.yml` → `infra` not `config`; `.github/workflows/ci.yml` → `infra`; `LICENSE` → `code`).
 
-**`.understandignore`:** reads `.understandignore` and `.understand-anything/.understandignore`, merges with hardcoded defaults (gitignore semantics via `pathspec`); `!`-negation overrides defaults. `filteredByIgnore` measures only user-driven drops.
+**`.understandignore`:** reads `.understandignore` and `$UA_DIR/.understandignore`, merges with hardcoded defaults (gitignore semantics via `pathspec`); `!`-negation overrides defaults. `filteredByIgnore` measures only user-driven drops.
 
 On non-zero exit, diagnose via stderr; up to 2 retry attempts. There is no substitute scanner.
 
@@ -109,8 +121,8 @@ After Step B produces the file list, run `extract_import_map` for deterministic 
 Write the input JSON (its `files[]` is Step B's `files[]` verbatim):
 
 ```bash
-mkdir -p "$PROJECT_ROOT/.understand-anything/tmp"
-cat > "$PROJECT_ROOT/.understand-anything/tmp/ua-import-map-input.json" << 'ENDJSON'
+mkdir -p "$UA_DIR/tmp"
+cat > "$UA_DIR/tmp/ua-import-map-input.json" << 'ENDJSON'
 {
   "projectRoot": "<absolute-project-root>",
   "files": [
@@ -123,8 +135,8 @@ ENDJSON
 
 ```bash
 "$PLUGIN_ROOT/packages/rust/run.sh" extract_import_map \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-import-map-input.json" \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-import-map-output.json"
+  "$UA_DIR/tmp/ua-import-map-input.json" \
+  "$UA_DIR/tmp/ua-import-map-output.json"
 ```
 
 Output shape:
@@ -166,7 +178,7 @@ Do NOT add the "over 100 files" note — the assembler appends it when `totalFil
 Write only your narrative fields:
 
 ```bash
-cat > "$PROJECT_ROOT/.understand-anything/tmp/ua-scan-narrative.json" << 'ENDJSON'
+cat > "$UA_DIR/tmp/ua-scan-narrative.json" << 'ENDJSON'
 {
   "name": "project-name",
   "description": "Brief description from README or package.json",
@@ -186,7 +198,7 @@ ENDJSON
 ```bash
 "$PLUGIN_ROOT/packages/rust/run.sh" assemble_project_scan_result \
   "$PROJECT_ROOT" \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-scan-narrative.json"
+  "$UA_DIR/tmp/ua-scan-narrative.json"
 ```
 
 Reads `tmp/ua-scan-files.json` (Step B) and `tmp/ua-import-map-output.json` (Step C), writes validated `intermediate/scan-result.json`. `files` and `importMap` are copied byte-for-byte — you never re-walk/re-count/re-derive/re-resolve.
@@ -222,6 +234,6 @@ Authoritative contract: `packages/rust/schemas/project-scan-output.schema.json`.
 
 ## Writing Results
 
-`assemble_project_scan_result` already wrote and validated `<project-root>/.understand-anything/intermediate/scan-result.json` in Phase 2 — you do NOT write it yourself.
+`assemble_project_scan_result` already wrote and validated `<project-root>/.ua/intermediate/scan-result.json` in Phase 2 — you do NOT write it yourself.
 
 After the assembler exits `0`, respond with ONLY a brief text summary: project name, total file count (breakdown by category), detected languages, estimated complexity. Do NOT include the full JSON.

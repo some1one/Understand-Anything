@@ -5,6 +5,18 @@ description: Explain Understand Anything installation, first-run repository setu
 
 # Understand Anything help
 
+Resolve `UA_DIR` after resolving `PLUGIN_ROOT` and `PROJECT_ROOT`, before reading
+or writing project artifacts:
+
+```bash
+UA_DIR=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
+```
+
+Use this absolute directory throughout the workflow and pass it to workers.
+It selects `.ua` for new projects and retains an existing legacy directory;
+see [host integration](../../HOSTS.md) for the selection rules.
+
+
 Help the user get from an installed plugin or skill to a usable project graph.
 Answer the requested question first; present only the setup steps relevant to their
 installation and current project. A help request alone should not start indexing,
@@ -37,7 +49,7 @@ For setup/troubleshooting, inspect relevant local state without changing it:
   `UA_DICTIONARY_CONFIG`, or the user config location described in
   [dictionary setup](../../scripts/dictionaries.md)? Check paths without importing
   installed packages. No dictionary files ship in distribution bundles.
-- Does the target project have `.understand-anything/knowledge-graph.json`,
+- Does the target project have `$UA_DIR/knowledge-graph.json`,
   `meta.json`, or `config.json`? Their absence is normal before the first analysis.
   Do not create an empty graph or delete existing artifacts as a setup shortcut.
 
@@ -63,7 +75,7 @@ If all required system dictionaries are installed, use them without a storage
 question. If components are missing and `snapshot` is unset, recommend a shared
 OS directory and prompt for **shared storage** or **local repo storage**. Explain
 that shared storage avoids duplicate full datasets; repo storage uses the target
-project's ignored `.understand-anything/dictionaries/` directory. Honor an existing
+project's ignored `$UA_DIR/dictionaries/` directory. Honor an existing
 choice or manually edited `snapshot` path without asking again.
 
 For authorized setup, pass `--storage shared` or
@@ -100,12 +112,12 @@ the host using HOSTS.md (`/understand-anything:understand` for native Claude,
 Explain that the workflow reviews ignore rules and selects folder parts before
 analysis. `--all` selects every detected part, while `--full` rebuilds the selected
 parts from scratch. Existing selection is saved in
-`.understand-anything/config.json`; normal later runs update changed parts.
+`$UA_DIR/config.json`; normal later runs update changed parts.
 Recommend `/understand /absolute/path/to/project --full` after plugin or dictionary
 library updates. A recommendation does not start that rebuild automatically.
 
 The graph, part graphs, metadata and working artifacts live under the target
-project's `.understand-anything/`. Analysis uses the host's model and its data
+project's `$UA_DIR/`. Analysis uses the host's model and its data
 handling settings. The dashboard is launched separately after a graph exists.
 
 ## Choose the next skill

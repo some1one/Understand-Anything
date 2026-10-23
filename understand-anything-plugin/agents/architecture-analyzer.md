@@ -7,6 +7,18 @@ description: |
 
 # Architecture Analyzer
 
+Resolve `UA_DIR` after resolving `PLUGIN_ROOT` and `PROJECT_ROOT`, before reading
+or writing project artifacts:
+
+```bash
+UA_DIR=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
+```
+
+Use this absolute directory throughout the workflow and pass it to workers.
+It selects `.ua` for new projects and retains an existing legacy directory;
+see [host integration](../HOSTS.md) for the selection rules.
+
+
 You are a software architect. Given file nodes (paths, summaries, tags, node types) and import edges, identify 3-10 logical architecture layers and assign every file node to exactly one layer, including non-code files (configs, docs, infra, data schemas). Two phases: run the structural-analysis script, then make semantic layer assignments from its output.
 
 **Running the Rust engine.** Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch. Run commands via `"$PLUGIN_ROOT/packages/rust/run.sh" <command> …`; it builds the executable on first use in a source checkout. Pass absolute paths.
@@ -45,7 +57,7 @@ The input JSON has three keys:
 - `allEdges` — all file-level edges including non-import types (`configures`, `documents`, `deploys`). Excludes sub-file edges (e.g. file→function `contains`).
 
 The orchestrator's `prepare_architecture_context.py` writes
-`$PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json` from the assembled
+`$UA_DIR/tmp/ua-arch-input.json` from the assembled
 graph. Use that input so selected parts, node IDs, summaries, and ignore choices
 stay consistent. Do not rescan the whole project for part-based analysis.
 If the caller supplies another prepared input, use that path for both analysis
@@ -56,7 +68,7 @@ Only for a standalone request without an assembled graph, generate a base invent
 ```bash
 "$PLUGIN_ROOT/packages/rust/run.sh" generate_input \
   "$PROJECT_ROOT" \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json" \
+  "$UA_DIR/tmp/ua-arch-input.json" \
   --exclude '**/node_modules/**' 'dist/**'
 ```
 
@@ -72,8 +84,8 @@ For that standalone fallback, the generator writes `fileNodes` (empty `summary`/
 
 ```bash
 "$PLUGIN_ROOT/packages/rust/run.sh" analyze \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json" \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-arch-results.json"
+  "$UA_DIR/tmp/ua-arch-input.json" \
+  "$UA_DIR/tmp/ua-arch-results.json"
 ```
 
 Validates input against `packages/rust/schemas/input.schema.json` and results against `output.schema.json`; exits `0` and writes results to arg 2, or exits `1` printing the cause to stderr. On non-zero, fix the input file (usually malformed JSON — invalid edge references, missing keys, bad node IDs) and re-run — do NOT modify the package. Up to 2 retry attempts.
@@ -165,7 +177,7 @@ Extra deterministic signals you may use:
 
 ## Phase 2 -- Semantic Layer Assignment
 
-Read `$PROJECT_ROOT/.understand-anything/tmp/ua-arch-results.json`. Use the structural analysis as the primary input; do NOT re-read source files or re-analyze imports.
+Read `$UA_DIR/tmp/ua-arch-results.json`. Use the structural analysis as the primary input; do NOT re-read source files or re-analyze imports.
 
 **Most of this phase is pre-computed.** `phase2Recommendations` already applies the mechanical rules:
 - `suggestedLayerByGroup` — layer id each directory group maps to (Step 1).
@@ -220,8 +232,8 @@ After writing `layers.json`, validate it (do not count by hand):
 
 ```bash
 "$PLUGIN_ROOT/packages/rust/run.sh" validate_layers \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-arch-input.json" \
-  <project-root>/.understand-anything/intermediate/layers.json
+  "$UA_DIR/tmp/ua-arch-input.json" \
+  <project-root>/.ua/intermediate/layers.json
 ```
 
 It verifies every input node appears in **exactly one** layer, no invented ids, no double-assignment, 3-10 layers with valid `layer:<kebab-case>` ids, and every layer's required fields non-empty. Exits `0` when valid, else `1` with problems. On non-zero, fix `layers.json` and re-run until it passes.
@@ -300,6 +312,6 @@ Authoritative contract: `packages/rust/schemas/layers.schema.json` (a JSON array
 
 ## Writing Results
 
-1. Write the JSON array to `<project-root>/.understand-anything/intermediate/layers.json` (project root provided in your prompt).
+1. Write the JSON array to `<project-root>/.ua/intermediate/layers.json` (project root provided in your prompt).
 2. Run `validate_layers` against the written file; fix and rewrite until it exits `0`.
 3. Respond with ONLY a brief text summary: number of layers, their names, file count per layer. Do NOT include the full JSON.

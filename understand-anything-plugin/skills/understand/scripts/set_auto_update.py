@@ -5,8 +5,11 @@ from pathlib import Path
 import sys
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+from data_directory import data_dir
+
 def main():
-    path = Path(sys.argv[1]) / ".understand-anything" / "config.json"
+    path = data_dir(Path(sys.argv[1])) / "config.json"
     config = json.loads(path.read_text()) if path.exists() else {}
     if not isinstance(config, dict):
         raise ValueError("config.json must contain an object")

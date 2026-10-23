@@ -5,6 +5,14 @@ Follow this workflow when a native hook reports a stale graph and the project's
 for dispatch and host conventions. Use the absolute project root in the hook
 message; resolve the plugin root from this file's parent directory.
 
+Resolve the project data directory before reading any artifacts:
+
+```bash
+UA_DIR=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
+```
+
+Use that directory for the entire update, including worker inputs and outputs.
+
 An enabled hook authorizes this graph-maintenance workflow within the current
 task's permissions. Honor instructions to stop and wait for an existing analysis
 run to finish before starting another. Do not stage, commit, or modify source files.
@@ -16,7 +24,7 @@ rebuilds project caches from configured system data and local fallback snapshots
 
 ## Part-based graphs
 
-Read `$PROJECT_ROOT/.understand-anything/config.json`. If it contains
+Read `$UA_DIR/config.json`. If it contains
 `includedParts`, read `$PLUGIN_ROOT/skills/understand/SKILL.md` and run its
 incremental path for the supplied project root. Reuse the saved source/depth and
 part selection. Refresh the scan, analyze affected or pending parts, merge, and
@@ -28,7 +36,7 @@ saved partitions stale, and a later partition merge would undo the update.
 ## Legacy graphs without partition selection
 
 The deterministic commands below write JSON under
-`.understand-anything/intermediate/` and print a JSON summary. Inspect each
+`$UA_DIR/intermediate/` and print a JSON summary. Inspect each
 result before proceeding. Fingerprinting avoids semantic analysis for unchanged
 structure, but does not prove that internal behavior is unchanged. This workflow
 uses the host's model context; do not claim it consumes zero tokens.

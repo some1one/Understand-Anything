@@ -31,6 +31,8 @@ fn git(root: &Path, args: &[&str]) -> String {
     String::from_utf8(out.stdout).unwrap().trim().to_owned()
 }
 fn init(root: &Path) {
+    // These regressions exercise compatibility with existing legacy projects.
+    fs::create_dir_all(root.join(".understand-anything")).unwrap();
     git(root, &["init", "-q"]);
     git(root, &["config", "user.email", "fixture@example.test"]);
     git(root, &["config", "user.name", "Fixture"]);

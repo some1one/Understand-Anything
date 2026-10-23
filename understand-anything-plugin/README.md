@@ -48,7 +48,7 @@ first-run setup, requirements, commands, and troubleshooting (native Claude:
 Analysis supports a target path and `--source=<dir>[,<dir>]`, `--split=<depth>`,
 `--all`, `--full`, `--review`, `--no-domain`, and
 `--auto-update` / `--no-auto-update`. It saves the partition selection in
-`.understand-anything/config.json`. `--all` selects all detected parts; ignore
+`.ua/config.json`. `--all` selects all detected parts; ignore
 review still applies when needed.
 
 ## Recommended repository instructions
@@ -186,7 +186,7 @@ The query engine works offline. Missing or corrupt required dictionary data
 reports an error; refresh it through explicit plugin maintenance or reinstall. Matches keep graph order; ranking remains future
 work. See the [dictionary provenance and license](scripts/dictionaries.md).
 
-Graph saves also generate `.understand-anything/query-dictionaries/` with one
+Graph saves also generate `.ua/query-dictionaries/` with one
 CSpell vocabulary cache per selected dictionary. Rust uses the project's declared
 languages and graph file extensions to select language dictionaries, plus shared
 software terms. JavaScript and TypeScript share the TypeScript/Node dictionaries.
@@ -257,3 +257,13 @@ Unavailable version information or failed network checks are reported explicitly
 After updating Understand Anything or dictionary libraries, recommend a fresh
 full index using `/understand --full`. This rebuild is a recommendation, not an
 automatic analysis run. `--offline` skips registry checks as well as downloads.
+
+## Project data directory compatibility
+
+New analyses store project data in `.ua/`. Existing projects with only
+`.understand-anything/` keep using that directory. When both exist, `.ua/` is
+selected for the entire workflow; missing files are not borrowed from the old
+snapshot. To migrate manually, stop analysis and dashboard processes, move the
+whole legacy directory to `.ua`, and update any custom dictionary paths in your
+configuration. Project-specific data and caches stay inside the selected directory;
+shared dictionaries and the plugin installation home keep their existing locations.

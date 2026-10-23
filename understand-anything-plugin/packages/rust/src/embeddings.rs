@@ -152,7 +152,7 @@ pub fn generate_and_save(
         .map(str::to_owned)
         .unwrap_or_else(|| setting("UNDERSTAND_EMBEDDINGS_MODEL", DEFAULT_MODEL));
     let result = build_embeddings(nodes, client, &model, 64)?;
-    let out = root.join(".understand-anything/embeddings.json");
+    let out = crate::persistence::data_dir(&root).join("embeddings.json");
     save_embeddings(&out, &result)?;
     Ok(out)
 }

@@ -1,8 +1,24 @@
 //! JSON artifact persistence; extension fields are retained.
 use crate::{Error, Result};
 use serde_json::{Value, json};
-use std::{fs, path::Path};
-pub const UA_DIR: &str = ".understand-anything";
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
+pub const UA_DIR: &str = ".ua";
+pub const LEGACY_UA_DIR: &str = ".understand-anything";
+
+/// Select one artifact directory for the whole project, including optional files.
+/// Existing legacy projects stay in place; new projects use `.ua`.
+pub fn data_dir(root: &Path) -> PathBuf {
+    let current = root.join(UA_DIR);
+    let legacy = root.join(LEGACY_UA_DIR);
+    if current.is_dir() || !legacy.is_dir() {
+        current
+    } else {
+        legacy
+    }
+}
 pub fn read_json(path: &Path) -> Result<Value> {
     Ok(serde_json::from_slice(&fs::read(path)?)?)
 }
@@ -11,14 +27,14 @@ pub fn write_json(path: &Path, value: &Value) -> Result<()> {
     Ok(())
 }
 pub fn load_optional(root: &Path, name: &str) -> Result<Option<Value>> {
-    let path = root.join(UA_DIR).join(name);
+    let path = data_dir(root).join(name);
     if !path.exists() {
         return Ok(None);
     }
     read_json(&path).map(Some)
 }
 pub fn save_artifact(root: &Path, name: &str, value: &Value) -> Result<()> {
-    let dir = root.join(UA_DIR);
+    let dir = data_dir(root);
     fs::create_dir_all(&dir)?;
     write_json(&dir.join(name), value)
 }
@@ -105,7 +121,9 @@ pub fn save_graph(root: &Path, graph: &Value) -> Result<()> {
         "knowledge-graph.json",
         &sanitize_file_paths(graph, root),
     )?;
-    crate::query_dictionary::refresh(&root.join(".understand-anything/knowledge-graph.json"))?;
+    crate::query_dictionary::refresh(
+        &crate::persistence::data_dir(&root).join("knowledge-graph.json"),
+    )?;
     Ok(())
 }
 pub fn save_domain_graph(root: &Path, graph: &Value) -> Result<()> {

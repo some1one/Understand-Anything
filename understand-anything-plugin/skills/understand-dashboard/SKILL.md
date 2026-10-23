@@ -6,6 +6,18 @@ argument-hint: "[project-path]"
 
 # /understand-dashboard
 
+Resolve `UA_DIR` after resolving `PLUGIN_ROOT` and `PROJECT_ROOT`, before reading
+or writing project artifacts:
+
+```bash
+UA_DIR=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
+```
+
+Use this absolute directory throughout the workflow and pass it to workers.
+It selects `.ua` for new projects and retains an existing legacy directory;
+see [host integration](../../HOSTS.md) for the selection rules.
+
+
 Launch the Understand Anything dashboard to visualize the current project's knowledge graph.
 
 Read [host integration](../../HOSTS.md) for invocation, argument handling, and agent dispatch.
@@ -14,7 +26,7 @@ Read [host integration](../../HOSTS.md) for invocation, argument handling, and a
 
 1. Project directory: use `$ARGUMENTS` if it contains a path, else the current working directory.
 
-2. If `.understand-anything/knowledge-graph.json` does not exist in the project directory, tell the user:
+2. If `$UA_DIR/knowledge-graph.json` does not exist in the project directory, tell the user:
    ```
    No knowledge graph found. Run /understand first to analyze this project.
    ```
@@ -29,9 +41,9 @@ Read [host integration](../../HOSTS.md) for invocation, argument handling, and a
    Prints:
    ```
    Dashboard started at http://127.0.0.1:<PORT>?token=<TOKEN>
-   Viewing: <project-dir>/.understand-anything/knowledge-graph.json
+   Viewing: <project-dir>/.ua/knowledge-graph.json
    PID: <pid>
-   Log: <project-dir>/.understand-anything/tmp/dashboard.log
+   Log: <project-dir>/.ua/tmp/dashboard.log
    ```
 
 5. Report the full tokenized URL to the user. **Always include the `?token=` parameter** — omitting it blocks the user at the token gate.

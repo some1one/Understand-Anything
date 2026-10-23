@@ -6,12 +6,24 @@ argument-hint: "<dir>"
 
 # /understand-add-part
 
+Resolve `UA_DIR` after resolving `PLUGIN_ROOT` and `PROJECT_ROOT`, before reading
+or writing project artifacts:
+
+```bash
+UA_DIR=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
+```
+
+Use this absolute directory throughout the workflow and pass it to workers.
+It selects `.ua` for new projects and retains an existing legacy directory;
+see [host integration](../../HOSTS.md) for the selection rules.
+
+
 Add a directory as a new **part** to an existing `/understand` analysis: analyze
 only that part and merge it into the full graph. Use this when a new
 folder/module appears, or to bring a previously-excluded part into the selection,
 without re-analyzing the whole repo.
 
-Requires a prior `/understand` run (a `.understand-anything/config.json` with
+Requires a prior `/understand` run (a `$UA_DIR/config.json` with
 `sourceFolders` / `splitDepth`). If missing, tell the user to run `/understand`
 first.
 
@@ -26,7 +38,7 @@ Read [host integration](../../HOSTS.md) for invocation, argument handling, and a
    PLUGIN_ROOT="$("$SKILL_DIR/../understand/scripts/ensure_rust_engine.sh")"
    UNDERSTAND_DIR="$SKILL_DIR/../understand"
    ```
-   Confirm `.understand-anything/config.json` exists with `sourceFolders`/`splitDepth`; if not, stop and instruct the user to run `/understand`.
+   Confirm `$UA_DIR/config.json` exists with `sourceFolders`/`splitDepth`; if not, stop and instruct the user to run `/understand`.
 
 2. **Refresh the scan** so the new folder's files are known — run **`/understand` Phase 1 (SCAN)**: dispatch the `project-scanner` agent exactly as that phase describes, refreshing `intermediate/scan-result.json`. (Use the resolved project root and `git -C "$PROJECT_ROOT" rev-parse HEAD`.)
 

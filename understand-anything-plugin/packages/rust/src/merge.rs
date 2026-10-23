@@ -243,7 +243,7 @@ pub fn merge_graphs(graphs: &[Value]) -> (Value, Vec<String>) {
     )
 }
 pub fn select_partition_graphs(root: &Path) -> Vec<PathBuf> {
-    let dir = root.join(".understand-anything");
+    let dir = crate::persistence::data_dir(&root);
     let mut files = vec![];
     for (path, partitions) in [(&dir, false), (&dir.join("partitions"), true)] {
         if let Ok(entries) = fs::read_dir(path) {

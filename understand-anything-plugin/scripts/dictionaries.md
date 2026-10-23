@@ -83,7 +83,7 @@ initiates this repair/download itself. After repairing, run `/understand --full`
 ## Keep dictionaries out of Git
 
 Full downloaded dictionaries, machine-specific source configuration, and generated
-`.understand-anything/query-dictionaries/` caches are reproducible local data.
+`.ua/query-dictionaries/` caches are reproducible local data.
 Do not commit them to the plugin source repository or the analyzed repository.
 Keeping a graph under version control does not require committing its dictionary
 cache. Preserve the project's separate policy for graph/configuration files.
@@ -92,8 +92,10 @@ Recommended repository `.gitignore` entries (adjust for custom installation path
 
 ```gitignore
 # Generated cache tied to this project's graph
+/.ua/query-dictionaries/
 /.understand-anything/query-dictionaries/
 # Optional full dictionaries downloaded into this repo
+/.ua/dictionaries/
 /.understand-anything/dictionaries/
 # Downloaded data and absolute system paths in source or copied plugin installs
 **/understand-anything-plugin/packages/rust/dictionaries/
@@ -125,7 +127,8 @@ The shared OS defaults are:
 | Windows path selection | `%LOCALAPPDATA%/UnderstandAnything/Cache/dictionaries` |
 
 Use `--storage repo --project-root /absolute/path/to/project` to choose
-`<project>/.understand-anything/dictionaries/`, or `--local-dir /custom/path` to
+`<project>/.ua/dictionaries/
+/.understand-anything/dictionaries/`, or `--local-dir /custom/path` to
 supply another location. Without `--project-root`, repo storage uses the current
 working directory; installers pass their explicit project target. New repo download
 directories get a `.gitignore` containing `*` before downloads are published.
@@ -167,7 +170,7 @@ this setup shares disk storage, not a guarantee of zero repeat network requests.
 `--offline` records configuration without downloads and cannot repair missing data.
 
 Keep each project's filtered `query-dictionaries/` cache local to that project's
-`.understand-anything/`. Those caches depend on its graph, languages, and lemma
+`.ua/`. Those caches depend on its graph, languages, and lemma
 fingerprint; a shared full dictionary is reusable across projects, while these
 filtered results are not interchangeable. Sharing does not refresh existing
 project graphs automatically.

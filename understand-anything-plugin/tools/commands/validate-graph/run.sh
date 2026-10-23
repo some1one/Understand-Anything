@@ -17,7 +17,7 @@ if [ $# -lt 1 ]; then
 fi
 
 PROJECT_ROOT=$(cd "$1" && pwd -P)
-UA="$PROJECT_ROOT/.understand-anything"
+UA=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
 GRAPH="$UA/knowledge-graph.json"
 REVIEW="$UA/intermediate/review.json"
 SCAN="$UA/intermediate/scan-result.json"

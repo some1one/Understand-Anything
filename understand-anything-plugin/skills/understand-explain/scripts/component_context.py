@@ -9,6 +9,9 @@ from pathlib import Path
 from typing import Any
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+from data_directory import data_dir
+
 def node_text(node: dict[str, Any]) -> str:
     return " ".join(
         str(v)
@@ -29,7 +32,7 @@ def main(argv: list[str] | None = None) -> int:
 
     project_root = Path(args[0]).resolve()
     target = args[1]
-    graph_path = project_root / ".understand-anything" / "knowledge-graph.json"
+    graph_path = data_dir(project_root) / "knowledge-graph.json"
     if not graph_path.is_file():
         sys.stderr.write("No knowledge graph found. Run /understand first to analyze this project.\n")
         return 1

@@ -6,7 +6,19 @@ argument-hint: "[]"
 
 # /understand-merge
 
-Merge saved fragments into `.understand-anything/knowledge-graph.json` without
+Resolve `UA_DIR` after resolving `PLUGIN_ROOT` and `PROJECT_ROOT`, before reading
+or writing project artifacts:
+
+```bash
+UA_DIR=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
+```
+
+Use this absolute directory throughout the workflow and pass it to workers.
+It selects `.ua` for new projects and retains an existing legacy directory;
+see [host integration](../../HOSTS.md) for the selection rules.
+
+
+Merge saved fragments into `$UA_DIR/knowledge-graph.json` without
 re-running analysis. This is an additive merge: the existing merged graph is
 the base. It does **not** remove old nodes when parts are deselected. To rebuild
 the selected set and its architecture, use `understand` with `--full`.

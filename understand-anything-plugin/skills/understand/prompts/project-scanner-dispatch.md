@@ -27,4 +27,4 @@ README and manifest are authoritative for project name, description, and framewo
 Scan this project directory to discover all project files (including non-code: configs, docs, infrastructure, data, scripts, markup). Detect languages and frameworks.
 
 - Project root: `{{PROJECT_ROOT}}`
-- Write output to: `{{PROJECT_ROOT}}/.understand-anything/intermediate/scan-result.json`
+- Write output to: `{{PROJECT_ROOT}}/.ua/intermediate/scan-result.json`

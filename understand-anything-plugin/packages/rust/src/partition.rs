@@ -152,8 +152,8 @@ pub fn parts_to_process(root: &Path, full: bool, changed: &[String]) -> Result<V
     .into_iter()
     .collect();
     for p in included {
-        if !root
-            .join(".understand-anything/partitions")
+        if !crate::persistence::data_dir(&root)
+            .join("partitions")
             .join(part_to_filename(&p))
             .exists()
         {

@@ -15,6 +15,9 @@ FILE_LEVEL_TYPES = {
 }
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+from data_directory import data_dir
+
 def load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -56,7 +59,7 @@ def main(argv: list[str] | None = None) -> int:
 
     project_root = Path(args[0]).resolve()
     skill_dir = Path(args[1]).resolve()
-    inter = project_root / ".understand-anything" / "intermediate"
+    inter = data_dir(project_root) / "intermediate"
     scan = load_json(inter / "scan-result.json")
     graph = load_json(inter / "assembled-graph.json")
     context = {}
@@ -74,7 +77,7 @@ def main(argv: list[str] | None = None) -> int:
         "importEdges": [e for e in import_edges if e.get("source") in file_ids and e.get("target") in file_ids],
         "allEdges": [e for e in edges if e.get("source") in file_ids and e.get("target") in file_ids],
     }
-    temp_dir = project_root / ".understand-anything" / "tmp"
+    temp_dir = data_dir(project_root) / "tmp"
     temp_dir.mkdir(parents=True, exist_ok=True)
     (temp_dir / "ua-arch-input.json").write_text(
         json.dumps(architecture_input, indent=2, ensure_ascii=False), encoding="utf-8"

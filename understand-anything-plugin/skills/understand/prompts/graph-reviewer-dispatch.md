@@ -24,8 +24,8 @@ Scan coverage is cross-checked deterministically: `validate_graph --scan-result`
 
 ## Dispatch Prompt
 
-Validate the knowledge graph at `{{PROJECT_ROOT}}/.understand-anything/intermediate/assembled-graph.json`.
+Validate the knowledge graph at `{{PROJECT_ROOT}}/.ua/intermediate/assembled-graph.json`.
 
 - Project root: `{{PROJECT_ROOT}}`
 - Read the graph file and validate it for completeness and correctness.
-- Write output to: `{{PROJECT_ROOT}}/.understand-anything/intermediate/review.json`
+- Write output to: `{{PROJECT_ROOT}}/.ua/intermediate/review.json`

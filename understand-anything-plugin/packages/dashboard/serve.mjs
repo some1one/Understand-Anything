@@ -8,7 +8,7 @@
 // `pnpm install`.
 //
 // Env:
-//   GRAPH_DIR                 project root that holds .understand-anything/
+//   GRAPH_DIR                 project root that holds .ua/ (or legacy data)
 //   UNDERSTAND_ACCESS_TOKEN   fixed access token (else a random one is generated)
 //   PORT / HOST               listen address (default 127.0.0.1:0 → random port)
 import http from "node:http";
@@ -44,11 +44,21 @@ const MIME = {
 
 // ---- data-endpoint helpers (ported from vite.config.ts) --------------------
 
+// Resolve once per project, not per artifact: never mix current and legacy graphs.
+function dataDirectory(root) {
+  const current = path.resolve(root, ".ua");
+  const legacy = path.resolve(root, ".understand-anything");
+  const isDirectory = (candidate) => {
+    try { return fs.statSync(candidate).isDirectory(); } catch { return false; }
+  };
+  return isDirectory(current) || !isDirectory(legacy) ? current : legacy;
+}
+
 function graphFileCandidates(fileName) {
   const graphDir = process.env.GRAPH_DIR;
-  if (graphDir) return [path.resolve(graphDir, `.understand-anything/${fileName}`)];
+  if (graphDir) return [path.join(dataDirectory(graphDir), fileName)];
   return [
-    path.resolve(process.cwd(), `.understand-anything/${fileName}`),
+    path.join(dataDirectory(process.cwd()), fileName),
   ];
 }
 

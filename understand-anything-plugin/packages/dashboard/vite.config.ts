@@ -12,12 +12,22 @@ import crypto from "crypto";
 const ACCESS_TOKEN = process.env.UNDERSTAND_ACCESS_TOKEN || crypto.randomBytes(16).toString("hex");
 const MAX_SOURCE_FILE_BYTES = 1024 * 1024;
 
+// Resolve once per project, not per artifact: never mix current and legacy graphs.
+function dataDirectory(root: string) {
+  const current = path.resolve(root, ".ua");
+  const legacy = path.resolve(root, ".understand-anything");
+  const isDirectory = (candidate: string) => {
+    try { return fs.statSync(candidate).isDirectory(); } catch { return false; }
+  };
+  return isDirectory(current) || !isDirectory(legacy) ? current : legacy;
+}
+
 function graphFileCandidates(fileName: string): string[] {
   const graphDir = process.env.GRAPH_DIR;
-  if (graphDir) return [path.resolve(graphDir, `.understand-anything/${fileName}`)];
+  if (graphDir) return [path.join(dataDirectory(graphDir), fileName)];
   return [
-    path.resolve(process.cwd(), `.understand-anything/${fileName}`),
-    path.resolve(process.cwd(), `../../../.understand-anything/${fileName}`),
+    path.join(dataDirectory(process.cwd()), fileName),
+    path.join(dataDirectory(path.resolve(process.cwd(), "../../..")), fileName),
   ];
 }
 

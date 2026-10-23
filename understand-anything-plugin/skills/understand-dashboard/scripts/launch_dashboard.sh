@@ -7,7 +7,10 @@ if [ $# -ne 1 ]; then
 fi
 
 PROJECT_DIR=$(cd "$1" && pwd -P)
-if [ ! -f "$PROJECT_DIR/.understand-anything/knowledge-graph.json" ]; then
+DATA_SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
+UA_DIR=$(python3 "$DATA_SCRIPT_DIR/../../../scripts/data_directory.py" "$PROJECT_DIR")
+
+if [ ! -f "$UA_DIR/knowledge-graph.json" ]; then
   echo "No knowledge graph found. Run /understand first to analyze this project." >&2
   exit 1
 fi
@@ -15,7 +18,7 @@ fi
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 eval "$("$SCRIPT_DIR/resolve_dashboard.sh")"
 
-LOG_DIR="$PROJECT_DIR/.understand-anything/tmp"
+LOG_DIR="$UA_DIR/tmp"
 mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/dashboard.log"
 
@@ -65,7 +68,7 @@ fi
 
 cat <<EOF
 Dashboard started at $URL
-Viewing: $PROJECT_DIR/.understand-anything/knowledge-graph.json
+Viewing: $UA_DIR/knowledge-graph.json
 PID: $PID
 Log: $LOG_FILE
 EOF

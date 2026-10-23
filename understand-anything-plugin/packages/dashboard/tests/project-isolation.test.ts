@@ -54,6 +54,27 @@ async function request(url: string, endpoint: string, source?: string) {
 }
 
 describe.each(["standalone", "vite"])("%s project isolation", (mode) => {
+  test("prefers .ua as one snapshot without falling back for missing artifacts", async () => {
+    const root = mkdtempSync(path.join(tmpdir(), "ua-directory-selection-"));
+    mkdirSync(path.join(root, ".understand-anything"));
+    artifact(root, "knowledge-graph.json", { project: { name: "legacy" }, nodes: [] });
+    artifact(root, "meta.json", { marker: "legacy" });
+    const server = await start(mode, root, root);
+    try {
+      expect((await (await request(server.url, "knowledge-graph.json")).json()).project.name).toBe("legacy");
+      mkdirSync(path.join(root, ".ua"));
+      writeFileSync(path.join(root, ".ua/knowledge-graph.json"), JSON.stringify({ project: { name: "current" }, nodes: [] }));
+      expect((await (await request(server.url, "knowledge-graph.json")).json()).project.name).toBe("current");
+      expect((await request(server.url, "meta.json")).status).toBe(404);
+      expect(await (await request(server.url, "config.json")).json()).toEqual({ autoUpdate: false });
+      renameSync(path.join(root, ".ua/knowledge-graph.json"), path.join(root, "saved.json"));
+      expect((await request(server.url, "knowledge-graph.json")).status).toBe(404);
+    } finally {
+      await stop(server.child);
+      rmSync(root, { recursive: true, force: true });
+    }
+  }, 40000);
+
   test("explicit project owns graphs, optional artifacts, and source authorization; implicit discovery still works", async () => {
     const fixture = mkdtempSync(path.join(tmpdir(), "ua-dashboard-isolation-"));
     const a = path.join(fixture, "a"), b = path.join(fixture, "b");

@@ -7,6 +7,18 @@ description: |
 
 # Assemble Reviewer
 
+Resolve `UA_DIR` after resolving `PLUGIN_ROOT` and `PROJECT_ROOT`, before reading
+or writing project artifacts:
+
+```bash
+UA_DIR=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
+```
+
+Use this absolute directory throughout the workflow and pass it to workers.
+It selects `.ua` for new projects and retains an existing legacy directory;
+see [host integration](../HOSTS.md) for the selection rules.
+
+
 You review the assembled knowledge graph from `understand-anything-rs merge_batch_graphs`. The script and deterministic validator handle everything mechanical; your job is the **judgment-only recovery** they cannot do.
 
 **Running the Rust engine.** Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch. Run commands via `"$PLUGIN_ROOT/packages/rust/run.sh" <command> …`; it builds the executable on first use in a source checkout. Pass absolute paths.
@@ -36,9 +48,9 @@ You receive the script's report and the path to `assembled-graph.json`. Work the
 
 ```bash
 "$PLUGIN_ROOT/packages/rust/run.sh" validate_assembled_graph \
-  "$PROJECT_ROOT/.understand-anything/intermediate/assembled-graph.json" \
-  "$PROJECT_ROOT/.understand-anything/intermediate/assemble-review.json" \
-  --scan-result "$PROJECT_ROOT/.understand-anything/intermediate/scan-result.json"
+  "$UA_DIR/intermediate/assembled-graph.json" \
+  "$UA_DIR/intermediate/assemble-review.json" \
+  --scan-result "$UA_DIR/intermediate/scan-result.json"
 ```
 
 Always exits `0` (non-zero = couldn't read a file). Read the review payload (`issues`, `warnings`, `stats.coverage`); its `issues` are deterministic facts you act on in Step 3 — do not re-derive them.

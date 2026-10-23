@@ -8,6 +8,18 @@ description: |
 
 # File Analyzer
 
+Resolve `UA_DIR` after resolving `PLUGIN_ROOT` and `PROJECT_ROOT`, before reading
+or writing project artifacts:
+
+```bash
+UA_DIR=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
+```
+
+Use this absolute directory throughout the workflow and pass it to workers.
+It selects `.ua` for new projects and retains an existing legacy directory;
+see [host integration](../HOSTS.md) for the selection rules.
+
+
 Complete the assigned batch in this worker. Do not spawn agents or invoke the
 top-level analysis skill; the caller owns dispatch, concurrency, and retries.
 Run the Rust helpers and read source directly. If the batch cannot be completed,
@@ -57,15 +69,15 @@ Pass several indices at once (`... <batchIndex> <batchIndex> ...`) if your dispa
 
 ```bash
 "$PLUGIN_ROOT/packages/rust/run.sh" extract_structure \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-analyzer-input-<batchIndex>.json" \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json"
+  "$UA_DIR/tmp/ua-file-analyzer-input-<batchIndex>.json" \
+  "$UA_DIR/tmp/ua-file-extract-results-<batchIndex>.json"
 ```
 
 On non-zero exit, read stderr and report the error — do NOT write a manual fallback. After it returns, verify the output exists and is non-empty (`test -s …ua-file-extract-results-<batchIndex>.json`); exit 0 with a missing output means a silent no-op — report as a hard failure, do not proceed.
 
 ### Step 3 — Read the extraction results
 
-Read `$PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json`:
+Read `$UA_DIR/tmp/ua-file-extract-results-<batchIndex>.json`:
 
 ```json
 {
@@ -125,8 +137,8 @@ Treat these like tree-sitter functions for node creation (Step 2 significance fi
 
 ```bash
 "$PLUGIN_ROOT/packages/rust/run.sh" validate_structure_output \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-analyzer-input-<batchIndex>.json" \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json"
+  "$UA_DIR/tmp/ua-file-analyzer-input-<batchIndex>.json" \
+  "$UA_DIR/tmp/ua-file-extract-results-<batchIndex>.json"
 ```
 
 Checks results against `packages/rust/schemas/structure-output.schema.json` plus batch coverage (no duplicate paths, `filesAnalyzed` matches `results`, integer metrics, every batch file analyzed or explicitly skipped). Exits `0` when valid. **On non-zero: re-run `extract_structure` once (Step 2); if it still fails, stop and report a hard failure — do NOT proceed to Phase 2 on malformed extraction output.**
@@ -139,9 +151,9 @@ Checks results against `packages/rust/schemas/structure-output.schema.json` plus
 
 ```bash
 "$PLUGIN_ROOT/packages/rust/run.sh" seed_file_batch_graph \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-context-<batchIndex>.json" \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-extract-results-<batchIndex>.json" \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-seed-<batchIndex>.json"
+  "$UA_DIR/tmp/ua-file-context-<batchIndex>.json" \
+  "$UA_DIR/tmp/ua-file-extract-results-<batchIndex>.json" \
+  "$UA_DIR/tmp/ua-file-seed-<batchIndex>.json"
 ```
 
 The seed already contains, computed deterministically:
@@ -435,9 +447,9 @@ You do NOT hand-split parts, name output files, or check import coverage. After 
 ```bash
 "$PLUGIN_ROOT/packages/rust/run.sh" finalize_file_batch_output \
   "$PROJECT_ROOT" \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-context-<batchIndex>.json" \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-seed-<batchIndex>.json" \
-  "$PROJECT_ROOT/.understand-anything/tmp/ua-file-draft-<batchIndex>.json"
+  "$UA_DIR/tmp/ua-file-context-<batchIndex>.json" \
+  "$UA_DIR/tmp/ua-file-seed-<batchIndex>.json" \
+  "$UA_DIR/tmp/ua-file-draft-<batchIndex>.json"
 ```
 
 The finalizer:

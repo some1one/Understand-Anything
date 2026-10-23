@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Load part graph(s) — or the full merged graph — as compact prompt context.
 
-Standalone stdlib (no package imports), operating on ``.understand-anything``:
+Uses the selected project data directory (``.ua`` or legacy):
   * ``--all``            → the merged ``knowledge-graph.json``
   * ``<part>[,<part>]``  → those parts' ``partitions/<part>.knowledge-graph.json``
   * (nothing)           → the parts in ``config.includedParts``
@@ -23,6 +23,9 @@ from typing import Any
 
 _SUFFIX = ".knowledge-graph.json"
 
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+from data_directory import data_dir
 
 def _part_to_filename(part: str) -> str:
     return part.replace("/", "~") + _SUFFIX
@@ -123,7 +126,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     project_root = Path(args[0]).resolve()
-    ua = project_root / ".understand-anything"
+    ua = data_dir(project_root)
     selector = args[1] if len(args) > 1 else ""
 
     if selector == "--all":

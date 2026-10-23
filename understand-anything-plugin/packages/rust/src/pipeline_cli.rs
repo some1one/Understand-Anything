@@ -58,13 +58,13 @@ pub fn run(command: &str, args: &[String]) -> Result<i32> {
                     })
                 })
                 .collect::<Result<Vec<_>>>()?;
-            let path = root.join(".understand-anything/intermediate/batches.json");
+            let path = ua::persistence::data_dir(&root).join("intermediate/batches.json");
             let doc = read_json(&path)?;
             let by_index: std::collections::BTreeMap<_, _> = ua::array(&doc, "batches")
                 .iter()
                 .filter_map(|b| b["batchIndex"].as_i64().map(|i| (i, b)))
                 .collect();
-            let tmp = root.join(".understand-anything/tmp");
+            let tmp = ua::persistence::data_dir(&root).join("tmp");
             fs::create_dir_all(&tmp)?;
             let mut written = 0;
             for idx in wanted {
@@ -157,7 +157,7 @@ pub fn run(command: &str, args: &[String]) -> Result<i32> {
                 .iter()
                 .filter_map(|f| f["path"].as_str().map(str::to_owned))
                 .collect::<Vec<_>>();
-            let out = root.join(".understand-anything/intermediate");
+            let out = ua::persistence::data_dir(&root).join("intermediate");
             fs::create_dir_all(&out)?;
             let fragments = ua::batch_validation::split_into_parts(
                 ua::array(&draft, "nodes"),
@@ -176,7 +176,7 @@ pub fn run(command: &str, args: &[String]) -> Result<i32> {
             let root = root(&args[0])?;
             let part = &args[1];
             let commit = args.get(2).map(String::as_str).unwrap_or("");
-            let inter = root.join(".understand-anything/intermediate");
+            let inter = ua::persistence::data_dir(&root).join("intermediate");
             let scan = read_json(&inter.join("scan-result.json"))?;
             let assembled = read_json(&inter.join("assembled-graph.json"))?;
             let known = ua::array(&scan, "files")
@@ -189,7 +189,7 @@ pub fn run(command: &str, args: &[String]) -> Result<i32> {
                 })
                 .collect();
             let graph = ua::assembly::build_part_graph(&assembled, part, &known, &scan, commit);
-            let dir = root.join(".understand-anything/partitions");
+            let dir = ua::persistence::data_dir(&root).join("partitions");
             fs::create_dir_all(&dir)?;
             let path = dir.join(ua::partition::part_to_filename(part));
             write_json(&path, &graph)?;

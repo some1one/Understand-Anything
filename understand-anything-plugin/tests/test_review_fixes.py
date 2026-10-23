@@ -77,15 +77,15 @@ def test_rename_helpers_preserve_both_paths_and_unusual_names(tmp_path, capsys):
     assert git('diff', '--name-status', previous, 'HEAD').startswith('R100')
     collector = module('understand', 'write_changed_files')
     assert collector.main([str(tmp_path), previous]) == 0
-    changed = tmp_path / '.understand-anything/tmp/changed-files.txt'
+    changed = tmp_path / '.ua/tmp/changed-files.txt'
     assert set(changed.read_bytes().decode().split('\0')) == {old, new, ''}
     diff = module('understand-diff', 'diff_context')
     assert set(diff.changed_files(tmp_path, previous)[0]) == {old, new}
     graph = {'nodes': [{'id': 'old', 'filePath': old}, {'id': 'keep', 'filePath': 'keep.py'}],
              'edges': [{'source': 'old', 'target': 'keep'}]}
-    (tmp_path / '.understand-anything/knowledge-graph.json').write_text(json.dumps(graph))
+    (tmp_path / '.ua/knowledge-graph.json').write_text(json.dumps(graph))
     assert module('understand', 'prune_incremental_batch').main([str(tmp_path), str(changed)]) == 0
-    pruned = json.loads((tmp_path / '.understand-anything/intermediate/batch-existing.json').read_text())
+    pruned = json.loads((tmp_path / '.ua/intermediate/batch-existing.json').read_text())
     assert pruned == {'nodes': [graph['nodes'][1]], 'edges': []}
 
 

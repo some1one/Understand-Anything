@@ -8,6 +8,9 @@ import sys
 from pathlib import Path
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+from data_directory import data_dir
+
 def main(argv: list[str] | None = None) -> int:
     args = sys.argv[1:] if argv is None else argv
     if len(args) != 1:
@@ -15,8 +18,8 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     project_root = Path(args[0]).resolve()
-    graph_path = project_root / ".understand-anything" / "knowledge-graph.json"
-    out_path = project_root / ".understand-anything" / "intermediate" / "domain-context.json"
+    graph_path = data_dir(project_root) / "knowledge-graph.json"
+    out_path = data_dir(project_root) / "intermediate" / "domain-context.json"
     graph = json.loads(graph_path.read_text(encoding="utf-8"))
     payload = {
         "source": "knowledge-graph",

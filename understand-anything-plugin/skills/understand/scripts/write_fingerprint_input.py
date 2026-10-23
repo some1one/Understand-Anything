@@ -15,6 +15,9 @@ SOURCE_EXTENSIONS = {
 }
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+from data_directory import data_dir
+
 def is_source(path: str) -> bool:
     return Path(path).suffix.lower() in SOURCE_EXTENSIONS
 
@@ -27,8 +30,8 @@ def main(argv: list[str] | None = None) -> int:
 
     project_root = Path(args[0]).resolve()
     commit_hash = args[1]
-    scan_path = project_root / ".understand-anything" / "intermediate" / "scan-result.json"
-    out_path = project_root / ".understand-anything" / "intermediate" / "fingerprint-input.json"
+    scan_path = data_dir(project_root) / "intermediate" / "scan-result.json"
+    out_path = data_dir(project_root) / "intermediate" / "fingerprint-input.json"
     try:
         scan = json.loads(scan_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as err:

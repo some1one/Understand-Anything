@@ -12,7 +12,7 @@ run.sh <project-root> [fragment.json ...]
 ```
 
 - No fragment args: discovers root-level `*knowledge-graph*.json` and
-  `partitions/*.knowledge-graph.json` under `<project-root>/.understand-anything/`,
+  `partitions/*.knowledge-graph.json` under `<project-root>/.ua/`,
   excluding the merged `knowledge-graph.json`. A non-empty `config.includedParts`
   filters graphs with a `part` field; legacy graphs without one remain included.
 - Explicit fragment paths bypass selection filtering. The existing merged graph

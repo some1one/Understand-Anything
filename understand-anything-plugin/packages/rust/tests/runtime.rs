@@ -91,12 +91,12 @@ fn persistence_fallbacks_and_path_sanitization() {
     );
     ua::persistence::save_config(root, &json!({"splitDepth":2,"custom":{"x":1}})).unwrap();
     assert_eq!(ua::persistence::load_config(root)["custom"]["x"], 1);
-    fs::write(root.join(".understand-anything/config.json"), "{").unwrap();
+    fs::write(root.join(".ua/config.json"), "{").unwrap();
     assert_eq!(
         ua::persistence::load_config(root),
         json!({"autoUpdate":false})
     );
-    fs::write(root.join(".understand-anything/fingerprints.json"), "{").unwrap();
+    fs::write(root.join(".ua/fingerprints.json"), "{").unwrap();
     assert!(ua::persistence::load_fingerprints(root).is_none());
     let graph = json!({"nodes":[{"id":"1","filePath":root.join("src/x.rs")},{"id":"2","filePath":"/outside/y.rs"},{"id":"3","filePath":"relative/z.rs"}],"extension":"yes"});
     ua::persistence::save_graph(root, &graph).unwrap();
@@ -158,10 +158,10 @@ fn pending_and_affected_parts_union() {
         &json!({"splitDepth":1,"includedParts":["src","tests","docs"]}),
     )
     .unwrap();
-    fs::create_dir_all(root.join(".understand-anything/partitions")).unwrap();
+    fs::create_dir_all(root.join(".ua/partitions")).unwrap();
     for part in ["src", "tests"] {
         fs::write(
-            root.join(".understand-anything/partitions")
+            root.join(".ua/partitions")
                 .join(ua::partition::part_to_filename(part)),
             "{}",
         )

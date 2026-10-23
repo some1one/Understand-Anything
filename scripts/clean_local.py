@@ -19,6 +19,12 @@ SKILL_DIRS = (
 CACHE_DIRS = {"__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".cache"}
 
 
+def project_data_dir(root):
+    current = root / ".ua"
+    legacy = root / ".understand-anything"
+    return current if current.is_dir() or not legacy.is_dir() else legacy
+
+
 def owned_payload(path):
     try:
         return json.loads((path / ".claude-plugin/plugin.json").read_text()).get("name") == "understand-anything"
@@ -50,7 +56,7 @@ def installed_paths(root):
             expected.append(payload / "skills" / link.name)
             if target in expected and link.name.startswith("understand"):
                 yield link
-    tools = root / ".understand-anything/tools"
+    tools = project_data_dir(root) / "tools"
     if safe_parent(tools / "placeholder", root) and tools.is_dir():
         for path in tools.iterdir():
             if path.is_file() and not path.is_symlink() and "# Understand-Anything tool wrapper" in path.read_text(errors="replace"):
@@ -69,7 +75,7 @@ def installed_paths(root):
 def cache_paths(root):
     # Preserve the graph, parts, metadata, fingerprints, embeddings, config and
     # any future index files. Only known scratch/cache names are removed here.
-    artifacts = root / ".understand-anything"
+    artifacts = project_data_dir(root)
     intermediate = artifacts / "intermediate"
     if safe_parent(intermediate / "placeholder", root) and intermediate.is_dir():
         for path in intermediate.iterdir():
@@ -86,7 +92,7 @@ def cache_paths(root):
             if name in CACHE_DIRS:
                 yield path
                 dirs.remove(name)
-            elif name in {".git", ".understand-anything", "node_modules", "target", "dist", "build", ".venv", "venv"} or path.is_symlink():
+            elif name in {".git", ".ua", ".understand-anything", "node_modules", "target", "dist", "build", ".venv", "venv"} or path.is_symlink():
                 dirs.remove(name)
         for name in files:
             if name.endswith((".pyc", ".pyo", ".tsbuildinfo")):

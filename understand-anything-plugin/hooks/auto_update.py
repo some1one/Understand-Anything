@@ -11,6 +11,9 @@ import subprocess
 import sys
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+from data_directory import data_dir
+
 def read_object(path):
     value = json.loads(path.read_text(encoding="utf-8"))
     return value if isinstance(value, dict) else {}
@@ -35,7 +38,7 @@ def context_for(event):
         ["git", "-C", cwd, "rev-parse", "--show-toplevel"],
         check=True, capture_output=True, text=True, timeout=3,
     ).stdout.strip())
-    graph_dir = root / ".understand-anything"
+    graph_dir = data_dir(root)
     if read_object(graph_dir / "config.json").get("autoUpdate") is not True:
         return None
     if not (graph_dir / "knowledge-graph.json").is_file():

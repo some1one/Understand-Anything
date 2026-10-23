@@ -311,8 +311,16 @@ remove_kilo_workflows() {
 # per deterministic command, forwarding to the copied plugin payload's run.sh.
 # Wrappers self-resolve relative to their own location, so they survive the
 # project being moved. Applies to every --local install, not just kilo.
+project_data_dir() {
+  if [ -d "$1/.ua" ] || [ ! -d "$1/.understand-anything" ]; then
+    printf '%s/.ua\n' "$1"
+  else
+    printf '%s/.understand-anything\n' "$1"
+  fi
+}
+
 install_project_tools() {
-  local project="$1" payload_rel="$2" tools_dir="$project/.understand-anything/tools" src name
+  local project="$1" payload_rel="$2" tools_dir="$(project_data_dir "$1")/tools" src name
   [ -d "$project/$payload_rel/tools/commands" ] || return 0
   mkdir -p "$tools_dir"
   for src in "$project/$payload_rel"/tools/commands/*/run.sh; do
@@ -326,14 +334,14 @@ HERE=\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd -P)
 exec "\$HERE/../../$payload_rel/tools/commands/$name/run.sh" "\$@"
 EOF
     chmod +x "$tools_dir/$name"
-    ok ".understand-anything/tools/$name"
+    ok "$tools_dir/$name"
   done
 }
 
 # Remove only the wrappers we generated; leave the rest of .understand-anything
 # (knowledge graph, etc.) untouched. Drops the tools/ dir only if left empty.
 remove_project_tools() {
-  local project="$1" tools_dir="$project/.understand-anything/tools" f
+  local project="$1" tools_dir="$(project_data_dir "$1")/tools" f
   [ -d "$tools_dir" ] || return 0
   for f in "$tools_dir"/*; do
     [ -f "$f" ] || continue
@@ -403,7 +411,7 @@ scripted_local_install() {
   done <<<"$dirs"
   [ "$id" = "kiro" ] && write_kiro_agent "$project/$payload_dir"
   [ "$id" = "kilo" ] && { info "Installing Kilo workflows"; install_kilo_workflows "$project/$payload_dir" "$project/.kilocode/workflows"; }
-  info "Installing project tool wrappers (.understand-anything/tools)"
+  info "Installing project tool wrappers in the selected data directory"
   install_project_tools "$project" "$payload_dir"
   python3 "$project/$payload_dir/scripts/configure_dictionaries.py" --plugin-root "$project/$payload_dir" --project-root "$project" || return 1
   warm_env "$project/$payload_dir"

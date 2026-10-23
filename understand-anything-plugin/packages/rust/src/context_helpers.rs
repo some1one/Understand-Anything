@@ -16,6 +16,7 @@ pub fn is_ignore_file(path: &str) -> bool {
         path,
         ".understandignore"
             | ".understand-anything/.understandignore"
+            | ".ua/.understandignore"
             | ".gitignore"
             | ".git/info/exclude"
     ) || path.ends_with("/.gitignore")
@@ -100,7 +101,7 @@ pub fn write_changed_files(root: &Path, previous: &str) -> Result<Value> {
     } else {
         "\n"
     };
-    let output = root.join(".understand-anything/tmp/changed-files.txt");
+    let output = crate::persistence::data_dir(&root).join("tmp/changed-files.txt");
     fs::create_dir_all(output.parent().unwrap())?;
     fs::write(
         &output,
@@ -136,7 +137,7 @@ pub fn prune_incremental_batch(root: &Path, changed: &Path) -> Result<Value> {
         .split(if raw.contains('\0') { '\0' } else { '\n' })
         .filter(|p| !p.is_empty())
         .collect();
-    let graph = read_json(&root.join(".understand-anything/knowledge-graph.json"))?;
+    let graph = read_json(&crate::persistence::data_dir(&root).join("knowledge-graph.json"))?;
     let removed: BTreeSet<_> = array(&graph, "nodes")
         .iter()
         .filter(|n| node_path(n, true).is_some_and(|p| paths.contains(p)))
@@ -155,7 +156,7 @@ pub fn prune_incremental_batch(root: &Path, changed: &Path) -> Result<Value> {
                     .any(|k| e[k].as_str().is_some_and(|id| removed.contains(id)))
         })
         .collect();
-    let path = root.join(".understand-anything/intermediate/batch-existing.json");
+    let path = crate::persistence::data_dir(&root).join("intermediate/batch-existing.json");
     fs::create_dir_all(path.parent().unwrap())?;
     write_json(&path, &json!({"nodes":nodes,"edges":edges}))?;
     Ok(
@@ -163,7 +164,7 @@ pub fn prune_incremental_batch(root: &Path, changed: &Path) -> Result<Value> {
     )
 }
 pub fn diff_context(root: &Path, base: Option<&str>) -> Result<Value> {
-    let graph = read_json(&root.join(".understand-anything/knowledge-graph.json"))?;
+    let graph = read_json(&crate::persistence::data_dir(&root).join("knowledge-graph.json"))?;
     let (files, label) = diff_files(root, base)?;
     let paths: BTreeSet<_> = files.iter().map(String::as_str).collect();
     let nodes: Vec<_> = array(&graph, "nodes")
@@ -198,7 +199,7 @@ pub fn diff_context(root: &Path, base: Option<&str>) -> Result<Value> {
             })
         })
         .collect();
-    let path = root.join(".understand-anything/diff-overlay.json");
+    let path = crate::persistence::data_dir(&root).join("diff-overlay.json");
     write_json(
         &path,
         &json!({"version":"1.0.0","baseBranch":label,"generatedAt":chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Millis,true),"changedFiles":files,"changedNodeIds":ids,"affectedNodeIds":affected}),
@@ -312,13 +313,13 @@ pub fn capture_project_context(root: &Path) -> Result<Value> {
     let payload = json!({"readmeContent":read_first(root,&["README.md","README.rst","readme.md"],3000)?,
         "manifestContent":read_first(root,&["package.json","pyproject.toml","Cargo.toml","go.mod","pom.xml"],usize::MAX)?,
         "dirTree":shallow_tree(root),"entryPoint":entry_point(root)});
-    let path = root.join(".understand-anything/intermediate/project-context.json");
+    let path = crate::persistence::data_dir(&root).join("intermediate/project-context.json");
     fs::create_dir_all(path.parent().unwrap())?;
     write_json(&path, &payload)?;
     Ok(payload)
 }
 pub fn save_knowledge_graph(root: &Path) -> Result<Value> {
-    let dir = root.join(".understand-anything");
+    let dir = crate::persistence::data_dir(&root);
     let graph = read_json(&dir.join("intermediate/assembled-graph.json"))?;
     let path = dir.join("knowledge-graph.json");
     write_json(&path, &graph)?;

@@ -15,6 +15,9 @@ FILE_LEVEL_TYPES = {
 COMPLEXITY_RANK = {"complex": 3, "moderate": 2, "simple": 1}
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+from data_directory import data_dir
+
 def main(argv: list[str] | None = None) -> int:
     args = sys.argv[1:] if argv is None else argv
     if len(args) != 1:
@@ -22,7 +25,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     project_root = Path(args[0]).resolve()
-    graph_path = project_root / ".understand-anything" / "knowledge-graph.json"
+    graph_path = data_dir(project_root) / "knowledge-graph.json"
     if not graph_path.is_file():
         sys.stderr.write("No knowledge graph found. Run /understand first to analyze this project.\n")
         return 1

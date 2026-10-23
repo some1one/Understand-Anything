@@ -695,7 +695,7 @@ pub fn load_batch(path: &Path) -> Option<Value> {
     }
 }
 pub fn merge_batch_directory(root: &Path) -> Result<Value> {
-    let dir = root.join(".understand-anything/intermediate");
+    let dir = crate::persistence::data_dir(&root).join("intermediate");
     if !dir.is_dir() {
         return Err(crate::Error::Invalid(format!(
             "Error: {} does not exist",

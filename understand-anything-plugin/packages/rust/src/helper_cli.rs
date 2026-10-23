@@ -90,7 +90,7 @@ pub fn run(command: &str, args: &[String]) -> Result<i32> {
             "save_knowledge_graph" => {
                 let summary = ua::context_helpers::save_knowledge_graph(&root)?;
                 ua::query_dictionary::refresh(
-                    &root.join(".understand-anything/knowledge-graph.json"),
+                    &ua::persistence::data_dir(&root).join("knowledge-graph.json"),
                 )?;
                 summary
             }
@@ -98,10 +98,10 @@ pub fn run(command: &str, args: &[String]) -> Result<i32> {
                 ua::context_helpers::diff_context(&root, args.get(1).map(String::as_str))?
             }
             "refresh_query_dictionaries" => ua::query_dictionary::refresh(
-                &root.join(".understand-anything/knowledge-graph.json"),
+                &ua::persistence::data_dir(&root).join("knowledge-graph.json"),
             )?,
             "query_graph" => {
-                let path = root.join(".understand-anything/knowledge-graph.json");
+                let path = ua::persistence::data_dir(&root).join("knowledge-graph.json");
                 let raw = fs::read(&path)?;
                 ua::query_graph::build_payload(
                     &serde_json::from_slice(&raw)?,

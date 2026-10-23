@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write .understand-anything/meta.json after fingerprints succeed."""
+"""Write meta.json in the selected project data directory after fingerprints succeed."""
 
 from __future__ import annotations
 
@@ -8,6 +8,9 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+from data_directory import data_dir
 
 def main(argv: list[str] | None = None) -> int:
     args = sys.argv[1:] if argv is None else argv
@@ -31,7 +34,7 @@ def main(argv: list[str] | None = None) -> int:
         "version": "1.0.0",
         "analyzedFiles": analyzed_files,
     }
-    path = project_root / ".understand-anything" / "meta.json"
+    path = data_dir(project_root) / "meta.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
     sys.stdout.write(str(path) + "\n")

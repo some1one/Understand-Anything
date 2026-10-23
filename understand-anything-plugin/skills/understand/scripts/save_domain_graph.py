@@ -9,6 +9,9 @@ import sys
 from pathlib import Path
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+from data_directory import data_dir
+
 def main(argv: list[str] | None = None) -> int:
     args = sys.argv[1:] if argv is None else argv
     if len(args) != 1:
@@ -16,7 +19,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     project_root = Path(args[0]).resolve()
-    ua_dir = project_root / ".understand-anything"
+    ua_dir = data_dir(project_root)
     intermediate = ua_dir / "intermediate"
     source = intermediate / "domain-analysis.json"
     target = ua_dir / "domain-graph.json"

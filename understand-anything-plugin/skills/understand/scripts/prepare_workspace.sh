@@ -10,8 +10,11 @@ PROJECT_ROOT="$1"
 shift || true
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 
-mkdir -p "$PROJECT_ROOT/.understand-anything/intermediate"
-mkdir -p "$PROJECT_ROOT/.understand-anything/tmp"
+DATA_SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
+UA_DIR=$(python3 "$DATA_SCRIPT_DIR/../../../scripts/data_directory.py" "$PROJECT_ROOT")
+
+mkdir -p "$UA_DIR/intermediate"
+mkdir -p "$UA_DIR/tmp"
 
 for arg in "$@"; do
   case "$arg" in

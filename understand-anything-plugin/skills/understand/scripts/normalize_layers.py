@@ -15,6 +15,9 @@ FILE_PREFIXES = {
 }
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+from data_directory import data_dir
+
 def kebab(value: str) -> str:
     out = re.sub(r"[^a-zA-Z0-9]+", "-", value.strip().lower()).strip("-")
     return out or "unnamed"
@@ -47,7 +50,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     project_root = Path(args[0]).resolve()
-    inter = project_root / ".understand-anything" / "intermediate"
+    inter = data_dir(project_root) / "intermediate"
     graph = json.loads((inter / "assembled-graph.json").read_text(encoding="utf-8"))
     raw = json.loads((inter / "layers.json").read_text(encoding="utf-8"))
     layers = raw.get("layers", raw) if isinstance(raw, dict) else raw

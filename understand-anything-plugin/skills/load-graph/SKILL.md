@@ -6,9 +6,21 @@ argument-hint: "[--all | <part>[,<part>...]]"
 
 # /load-graph
 
+Resolve `UA_DIR` after resolving `PLUGIN_ROOT` and `PROJECT_ROOT`, before reading
+or writing project artifacts:
+
+```bash
+UA_DIR=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
+```
+
+Use this absolute directory throughout the workflow and pass it to workers.
+It selects `.ua` for new projects and retains an existing legacy directory;
+see [host integration](../../HOSTS.md) for the selection rules.
+
+
 Load a codebase's knowledge graph into context for follow-up questions. Analysis
 with `/understand` produces per-part graphs under
-`.understand-anything/partitions/` plus a merged `knowledge-graph.json`. This
+`$UA_DIR/partitions/` plus a merged `knowledge-graph.json`. This
 skill loads either:
 
 - **selected parts** — a smaller, focused slice (cheaper context), or

@@ -5,7 +5,19 @@ description: Use when you need to analyze git diffs or pull requests to understa
 
 # /understand-diff
 
-Analyze the current code changes against the knowledge graph at `.understand-anything/knowledge-graph.json`.
+Resolve `UA_DIR` after resolving `PLUGIN_ROOT` and `PROJECT_ROOT`, before reading
+or writing project artifacts:
+
+```bash
+UA_DIR=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
+```
+
+Use this absolute directory throughout the workflow and pass it to workers.
+It selects `.ua` for new projects and retains an existing legacy directory;
+see [host integration](../../HOSTS.md) for the selection rules.
+
+
+Analyze the current code changes against the knowledge graph at `$UA_DIR/knowledge-graph.json`.
 
 ## Graph Structure Reference
 
@@ -24,7 +36,7 @@ Read [host integration](../../HOSTS.md) for invocation, argument handling, and a
 
 1. Set `SKILL_DIR` to the directory containing this `SKILL.md`.
 
-2. Run the helper. Pass a base branch as the optional second argument if the user specified one, else omit it. The helper compares feature branches against the local origin default-branch reference or an available main/master branch. On the default branch, or without a usable base, it includes staged and unstaged changes against HEAD. Gathers changed files, extracts changed/affected nodes, finds touched layers, and writes `.understand-anything/diff-overlay.json`.
+2. Run the helper. Pass a base branch as the optional second argument if the user specified one, else omit it. The helper compares feature branches against the local origin default-branch reference or an available main/master branch. On the default branch, or without a usable base, it includes staged and unstaged changes against HEAD. Gathers changed files, extracts changed/affected nodes, finds touched layers, and writes `$UA_DIR/diff-overlay.json`.
    ```bash
    python3 "$SKILL_DIR/scripts/diff_context.py" "$PWD" [base-branch]
    ```

@@ -57,7 +57,7 @@ helps navigation; current source remains the evidence for behavior.
   pnpm 10.6.2, pinned in its `package.json`; prebuilt dashboards need only Node.
 
 The analysis model is provided by the host. Graph artifacts are saved under the
-analyzed project's `.understand-anything/` directory. Source content and summaries
+analyzed project's `.ua/` directory. Source content and summaries
 are processed by the host model; see the host's settings for its data handling.
 
 ## Build and install from this checkout
@@ -132,7 +132,7 @@ unrelated skills, tracked files, and global/native host installations.
 Cache cleanup removes Python/tool caches, bytecode, TypeScript build metadata,
 analysis temporary files and old analysis trash. Generated graphs/indexes,
 parts, embeddings, fingerprints, configuration and metadata remain under
-`.understand-anything/`; the intermediate scan result and save summary also
+`.ua/`; the intermediate scan result and save summary also
 remain. `clean-build` always targets this source checkout, even when `LOCAL`
 selects another repository for `clean-local`.
 
@@ -165,3 +165,13 @@ for offline discovery. Graph updates and searches stay offline.
 Downloaded dictionaries and generated query caches should stay out of Git.
 For multiple projects, use the [shared storage setup and recommendations](understand-anything-plugin/scripts/dictionaries.md#share-downloads-across-projects);
 per-project caches remain separate. See [dictionary maintenance](understand-anything-plugin/scripts/dictionaries.md).
+
+## Project data directory compatibility
+
+New analyses store project data in `.ua/`. Existing projects with only
+`.understand-anything/` keep using that directory. When both exist, `.ua/` is
+selected for the entire workflow; missing files are not borrowed from the old
+snapshot. To migrate manually, stop analysis and dashboard processes, move the
+whole legacy directory to `.ua`, and update any custom dictionary paths in your
+configuration. Project-specific data and caches stay inside the selected directory;
+shared dictionaries and the plugin installation home keep their existing locations.
