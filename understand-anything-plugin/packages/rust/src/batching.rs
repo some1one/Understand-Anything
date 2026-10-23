@@ -234,9 +234,13 @@ pub fn build_non_code_batches(files: &[Value]) -> Vec<Value> {
     let by_path: BTreeMap<_, _> = files.iter().map(|f| (path(f), f)).collect();
     // Preserve input ordering for reserved groups A-C.
     let mut ordered = Vec::new();
+    let mut seen = BTreeSet::new();
+    let mut by_directory = BTreeMap::<&str, Vec<&str>>::new();
     for f in files {
-        if !ordered.contains(&path(f)) {
-            ordered.push(path(f));
+        let p = path(f);
+        if seen.insert(p) {
+            ordered.push(p);
+            by_directory.entry(dir(p)).or_default().push(p);
         }
     }
     let mut consumed = BTreeSet::<String>::new();
@@ -258,13 +262,12 @@ pub fn build_non_code_batches(files: &[Value]) -> Vec<Value> {
         .collect();
     for d in docker_dirs {
         add(
-            ordered
+            by_directory[d]
                 .iter()
                 .copied()
                 .filter(|p| {
-                    dir(p) == d
-                        && (["Dockerfile", ".dockerignore"].contains(&base(p))
-                            || base(p).starts_with("docker-compose."))
+                    ["Dockerfile", ".dockerignore"].contains(&base(p))
+                        || base(p).starts_with("docker-compose.")
                 })
                 .collect(),
             false,
@@ -294,14 +297,11 @@ pub fn build_non_code_batches(files: &[Value]) -> Vec<Value> {
         .map(|p| dir(p))
         .collect();
     for d in migrations {
-        add(
-            by_path
-                .keys()
-                .copied()
-                .filter(|p| dir(p) == d && p.ends_with(".sql"))
-                .collect(),
-            false,
-        );
+        // Migration order is lexical, unlike the input order of Docker groups.
+        let mut paths: Vec<_> = by_directory[d].iter().copied()
+            .filter(|p| p.ends_with(".sql")).collect();
+        paths.sort_unstable();
+        add(paths, false);
     }
     let mut remaining = BTreeMap::<&str, Vec<&Value>>::new();
     let mut directory_order = vec![];
