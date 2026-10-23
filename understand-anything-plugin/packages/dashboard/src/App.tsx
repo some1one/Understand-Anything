@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo, useCallback, lazy, Suspense } from "react
 import { validateGraph, validateEmbeddings } from "@understand-anything/core/schema";
 import type { GraphIssue } from "@understand-anything/core/schema";
 import { useDashboardStore } from "./store";
+import { readGraphResponse } from "./graph-response";
 import GraphView from "./components/GraphView";
 import DomainGraphView from "./components/DomainGraphView";
 import KnowledgeGraphView from "./components/KnowledgeGraphView";
@@ -124,7 +125,7 @@ function Dashboard({ accessToken }: { accessToken: string }) {
 
   useEffect(() => {
     fetch(dataUrl("knowledge-graph.json", accessToken))
-      .then((res) => res.json())
+      .then(readGraphResponse)
       .then((data: unknown) => {
         const result = validateGraph(data);
         if (result.success && result.data) {
