@@ -71,12 +71,75 @@ fn join(parts: &[&str]) -> String {
 fn rx(s: &str) -> Regex {
     Regex::new(s).unwrap()
 }
+// JSONC comments and trailing commas are syntax only outside quoted strings.
+fn normalize_jsonc(raw: &str) -> Option<String> {
+    let bytes = raw.trim_start_matches('\u{feff}').as_bytes();
+    let mut clean = Vec::with_capacity(bytes.len());
+    let (mut quoted, mut escaped, mut i) = (false, false, 0);
+    while i < bytes.len() {
+        let ch = bytes[i];
+        if quoted {
+            clean.push(ch);
+            if escaped {
+                escaped = false;
+            } else if ch == b'\\' {
+                escaped = true;
+            } else if ch == b'"' {
+                quoted = false;
+            }
+        } else if ch == b'"' {
+            quoted = true;
+            clean.push(ch);
+        } else if ch == b'/' && bytes.get(i + 1) == Some(&b'/') {
+            clean.push(b' ');
+            i += 2;
+            while i < bytes.len() && bytes[i] != b'\n' && bytes[i] != b'\r' {
+                i += 1;
+            }
+            continue;
+        } else if ch == b'/' && bytes.get(i + 1) == Some(&b'*') {
+            clean.push(b' ');
+            i += 2;
+            while i + 1 < bytes.len() && !(bytes[i] == b'*' && bytes[i + 1] == b'/') {
+                i += 1;
+            }
+            if i + 1 >= bytes.len() {
+                return None;
+            }
+            i += 2;
+            continue;
+        } else {
+            clean.push(ch);
+        }
+        i += 1;
+    }
+    let mut output = Vec::with_capacity(clean.len());
+    quoted = false;
+    escaped = false;
+    for (i, &ch) in clean.iter().enumerate() {
+        if quoted {
+            if escaped {
+                escaped = false;
+            } else if ch == b'\\' {
+                escaped = true;
+            } else if ch == b'"' {
+                quoted = false;
+            }
+        } else if ch == b'"' {
+            quoted = true;
+        } else if ch == b',' {
+            let next = clean[i + 1..].iter().find(|ch| !ch.is_ascii_whitespace());
+            if matches!(next, Some(b'}' | b']')) {
+                continue;
+            }
+        }
+        output.push(ch);
+    }
+    String::from_utf8(output).ok()
+}
+
 pub fn parse_tsconfig_text(raw: &str) -> Option<Value> {
-    let s = rx(r"/\*[\s\S]*?\*/").replace_all(raw, "");
-    let s = rx(r"(?m)(^|[^:])//.*$").replace_all(&s, "$1").into_owned();
-    let p: Value = serde_json::from_str(&s)
-        .or_else(|_| serde_json::from_str(raw))
-        .ok()?;
+    let p: Value = serde_json::from_str(&normalize_jsonc(raw)?).ok()?;
     let co = &p["compilerOptions"];
     let paths: serde_json::Map<_, _> = co["paths"]
         .as_object()
