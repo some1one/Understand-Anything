@@ -341,13 +341,18 @@ fn louvain_batches_are_repeatable_complete_bounded_and_keep_neighbor_links() {
     let filtered = ua::batching::compute_batches(tmp.path(), &scan, Some(&changed));
     assert_eq!(ua::array(&filtered, "batches").len(), 1);
     let b = &filtered["batches"][0];
-    assert_eq!(
-        b,
-        ua::array(&one, "batches")
-            .iter()
-            .find(|v| v["batchIndex"] == b["batchIndex"])
-            .unwrap()
-    );
+    assert_eq!(b["batchIndex"], assignment["f000.unknown"]);
+    assert_eq!(ua::array(b, "files").len(), 1);
+    assert_eq!(b["files"][0]["path"], "f000.unknown");
+    assert_eq!(b["batchImportData"].as_object().unwrap().len(), 1);
+    assert_eq!(b["batchImportData"]["f000.unknown"], scan["importMap"]["f000.unknown"]);
+    let neighbors = b["neighborMap"]["f000.unknown"].as_array().unwrap();
+    assert!(!neighbors.is_empty() && neighbors.len() <= 50);
+    for neighbor in neighbors {
+        let path = neighbor["path"].as_str().unwrap();
+        assert_ne!(path, "f000.unknown");
+        assert_eq!(neighbor["batchIndex"], assignment[path]);
+    }
 }
 #[test]
 fn corrupt_interrupted_and_wrong_version_parser_caches_fail_explicitly() {
