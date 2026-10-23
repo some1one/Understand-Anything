@@ -153,6 +153,21 @@ fn scope_filter(root: &Path) -> Result<crate::scan::IgnoreFilter> {
 fn scoped_scan(root: &Path) -> Result<Value> {
     crate::scan::scan_project_with_patterns(root, &published_excludes(root)?)
 }
+/// Advance snapshot identity while preserving descriptive and extension fields.
+fn refresh_project_metadata(graph: &mut Value, scan: &Value, commit: &str) -> Result<()> {
+    if !graph["nodes"].is_array() || !graph["edges"].is_array() {
+        return Err(Error::Invalid("Cannot refresh metadata of an invalid saved graph".into()));
+    }
+    if !graph["project"].is_object() { graph["project"] = json!({}); }
+    if scan["files"].is_array() {
+        let languages: BTreeSet<_> = array(scan,"files").iter()
+            .filter_map(|file| file["language"].as_str()).filter(|language| !language.is_empty()).collect();
+        graph["project"]["languages"] = json!(languages);
+    }
+    graph["project"]["analyzedAt"] = json!(crate::now_iso());
+    if !commit.is_empty() { graph["project"]["gitCommitHash"] = json!(commit); }
+    Ok(())
+}
 pub fn write_meta(root: &Path, commit: &str, analyzed: Option<usize>) -> Result<()> {
     let path = ua(root, "meta.json");
     let mut meta = read(&path);
@@ -335,6 +350,9 @@ pub fn fingerprint_check(root: &Path) -> Result<Value> {
     let mut analysis = json!({"action":decision["action"],"rerunArchitecture":decision["rerunArchitecture"],"reason":decision["reason"],"filesToReanalyze":select("STRUCTURAL",Some("deleted"),true),"newFiles":select("STRUCTURAL",Some("new"),false),"deletedFiles":select("STRUCTURAL",Some("deleted"),false),"cosmeticOnlyFiles":select("COSMETIC",None,false),"unchangedFiles":select("NONE",None,false),"fileChanges":changes,"metadataUpdated":false});
     if decision["action"] == "SKIP" && !s(&state, "currentCommit").is_empty() {
         verify_prepared_revision(root)?;
+        let mut graph = required(&ua(root, "knowledge-graph.json"))?;
+        refresh_project_metadata(&mut graph, &read(&inter(root,"scan-result.json")), s(&state,"currentCommit"))?;
+        write(&ua(root,"knowledge-graph.json"), &graph)?;
         write_meta(root, s(&state, "currentCommit"), None)?;
         analysis["metadataUpdated"] = json!(true);
     }
@@ -748,6 +766,7 @@ pub fn finalize(root: &Path) -> Result<Value> {
         .unwrap_or_else(|| array(&merged, "layers"));
     merged["layers"] = json!(reconcile_layers(array(&merged, "nodes"), layers));
     clean_graph(&mut merged);
+    refresh_project_metadata(&mut merged, &scan, current)?;
     write(&ua(root, "knowledge-graph.json"), &merged)?;
     crate::query_dictionary::refresh(&ua(root, "knowledge-graph.json"))?;
     let changed: Vec<_> = strings(&analysis["filesToReanalyze"])

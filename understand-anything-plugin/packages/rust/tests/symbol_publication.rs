@@ -49,7 +49,7 @@ fn finalization_blocks_symbol_loss_and_recovers_inbound_edges_after_verified_id_
     assert_eq!(report["files"][0]["missing"][0]["status"], "still-present");
     let repaired = json!({"nodes":[file("file.ts"),file("caller.ts"),symbol("func:file.ts:run")],"edges":[],"layers":[]});
     write_json(&inter.join("merged-graph.json"), &repaired).unwrap();
-    write_json(&inter.join("scan-result.json"), &json!({"importMapRefreshPaths":["caller.ts"],"importMap":{"caller.ts":[]}})).unwrap();
+    write_json(&inter.join("scan-result.json"), &json!({"files":[{"language":"typescript"},{"language":"python"},{"language":"typescript"}],"importMapRefreshPaths":["caller.ts"],"importMap":{"caller.ts":[]}})).unwrap();
     // Repeated preparation must retain the original comparison baseline if
     // an interrupted finalization has already persisted a replacement graph.
     capture_baseline(root, &state, &analysis, &repaired).unwrap();
@@ -70,6 +70,9 @@ fn finalization_blocks_symbol_loss_and_recovers_inbound_edges_after_verified_id_
     assert!(saved["edges"].as_array().unwrap().iter().any(|e| e["source"]=="file:caller.ts" && e["target"]=="func:file.ts:run" && e["description"]=="preserve this"));
     assert!(saved["edges"].as_array().unwrap().iter().any(|e| e["target"] == "func:file.ts:run" && e["description"] == "fresh analyzer evidence"));
     assert!(!saved["edges"].as_array().unwrap().iter().any(|edge| edge["type"] == "imports"));
+    assert_eq!(saved["project"]["gitCommitHash"], head);
+    assert_eq!(saved["project"]["languages"], json!(["python","typescript"]));
+    assert!(saved["project"]["analyzedAt"].as_str().unwrap().contains('T'));
     assert_eq!(read_json(&data.join("meta.json")).unwrap()["gitCommitHash"], head);
 }
 
