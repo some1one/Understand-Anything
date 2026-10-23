@@ -5,6 +5,10 @@ use std::{cell::RefCell, collections::HashMap, path::Path, sync::atomic::{Atomic
 // Parsers are mutable. Give each worker its own reusable instances, while trees
 // remain owned by each call. Reconfiguration invalidates every worker's cache.
 static CONFIG_GENERATION: AtomicU64 = AtomicU64::new(0);
+static OFFLINE: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+pub fn set_offline(value: bool) {
+    OFFLINE.store(value, Ordering::SeqCst);
+}
 #[derive(Default)]
 struct ParserCache {
     generation: u64,
@@ -70,6 +74,9 @@ pub fn parse(language: &str, source: &str) -> Result<tree_sitter_language_pack::
             cache.generation = generation;
         }
         if !cache.parsers.contains_key(language) {
+            if OFFLINE.load(Ordering::SeqCst) && !tree_sitter_language_pack::has_parser(language) {
+                return Err(Error::Invalid(format!("Offline parser unavailable: {language}")));
+            }
             let parser = tree_sitter_language_pack::get_parser(language)
                 .map_err(|e| Error::Invalid(e.to_string()))?;
             cache.parsers.insert(language.to_owned(), parser);

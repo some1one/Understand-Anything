@@ -100,6 +100,10 @@ fn absolute(p: &str) -> Result<PathBuf> {
     })
 }
 fn execute(mut args: Vec<String>) -> Result<i32> {
+    if let Some(i) = args.iter().position(|a| a == "--offline-parsers") {
+        args.remove(i);
+        ua::parsers::set_offline(true);
+    }
     let mut cache = None;
     let mut i = 0;
     while i < args.len() {
@@ -488,9 +492,15 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
             require(&args, 1, command, "<project-root> [--changed-files PATH]")?;
             let root = absolute(&args[0])?;
             let mut changed_files = None;
+            let mut scan_path = ua::persistence::data_dir(&root).join("intermediate/scan-result.json");
+            let mut output = ua::persistence::data_dir(&root).join("intermediate/batches.json");
             let mut i = 1;
             while i < args.len() {
-                if let Some(p) = args[i].strip_prefix("--changed-files=") {
+                if ["--scan-result", "--output"].contains(&args[i].as_str()) && i + 1 < args.len() {
+                    let target = if args[i] == "--scan-result" { &mut scan_path } else { &mut output };
+                    i += 1;
+                    *target = PathBuf::from(&args[i]);
+                } else if let Some(p) = args[i].strip_prefix("--changed-files=") {
                     changed_files = Some(changed(Path::new(p))?.into_iter().collect());
                 } else if args[i] == "--changed-files" && i + 1 < args.len() {
                     i += 1;
@@ -498,13 +508,11 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
                 }
                 i += 1;
             }
-            let inter = ua::persistence::data_dir(&root).join("intermediate");
             let result = ua::batching::compute_batches(
                 &root,
-                &read_json(&inter.join("scan-result.json"))?,
+                &read_json(&scan_path)?,
                 changed_files.as_ref(),
             );
-            let output = inter.join("batches.json");
             write_json(&output, &result)?;
             let sizes: Vec<_> = ua::array(&result, "batches")
                 .iter()
