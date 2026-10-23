@@ -796,10 +796,9 @@ pub fn merge_batch_directory(root: &Path) -> Result<Value> {
         .collect();
     files.sort();
     files.sort_by_key(|p| {
-        numeric
-            .captures(&p.file_name().unwrap().to_string_lossy())
-            .and_then(|c| c[1].parse::<u64>().ok())
-            .unwrap_or(0)
+        let name = p.file_name().unwrap().to_string_lossy();
+        (name != "batch-existing.json", numeric.captures(&name)
+            .and_then(|c| c[1].parse::<u64>().ok()).unwrap_or(0))
     });
     let empty_plan = crate::persistence::read_json(&dir.join("batches.json")).is_ok_and(|plan| {
         plan["batches"].as_array().is_some_and(Vec::is_empty) && plan["totalBatches"] == 0
@@ -822,6 +821,7 @@ pub fn merge_batch_directory(root: &Path) -> Result<Value> {
     let mut unrecognized = vec![];
     for p in &files {
         let name = p.file_name().unwrap().to_string_lossy();
+        if name == "batch-existing.json" { continue; }
         if let Some(c) = exact.captures(&name) {
             groups
                 .entry(c[1].parse().unwrap())
@@ -876,13 +876,21 @@ pub fn merge_batch_directory(root: &Path) -> Result<Value> {
         if unrecognized.iter().any(|s| s == &name) {
             continue;
         }
-        if let Some(b) = load_batch(&p) {
+        let baseline = name == "batch-existing.json";
+        let batch = if baseline {
+            let saved = crate::persistence::read_json(&p)?;
+            if !saved["nodes"].is_array() || !saved["edges"].is_array() {
+                return Err(crate::Error::Invalid("Invalid incremental batch-existing.json baseline; expected nodes and edges arrays".into()));
+            }
+            Some(saved)
+        } else { load_batch(&p) };
+        if let Some(b) = batch {
             eprintln!(
                 "  {name}: {} nodes, {} edges",
                 array(&b, "nodes").len(),
                 array(&b, "edges").len()
             );
-            if array(&b, "nodes").is_empty() && array(&b, "edges").is_empty() {
+            if !baseline && array(&b, "nodes").is_empty() && array(&b, "edges").is_empty() {
                 let warning = format!(
                     "{name} loaded but contributed 0 nodes and 0 edges; inspect the analyzer output before publishing"
                 );

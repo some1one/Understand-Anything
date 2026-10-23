@@ -260,3 +260,9 @@ Incremental preparation preserves the original scan and import map in
 Retries against another HEAD reuse this baseline instead of an abandoned
 attempt's `scan-result.json`. Keep the baseline with failed-update artifacts;
 successful finalization removes it with the other recovery intermediates.
+
+`merge_batch_graphs` recognizes the reserved `batch-existing.json` incremental
+baseline alongside numeric analyzer batches. It loads the baseline first so fresh
+nodes override duplicate IDs, and retains it even when no analyzer batches are
+planned. An invalid baseline stops merging without replacing the assembled graph.
+The caller must prune replaced/deleted files from the baseline before merging.
