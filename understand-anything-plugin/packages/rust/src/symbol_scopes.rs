@@ -79,6 +79,7 @@ fn record(node: &Node, name: Option<String>, scope: &Scope) -> Value {
 struct Inventory<'a> {
     content: &'a str,
     ruby: bool,
+    python: bool,
     effects: Vec<Value>,
     javascript: bool,
     functions: Vec<Value>,
@@ -108,6 +109,16 @@ impl Inventory<'_> {
                 &enclosing.json(),
                 &receiver.json(),
             ));
+        }
+        if self.javascript || self.python {
+            self.effects
+                .extend(crate::symbol_effects::javascript_python(
+                    &node,
+                    self.content,
+                    &enclosing.json(),
+                    &receiver.json(),
+                    self.javascript,
+                ));
         }
         let is_class = CLASSES.contains(&kind.as_str());
         let is_function = FUNCTIONS.contains(&kind.as_str());
@@ -273,6 +284,7 @@ pub fn collect(root: Node, content: &str, language: &str, structure: &Value) -> 
     let mut inventory = Inventory {
         content,
         ruby: language == "ruby",
+        python: language == "python",
         effects: vec![],
         javascript: ["typescript", "javascript", "tsx"].contains(&language),
         functions: vec![],

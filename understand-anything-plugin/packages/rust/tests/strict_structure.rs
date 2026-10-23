@@ -147,3 +147,33 @@ text = "attr_accessor :fake"
     assert!(effects.iter().any(|e| e["reason"] == "Indirect method installer"));
     assert!(effects.iter().any(|e| e["reason"] == "Dynamic dispatch or code evaluation" && e["kind"].is_null()));
 }
+
+#[test]
+#[ignore = "requires pinned grammars; run with UA_TEST_PARSER_CACHE"]
+fn javascript_python_runtime_evidence_covers_bindings_properties_and_installers() {
+    if let Ok(cache) = std::env::var("UA_TEST_PARSER_CACHE") {
+        parsers::configure(Some(std::path::Path::new(&cache))).unwrap();
+    }
+    for (path, source) in [
+        ("file.ts", r#"const run = existing; ({copied} = source); class Worker { setup() { this.run = existing; const local = existing; } } Object.defineProperty(Worker.prototype, 'created', descriptor); const install = Object.defineProperty; (target[key])(); eval(source); const message = "setattr eval";"#),
+        ("file.py", "run = existing\nclass Worker:\n    run = existing\n    def setup(self):\n        self.run = existing\n        local = existing\nsetattr(Worker, 'created', existing)\ninstall = setattr\ntarget[key]()\nexec(source)\nmessage = 'setattr eval'\n"),
+    ] {
+        let result = analyze_file_strict(path, source);
+        assert_eq!(result["status"], "succeeded", "{result}");
+        let effects = result["declarationScopes"]["effects"].as_array().unwrap();
+        assert!(effects.iter().any(|e| e["name"] == "run" && e["scope"]["kind"] == "file" && e["reason"] == "Binding assignment"), "{result}");
+        assert!(effects.iter().any(|e| e["name"] == "run" && e["reason"] == "Property assignment"), "{result}");
+        assert!(!effects.iter().any(|e| e["name"] == "local"), "{result}");
+        for reason in ["Runtime installer identity is unresolved", "Computed callee may select a runtime installer", "Dynamic code or class evaluation"] {
+            assert!(effects.iter().any(|e| e["reason"] == reason && e["scope"]["kind"] == "unknown"), "{reason}: {result}");
+        }
+        if path.ends_with(".ts") {
+            assert!(effects.iter().any(|e| e["name"] == "copied" && e["reason"] == "Binding assignment"), "{result}");
+            assert!(effects.iter().any(|e| e["name"] == "run" && e["scope"]["name"] == "Worker" && e["reason"] == "Property assignment"), "{result}");
+        }
+    }
+    for (path, source) in [("file.ts", "function ordinary() { return 'eval setattr defineProperty'; }"), ("file.py", "def ordinary():\n    return 'eval setattr defineProperty'\n")] {
+        let result = analyze_file_strict(path, source);
+        assert_eq!(result["declarationScopes"]["effects"], serde_json::json!([]));
+    }
+}

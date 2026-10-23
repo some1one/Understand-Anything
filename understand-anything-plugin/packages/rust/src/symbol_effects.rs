@@ -195,3 +195,234 @@ pub(crate) fn ruby(
     }
     effects
 }
+
+fn member(node: &Node, content: &str) -> Option<(Node, Option<String>)> {
+    match node.kind().as_str() {
+        "member_expression" | "attribute" => Some((
+            node.child_by_field_name("object")?,
+            crate::symbol_coverage::name(
+                node.child_by_field_name("property")
+                    .or_else(|| node.child_by_field_name("attribute")),
+                content,
+            ),
+        )),
+        "subscript_expression" | "subscript" => Some((
+            node.child_by_field_name("object")
+                .or_else(|| node.child_by_field_name("value"))?,
+            node.child_by_field_name("index")
+                .or_else(|| node.child_by_field_name("subscript"))
+                .as_ref()
+                .and_then(|n| literal(n, content)),
+        )),
+        _ => None,
+    }
+}
+fn target_scope(node: &Node, content: &str, receiver: &Value, javascript: bool) -> Value {
+    // `this` is a lexical receiver only when scope analysis has verified it.
+    // Named variables (including Python's `self`) need binding-resolution evidence.
+    if javascript && text(node, content) == "this" && receiver["kind"] == "class" {
+        return receiver.clone();
+    }
+    if let Some((object, Some(name))) = member(node, content)
+        && ["prototype", "__dict__"].contains(&name.as_str())
+    {
+        return target_scope(&object, content, receiver, javascript);
+    }
+    json!({"kind":"unknown"})
+}
+fn assignment_effects(
+    target: &Node,
+    content: &str,
+    scope: &Value,
+    receiver: &Value,
+    javascript: bool,
+    out: &mut Vec<Value>,
+) {
+    if let Some((object, name)) = member(target, content) {
+        // Replacing a prototype can install any of the assigned object's keys.
+        let name = if javascript && name.as_deref() == Some("prototype") {
+            None
+        } else {
+            name
+        };
+        out.push(entry(
+            target,
+            &target_scope(&object, content, receiver, javascript),
+            name,
+            None,
+            "Property assignment",
+        ));
+    } else if ["identifier", "shorthand_property_identifier_pattern"]
+        .contains(&target.kind().as_str())
+    {
+        if scope["kind"] != "local" {
+            out.push(entry(
+                target,
+                scope,
+                spelling(text(target, content)).then(|| text(target, content).to_owned()),
+                None,
+                "Binding assignment",
+            ));
+        }
+    } else if [
+        "object_pattern",
+        "array_pattern",
+        "pair_pattern",
+        "pattern_list",
+        "tuple_pattern",
+        "list_pattern",
+        "parenthesized_expression",
+    ]
+    .contains(&target.kind().as_str())
+    {
+        let children = target
+            .child_by_field_name("value")
+            .map(|n| vec![n])
+            .unwrap_or_else(|| named_children(target));
+        for child in children {
+            assignment_effects(&child, content, scope, receiver, javascript, out);
+        }
+    }
+}
+/// JS/Python operations that can install or retain callable/class bindings.
+/// Until installer and receiver bindings are proven, report unknown identity
+/// instead of assuming a standard builtin or a same-spelled declaring class.
+pub(crate) fn javascript_python(
+    node: &Node,
+    content: &str,
+    scope: &Value,
+    receiver: &Value,
+    javascript: bool,
+) -> Vec<Value> {
+    let mut effects = vec![];
+    let kind = node.kind();
+    if [
+        "assignment_expression",
+        "augmented_assignment_expression",
+        "assignment",
+        "augmented_assignment",
+        "variable_declarator",
+    ]
+    .contains(&kind.as_str())
+    {
+        if let Some(target) = node
+            .child_by_field_name("left")
+            .or_else(|| node.child_by_field_name("name"))
+        {
+            assignment_effects(&target, content, scope, receiver, javascript, &mut effects);
+        }
+    }
+    let js_installers = [
+        "defineProperty",
+        "defineProperties",
+        "__defineGetter__",
+        "__defineSetter__",
+    ];
+    let py_installers = ["setattr", "__setattr__", "new_class"];
+    if (javascript && kind == "call_expression") || (!javascript && kind == "call") {
+        if let Some(mut callee) = node.child_by_field_name("function") {
+            while ["parenthesized_expression", "parenthesized_statements"]
+                .contains(&callee.kind().as_str())
+            {
+                let children = named_children(&callee);
+                if children.len() != 1 {
+                    break;
+                }
+                callee = children[0].clone();
+            }
+            let access = member(&callee, content);
+            let method = access
+                .as_ref()
+                .and_then(|(_, name)| name.clone())
+                .or_else(|| crate::symbol_coverage::name(Some(callee.clone()), content));
+            let args = node
+                .child_by_field_name("arguments")
+                .map(|n| named_children(&n))
+                .unwrap_or_default();
+            let installer = method.as_ref().is_some_and(|method| {
+                if javascript {
+                    js_installers.contains(&method.as_str())
+                        || access.as_ref().is_some_and(|(object, _)| {
+                            (text(object, content) == "Reflect" && method == "set")
+                                || (text(object, content) == "Object" && method == "assign")
+                        })
+                } else {
+                    py_installers.contains(&method.as_str())
+                }
+            });
+            if installer {
+                effects.push(entry(
+                    node,
+                    &json!({"kind":"unknown"}),
+                    None,
+                    None,
+                    "Runtime installer identity is unresolved",
+                ));
+            } else if method.as_ref().is_some_and(|method| {
+                (javascript && ["eval", "Function"].contains(&method.as_str()))
+                    || (!javascript
+                        && (["eval", "exec"].contains(&method.as_str())
+                            || method == "type" && args.len() >= 3))
+            }) {
+                effects.push(entry(
+                    node,
+                    &json!({"kind":"unknown"}),
+                    None,
+                    None,
+                    "Dynamic code or class evaluation",
+                ));
+            } else if access.as_ref().is_some_and(|(_, name)| name.is_none()) {
+                effects.push(entry(
+                    node,
+                    &json!({"kind":"unknown"}),
+                    None,
+                    None,
+                    "Computed callee may select a runtime installer",
+                ));
+            }
+        }
+    }
+    if let Some((object, name)) = member(node, content) {
+        if javascript
+            && (name
+                .as_ref()
+                .is_some_and(|n| js_installers.contains(&n.as_str()))
+                || text(&object, content) == "Object"
+                    && (name.is_none() || name.as_deref() == Some("assign")))
+        {
+            effects.push(entry(
+                node,
+                &json!({"kind":"unknown"}),
+                None,
+                None,
+                "Aliased property installer",
+            ));
+        } else if !javascript && name.as_deref() == Some("__dict__") {
+            effects.push(entry(
+                node,
+                &target_scope(&object, content, receiver, false),
+                None,
+                None,
+                "Indirect attribute dictionary",
+            ));
+        }
+    }
+    if kind == "identifier" {
+        let name = text(node, content);
+        if (javascript
+            && (js_installers.contains(&name) || ["Reflect", "eval", "Function"].contains(&name)))
+            || (!javascript
+                && (py_installers.contains(&name)
+                    || ["exec", "eval", "globals", "locals", "vars"].contains(&name)))
+        {
+            effects.push(entry(
+                node,
+                &json!({"kind":"unknown"}),
+                None,
+                None,
+                "Runtime installer or evaluation reference",
+            ));
+        }
+    }
+    effects
+}
