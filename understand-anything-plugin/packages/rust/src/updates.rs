@@ -318,6 +318,7 @@ pub fn prepare_batches(root: &Path) -> Result<Value> {
     }
     scan.as_object_mut().unwrap().remove("failures");
     scan["importMap"] = imports;
+    scan["importMapRefreshPaths"] = json!(refreshed["importMap"].as_object().unwrap().keys().collect::<Vec<_>>());
     let batches =
         crate::batching::compute_batches(root, &scan, Some(&changed.iter().cloned().collect()));
     // Do not publish any preparation output until both scanning and import
@@ -350,6 +351,35 @@ pub fn build_arch_input(nodes: &[Value], edges: &[Value]) -> Value {
         .collect();
     json!({"fileNodes":files,"importEdges":imports,"allEdges":all})
 }
+/// Replace only imports whose whole-file source was refreshed by preparation.
+/// Other relationships and unrefreshed sources retain their existing payloads.
+pub fn refresh_graph_imports(graph: &Value, import_map: &Value, paths: &[String]) -> Result<Value> {
+    let (index, _) = batch_merge::whole_file_node_index(array(graph, "nodes"));
+    for path in paths {
+        if !import_map[path].as_array().is_some_and(|targets| targets.iter().all(Value::is_string)) {
+            return Err(Error::Invalid(format!("Missing or invalid refreshed imports for {path}")));
+        }
+    }
+    let source_ids: BTreeSet<_> = paths.iter().filter_map(|path| index.get(path)).collect();
+    let mut edges: Vec<_> = array(graph, "edges").iter()
+        .filter(|e| !(e["type"] == "imports" && source_ids.contains(&s(e, "source").to_owned())))
+        .cloned().collect();
+    let mut seen: BTreeSet<_> = edges.iter()
+        .map(|e| (s(e, "source").to_owned(), s(e, "target").to_owned(), s(e, "type").to_owned())).collect();
+    for path in paths {
+        let Some(source) = index.get(path) else { continue; };
+        for target_path in strings(&import_map[path]) {
+            let Some(target) = index.get(&target_path) else { continue; };
+            if source != target && seen.insert((source.clone(), target.clone(), "imports".into())) {
+                edges.push(json!({"source":source,"target":target,"type":"imports","direction":"forward","weight":0.7,"recoveredFromImportMap":true}));
+            }
+        }
+    }
+    let mut graph = graph.clone();
+    graph["edges"] = json!(edges);
+    Ok(graph)
+}
+
 pub fn apply_batches(root: &Path) -> Result<Value> {
     let _lock = crate::batch_files::lock(&inter(root, ""))?;
     let analysis = required(&inter(root, "change-analysis.json"))?;
@@ -392,6 +422,8 @@ pub fn apply_batches(root: &Path) -> Result<Value> {
     let mut batches = vec![existing];
     batches.extend(files.iter().map(|(_, p)| read(p)));
     let (assembled, report) = batch_merge::merge_and_normalize(&batches);
+    let scan = read(&inter(root, "scan-result.json"));
+    let assembled = refresh_graph_imports(&assembled, &scan["importMap"], &strings(&scan["importMapRefreshPaths"]))?;
     let merged = json!({"version":graph.get("version").cloned().unwrap_or(json!("1.0.0")),"project":graph.get("project").cloned().unwrap_or(json!({})),"nodes":assembled["nodes"],"edges":assembled["edges"],"layers":graph.get("layers").cloned().unwrap_or(json!([]))});
     write(&inter(root, "merged-graph.json"), &merged)?;
     if analysis["rerunArchitecture"] == true {

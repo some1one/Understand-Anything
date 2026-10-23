@@ -22,6 +22,15 @@ fn new_targets_refresh_imports_in_unchanged_files() {
     save(&temp, "change-analysis.json", json!({"filesToReanalyze":["dep.rb"]}));
     prepare_batches(temp.path()).unwrap();
     assert_eq!(scan(&temp)["importMap"]["main.rb"], json!(["dep.rb"]));
+    write_json(&temp.path().join(".ua/knowledge-graph.json"), &json!({"nodes":[
+        {"id":"file:main.rb","type":"file","filePath":"main.rb"}
+    ],"edges":[]})).unwrap();
+    save(&temp, "batch-0.json", json!({"nodes":[
+        {"id":"file:dep.rb","type":"file","filePath":"dep.rb"}
+    ],"edges":[]}));
+    let graph = understand_anything::updates::apply_batches(temp.path()).unwrap();
+    assert!(graph["edges"].as_array().unwrap().iter().any(|e|
+        e["source"] == "file:main.rb" && e["target"] == "file:dep.rb" && e["type"] == "imports"));
     // A committed deletion disappears from both the inventory and import targets.
     fs::rename(temp.path().join("dep.rb"), temp.path().join(".ua/dep.rb")).unwrap();
     save(&temp, "change-analysis.json", json!({"filesToReanalyze":[],"deletedFiles":["dep.rb"]}));
