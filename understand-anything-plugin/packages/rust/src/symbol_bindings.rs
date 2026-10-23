@@ -114,9 +114,11 @@ pub(crate) struct Index {
     expressions: BTreeMap<Key, Target>,
     internal_names: Vec<(usize, String, Node, Target)>,
     python: bool,
+    javascript: bool,
+    ruby: bool,
 }
 impl Index {
-    pub(crate) fn build(root: &Node, source: &str, python: bool) -> Self {
+    pub(crate) fn build(root: &Node, source: &str, language: &str) -> Self {
         let mut result = Self {
             scopes: vec![Scope {
                 kind: "root",
@@ -126,7 +128,9 @@ impl Index {
             declarations: BTreeSet::new(),
             expressions: BTreeMap::new(),
             internal_names: vec![],
-            python,
+            python: language == "python",
+            ruby: language == "ruby",
+            javascript: ["javascript", "typescript", "tsx"].contains(&language),
         };
         let mut writes = vec![];
         result.scan(root, source, 0, "", true, None, &mut writes);
@@ -338,18 +342,21 @@ impl Index {
         let mut scope = enclosing;
         let name = node.child_by_field_name("name");
         let class = !root
-            && [
+            && ([
                 "class",
                 "class_declaration",
                 "abstract_class_declaration",
                 "class_definition",
             ]
-            .contains(&kind.as_str());
+            .contains(&kind.as_str())
+                || self.ruby && kind == "module");
         let function = [
             "function_declaration",
             "generator_function_declaration",
             "function_definition",
             "method_definition",
+            "method",
+            "singleton_method",
             "function_expression",
             "generator_function",
             "arrow_function",
@@ -362,7 +369,7 @@ impl Index {
                 name.as_ref().and_then(|n| identifier(n, source)),
                 node,
             );
-            let target = if kind == "class" && !self.python {
+            let target = if kind == "class" && self.javascript {
                 match &region {
                     Some(region) if region.direct == key(node) => region.target.clone(),
                     Some(region) => Target::Indirect(Box::new(region.target.clone())),
@@ -371,10 +378,10 @@ impl Index {
             } else {
                 Target::Known(declared_target)
             };
-            if kind == "class" && !self.python {
+            if kind == "class" && self.javascript {
                 self.expressions.insert(key(node), target.clone());
             }
-            if kind != "class" {
+            if kind != "class" || !self.javascript {
                 if let Some(name) = &name {
                     self.bind(
                         enclosing,
@@ -385,7 +392,7 @@ impl Index {
                 }
             }
             scope = self.scope(enclosing, "class");
-            if !self.python {
+            if self.javascript {
                 if let Some(name) = &name {
                     if let Some(name) = identifier(name, source) {
                         self.bind(scope, Some(name.clone()), node, self.resolve(&target));
@@ -394,6 +401,8 @@ impl Index {
                     }
                 }
             }
+        } else if kind == "singleton_class" {
+            scope = self.scope(enclosing, "class");
         } else if function {
             if [
                 "function_declaration",
@@ -419,7 +428,7 @@ impl Index {
             ) {
                 self.bind(scope, name, node, unknown());
             }
-        } else if !self.python
+        } else if self.javascript
             && [
                 "statement_block",
                 "class_static_block",
@@ -433,7 +442,7 @@ impl Index {
         {
             scope = self.scope(enclosing, "block");
         }
-        if !self.python
+        if self.javascript
             && [
                 "internal_module",
                 "module",
@@ -448,7 +457,7 @@ impl Index {
             }
             scope = self.scope(enclosing, "namespace");
         }
-        if !self.python && kind == "enum_declaration" {
+        if self.javascript && kind == "enum_declaration" {
             if let Some(name) = &name {
                 self.bind(scope, identifier(name, source), node, unknown());
             }
@@ -476,7 +485,7 @@ impl Index {
             self.mark_targets(node.child_by_field_name("left"));
         }
 
-        if kind == "with_statement" && !self.python {
+        if kind == "with_statement" && self.javascript {
             self.scopes[scope].opaque = true;
         }
         if kind == "catch_clause" {
@@ -515,7 +524,7 @@ impl Index {
                     },
                 ));
             }
-        } else if !self.python
+        } else if self.javascript
             && ["assignment_expression", "augmented_assignment_expression"].contains(&kind.as_str())
         {
             writes.push((node.clone(), scope));
@@ -536,8 +545,14 @@ impl Index {
                     },
                 ));
             }
-        } else if self.python
-            && ["assignment", "augmented_assignment", "named_expression"].contains(&kind.as_str())
+        } else if (self.python || self.ruby)
+            && [
+                "assignment",
+                "augmented_assignment",
+                "named_expression",
+                "operator_assignment",
+            ]
+            .contains(&kind.as_str())
         {
             for name in targets(
                 node.child_by_field_name("left")
@@ -548,11 +563,11 @@ impl Index {
             }
         }
         if kind == "for_in_statement" || self.python && kind == "for_statement" {
-            if !self.python && node.child_by_field_name("kind").is_none() {
+            if self.javascript && node.child_by_field_name("kind").is_none() {
                 writes.push((node.clone(), scope));
             }
             let mut destination = scope;
-            if !self.python
+            if self.javascript
                 && node
                     .child_by_field_name("kind")
                     .is_some_and(|n| text(&n, source) == "var")
@@ -584,7 +599,7 @@ impl Index {
                 }
             }
         }
-        if !self.python && kind == "import_specifier" {
+        if self.javascript && kind == "import_specifier" {
             self.bind(
                 scope,
                 node.child_by_field_name("alias")
@@ -594,7 +609,7 @@ impl Index {
                 node,
                 unknown(),
             );
-        } else if !self.python
+        } else if self.javascript
             && ["import_clause", "namespace_import", "import_require_clause"]
                 .contains(&kind.as_str())
         {

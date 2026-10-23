@@ -115,6 +115,7 @@ impl Inventory<'_> {
                 self.content,
                 &enclosing.json(),
                 &receiver.json(),
+                &self.bindings,
             ));
         }
         if self.javascript || self.python {
@@ -318,7 +319,7 @@ impl Inventory<'_> {
 /// explicit, and local declarations are never treated as file-level replacements.
 pub fn collect(root: Node, content: &str, language: &str, structure: &Value) -> Value {
     let mut inventory = Inventory {
-        bindings: crate::symbol_bindings::Index::build(&root, content, language == "python"),
+        bindings: crate::symbol_bindings::Index::build(&root, content, language),
         handled_references: Default::default(),
         content,
         ruby: language == "ruby",

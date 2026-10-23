@@ -60,6 +60,7 @@ pub(crate) fn ruby(
     content: &str,
     scope: &Value,
     receiver_scope: &Value,
+    bindings: &crate::symbol_bindings::Index,
 ) -> Vec<Value> {
     let mut effects = vec![];
     if node.kind() == "alias" {
@@ -92,7 +93,7 @@ pub(crate) fn ruby(
     let owner = if receiver.as_ref().is_none_or(|n| text(n, content) == "self") {
         receiver_scope.clone()
     } else {
-        json!({"kind":"unknown"})
+        bindings.reference(receiver.as_ref().unwrap(), content)
     };
     if ACCESSORS.contains(&method) {
         let mut writer = ["attr_writer", "attr_accessor"].contains(&method);
