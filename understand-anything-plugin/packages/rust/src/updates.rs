@@ -288,6 +288,7 @@ pub fn preflight_with_git(root: &Path, force: bool, git: &dyn GitClient) -> Resu
     Ok(state)
 }
 pub fn fingerprint_check(root: &Path) -> Result<Value> {
+    verify_prepared_revision(root)?;
     let state = required(&inter(root, "auto-update-state.json"))?;
     let (store, _) = fingerprints::load_fingerprint_store(&ua(root, "fingerprints.json"))?;
     let graph = read(&ua(root, "knowledge-graph.json"));
@@ -317,6 +318,7 @@ pub fn fingerprint_check(root: &Path) -> Result<Value> {
     };
     let mut analysis = json!({"action":decision["action"],"rerunArchitecture":decision["rerunArchitecture"],"reason":decision["reason"],"filesToReanalyze":select("STRUCTURAL",Some("deleted"),true),"newFiles":select("STRUCTURAL",Some("new"),false),"deletedFiles":select("STRUCTURAL",Some("deleted"),false),"cosmeticOnlyFiles":select("COSMETIC",None,false),"unchangedFiles":select("NONE",None,false),"fileChanges":changes,"metadataUpdated":false});
     if decision["action"] == "SKIP" && !s(&state, "currentCommit").is_empty() {
+        verify_prepared_revision(root)?;
         write_meta(root, s(&state, "currentCommit"), None)?;
         analysis["metadataUpdated"] = json!(true);
     }

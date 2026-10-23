@@ -41,19 +41,21 @@ fn artifacts_and_ignored_files_are_allowed_but_scope_controls_are_relevant() {
     assert_eq!(updates::relevant_worktree_changes(root, &ProcessGit).unwrap(), vec![".ua/.understandignore", "ignored/.gitignore"]);
 }
 #[test]
-fn preparation_and_finalization_reject_source_drift_without_publishing() {
+fn fingerprinting_preparation_and_finalization_reject_source_drift_without_publishing() {
     let temp = setup(); let root = temp.path();
     write_json(&root.join(".ua/intermediate/auto-update-state.json"), &json!({"currentCommit":ProcessGit.head(root)})).unwrap();
     let saved = fs::read(root.join(".ua/knowledge-graph.json")).unwrap();
+    let metadata = fs::read(root.join(".ua/meta.json")).unwrap();
     fs::write(root.join("source.rb"), "puts 2").unwrap();
-    for phase in [updates::prepare_batches, updates::finalize] {
+    for phase in [updates::fingerprint_check, updates::prepare_batches, updates::finalize] {
         assert!(phase(root).unwrap_err().to_string().contains("uncommitted"));
     }
     git(root, &["add", "source.rb"]); git(root, &["commit", "-qm", "advance"]);
-    for phase in [updates::prepare_batches, updates::finalize] {
+    for phase in [updates::fingerprint_check, updates::prepare_batches, updates::finalize] {
         assert!(phase(root).unwrap_err().to_string().contains("HEAD changed"));
     }
     assert_eq!(fs::read(root.join(".ua/knowledge-graph.json")).unwrap(), saved);
+    assert_eq!(fs::read(root.join(".ua/meta.json")).unwrap(), metadata);
 }
 
 #[test]

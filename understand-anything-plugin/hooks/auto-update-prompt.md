@@ -61,9 +61,10 @@ inventory reconciliation even when the rules live inside the data directory.
 `DIRTY_WORKTREE` stops without changing the baseline. Report `dirtyPaths`; the
 user must commit or stash those changes before an incremental update. Do not
 stage, commit, stash, or discard their work automatically. Generated graph data
-and ignored files do not block the update; ignore-rule changes do. Preparation
-and finalization recheck HEAD and relevant worktree changes, so source drift
-requires a new preflight instead of publishing against the old revision.
+and ignored files do not block the update; ignore-rule changes do. Fingerprint
+comparison, preparation, and finalization recheck HEAD and relevant worktree
+changes, so source drift requires a new preflight instead of publishing against
+the old revision.
 `SCAN_FAILED` stops ignore-rule reconciliation when the inventory is incomplete.
 Report `scanFailures`; retain the existing graph and baseline, resolve the read
 or enumeration failures, and retry preflight. Missing scan entries are not proof
