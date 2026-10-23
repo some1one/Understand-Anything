@@ -663,7 +663,7 @@ pub fn apply_batches(root: &Path) -> Result<Value> {
     eprintln!("{}", report.join("\n"));
     Ok(merged)
 }
-pub fn reconcile_layers(nodes: &[Value], layers: &[Value]) -> Vec<Value> {
+pub fn reconcile_layers(nodes: &[Value], edges: &[Value], layers: &[Value]) -> Vec<Value> {
     let paths: BTreeMap<_, _> = nodes
         .iter()
         .filter(|n| !s(n, "id").is_empty())
@@ -691,48 +691,48 @@ pub fn reconcile_layers(nodes: &[Value], layers: &[Value]) -> Vec<Value> {
                 && !seen.contains(s(n, "id"))
         })
         .collect();
-    let mut catch = None;
-    for n in unassigned {
-        let path = paths
-            .get(s(n, "id"))
-            .and_then(|p| p.as_deref())
-            .unwrap_or("");
-        let dir = crate::imports::dir_of(path);
-        let mut best = None;
-        let mut score = -1;
-        for (i, l) in clean.iter().enumerate() {
-            for id in strings(&l["nodeIds"]) {
-                if let Some(Some(path)) = paths
-                    .get(id.as_str())
-                    .filter(|p| p.as_ref().is_some_and(|s| !s.is_empty()))
-                {
-                    let new_score = dir
-                        .split('/')
-                        .zip(crate::imports::dir_of(path).split('/'))
-                        .take_while(|(a, b)| a == b)
-                        .count() as i64;
-                    if new_score > score {
-                        score = new_score;
-                        best = Some(i);
-                    }
+    // Count distinct neighbors, regardless of edge direction or duplicate edges.
+    let mut adjacency: BTreeMap<&str, BTreeSet<&str>> = BTreeMap::new();
+    for edge in edges {
+        let (source, target) = (s(edge, "source"), s(edge, "target"));
+        if paths.contains_key(source) && paths.contains_key(target) {
+            adjacency.entry(source).or_default().insert(target);
+            adjacency.entry(target).or_default().insert(source);
+        }
+    }
+    clean.retain(|layer| !array(layer, "nodeIds").is_empty());
+    for node in unassigned {
+        if clean.is_empty() {
+            clean.push(json!({"id":"layer:misc","name":"Miscellaneous","description":"Files not assigned to a specific architecture layer.","nodeIds":[]}));
+        }
+        let path = paths.get(s(node, "id")).and_then(|p| p.as_deref()).unwrap_or("");
+        let directory: Vec<_> = path.split('/').collect();
+        let directory = &directory[..directory.len().saturating_sub(1)];
+        let neighbors = adjacency.get(s(node, "id"));
+        let mut best = 0;
+        let mut best_score = None;
+        for (index, layer) in clean.iter().enumerate() {
+            let mut depth = 0;
+            let mut connections = 0;
+            for id in strings(&layer["nodeIds"]) {
+                if neighbors.is_some_and(|ids| ids.contains(id.as_str())) {
+                    connections += 1;
+                }
+                if let Some(Some(member_path)) = paths.get(id.as_str()) {
+                    let parts: Vec<_> = member_path.split('/').collect();
+                    let parent = &parts[..parts.len().saturating_sub(1)];
+                    depth = depth.max(directory.iter().zip(parent).take_while(|(a,b)| a == b).count());
                 }
             }
+            let score = (depth, connections);
+            // Strict comparison keeps original layer order as the final tie-break.
+            if best_score.is_none_or(|previous| score > previous) {
+                best = index;
+                best_score = Some(score);
+            }
         }
-        let idx = if score > 0 {
-            best.unwrap()
-        } else if let Some(i) = catch {
-            i
-        } else {
-            let i = clean.len();
-            clean.push(json!({"id":"layer:misc","name":"Miscellaneous","description":"Files not assigned to a specific architecture layer.","nodeIds":[]}));
-            catch = Some(i);
-            i
-        };
-        clean[idx]["nodeIds"]
-            .as_array_mut()
-            .unwrap()
-            .push(n["id"].clone());
-        seen.insert(s(n, "id").into());
+        clean[best]["nodeIds"].as_array_mut().unwrap().push(node["id"].clone());
+        seen.insert(s(node, "id").into());
     }
     clean
         .into_iter()
@@ -777,7 +777,7 @@ pub fn finalize(root: &Path) -> Result<Value> {
         .as_array()
         .map(Vec::as_slice)
         .unwrap_or_else(|| array(&merged, "layers"));
-    merged["layers"] = json!(reconcile_layers(array(&merged, "nodes"), layers));
+    merged["layers"] = json!(reconcile_layers(array(&merged, "nodes"), array(&merged, "edges"), layers));
     clean_graph(&mut merged);
     refresh_project_metadata(&mut merged, &scan, current)?;
     write(&ua(root, "knowledge-graph.json"), &merged)?;
