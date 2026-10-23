@@ -30,7 +30,6 @@ function graph(): KnowledgeGraph {
       { id: "layer:a", name: "A", description: "", nodeIds: ["a1", "a2"] },
       { id: "layer:b", name: "B", description: "", nodeIds: ["b1", "b2"] },
     ],
-    tour: [],
   };
 }
 
