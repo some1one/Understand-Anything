@@ -238,13 +238,16 @@ impl Inventory<'_> {
             if name.is_some() {
                 self.functions.push(entry);
             } else if !value_function {
-                self.unresolved.push(entry);
+                // Literal private/quoted names are concrete even when the
+                // structural extractor does not inventory their declarations.
+                let known_name = crate::symbol_coverage::name(node.child_by_field_name("name"), self.content);
+                self.unresolved.push(record(&node, known_name.clone(), &owner));
                 self.gaps.push(crate::symbol_coverage::entry(
                     &node,
                     &owner.json(),
-                    None,
+                    known_name.clone(),
                     Some("callable"),
-                    "Unresolved declaration name",
+                    if known_name.is_some() { "Declaration is not covered by structural extraction" } else { "Unresolved declaration name" },
                 ));
             }
             children_receiver = owner;

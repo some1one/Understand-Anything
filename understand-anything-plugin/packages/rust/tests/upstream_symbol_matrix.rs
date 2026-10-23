@@ -91,3 +91,38 @@ fn retained_same_line_symbols_and_corrupt_scope_records_follow_the_native_contra
         "unknown"
     );
 }
+
+#[test]
+#[ignore = "requires pinned TypeScript grammar; run with UA_TEST_PARSER_CACHE"]
+fn literal_private_names_are_distinct_from_dot_prefixed_installer_keys() {
+    if let Ok(cache) = std::env::var("UA_TEST_PARSER_CACHE") {
+        parsers::configure(Some(std::path::Path::new(&cache))).unwrap();
+    }
+    let path = "file.ts";
+    let mut before = analyze_file_strict(path, "class A { #run() {} }");
+    let after = analyze_file_strict(
+        path,
+        "class A { keep() {} }; Object.defineProperty(A.prototype, '.run', {value() {}});",
+    );
+    let graph = json!({"nodes":[{"id":"old","type":"function","name":"A.#run","filePath":path}],"edges":[]});
+    let empty = json!({"nodes":[],"edges":[]});
+    assert_eq!(
+        compare_file_symbols(path, &graph, &empty, &before, &after)["missing"][0]["status"],
+        "unknown"
+    );
+    let public = json!({"nodes":[{"id":"public","type":"function","name":"A.run","filePath":path}],"edges":[]});
+    let public_before = analyze_file_strict(path, "class A { run() {} }");
+    let private_other = analyze_file_strict(path, "class A { #keep() {} }");
+    assert_eq!(
+        compare_file_symbols(path, &public, &empty, &public_before, &private_other)["missing"][0]["status"],
+        "deleted"
+    );
+    // Exercise the matcher with an explicit private-name inventory, independently
+    // of the parser's current private-method extraction limitation.
+    before["declarationScopes"]["functions"] =
+        json!([{"name":"#run","scope":{"kind":"class","name":"A"},"lineRange":[1,1]}]);
+    assert_eq!(
+        compare_file_symbols(path, &graph, &empty, &before, &after)["missing"][0]["status"],
+        "deleted"
+    );
+}
