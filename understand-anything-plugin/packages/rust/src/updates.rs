@@ -271,30 +271,58 @@ pub fn fingerprint_check(root: &Path) -> Result<Value> {
 pub fn prepare_batches(root: &Path) -> Result<Value> {
     let analysis = required(&inter(root, "change-analysis.json"))?;
     let changed = strings(&analysis["filesToReanalyze"]);
-    let mut scan = read(&inter(root, "scan-result.json"));
-    if !scan.is_object() {
-        scan = json!({"files":[],"importMap":{}});
+    let baseline = read(&inter(root, "scan-result.json"));
+    let current = crate::scan::scan_project(root)?;
+    if !array(&current, "failures").is_empty() {
+        return Err(Error::Invalid(format!(
+            "Project scan reported failures; incremental preparation aborted: {}",
+            current["failures"]
+        )));
     }
-    if scan.get("files").is_none() {
-        scan["files"] = json!([]);
-    }
-    if scan.get("importMap").is_none() {
-        scan["importMap"] = json!({});
-    }
-    let mut known: BTreeSet<_> = array(&scan, "files")
-        .iter()
-        .filter_map(|f| f["path"].as_str().map(str::to_owned))
-        .collect();
-    for rel in &changed {
-        if !known.contains(rel)
-            && let Ok(bytes) = fs::read(root.join(rel))
-        {
-            scan["files"].as_array_mut().unwrap().push(json!({"path":rel,"language":crate::scan::detect_language(rel),"sizeLines":bytes.iter().filter(|&&b|b==b'\n').count(),"fileCategory":crate::scan::detect_category(rel)}));
-            known.insert(rel.clone());
+    let known: BTreeSet<String> = array(&current, "files").iter()
+        .filter_map(|f| f["path"].as_str().map(str::to_owned)).collect();
+    for path in &changed {
+        if !known.contains(path) {
+            return Err(Error::Invalid(format!(
+                "Incremental analysis target is absent from the current inventory: {path}"
+            )));
         }
     }
+    let previous: BTreeSet<String> = array(&baseline, "files").iter()
+        .filter_map(|f| f["path"].as_str().map(str::to_owned)).collect();
+    let resolver_changed = ["filesToReanalyze", "deletedFiles", "cosmeticOnlyFiles"]
+        .iter().flat_map(|key| strings(&analysis[*key]))
+        .any(|path| matches!(path.rsplit('/').next(), Some("tsconfig.json" | "composer.json" | "go.mod")));
+    let cache_complete = baseline["importMap"].as_object().is_some_and(|map| {
+        map.len() == known.len() && known.iter().all(|path| {
+            map.get(path).and_then(Value::as_array).is_some_and(|targets| {
+                targets.iter().all(|target| target.as_str().is_some_and(|p| known.contains(p)))
+            })
+        })
+    });
+    // Added/deleted paths can change resolution in unchanged importers. Resolver
+    // configuration edits likewise require refreshing the whole inventory.
+    let refresh_all = known != previous || resolver_changed || !cache_complete;
+    let mut request = json!({"projectRoot":root,"files":current["files"]});
+    if !refresh_all {
+        request["analysisPaths"] = json!(changed);
+    }
+    let refreshed = crate::imports::extract_import_map(&request)?;
+    let mut imports = if refresh_all { json!({}) } else { baseline["importMap"].clone() };
+    for (path, targets) in refreshed["importMap"].as_object().unwrap() {
+        imports[path] = targets.clone();
+    }
+    let mut scan = if baseline.is_object() { baseline } else { json!({}) };
+    for (key, value) in current.as_object().unwrap() {
+        scan[key] = value.clone();
+    }
+    scan.as_object_mut().unwrap().remove("failures");
+    scan["importMap"] = imports;
     let batches =
         crate::batching::compute_batches(root, &scan, Some(&changed.iter().cloned().collect()));
+    // Do not publish any preparation output until both scanning and import
+    // extraction have succeeded.
+    write(&inter(root, "scan-result.json"), &scan)?;
     write(&inter(root, "batches.json"), &batches)?;
     let graph = read(&ua(root, "knowledge-graph.json"));
     let project = &graph["project"];

@@ -210,3 +210,11 @@ fail instead of silently producing incomplete results. Unix backslashes remain
 literal filename characters. Callers must merge the selected results into their
 previous map and explicitly remove entries for deleted files; a partial result is
 not a replacement for the entire project import map.
+
+Incremental batch preparation rescans the current inventory and aborts on reported
+scan failures or missing analysis targets. It refreshes imports for changed files
+when the cached inventory and map are complete. Added/deleted paths, resolver
+configuration changes, or an incomplete cache trigger a full import refresh so
+unchanged importers can resolve newly available targets. Source-read, parser-load,
+and resolver-configuration failures leave previous preparation outputs intact.
+This refresh updates batch inputs; graph publication remains a separate phase.

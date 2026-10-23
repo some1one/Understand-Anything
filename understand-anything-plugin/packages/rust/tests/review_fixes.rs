@@ -180,14 +180,14 @@ fn legacy_ignore_updates_prune_and_restore_before_advancing_baseline() {
     let root = tmp.path();
     init(root);
     fs::create_dir(root.join("a")).unwrap();
-    fs::write(root.join("a/f.py"), "x = 1\n").unwrap();
+    fs::write(root.join("a/f.rb"), "x = 1\n").unwrap();
     let before = commit(root);
     let ua_dir = root.join(".understand-anything");
     let inter = ua_dir.join("intermediate");
     fs::create_dir_all(&inter).unwrap();
     write_json(
         &ua_dir.join("knowledge-graph.json"),
-        &json!({"nodes":[node("a/f.py")],"edges":[],"layers":[]}),
+        &json!({"nodes":[node("a/f.rb")],"edges":[],"layers":[]}),
     )
     .unwrap();
     ua::updates::write_meta(root, &before, None).unwrap();
@@ -201,7 +201,7 @@ fn legacy_ignore_updates_prune_and_restore_before_advancing_baseline() {
     );
     write_json(&inter.join("auto-update-state.json"), &state).unwrap();
     let analysis = ua::updates::fingerprint_check(root).unwrap();
-    assert_eq!(analysis["deletedFiles"], json!(["a/f.py"]));
+    assert_eq!(analysis["deletedFiles"], json!(["a/f.rb"]));
     write_json(&inter.join("change-analysis.json"), &analysis).unwrap();
     ua::updates::prepare_batches(root).unwrap();
     ua::updates::apply_batches(root).unwrap();
@@ -223,10 +223,10 @@ fn legacy_ignore_updates_prune_and_restore_before_advancing_baseline() {
     let state = ua::updates::preflight(root, false).unwrap();
     write_json(&inter.join("auto-update-state.json"), &state).unwrap();
     let analysis = ua::updates::fingerprint_check(root).unwrap();
-    assert_eq!(analysis["newFiles"], json!(["a/f.py"]));
+    assert_eq!(analysis["newFiles"], json!(["a/f.rb"]));
     write_json(&inter.join("change-analysis.json"), &analysis).unwrap();
     ua::updates::prepare_batches(root).unwrap();
-    ua::batch_files::replace(&inter, 0, &[json!({"nodes":[node("a/f.py")],"edges":[]})]).unwrap();
+    ua::batch_files::replace(&inter, 0, &[json!({"nodes":[node("a/f.rb")],"edges":[]})]).unwrap();
     ua::updates::apply_batches(root).unwrap();
     // Persistence failure must not advance the baseline.
     fs::rename(
@@ -249,13 +249,13 @@ fn legacy_ignore_updates_prune_and_restore_before_advancing_baseline() {
     ua::updates::finalize(root).unwrap();
     assert_eq!(
         ua::updates::graph_file_paths(&read_json(&ua_dir.join("knowledge-graph.json")).unwrap()),
-        ["a/f.py".into()].into()
+        ["a/f.rb".into()].into()
     );
     assert_eq!(
         read_json(&ua_dir.join("meta.json")).unwrap()["gitCommitHash"],
         state["currentCommit"]
     );
-    assert!(read_json(&ua_dir.join("fingerprints.json")).unwrap()["files"]["a/f.py"].is_object());
+    assert!(read_json(&ua_dir.join("fingerprints.json")).unwrap()["files"]["a/f.rb"].is_object());
 }
 
 #[test]
