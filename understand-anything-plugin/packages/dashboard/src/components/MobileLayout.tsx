@@ -1,3 +1,5 @@
+import StalenessBanner from "./StalenessBanner";
+import type { DashboardFreshnessReport } from "../freshness";
 import { lazy, Suspense, useEffect, useState } from "react";
 import type { GraphIssue } from "@understand-anything/core/schema";
 import { useDashboardStore } from "../store";
@@ -25,6 +27,7 @@ interface Props {
   setShowKeyboardHelp: (value: boolean) => void;
   loadError: string | null;
   allIssues: GraphIssue[];
+  graphFreshness: DashboardFreshnessReport | null;
   shortcuts: import("../hooks/useKeyboardShortcuts").KeyboardShortcut[];
 }
 
@@ -34,6 +37,7 @@ export default function MobileLayout({
   setShowKeyboardHelp,
   loadError,
   allIssues,
+  graphFreshness,
   shortcuts,
 }: Props) {
   const graph = useDashboardStore((s) => s.graph);
@@ -129,6 +133,8 @@ export default function MobileLayout({
 
       {/* Search (collapsible) */}
       {searchOpen && <SearchBar />}
+
+      {!loadError && <StalenessBanner freshness={graphFreshness} />}
 
       {/* Validation warnings */}
       {allIssues.length > 0 && !loadError && <WarningBanner issues={allIssues} />}

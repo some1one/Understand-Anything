@@ -131,6 +131,13 @@ prebuilt bundles use `packages/dashboard/serve.mjs`. The launcher reports a
 loopback URL with an access token. Open the full URL, including `?token=`.
 Analysis does not launch the dashboard automatically.
 
+The desktop and mobile dashboard check graph freshness when opened and when
+refocused. A warning distinguishes local edits, stale revisions, and checks that
+could not be verified. Expand it to see affected files. Refresh analysis with
+`/understand` when needed; the dashboard never starts analysis automatically.
+If the saved graph changes while the page is open, reload to display that snapshot.
+Static demos omit these checks unless `VITE_STALENESS_URL` supplies a report.
+
 ## Optional auto-update
 
 Enable with the analysis skill's `--auto-update` flag. Native hooks compare the

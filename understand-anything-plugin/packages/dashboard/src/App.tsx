@@ -15,6 +15,8 @@ import PersonaSelector from "./components/PersonaSelector";
 import ProjectOverview from "./components/ProjectOverview";
 import FileExplorer from "./components/FileExplorer";
 import WarningBanner from "./components/WarningBanner";
+import StalenessBanner from "./components/StalenessBanner";
+import { freshnessForLoadedGraphs, requestFreshnessReport, shouldRequestFreshness, startFreshnessRefresh, type DashboardFreshnessReport } from "./freshness";
 import TokenGate from "./components/TokenGate";
 import MobileLayout from "./components/MobileLayout";
 import { useIsMobile } from "./hooks/useIsMobile";
@@ -46,6 +48,7 @@ function dataUrl(fileName: string, token: string | null): string {
       "meta.json": import.meta.env.VITE_META_URL,
       "diff-overlay.json": import.meta.env.VITE_DIFF_OVERLAY_URL,
       "config.json": import.meta.env.VITE_CONFIG_URL,
+      "staleness.json": import.meta.env.VITE_STALENESS_URL,
     };
     const url = envMap[fileName];
     if (url) return url;
@@ -100,10 +103,13 @@ function App() {
 
 function Dashboard({ accessToken }: { accessToken: string }) {
   const setGraph = useDashboardStore((s) => s.setGraph);
+  const loadedGraph = useDashboardStore((s) => s.graph);
+  const loadedDomain = useDashboardStore((s) => s.domainGraph);
   const setDomainGraph = useDashboardStore((s) => s.setDomainGraph);
   const setEmbeddings = useDashboardStore((s) => s.setEmbeddings);
   const setDiffOverlay = useDashboardStore((s) => s.setDiffOverlay);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [graphFreshness, setGraphFreshness] = useState<DashboardFreshnessReport | null>(null);
   const [graphIssues, setGraphIssues] = useState<GraphIssue[]>([]);
   const [metaTheme, setMetaTheme] = useState<ThemeConfig | null>(null);
 
@@ -148,6 +154,18 @@ function Dashboard({ accessToken }: { accessToken: string }) {
         setLoadError(`Failed to load knowledge graph: ${err instanceof Error ? err.message : String(err)}`);
       });
   }, [setGraph]);
+
+  useEffect(() => {
+    if (!shouldRequestFreshness(DEMO_MODE, import.meta.env.VITE_STALENESS_URL)) {
+      setGraphFreshness(null);
+      return;
+    }
+    return startFreshnessRefresh({
+      target: window,
+      load: (signal) => requestFreshnessReport(dataUrl("staleness.json", accessToken), signal),
+      onResult: setGraphFreshness,
+    });
+  }, [accessToken]);
 
   useEffect(() => {
     fetch(dataUrl("diff-overlay.json", accessToken))
@@ -211,6 +229,7 @@ function Dashboard({ accessToken }: { accessToken: string }) {
           accessToken={accessToken}
           loadError={loadError}
           graphIssues={graphIssues}
+          graphFreshness={freshnessForLoadedGraphs(graphFreshness, loadedGraph?.project, loadedDomain?.project)}
         />
       </ThemeProvider>
     </I18nProvider>
@@ -221,10 +240,12 @@ function DashboardContent({
   accessToken,
   loadError,
   graphIssues,
+  graphFreshness,
 }: {
   accessToken: string;
   loadError: string | null;
   graphIssues: GraphIssue[];
+  graphFreshness: DashboardFreshnessReport | null;
 }) {
   const graph = useDashboardStore((s) => s.graph);
   const selectedNodeId = useDashboardStore((s) => s.selectedNodeId);
@@ -400,6 +421,7 @@ function DashboardContent({
         setShowKeyboardHelp={setShowKeyboardHelp}
         loadError={loadError}
         allIssues={allIssues}
+        graphFreshness={graphFreshness}
         shortcuts={shortcuts}
       />
     );
@@ -585,6 +607,8 @@ function DashboardContent({
 
       {/* Search */}
       <SearchBar />
+
+      {!loadError && <StalenessBanner freshness={graphFreshness} />}
 
       {/* Validation warning banner */}
       {allIssues.length > 0 && !loadError && (
