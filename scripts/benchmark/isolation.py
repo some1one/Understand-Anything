@@ -1,5 +1,6 @@
 """Read-only subject identity and owned temporary artifact boundaries."""
 import hashlib
+import codecs
 import json
 import os
 from pathlib import Path
@@ -80,13 +81,23 @@ def ignore_identity(subject, exclusions):
 
 def input_identity(subject, files):
     result = []
+    unreadable = 0
     for file in files:
         relative = Path(file['path'])
         path = (subject / relative).resolve()
         if relative.is_absolute() or '..' in relative.parts or not path.is_relative_to(subject):
             raise StageError('input-outside-subject')
         try:
-            result.append((file['path'], hash_file(path)))
-        except OSError as error:
-            raise StageError('input-unreadable') from error
+            h = hashlib.sha256()
+            decoder = codecs.getincrementaldecoder('utf-8')()
+            with path.open('rb') as stream:
+                for block in iter(lambda: stream.read(1024 * 1024), b''):
+                    h.update(block)
+                    decoder.decode(block)
+                decoder.decode(b'', final=True)
+            result.append((file['path'], h.hexdigest()))
+        except (OSError, UnicodeError):
+            unreadable += 1
+    if unreadable:
+        raise StageError('input-unreadable', count=unreadable)
     return digest(result)

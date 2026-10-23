@@ -13,10 +13,11 @@ RUST = ROOT / 'understand-anything-plugin/packages/rust'
 
 
 class StageError(Exception):
-    def __init__(self, code, metric=None):
+    def __init__(self, code, metric=None, count=1):
         super().__init__(code)
         self.code = code
         self.metric = metric
+        self.count = count
 
 
 def build(mode):

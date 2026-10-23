@@ -1617,18 +1617,29 @@ pub fn analyze_file(path: &str, content: &str) -> Option<Value> {
 /// Batch extraction shares one syntax tree between both deterministic passes.
 /// Keep the existing permissive fallback contract; strict evidence uses its own API.
 pub fn analyze_file_full(path: &str, content: &str) -> (Option<Value>, Option<Vec<Value>>) {
-    let Some(lang) = parsers::detect_registry_language(path) else { return (None, None) };
+    let (structure, calls, _) = analyze_file_with_evidence(path, content);
+    (structure, calls)
+}
+
+/// Coverage evidence shares the production syntax tree. Recovered syntax errors
+/// still produce the usual output, but cannot be counted as successful parsing.
+fn analyze_file_with_evidence(path: &str, content: &str) -> (Option<Value>, Option<Vec<Value>>, &'static str) {
+    let Some(lang) = parsers::detect_registry_language(path) else { return (None, None, "unsupported") };
     if !parsers::LANGUAGES.contains(&lang.as_str()) {
-        return (analyze_file(path, content), None);
+        let analysis = analyze_file(path, content);
+        let status = if analysis.is_some() { "succeeded" } else { "unsupported" };
+        return (analysis, None, status);
     }
     let mut structure = empty();
     let mut calls = vec![];
+    let mut status = "failed";
     if let Ok(tree) = parsers::parse(&lang, content) {
+        status = if tree.root_node().has_error() { "failed" } else { "succeeded" };
         let root = N { raw: tree.root_node(), source: content };
         extract_tree_structure(&root, &lang, &mut structure);
         calls = call_graph(&root, normalized_lang(&lang));
     }
-    (Some(structure), Some(calls))
+    (Some(structure), Some(calls), status)
 }
 
 fn extract_tree_structure(n: &N, lang: &str, a: &mut Value) {
@@ -1783,6 +1794,8 @@ pub fn extract_structure(input: &Value) -> Result<Value> {
     let mut results = vec![];
     let mut skipped = vec![];
     let mut unreadable = vec![];
+    let mut coverage = vec![];
+    let with_coverage = input["includeCoverage"] == true;
     for f in files {
         let path = f["path"]
             .as_str()
@@ -1798,13 +1811,21 @@ pub fn extract_structure(input: &Value) -> Result<Value> {
                     _ => "IO_ERROR",
                 };
                 unreadable.push(json!({"path": path, "code": code}));
+                if with_coverage {
+                    coverage.push(json!({"path":path,"structure":"unreadable","callGraph":"unreadable"}));
+                }
                 skipped.push(path);
                 continue;
             }
         };
         let content = content.replace("\r\n", "\n").replace('\r', "\n");
         let (total, nonempty) = count_lines(&content);
-        let (analysis, calls) = if ["code", "script"].contains(&f["fileCategory"].as_str().unwrap_or("")) {
+        let (analysis, calls) = if with_coverage {
+            let (analysis, calls, status) = analyze_file_with_evidence(path, &content);
+            let has_calls = calls.is_some() && ["code", "script"].contains(&f["fileCategory"].as_str().unwrap_or(""));
+            coverage.push(json!({"path":path,"structure":status,"callGraph":if has_calls { status } else { "unsupported" }}));
+            (analysis, if has_calls { calls } else { None })
+        } else if ["code", "script"].contains(&f["fileCategory"].as_str().unwrap_or("")) {
             analyze_file_full(path, &content)
         } else {
             (analyze_file(path, &content), None)
@@ -1818,9 +1839,9 @@ pub fn extract_structure(input: &Value) -> Result<Value> {
             &input["batchImportData"],
         ));
     }
-    Ok(
-        json!({"scriptCompleted":true,"filesAnalyzed":results.len(),"filesSkipped":skipped,"filesUnreadable":unreadable,"results":results}),
-    )
+    let mut output = json!({"scriptCompleted":true,"filesAnalyzed":results.len(),"filesSkipped":skipped,"filesUnreadable":unreadable,"results":results});
+    if with_coverage { output["coverage"] = json!(coverage); }
+    Ok(output)
 }
 /// Import-map extraction intentionally has different traversal and alias rules
 /// from the structural extractor. Keep this boundary separate.
