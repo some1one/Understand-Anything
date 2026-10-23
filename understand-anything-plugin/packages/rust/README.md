@@ -188,6 +188,7 @@ data; normal builds and runtime do not need the old Python package.
 | `parts_to_process` |  |
 | `prepare_file_analysis_batch` | `prepare-batch` |
 | `prepare_part_batches` |  |
+| `prepare_part_symbol_retry` |  |
 | `scan_project` | `scan` |
 | `seed_file_batch_graph` | `seed-file-batch` |
 | `validate_assembled_graph` | `validate-assembled-graph` |
@@ -275,3 +276,11 @@ selected batch plan, and records the graph/scan/source snapshot. Partition
 publication rejects changed snapshots and missing assigned-file coverage, then
 uses verified symbol replacements to recover incoming and fresh candidate edges.
 Keep the preparation and recovery artifacts after a failed analysis.
+
+`prepare_part_symbol_retry <project-root> <part>` permits one targeted repair for
+symbol omissions in a prepared partition update. It retains successful outputs
+and incoming edge evidence, archives failed batches, and writes batches for only
+the reported files. The limit is tied to the saved graph and source snapshot;
+repreparing that snapshot does not reset it. Source or identity errors block
+repair. If repaired assembly fails, stop and retain the saved graph and recovery
+artifacts. Successful publication removes the repair marker.

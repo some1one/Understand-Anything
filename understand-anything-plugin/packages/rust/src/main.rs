@@ -42,6 +42,7 @@ const IMPLEMENTED: &[&str] = &[
     "seed_file_batch_graph",
     "prepare_file_analysis_batch",
     "prepare_part_batches",
+    "prepare_part_symbol_retry",
     "validate_structure_output",
     "validate_layers",
     "finalize_file_batch_output",
@@ -464,6 +465,11 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
                     review["stats"]["totalNodes"], review["stats"]["totalEdges"]
                 );
             }
+        }
+        "prepare_part_symbol_retry" => {
+            if args.len()!=2 { return Err(usage(command,"<project-root> <part>")); }
+            let result=ua::partition_updates::prepare_retry(&absolute(&args[0])?,&args[1])?;
+            println!("{}",serde_json::to_string_pretty(&result)?);
         }
         "prepare_part_batches" => {
             require(&args,2,command,"<project-root> <part> [--full]")?;

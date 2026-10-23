@@ -1,4 +1,4 @@
-use serde_json::{Value, json};
+use serde_json::{json, Value};
 use std::{fs, process::Command};
 use understand_anything::persistence::{read_json, write_json};
 fn file(path: &str) -> Value {
@@ -7,6 +7,11 @@ fn file(path: &str) -> Value {
 #[test]
 #[ignore = "requires pinned TypeScript grammar; run with UA_TEST_PARSER_CACHE"]
 fn incremental_partition_preserves_unchanged_data_and_repairs_old_endpoint_ids() {
+    run_partition_pipeline(false, false);
+    run_partition_pipeline(true, false);
+    run_partition_pipeline(true, true);
+}
+fn run_partition_pipeline(repair: bool, fail_repair: bool) {
     let temp = tempfile::tempdir().unwrap();
     let root = temp.path();
     let git = |args: &[&str]| {
@@ -77,7 +82,7 @@ fn incremental_partition_preserves_unchanged_data_and_repairs_old_endpoint_ids()
             let path = entry["path"].as_str().unwrap();
             assert_ne!(path, "src/caller.ts");
             nodes.push(file(path));
-            if path == "src/change.ts" {
+            if path == "src/change.ts" && !repair {
                 nodes.push(
                     json!({"id":new_id,"type":"function","filePath":path,"name":"run","tags":[]}),
                 );
@@ -104,7 +109,63 @@ fn incremental_partition_preserves_unchanged_data_and_repairs_old_endpoint_ids()
     assert!(!run("assemble_part_graph", &["src", &head]).status.success());
     assert_eq!(fs::read(&saved).unwrap(), original);
     assert!(inter.join("part-update.json").exists());
+    assert!(!run("prepare_part_symbol_retry", &["src"]).status.success());
     fs::write(root.join("src/change.ts"), source).unwrap();
+    if repair {
+        assert!(!run("assemble_part_graph", &["src", &head]).status.success());
+        let retry = run("prepare_part_symbol_retry", &["src"]);
+        assert!(
+            retry.status.success(),
+            "{}",
+            String::from_utf8_lossy(&retry.stderr)
+        );
+        let summary: Value = serde_json::from_slice(&retry.stdout).unwrap();
+        assert_eq!(summary["filesToAnalyze"], json!(["src/change.ts"]));
+        assert!(!run("prepare_part_symbol_retry", &["src"]).status.success());
+        assert_eq!(fs::read(&saved).unwrap(), original);
+        let batches = read_json(&inter.join("batches.json")).unwrap();
+        for batch in batches["batches"].as_array().unwrap() {
+            assert_eq!(batch["files"].as_array().unwrap().len(), 1);
+            assert_eq!(batch["files"][0]["path"], "src/change.ts");
+            write_json(&inter.join(format!("batch-{}.json",batch["batchIndex"])),&json!({"nodes":[file("src/change.ts"),{"id":new_id,"type":"function","filePath":"src/change.ts","name":"run","tags":[]}],"edges":[]})).unwrap();
+        }
+        if fail_repair {
+            for batch in batches["batches"].as_array().unwrap() {
+                write_json(
+                    &inter.join(format!("batch-{}.json", batch["batchIndex"])),
+                    &json!({"nodes":[file("src/change.ts")],"edges":[]}),
+                )
+                .unwrap();
+            }
+        }
+        let merged = run("merge_batch_graphs", &[]);
+        assert!(
+            merged.status.success(),
+            "{}",
+            String::from_utf8_lossy(&merged.stderr)
+        );
+    }
+    if fail_repair {
+        assert!(!run("assemble_part_graph", &["src", &head]).status.success());
+        assert!(!run("prepare_part_symbol_retry", &["src"]).status.success());
+        assert_eq!(fs::read(&saved).unwrap(), original);
+        assert!(run("prepare_part_batches", &["src"]).status.success());
+        assert!(!run("prepare_part_symbol_retry", &["src"]).status.success());
+        return;
+    }
+    if repair {
+        let marker = inter.join("part-symbol-retry-src.json");
+        let ready = read_json(&marker).unwrap();
+        let mut incomplete = ready.clone();
+        incomplete["status"] = json!("preparing");
+        write_json(&marker, &incomplete).unwrap();
+        assert!(!run("assemble_part_graph", &["src", &head]).status.success());
+        assert_eq!(fs::read(&saved).unwrap(), original);
+        write_json(&marker, &json!({"version":1})).unwrap();
+        assert!(!run("assemble_part_graph", &["src", &head]).status.success());
+        assert_eq!(fs::read(&saved).unwrap(), original);
+        write_json(&marker, &ready).unwrap();
+    }
     let published = run("assemble_part_graph", &["src", &head]);
     assert!(
         published.status.success(),
@@ -130,14 +191,13 @@ fn incremental_partition_preserves_unchanged_data_and_repairs_old_endpoint_ids()
             "{graph}"
         );
     }
-    assert!(
-        graph["nodes"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .any(|n| n["id"] == "file:src/caller.ts" && n["stub"] != true)
-    );
+    assert!(graph["nodes"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|n| n["id"] == "file:src/caller.ts" && n["stub"] != true));
     assert!(!inter.join("part-update.json").exists());
+    assert!(!inter.join("part-symbol-retry-src.json").exists());
     assert!(!inter.join("batch-existing.json").exists());
 }
 
@@ -174,11 +234,9 @@ fn preparation_errors_preserve_scratch_and_new_parts_require_file_coverage() {
     let missing = run("assemble_part_graph", &["_root"]);
     assert!(!missing.status.success());
     assert!(String::from_utf8_lossy(&missing.stderr).contains("README.md"));
-    assert!(
-        !root
-            .join(".ua/partitions/_root.knowledge-graph.json")
-            .exists()
-    );
+    assert!(!root
+        .join(".ua/partitions/_root.knowledge-graph.json")
+        .exists());
     assert!(inter.join("part-update.json").exists());
     write_json(&inter.join("batch-0.json"),&json!({"nodes":[{"id":"document:README.md","type":"document","name":"README.md","filePath":"README.md","tags":[]}],"edges":[]})).unwrap();
     assert!(run("merge_batch_graphs", &[]).status.success());

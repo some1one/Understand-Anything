@@ -238,9 +238,22 @@ Before overwriting an existing part, `assemble_part_graph` verifies its real sym
 against the previous committed source and the current source for files still in
 that part. Boundary stubs do not prove symbol presence. On failure, inspect
 `intermediate/part-symbol-report-<encoded-part>.json`; preserve the saved part and
-batch evidence, report the missing or ambiguous identities, and stop dependent
-merge/SAVE steps. Do not bypass the gate by deleting the old part or editing its
-commit hash. Correct the affected analysis using the report, then rerun assembly.
+batch evidence and stop dependent merge/SAVE steps. For a prepared update with
+symbol omissions, run the bounded repair helper:
+
+```bash
+"$PLUGIN_ROOT/packages/rust/run.sh" prepare_part_symbol_retry "$PROJECT_ROOT" "<part>"
+```
+
+It permits one attempt for the same saved graph and source snapshot, archives the
+failed batches, retains successful analysis and edge evidence, and prepares only
+the reported files. Dispatch those batches with the symbol report as repair
+context, then repeat batch merging and part assembly. If preparation rejects the
+repair or assembly still fails, report the missing or ambiguous identities and
+stop with the saved graph intact. Source/identity errors require investigation;
+they are not permission to retry analysis. Do not reset the retry marker, delete
+the old part, change its commit hash, or repeatedly prepare the same snapshot to
+bypass the limit.
 
 After all parts are processed, **merge the included parts** into the unified assembled graph — reused (unaffected) parts are read from `partitions/`, and boundary stubs resolve against the real nodes:
 ```bash

@@ -203,7 +203,9 @@ pub fn run(command: &str, args: &[String]) -> Result<i32> {
                         return Err(Error::Invalid("Partition edge evidence is stale; rerun batch merging".into()));
                     }
                     let selected=ua::strings(&preparation["plan"]["filesToAnalyze"]).into_iter().collect();
-                    ua::incremental_symbols::restore_part_edges(&previous,&mut graph,&report,&selected,&candidates)?;
+                    let retry=ua::partition_updates::retry_state(&root,part,preparation)?;
+                    if retry.as_ref().is_some_and(|r|r["status"]!="ready") { return Err(Error::Invalid("Partition repair preparation is incomplete; preserve recovery evidence".into())); }
+                    ua::incremental_symbols::restore_part_edges(&previous,&mut graph,&report,&selected,&candidates,retry.as_ref())?;
                 }
             } else if !ua::array(&scan, "failures").is_empty() {
                 return Err(Error::Invalid("Cannot publish a partition from an incomplete scan".into()));
@@ -218,6 +220,7 @@ pub fn run(command: &str, args: &[String]) -> Result<i32> {
                 let name = entry.file_name().to_string_lossy().into_owned();
                 if (name.starts_with("batch-") && name.ends_with(".json"))
                     || ["assembled-graph.json", "part-update.json", "part-edge-candidates.json"].contains(&name.as_str())
+                    || name == format!("part-symbol-retry-{}.json",part.replace('/',"~"))
                 {
                     fs::remove_file(entry.path())?;
                 }

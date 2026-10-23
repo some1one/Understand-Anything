@@ -706,7 +706,7 @@ pub fn validate_part_replacement(
 }
 
 /// Reconcile partition edges only after the normal symbol gate has verified IDs.
-pub fn restore_part_edges(previous: &Value, current: &mut Value, report: &Value, selected: &BTreeSet<String>, candidates: &Value) -> crate::Result<()> {
+pub fn restore_part_edges(previous: &Value, current: &mut Value, report: &Value, selected: &BTreeSet<String>, candidates: &Value, retry: Option<&Value>) -> crate::Result<()> {
     let mut remaps = std::collections::BTreeMap::new();
     for replacement in array(report,"files").iter().flat_map(|f|array(f,"replacements")) {
         let (old,new)=(s(replacement,"oldId"),s(replacement,"newId"));
@@ -715,7 +715,8 @@ pub fn restore_part_edges(previous: &Value, current: &mut Value, report: &Value,
         }
     }
     restore_current_candidates(candidates,previous,current,&remaps,&BTreeSet::new());
-    let mut remapped=previous.clone();
+    let remap = |source: &Value| {
+    let mut remapped=source.clone();
     for node in remapped["nodes"].as_array_mut().unwrap() {
         if let Some(new)=remaps.get(s(node,"id")) {node["id"]=json!(new);}
     }
@@ -724,5 +725,12 @@ pub fn restore_part_edges(previous: &Value, current: &mut Value, report: &Value,
             if let Some(new)=remaps.get(s(edge,field)) {edge[field]=json!(new);}
         }
     }
-    crate::updates::restore_inbound_edges(&remapped,current,selected)
+        remapped
+    };
+    if let Some(retry)=retry {
+        let files=crate::strings(&retry["files"]).into_iter().collect();
+        restore_current_candidates(&retry["edgeCandidates"],previous,current,&remaps,&files);
+        crate::updates::restore_inbound_edges(&remap(&retry["graph"]),current,&files)?;
+    }
+    crate::updates::restore_inbound_edges(&remap(previous),current,selected)
 }

@@ -303,3 +303,137 @@ pub fn verify_preparation(root: &Path, part: &str, previous: &Value) -> Result<O
     }
     Ok(Some(record))
 }
+
+pub fn retry_state(root: &Path, part: &str, preparation: &Value) -> Result<Option<Value>> {
+    let path = data_dir(root)
+        .join("intermediate")
+        .join(format!("part-symbol-retry-{}.json", part.replace('/', "~")));
+    if !path.exists() {
+        return Ok(None);
+    }
+    let retry = read_json(&path)?;
+    if retry["version"] != 1
+        || !retry["graph"]["nodes"].is_array()
+        || !retry["graph"]["edges"].is_array()
+        || !retry["files"]
+            .as_array()
+            .is_some_and(|values| values.iter().all(Value::is_string))
+    {
+        return Err(Error::Invalid("Invalid partition repair marker".into()));
+    }
+    if retry["preparation"]["previousGraph"] != preparation["previousGraph"]
+        || retry["preparation"]["sourceHashes"] != preparation["sourceHashes"]
+    {
+        return Ok(None);
+    }
+    Ok(Some(retry))
+}
+/// Prepare one repair attempt, retaining successful outputs and original evidence.
+pub fn prepare_retry(root: &Path, part: &str) -> Result<Value> {
+    use std::fs;
+    let inter = data_dir(root).join("intermediate");
+    let _lock = crate::batch_files::lock(&inter)?;
+    let previous = read_json(
+        &data_dir(root)
+            .join("partitions")
+            .join(crate::partition::part_to_filename(part)),
+    )?;
+    let preparation = verify_preparation(root, part, &previous)?
+        .ok_or_else(|| Error::Invalid("Partition repair requires a prepared update".into()))?;
+    if retry_state(root, part, &preparation)?.is_some() {
+        return Err(Error::Invalid(
+            "The single partition symbol repair attempt has already been used".into(),
+        ));
+    }
+    let assembled = read_json(&inter.join("assembled-graph.json"))?;
+    let candidates = read_json(&inter.join("part-edge-candidates.json"))?;
+    if candidates["version"] != 1
+        || candidates["preparation"] != preparation
+        || candidates["graphHash"] != crate::incremental_symbols::edge_candidate_hash(&assembled)?
+    {
+        return Err(Error::Invalid(
+            "Partition repair edge evidence is stale; rerun merging".into(),
+        ));
+    }
+    let scan = &preparation["scan"];
+    let known = array(scan, "files")
+        .iter()
+        .filter_map(|f| f["path"].as_str().map(str::to_owned))
+        .collect();
+    let graph = crate::assembly::build_part_graph(&assembled, part, &known, scan, "");
+    if crate::incremental_symbols::validate_part_replacement(root, part, &previous, &graph, scan)
+        .is_ok()
+    {
+        return Err(Error::Invalid(
+            "No unresolved partition symbols need repair".into(),
+        ));
+    }
+    let report = read_json(&inter.join(format!(
+        "part-symbol-report-{}.json",
+        part.replace('/', "~")
+    )))?;
+    if report["ok"] != false || !report["errors"].is_array() || !array(&report, "errors").is_empty()
+    {
+        return Err(Error::Invalid(
+            "Partition source/identity errors must be resolved before repair".into(),
+        ));
+    }
+    let paths: BTreeSet<_> = array(&report, "files")
+        .iter()
+        .filter(|f| f["ok"] != true)
+        .filter_map(|f| f["filePath"].as_str().map(str::to_owned))
+        .collect();
+    let original: BTreeSet<_> = crate::strings(&preparation["plan"]["filesToAnalyze"])
+        .into_iter()
+        .collect();
+    if paths.is_empty() || !paths.is_subset(&original) {
+        return Err(Error::Invalid(
+            "Partition repair files are outside the analyzed targets".into(),
+        ));
+    }
+    let batches = crate::batching::compute_batches(root, scan, Some(&paths));
+    let nodes: Vec<_> = array(&assembled, "nodes")
+        .iter()
+        .filter(|n| !node_file_path(n).is_some_and(|p| paths.contains(&p)))
+        .cloned()
+        .collect();
+    let ids: BTreeSet<_> = nodes.iter().filter_map(|n| n["id"].as_str()).collect();
+    let edges: Vec<_> = array(&assembled, "edges")
+        .iter()
+        .filter(|e| e["source"].as_str().is_some_and(|id| ids.contains(id)))
+        .cloned()
+        .collect();
+    let marker = inter.join(format!("part-symbol-retry-{}.json", part.replace('/', "~")));
+    let mut retry = json!({"version":1,"preparation":preparation,"graph":assembled,"edgeCandidates":candidates,"files":paths,"status":"preparing"});
+    crate::persistence::write_json(&marker, &retry)?;
+    let stamp = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_err(|e| Error::Invalid(e.to_string()))?
+        .as_nanos();
+    let archive = inter.join(format!(".part-symbol-retry-{stamp}"));
+    fs::create_dir(&archive)?;
+    for entry in fs::read_dir(&inter)? {
+        let entry = entry?;
+        let name = entry.file_name().to_string_lossy().into_owned();
+        if (name.starts_with("batch-") && name.ends_with(".json"))
+            || [
+                "batches.json",
+                "assembled-graph.json",
+                "part-edge-candidates.json",
+            ]
+            .contains(&name.as_str())
+        {
+            fs::rename(entry.path(), archive.join(name))?;
+        }
+    }
+    crate::persistence::write_json(
+        &inter.join("batch-existing.json"),
+        &json!({"nodes":nodes,"edges":edges}),
+    )?;
+    crate::persistence::write_json(&inter.join("batches.json"), &batches)?;
+    retry["status"] = json!("ready");
+    crate::persistence::write_json(&marker, &retry)?;
+    Ok(
+        json!({"part":part,"symbolRepair":true,"filesToAnalyze":paths,"totalBatches":batches["totalBatches"],"symbolReport":report,"recoveryDirectory":archive}),
+    )
+}
