@@ -35,7 +35,7 @@ jobs:
       TSLP_OFFLINE: '1'
       UA_TEST_PARSER_CACHE: ${{ runner.temp }}/ua-parsers
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
