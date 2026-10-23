@@ -1681,7 +1681,7 @@ pub fn analyze_file_strict(path: &str, content: &str) -> Value {
     }
     let mut structure = empty();
     extract_tree_structure(&root, &lang, &mut structure);
-    let scopes = crate::symbol_scopes::collect(root.raw.clone(), content, &lang);
+    let scopes = crate::symbol_scopes::collect(root.raw.clone(), content, &lang, &structure);
     let mut leaves = BTreeSet::new();
     let mut pending = vec![root];
     while let Some(node) = pending.pop() {

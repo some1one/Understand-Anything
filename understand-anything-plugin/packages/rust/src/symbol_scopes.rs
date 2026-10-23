@@ -67,7 +67,7 @@ fn identifier(node: Option<Node>, content: &str) -> Option<String> {
         return None;
     }
     let name = text(&node, content);
-    if name.is_empty() || name.contains(['\\', '`']) {
+    if name.is_empty() || !crate::symbol_coverage::spelling(name) {
         None
     } else {
         Some(name.to_owned())
@@ -82,6 +82,7 @@ struct Inventory<'a> {
     functions: Vec<Value>,
     classes: Vec<Value>,
     unresolved: Vec<Value>,
+    gaps: Vec<Value>,
     next_scope: usize,
 }
 impl Inventory<'_> {
@@ -95,11 +96,22 @@ impl Inventory<'_> {
         enclosing: Scope,
         binding: Option<String>,
         object_member: bool,
+        receiver: Scope,
     ) {
         let kind = node.kind();
         let is_class = CLASSES.contains(&kind.as_str());
         let is_function = FUNCTIONS.contains(&kind.as_str());
         let declared = identifier(node.child_by_field_name("name"), self.content);
+        if let Some(gap) = crate::symbol_coverage::gap(
+            &node,
+            &enclosing.json(),
+            &receiver.json(),
+            self.content,
+            is_class || is_function,
+        ) {
+            self.gaps.push(gap);
+        }
+        let mut children_receiver = receiver;
         let mut children_scope = enclosing.clone();
         if is_class {
             let expression = self.javascript && kind == "class";
@@ -114,6 +126,13 @@ impl Inventory<'_> {
                 self.classes.push(entry);
             } else {
                 self.unresolved.push(entry);
+                self.gaps.push(crate::symbol_coverage::entry(
+                    &node,
+                    &declaration_scope.json(),
+                    None,
+                    Some("class"),
+                    "Unresolved declaration name",
+                ));
             }
             children_scope = match declaration_scope {
                 Scope::File => name.map(Scope::Class).unwrap_or(Scope::Unknown),
@@ -122,6 +141,7 @@ impl Inventory<'_> {
                 // promote a nested class into an unrelated top-level owner.
                 Scope::Class(_) | Scope::Unknown => Scope::Unknown,
             };
+            children_receiver = children_scope.clone();
         } else if is_function {
             let value_function = [
                 "arrow_function",
@@ -152,12 +172,29 @@ impl Inventory<'_> {
                     owner = Scope::Unknown;
                 }
             }
+            if matches!(owner, Scope::Unknown) {
+                self.gaps.push(crate::symbol_coverage::entry(
+                    &node,
+                    &owner.json(),
+                    name.clone(),
+                    Some("callable"),
+                    "Unresolved declaring type",
+                ));
+            }
             let entry = record(&node, name.clone(), &owner);
             if name.is_some() {
                 self.functions.push(entry);
             } else if !value_function {
                 self.unresolved.push(entry);
+                self.gaps.push(crate::symbol_coverage::entry(
+                    &node,
+                    &owner.json(),
+                    None,
+                    Some("callable"),
+                    "Unresolved declaration name",
+                ));
             }
+            children_receiver = owner;
             children_scope = self.local();
         } else if [
             "namespace_definition",
@@ -213,6 +250,7 @@ impl Inventory<'_> {
                     children_scope.clone(),
                     child_binding,
                     self.javascript && kind == "object",
+                    children_receiver.clone(),
                 );
             }
         }
@@ -220,21 +258,66 @@ impl Inventory<'_> {
 }
 /// Return declarations with positive lexical ownership. Unknown ownership stays
 /// explicit, and local declarations are never treated as file-level replacements.
-pub fn collect(root: Node, content: &str, language: &str) -> Value {
+pub fn collect(root: Node, content: &str, language: &str, structure: &Value) -> Value {
     let mut inventory = Inventory {
         content,
         javascript: ["typescript", "javascript", "tsx"].contains(&language),
         functions: vec![],
         classes: vec![],
         unresolved: vec![],
+        gaps: vec![],
         next_scope: 0,
     };
     // Python's root is named `module`, the same node kind Ruby uses for a
     // declaring module. The parse root always establishes file scope.
     for i in 0..root.child_count() {
         if let Some(child) = root.child(i as u32) {
-            inventory.visit(child, Scope::File, None, false);
+            inventory.visit(child, Scope::File, None, false, Scope::File);
         }
     }
-    json!({"functions":inventory.functions,"classes":inventory.classes,"unresolved":inventory.unresolved})
+    for (key, kind) in [("functions", "callable"), ("classes", "class")] {
+        let declarations = if key == "functions" {
+            &inventory.functions
+        } else {
+            &inventory.classes
+        };
+        for declaration in declarations {
+            let exact = crate::array(structure, key).iter().any(|item| {
+                item["name"] == declaration["name"] && item["lineRange"] == declaration["lineRange"]
+            });
+            let method = key == "functions"
+                && declaration["scope"]["kind"] == "class"
+                && crate::array(structure, "classes").iter().any(|class| {
+                    class["name"] == declaration["scope"]["name"]
+                        && crate::array(class, "methods").contains(&declaration["name"])
+                });
+            if !exact && !method {
+                let mut gap = declaration.clone();
+                gap["kind"] = json!(kind);
+                gap["reason"] = json!("Declaration is not covered by structural extraction");
+                inventory.gaps.push(gap);
+            }
+        }
+    }
+    if ![
+        "javascript",
+        "typescript",
+        "tsx",
+        "python",
+        "ruby",
+        "go",
+        "rust",
+        "cpp",
+    ]
+    .contains(&language)
+    {
+        inventory.gaps.push(crate::symbol_coverage::entry(
+            &root,
+            &Scope::Unknown.json(),
+            None,
+            None,
+            "Language has no verified declaration coverage profile",
+        ));
+    }
+    json!({"functions":inventory.functions,"classes":inventory.classes,"unresolved":inventory.unresolved,"coverageGaps":inventory.gaps})
 }

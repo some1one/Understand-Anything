@@ -71,3 +71,37 @@ fn expression_bindings_and_nested_types_do_not_claim_wrong_public_owners() {
     assert!(classes.iter().any(|c| c["name"] == "Worker" && c["scope"]["kind"] == "file"));
     assert!(!classes.iter().any(|c| c["name"] == "Internal"));
 }
+
+#[test]
+#[ignore = "requires pinned grammars; run with UA_TEST_PARSER_CACHE"]
+fn coverage_gaps_keep_parameter_properties_and_computed_members_in_their_owner_scope() {
+    if let Ok(cache) = std::env::var("UA_TEST_PARSER_CACHE") {
+        parsers::configure(Some(std::path::Path::new(&cache))).unwrap();
+    }
+    let result = analyze_file_strict("file.ts", "abstract class Worker { constructor(public callback: () => void) {} abstract run(): void; [key]() {} } function ordinary(value: string) { return value; }");
+    assert_eq!(result["status"], "succeeded", "{result}");
+    let gaps = result["declarationScopes"]["coverageGaps"].as_array().unwrap();
+    let parameter = gaps.iter().find(|gap| gap["reason"] == "Parameter-property callability is not covered by structural extraction").unwrap();
+    assert_eq!(parameter["name"], "callback");
+    assert_eq!(parameter["scope"]["kind"], "class");
+    assert_eq!(parameter["scope"]["name"], "Worker");
+    assert!(gaps.iter().any(|gap| gap["name"].is_null() && gap["reason"] == "Unresolved declaration name" && gap["scope"]["name"] == "Worker"));
+    assert!(gaps.iter().any(|gap| gap["name"] == "run" && gap["scope"]["name"] == "Worker"));
+    assert!(!gaps.iter().any(|gap| gap["name"] == "value"));
+}
+
+#[test]
+#[ignore = "requires pinned grammars; run with UA_TEST_PARSER_CACHE"]
+fn ordinary_identifiers_and_references_are_not_declaration_gaps() {
+    if let Ok(cache) = std::env::var("UA_TEST_PARSER_CACHE") {
+        parsers::configure(Some(std::path::Path::new(&cache))).unwrap();
+    }
+    for (path, source) in [
+        ("file.ts", "export function run(value: string) { return helper(value); }"),
+        ("file.py", "def run(value):\n    return helper(value)\n"),
+    ] {
+        let result = analyze_file_strict(path, source);
+        assert_eq!(result["status"], "succeeded");
+        assert_eq!(result["declarationScopes"]["coverageGaps"], serde_json::json!([]), "{result}");
+    }
+}
