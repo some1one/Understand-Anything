@@ -216,7 +216,11 @@ def test_distribution_contains_native_engine_and_shared_references(tmp_path):
                      "packages/dashboard/freshness-server.mjs"]:
         assert (payload / relative).is_file(), relative
     assert (payload / "AGENTS.md").read_text() == (PLUGIN / "AGENTS.md").read_text()
-    assert len(list((payload / "skills").glob("*/SKILL.md"))) == 13
+    assert {p.parent.name for p in (payload / "skills").glob("*/SKILL.md")} == {
+        p.parent.name for p in (PLUGIN / "skills").glob("*/SKILL.md")
+    }
+    assert (payload / "skills/understand-agent-instructions/assets/agent-instructions.md").is_file()
+    assert (payload / "skills/understand-agent-instructions/scripts/agent_instructions.py").is_file()
     assert not (payload / "packages/core").exists()
     result = subprocess.run(["bash", str(payload / "packages/rust/run.sh"), "--version"],
                             check=True, capture_output=True, text=True)

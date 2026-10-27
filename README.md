@@ -40,9 +40,10 @@ hook behavior, and troubleshooting.
 
 ## Help your agent choose when to use the plugin
 
-Copy the [recommended repository instructions](understand-anything-plugin/README.md#recommended-repository-instructions)
-into your project's `AGENTS.md` or `CLAUDE.md`, or ask `understand-help` to adapt
-them. They recommend graph-based discovery for unfamiliar components and
+General `understand-help` prints the [recommended repository instructions](understand-anything-plugin/README.md#recommended-repository-instructions).
+Use `understand-agent-instructions <project-path> --write` to integrate them as
+a separate section in an existing `AGENTS.md`, or copy the printed guidance into
+`CLAUDE.md`. They recommend graph-based discovery for unfamiliar components and
 cross-file relationships, direct reads for known single-file tasks, and no
 retrieval for generic questions or relevant context already loaded. The graph
 helps navigation; current source remains the evidence for behavior.

@@ -55,9 +55,10 @@ A single-file task can warrant graph context when external dependencies matter.
 Explicit user requests to use or skip a skill take precedence over these defaults.
 
 Do not make indexing a prerequisite when direct source inspection is sufficient.
-Use the [repository instruction template](README.md#recommended-repository-instructions)
-when helping users configure their own agent. Follow the selected skill when a
-workflow is needed; this routing guidance does not silently skip its required steps.
+Use [understand-agent-instructions](skills/understand-agent-instructions/SKILL.md)
+to print the shared guidance or integrate it into a project's `AGENTS.md`.
+Follow the selected skill when a workflow is needed; this routing guidance does
+not silently skip its required steps.
 
 ## Graph freshness when answering questions
 

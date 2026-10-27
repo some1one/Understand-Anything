@@ -32,6 +32,7 @@ first-run setup, requirements, commands, and troubleshooting (native Claude:
 | Skill | Purpose |
 |---|---|
 | `understand-help` | Explain installation, first-run setup, usage, and troubleshooting |
+| `understand-agent-instructions` | Print efficient exploration guidance or integrate it into AGENTS.md |
 | `understand-update` | Configure, update, or repair dictionary dependencies |
 | `understand` | Analyze the project, selected folder parts, or changed parts |
 | `load-graph` | Load selected part graphs or the full merged graph |
@@ -53,52 +54,23 @@ review still applies when needed.
 
 ## Recommended repository instructions
 
-Add the following to the user's repository `AGENTS.md` (plural) or `CLAUDE.md`,
-whichever their host reads. Merge it into existing instructions. It is guidance
-for using an installed plugin, not a requirement to index every repository.
-`understand-help` can adapt this block to the available skills and project scope.
+Use [understand-agent-instructions](skills/understand-agent-instructions/SKILL.md)
+to print portable guidance for an agent or add it as a separate section in the
+project's existing `AGENTS.md`. General `understand-help` output includes the
+recommended section; help alone does not edit project files.
 
-Using a relevant graph slice can help locate unfamiliar components, trace
-relationships across files, and avoid repeated broad searches. Reusing context
-already loaded avoids paying for the same retrieval again.
+The shared [instruction template](skills/understand-agent-instructions/assets/agent-instructions.md)
+explains when to query a small subgraph, use explain, load selected partitions,
+reuse context, check exact snapshot freshness, and inspect current source. It
+includes the corresponding helper commands. It is guidance for an installed
+plugin, not a requirement to index every repository or load the entire graph.
 
-```markdown
-## Understand Anything
-
-Use the installed Understand Anything skills when repository structure or
-relationships across files would materially help the task:
-
-- Use understand-chat to locate unfamiliar components and trace cross-file flows.
-- Use understand-diff for change impact across components, and understand-explain
-  when explaining a symbol requires its callers, dependencies, or architecture.
-- Use load-graph for the smallest relevant parts when several follow-up questions
-  need the same context. Reuse that context rather than loading it each turn.
-- Use understand-onboard for a codebase orientation and understand-help for plugin
-  setup or usage. Use understand to create or refresh an index when the task needs
-  it; use understand-dashboard when visualization is requested or useful.
-
-Skip plugin retrieval for general programming questions, writing, or other tasks
-that do not need repository evidence. Read a known file directly for a local
-question or edit; use a targeted text search for an exact symbol or path. A
-single-file question only needs graph context if relationships outside that file
-are relevant. Do not invoke a skill merely because the task mentions code.
-
-Before retrieving, reuse relevant source, search results, and graph context
-already in this conversation. Retrieve again only for missing scope, changed files
-or revisions, stale evidence, or context that is no longer available. Knowing that
-an index exists is different from having its relevant contents loaded.
-
-Treat graph results as navigation hints and snapshots. Confirm behavior against
-current source, including uncommitted changes, before editing or making claims.
-An empty result or an excluded graph partition is not proof that code is absent;
-fall back to a focused source search. If the graph is missing or stale and direct
-inspection suffices, continue without indexing. Refresh only the scope needed;
-do not start a full rebuild, download, or dashboard as a side effect of a question.
-
-Honor explicit requests to use or skip a skill and the host's invocation rules.
-Keep the analyzed project separate from the plugin installation. Keep downloaded
-dictionaries, machine-specific dictionary configuration, and generated query
-caches out of Git; use shared dictionary storage where configured.
+```bash
+# Print recommended instructions without changing the project.
+python3 "$PLUGIN_ROOT/skills/understand-agent-instructions/scripts/agent_instructions.py" "$PROJECT_ROOT"
+# When integration is requested, preserve existing instructions and update only
+# the dedicated Understand Anything section (or create AGENTS.md if absent).
+python3 "$PLUGIN_ROOT/skills/understand-agent-instructions/scripts/agent_instructions.py" "$PROJECT_ROOT" --write
 ```
 
 Use the host's discovered skill names: native Claude uses

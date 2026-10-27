@@ -131,6 +131,7 @@ handling settings. The dashboard is launched separately after a graph exists.
 
 | User intent | Workflow |
 |---|---|
+| Print or integrate efficient agent instructions | [understand-agent-instructions](../understand-agent-instructions/SKILL.md) |
 | Create, refresh or fully rebuild an index | [understand](../understand/SKILL.md) |
 | Ask a question using the graph | [understand-chat](../understand-chat/SKILL.md) |
 | Explain a file, function or module | [understand-explain](../understand-explain/SKILL.md) |
@@ -147,31 +148,23 @@ are normally loaded by the analysis workflow, not first-run setup commands.
 
 ## Recommend repository agent instructions
 
-When the user asks how their agent should use the plugin, provide or adapt the
-[copyable AGENTS.md / CLAUDE.md block](../../README.md#recommended-repository-instructions).
-Use `AGENTS.md` (plural) for hosts that read that name; retain existing repository
-instructions. A request for advice does not itself request file edits. When edits
-are requested, merge the guidance into the user's chosen file and scope.
+For general help (including a bare help invocation) or a request for agent
+usage guidance, print the shared recommended instruction section as copyable
+Markdown after answering the immediate question:
 
-Explain both sides of the routing decision:
+```bash
+python3 "$PLUGIN_ROOT/skills/understand-agent-instructions/scripts/agent_instructions.py" "$PROJECT_ROOT"
+```
 
-- Use graph skills for unfamiliar components, cross-file relationships, change
-  impact, and repeated questions that benefit from a selected graph slice.
-- Skip retrieval for generic questions without repository evidence, known
-  single-file questions or edits, and exact lookups handled by a focused search.
-  A file-specific question can still need the graph when callers or dependencies
-  outside that file matter.
-- Reuse source, search results, and relevant graph context already loaded. Fetch
-  only missing or changed context; an index on disk is not loaded context.
-- Verify current source, including uncommitted changes. If the graph is missing,
-  stale, or incomplete, use focused source inspection when sufficient; do not
-  force indexing or a full rebuild just to answer a question.
-
-Honor explicit skill requests and exclusions. Avoid prescribing plugin use on
-every turn or loading the complete graph by default. Recommend shared full
-[dictionary downloads](../../scripts/dictionaries.md#share-downloads-across-projects)
-and repository ignore rules for generated data; project query caches still belong
-to their own graph. Explain the saved storage choice and the remaining shared-update limitations.
+Use [understand-agent-instructions](../understand-agent-instructions/SKILL.md)
+when the user asks to integrate it into the project's `AGENTS.md`; its `--write`
+mode creates or updates a separate marked section and preserves other content.
+Read existing instructions first and honor project-specific preferences. A help
+request alone does not authorize editing. For focused troubleshooting unrelated
+to agent guidance, link to this skill instead of printing the entire section.
+The [template](../understand-agent-instructions/assets/agent-instructions.md)
+is the single source of the recommended instructions; do not substitute a
+full-graph-by-default recipe or omit its context-reuse and freshness guidance.
 
 ## Common setup issues
 
