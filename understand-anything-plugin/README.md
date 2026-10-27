@@ -129,12 +129,17 @@ not advance the saved baseline.
 The dashboard requires Node.js 22+. Source mode additionally requires pnpm;
 prebuilt bundles use `packages/dashboard/serve.mjs`. The launcher reports a
 loopback URL with an access token. Open the full URL, including `?token=`.
+In Codex, the dashboard skill uses `launch_dashboard.sh --foreground` in a
+managed command session and checks the URL from a separate command. Keep that
+session running; shell backgrounding alone does not guarantee persistence.
 Analysis does not launch the dashboard automatically.
 
 The desktop and mobile dashboard check graph freshness when opened and when
 refocused. A warning distinguishes local edits, stale revisions, and checks that
 could not be verified. Expand it to see affected files. Refresh analysis with
 `/understand` when needed; the dashboard never starts analysis automatically.
+The affected-file list respects built-in exclusions and `.uaignore` rules in
+the selected data directory and project root, including negation rules.
 If the saved graph changes while the page is open, reload to display that snapshot.
 Static demos omit these checks unless `VITE_STALENESS_URL` supplies a report.
 
@@ -280,4 +285,4 @@ Patterns are evaluated in order after user ignore files. Changing or removing
 these extra patterns refreshes all included parts; it does not change which
 parts are included. Omitting `--exclude` on a later explicit analysis removes
 extra exclusions. Automatic updates retain the last published patterns from
-`meta.json`. Use `.understandignore` for permanent repository rules.
+`meta.json`. Use `.uaignore` for permanent repository rules.

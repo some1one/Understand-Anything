@@ -44,7 +44,7 @@ def main():
     snapshot = {}
     for rel in paths:
         # Analyze source, not installed plugin copies or previous analysis artifacts.
-        if rel.split('/')[0].startswith('.') and not rel.startswith('.github/') and rel not in {'.gitignore', '.understandignore'}:
+        if rel.split('/')[0].startswith('.') and not rel.startswith('.github/') and rel not in {'.gitignore', '.uaignore'}:
             continue
         source = REPO/rel
         if not source.is_file() or source.is_symlink():

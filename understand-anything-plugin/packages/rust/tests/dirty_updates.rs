@@ -9,7 +9,7 @@ fn setup() -> tempfile::TempDir {
     git(root, &["init", "-q"]); git(root, &["config", "user.email", "fixture@example.test"]);
     git(root, &["config", "user.name", "Fixture"]);
     fs::write(root.join("source.rb"), "puts 1\n").unwrap();
-    fs::write(root.join(".understandignore"), "ignored/\n").unwrap();
+    fs::write(root.join(".uaignore"), "ignored/\n").unwrap();
     git(root, &["add", "."]); git(root, &["commit", "-qm", "baseline"]);
     fs::create_dir_all(root.join(".ua/intermediate")).unwrap();
     write_json(&root.join(".ua/knowledge-graph.json"), &json!({"nodes":[],"edges":[]})).unwrap();
@@ -36,9 +36,9 @@ fn artifacts_and_ignored_files_are_allowed_but_scope_controls_are_relevant() {
     fs::write(root.join("ignored/a.rb"), "puts 1").unwrap();
     fs::write(root.join(".ua/generated.json"), "{}").unwrap();
     assert!(updates::relevant_worktree_changes(root, &ProcessGit).unwrap().is_empty());
-    fs::write(root.join(".ua/.understandignore"), "other/\n").unwrap();
+    fs::write(root.join(".ua/.uaignore"), "other/\n").unwrap();
     fs::write(root.join("ignored/.gitignore"), "x\n").unwrap();
-    assert_eq!(updates::relevant_worktree_changes(root, &ProcessGit).unwrap(), vec![".ua/.understandignore", "ignored/.gitignore"]);
+    assert_eq!(updates::relevant_worktree_changes(root, &ProcessGit).unwrap(), vec![".ua/.uaignore", "ignored/.gitignore"]);
 }
 #[test]
 fn fingerprinting_preparation_and_finalization_reject_source_drift_without_publishing() {

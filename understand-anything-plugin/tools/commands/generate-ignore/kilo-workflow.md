@@ -1,10 +1,10 @@
 ---
-description: Generate a starter .understandignore from .gitignore plus built-in defaults.
+description: Generate a starter .uaignore from .gitignore plus built-in defaults.
 ---
 
 # /understand-generate-ignore
 
-Generates a starter `.ua/.understandignore` (reads `.gitignore`,
+Generates a starter `.ua/.uaignore` (reads `.gitignore`,
 dedupes against built-in defaults, suggests test-file exclusions for review).
 
 Parse the supplied arguments into a project path; quote each path separately. Do not evaluate the raw argument text as shell code. The installer replaces `__PLUGIN_ROOT__` below.

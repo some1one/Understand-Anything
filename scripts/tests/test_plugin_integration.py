@@ -125,6 +125,45 @@ def test_dashboard_resolution_with_spaces_and_stale_host_root(tmp_path):
     assert result.stdout == str(plugin / "packages/dashboard")
 
 
+@pytest.mark.parametrize("prebuilt", [True, False])
+def test_dashboard_foreground_exec_keeps_server_in_managed_session(tmp_path, prebuilt):
+    import shutil
+    plugin = tmp_path / "plugin with spaces"
+    relative = Path("skills/understand-dashboard/scripts")
+    shutil.copytree(PLUGIN / relative, plugin / relative)
+    (plugin / "scripts").mkdir()
+    shutil.copy2(PLUGIN / "scripts/data_directory.py", plugin / "scripts/data_directory.py")
+    dashboard = plugin / "packages/dashboard"
+    dashboard.mkdir(parents=True)
+    if prebuilt:
+        (dashboard / "dist").mkdir()
+        (dashboard / "dist/index.html").write_text("fixture")
+        (dashboard / "serve.mjs").write_text("fixture")
+    project = tmp_path / "project with spaces"
+    write_json(project / ".ua/knowledge-graph.json", {"nodes": []})
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    for name in ["node", "npx", "pnpm"]:
+        command = bin_dir / name
+        command.write_text(f'''#!{sys.executable}
+import json, os, sys
+if os.path.basename(sys.argv[0]) == "pnpm": sys.exit(0)
+print(json.dumps({{"pid": os.getpid(), "root": os.environ["GRAPH_DIR"], "cwd": os.getcwd(), "args": sys.argv[1:]}}))
+sys.exit(23)
+''')
+        command.chmod(0o755)
+    process = subprocess.Popen(
+        ["bash", str(plugin / relative / "launch_dashboard.sh"), "--foreground", str(project)],
+        env={**os.environ, "PATH": str(bin_dir) + os.pathsep + os.environ["PATH"]},
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+    )
+    stdout, stderr = process.communicate(timeout=10)
+    assert process.returncode == 23, stderr
+    server = json.loads(stdout.splitlines()[-1])
+    assert server == {"pid": process.pid, "root": str(project), "cwd": str(dashboard),
+                      "args": ["serve.mjs"] if prebuilt else ["vite", "--host", "127.0.0.1"]}
+
+
 def test_architecture_input_uses_analyzed_nodes_only(project):
     write_json(project / ".understand-anything/intermediate/scan-result.json", {"languages": [], "frameworks": []})
     nodes = [{"id": "file:src/custom.py", "type": "file", "name": "custom.py", "filePath": "src/custom.py", "summary": "Actual analyzed node", "tags": ["python"]}]

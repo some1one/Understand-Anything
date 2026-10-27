@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# generate-ignore — generate a starter .understandignore from .gitignore +
+# generate-ignore — generate a starter .uaignore from .gitignore +
 # built-in defaults. Wraps: understand-anything-rs generate_ignore
 #
 # Usage: run.sh <project-root>

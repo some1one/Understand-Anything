@@ -73,7 +73,7 @@ fn artifact_filter_preserves_source_changes_ignore_rules_and_directory_boundarie
     let state = preflight_with_git(
         tmp.path(),
         false,
-        &Git(vec![".ua/.understandignore".into()]),
+        &Git(vec![".ua/.uaignore".into()]),
     )
     .unwrap();
     assert_eq!(state["action"], "PROCEED");

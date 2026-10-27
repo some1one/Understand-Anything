@@ -5,8 +5,8 @@ use understand_anything::scan::{create_ignore_filter_with_patterns, scan_project
 fn invocation_patterns_override_user_rules_and_defaults_in_order() {
     let temp = tempfile::tempdir().unwrap(); let root = temp.path();
     fs::create_dir(root.join(".ua")).unwrap();
-    fs::write(root.join(".ua/.understandignore"), "!docs/\n").unwrap();
-    fs::write(root.join(".understandignore"), "fixtures/\n").unwrap();
+    fs::write(root.join(".ua/.uaignore"), "!docs/\n").unwrap();
+    fs::write(root.join(".uaignore"), "fixtures/\n").unwrap();
     let filter = create_ignore_filter_with_patterns(root, &["docs/".into(),"!dist/".into(),"e2e/".into(),"!e2e/keep.ts".into()]).unwrap();
     assert!(filter.is_ignored("docs/README.md"));
     assert!(filter.is_ignored("fixtures/data.json"));

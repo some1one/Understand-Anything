@@ -243,12 +243,14 @@ all entries share one HEAD/worktree snapshot. Results distinguish `fresh`,
 `dirty`, `stale` (with `behind`, `ahead`, or `diverged`), and `unknown`.
 Git failures and timeouts produce `unknown`, never a claim that the graph is fresh.
 Changed paths are scoped to the requested project and exclude generated files
-inside `.ua` and `.understand-anything`. Each Git command has a five-second
+inside `.ua` and `.understand-anything`. Both committed and worktree paths use
+the scanner's built-in defaults and `.uaignore` rules (selected data directory
+first, project root second, including negation). Each Git command has a five-second
 limit and a four-MiB output limit.
 
 `scan_project` accepts `--exclude=pattern,...` or `--exclude pattern,...`, including
 repeated options. Patterns use gitignore syntax and are applied in argument order
-after defaults and both `.understandignore` files; `!` negates an earlier rule.
+after defaults and both `.uaignore` files; `!` negates an earlier rule.
 Quote patterns so the shell does not expand them. This filters the scanner's
 existing file inventory; it does not make Git-ignored, untracked files enumerable.
 Nonempty patterns are retained as `excludePatterns` in scan and assembled scan

@@ -28,7 +28,7 @@ You produce a precise JSON inventory of a project's files, languages, frameworks
 
 ## Task
 
-The deterministic parts (file enumeration, language/category assignment, line counting, complexity, `.understandignore` filtering, import resolution) are handled by the Rust engine (`scan_project` + `extract_import_map`) — do NOT re-implement them. Your contribution is the **LLM narrative**: reading README + manifests for `name`/`description`/`frameworks`/`languages`.
+The deterministic parts (file enumeration, language/category assignment, line counting, complexity, `.uaignore` filtering, import resolution) are handled by the Rust engine (`scan_project` + `extract_import_map`) — do NOT re-implement them. Your contribution is the **LLM narrative**: reading README + manifests for `name`/`description`/`frameworks`/`languages`.
 
 **Running the Rust engine.** Use the absolute `PLUGIN_ROOT` supplied by the caller (or the parent of this agent file's `agents/` directory); read [host integration](../HOSTS.md) for host-specific dispatch. Run commands via `"$PLUGIN_ROOT/packages/rust/run.sh" <command> …`; it builds the executable on first use in a source checkout. Pass absolute paths.
 
@@ -65,7 +65,7 @@ If a manifest is missing/malformed, leave the field empty rather than guessing.
 
 ### Step B (`scan_project`) -- File enumeration + language + category + lines
 
-Walks the project (prefers `git ls-files`, falls back to recursive walk), applies `.understandignore` filtering, assigns `language`/`fileCategory` per canonical tables, counts lines, writes deterministic JSON. You do not maintain those tables.
+Walks the project (prefers `git ls-files`, falls back to recursive walk), applies `.uaignore` filtering, assigns `language`/`fileCategory` per canonical tables, counts lines, writes deterministic JSON. You do not maintain those tables.
 
 ```bash
 mkdir -p "$UA_DIR/tmp"
@@ -123,7 +123,7 @@ Behavior: `files` sorted by `path.localeCompare`; `fileCategory ∈ {code, confi
 
 **Priority:** most-specific wins — filename/path rules fire before extension rules (`docker-compose.yml` → `infra` not `config`; `.github/workflows/ci.yml` → `infra`; `LICENSE` → `code`).
 
-**`.understandignore`:** reads `.understandignore` and `$UA_DIR/.understandignore`, merges with hardcoded defaults (gitignore semantics via `pathspec`); `!`-negation overrides defaults. `filteredByIgnore` measures only user-driven drops.
+**`.uaignore`:** reads `.uaignore` and `$UA_DIR/.uaignore`, merges with hardcoded defaults (gitignore semantics via `pathspec`); `!`-negation overrides defaults. `filteredByIgnore` measures only user-driven drops.
 
 On non-zero exit, diagnose via stderr; up to 2 retry attempts. There is no substitute scanner.
 

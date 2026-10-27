@@ -127,8 +127,8 @@ pub fn create_ignore_filter(root: &Path) -> Result<IgnoreFilter> {
 pub fn create_ignore_filter_with_patterns(root: &Path, extra: &[String]) -> Result<IgnoreFilter> {
     let mut patterns = default_patterns();
     for p in [
-        crate::persistence::data_dir(root).join(".understandignore"),
-        root.join(".understandignore"),
+        crate::persistence::data_dir(root).join(".uaignore"),
+        root.join(".uaignore"),
     ] {
         if let Ok(text) = fs::read_to_string(p) {
             patterns.extend(text.lines().map(str::to_owned));
@@ -184,9 +184,9 @@ pub fn scan_project(root: &Path) -> Result<Value> {
 pub fn scan_project_with_patterns(root: &Path, extra: &[String]) -> Result<Value> {
     let combined = create_ignore_filter_with_patterns(root, extra)?;
     let defaults = IgnoreFilter::new(&default_patterns())?;
-    let has_user = root.join(".understandignore").exists()
+    let has_user = root.join(".uaignore").exists()
         || crate::persistence::data_dir(&root)
-            .join(".understandignore")
+            .join(".uaignore")
             .exists();
     let mut filtered = 0;
     let mut files = vec![];

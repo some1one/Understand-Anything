@@ -116,7 +116,7 @@ pub fn relevant_worktree_changes(root: &Path, git: &dyn GitClient) -> Result<Vec
     let filter = scope_filter(root)?;
     Ok(paths.into_iter().filter(|path| {
         let name = path.rsplit('/').next().unwrap_or(path);
-        if name == ".understandignore" { return true; }
+        if name == ".uaignore" { return true; }
         if path.starts_with(".ua/") || path.starts_with(".understand-anything/") { return false; }
         if name == ".gitignore" { return true; }
         ![".ps1", ".psm1", ".psd1", ".bat", ".cmd"].contains(&crate::scan::extension(path).as_str())

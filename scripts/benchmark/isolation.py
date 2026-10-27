@@ -77,7 +77,7 @@ def ignore_identity(subject, exclusions):
     tables = json.loads((RUST / 'reference/tables.json').read_text())
     user = []
     data = '.ua' if (subject / '.ua').is_dir() or not (subject / '.understand-anything').is_dir() else '.understand-anything'
-    for rel in (data + '/.understandignore', '.understandignore', '.gitignore', '.git/info/exclude'):
+    for rel in (data + '/.uaignore', '.uaignore', '.gitignore', '.git/info/exclude'):
         path = subject / rel
         if path.is_file():
             user.append((rel, hash_file(path)))

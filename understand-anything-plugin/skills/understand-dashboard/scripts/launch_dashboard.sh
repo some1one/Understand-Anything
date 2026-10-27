@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+FOREGROUND=false
+if [ "${1:-}" = "--foreground" ]; then
+  FOREGROUND=true
+  shift
+fi
 if [ $# -ne 1 ]; then
-  echo "Usage: launch_dashboard.sh <project-dir>" >&2
+  echo "Usage: launch_dashboard.sh [--foreground] <project-dir>" >&2
   exit 1
 fi
 
@@ -32,8 +37,7 @@ cd "$DASHBOARD_DIR"
 if [ -f "$DASHBOARD_DIR/serve.mjs" ] && [ -f "$DASHBOARD_DIR/dist/index.html" ]; then
   # Bundled / pre-built dashboard: serve the static build with the zero-dependency
   # Node server (no install step, no pnpm required).
-  GRAPH_DIR="$PROJECT_DIR" node serve.mjs >"$LOG_FILE" 2>&1 &
-  PID=$!
+  SERVER=(node serve.mjs)
 else
   # Source checkout: run the Vite dev server (needs pnpm + a one-time install).
   if ! command -v pnpm >/dev/null 2>&1; then
@@ -41,9 +45,18 @@ else
     exit 1
   fi
   (pnpm install --frozen-lockfile 2>/dev/null || pnpm install)
-  GRAPH_DIR="$PROJECT_DIR" npx vite --host 127.0.0.1 >"$LOG_FILE" 2>&1 &
-  PID=$!
+  SERVER=(npx vite --host 127.0.0.1)
 fi
+
+export GRAPH_DIR="$PROJECT_DIR"
+if [ "$FOREGROUND" = true ]; then
+  echo "Viewing: $UA_DIR/knowledge-graph.json"
+  echo "Foreground dashboard; keep this managed command session running."
+  exec "${SERVER[@]}"
+fi
+
+"${SERVER[@]}" >"$LOG_FILE" 2>&1 &
+PID=$!
 
 URL=""
 for _ in $(seq 1 60); do

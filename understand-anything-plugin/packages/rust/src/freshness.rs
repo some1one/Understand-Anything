@@ -98,6 +98,7 @@ fn paths(bytes: Vec<u8>) -> Result<BTreeSet<String>, Failure> {
 struct Snapshot {
     head: String,
     dirty: BTreeSet<String>,
+    ignore: crate::scan::IgnoreFilter,
 }
 fn snapshot(root: &Path) -> Result<Snapshot, Failure> {
     git(root, &["rev-parse", "--show-toplevel"], false)?;
@@ -129,7 +130,9 @@ fn snapshot(root: &Path) -> Result<Snapshot, Failure> {
     ] {
         dirty.extend(paths(git(root, &args, true)?)?);
     }
-    Ok(Snapshot { head, dirty })
+    let ignore = crate::scan::create_ignore_filter(root).map_err(|_| Failure::Command)?;
+    dirty.retain(|path| !ignore.is_ignored(path));
+    Ok(Snapshot { head, dirty, ignore })
 }
 fn ancestor(root: &Path, a: &str, b: &str) -> Result<bool, Failure> {
     match git(root, &["merge-base", "--is-ancestor", a, b], false) {
@@ -165,7 +168,7 @@ fn evaluate(root: &Path, snapshot: &Snapshot, requested: &str, mut base: Value) 
         Err(e) => return unknown(base, &e, "graph-commit-unavailable"),
     };
     base["graphCommitHash"] = json!(graph);
-    let committed = match git(
+    let committed: BTreeSet<String> = match git(
         root,
         &[
             "diff",
@@ -181,7 +184,7 @@ fn evaluate(root: &Path, snapshot: &Snapshot, requested: &str, mut base: Value) 
     )
     .and_then(paths)
     {
-        Ok(files) => files,
+        Ok(files) => files.into_iter().filter(|path| !snapshot.ignore.is_ignored(path)).collect(),
         Err(e) => return unknown(base, &e, "graph-commit-unavailable"),
     };
     let (status, ahead, behind) = if committed.is_empty() {

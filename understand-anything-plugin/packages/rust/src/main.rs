@@ -558,7 +558,7 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
                 absolute(&args[0])?
             };
             let dir = ua::persistence::data_dir(&root);
-            let output = dir.join(".understandignore");
+            let output = dir.join(".uaignore");
             if output.exists() {
                 eprintln!(
                     "generate-ignore: {} already exists — skipping",

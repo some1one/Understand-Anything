@@ -178,3 +178,38 @@ fn explicit_partition_snapshot_does_not_inherit_merged_graph_freshness() {
         }
     }
 }
+
+#[test]
+fn freshness_filters_committed_staged_unstaged_deleted_and_untracked_paths() {
+    let tmp = setup();
+    let root = tmp.path();
+    fs::create_dir_all(root.join(".ua")).unwrap();
+    fs::create_dir_all(root.join("excluded")).unwrap();
+    fs::create_dir_all(root.join("node_modules")).unwrap();
+    fs::write(root.join(".ua/.uaignore"), "excluded/\n").unwrap();
+    // Root rules override the data-directory rules, including negation.
+    fs::write(root.join(".uaignore"), "!excluded/keep.rs\n").unwrap();
+    for path in ["excluded/committed.rs", "excluded/staged.rs", "excluded/unstaged.rs", "excluded/deleted.rs", "excluded/keep.rs", "node_modules/tracked.rs"] {
+        fs::write(root.join(path), "baseline").unwrap();
+    }
+    let base = commit(root);
+    fs::write(root.join("excluded/committed.rs"), "committed change").unwrap();
+    commit(root);
+    fs::write(root.join("excluded/staged.rs"), "staged change").unwrap();
+    git(root, &["add", "excluded/staged.rs"]);
+    fs::write(root.join("excluded/unstaged.rs"), "unstaged change").unwrap();
+    fs::rename(root.join("excluded/deleted.rs"), root.join("excluded/renamed.rs")).unwrap();
+    fs::write(root.join("excluded/untracked.rs"), "untracked change").unwrap();
+    fs::write(root.join("node_modules/tracked.rs"), "default exclusion").unwrap();
+    let clean = check(root, &base);
+    assert_eq!(clean["status"], "fresh", "{clean}");
+    assert_eq!(clean["changedFileCount"], 0);
+    fs::write(root.join("excluded/keep.rs"), "included change").unwrap();
+    let dirty = check(root, &base);
+    assert_eq!(dirty["status"], "dirty");
+    assert_eq!(dirty["changedFiles"], json!(["excluded/keep.rs"]));
+    commit(root);
+    let stale = check(root, &base);
+    assert_eq!(stale["status"], "stale");
+    assert_eq!(stale["changedFiles"], json!(["excluded/keep.rs"]));
+}

@@ -120,7 +120,7 @@ Decide full analysis vs. incremental update.
 
 ## Phase 0.5 — Ignore Configuration
 
-1. If `$UA_DIR/.understandignore` does not exist, generate a starter:
+1. If `$UA_DIR/.uaignore` does not exist, generate a starter:
    ```bash
    "$PLUGIN_ROOT/packages/rust/run.sh" generate_ignore "$PROJECT_ROOT"
    ```
@@ -133,8 +133,8 @@ Decide full analysis vs. incremental update.
      - an obvious **framework/domain** change — new framework or new top-level domain/service dirs.
 
 3. **Prompt-and-wait** (only when step 2 requires it):
-   - Just generated: "Generated `$UA_DIR/.understandignore` with suggested exclusions. Review it, uncomment patterns to exclude, then confirm to continue."
-   - Already existed: "Found `$UA_DIR/.understandignore`. Review it if needed, then confirm to continue."
+   - Just generated: "Generated `$UA_DIR/.uaignore` with suggested exclusions. Review it, uncomment patterns to exclude, then confirm to continue."
+   - Already existed: "Found `$UA_DIR/.uaignore`. Review it if needed, then confirm to continue."
    - **Wait for confirmation before proceeding.**
 
 ---

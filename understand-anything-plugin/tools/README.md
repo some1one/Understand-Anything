@@ -32,7 +32,7 @@ command may take a moment. Packaged installs include the executable.
 
 | Command | Wraps | Canonical file it writes |
 |---------|-------|--------------------------|
-| `generate-ignore` | `understand-anything-rs generate_ignore` | `.ua/.understandignore` |
+| `generate-ignore` | `understand-anything-rs generate_ignore` | `.ua/.uaignore` |
 | `merge-subdomains` | `understand-anything-rs merge_subdomain_graphs` | `.ua/knowledge-graph.json` (merged) |
 | `validate-graph` | `understand-anything-rs validate_graph` | `.ua/intermediate/review.json` |
 

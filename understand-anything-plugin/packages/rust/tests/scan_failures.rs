@@ -32,7 +32,7 @@ fn ignore_reconciliation_stops_on_scan_failure_without_advancing_baseline() {
     impl GitClient for Git {
         fn head(&self, _: &std::path::Path) -> Option<String> { Some("next".into()) }
         fn changed_files(&self, _: &std::path::Path, _: &str, _: &str) -> Option<Vec<String>> {
-            Some(vec![".understandignore".into()])
+            Some(vec![".uaignore".into()])
         }
     }
     for directory in [".ua", ".understand-anything"] {

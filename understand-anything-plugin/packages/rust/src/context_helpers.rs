@@ -14,9 +14,9 @@ use std::{
 pub fn is_ignore_file(path: &str) -> bool {
     matches!(
         path,
-        ".understandignore"
-            | ".understand-anything/.understandignore"
-            | ".ua/.understandignore"
+        ".uaignore"
+            | ".understand-anything/.uaignore"
+            | ".ua/.uaignore"
             | ".gitignore"
             | ".git/info/exclude"
     ) || path.ends_with("/.gitignore")

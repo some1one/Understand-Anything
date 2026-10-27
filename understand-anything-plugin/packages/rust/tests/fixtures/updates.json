@@ -171,7 +171,7 @@
     "git": {
       "head": "c2c4fd0d83476812ed33192d1138c924c9e29abf",
       "changed": [
-        ".understand-anything/.understandignore",
+        ".understand-anything/.uaignore",
         ".understand-anything/fingerprints.json",
         ".understand-anything/knowledge-graph.json",
         ".understand-anything/meta.json",
@@ -183,7 +183,7 @@
       "b.py": "def bar():\n    return 1\n",
       "a.py": "def foo(a, b):\n    return a + b\n",
       "ignored/x.py": "def x():\n    return 1\n",
-      ".understand-anything/.understandignore": "ignored/\n",
+      ".understand-anything/.uaignore": "ignored/\n",
       ".understand-anything/fingerprints.json": "{\"version\": \"1.0.0\", \"gitCommitHash\": \"b4cdd0f9c6f513b2e75bb5c465a4ec5778bf3de5\", \"generatedAt\": \"<TIME>\", \"files\": {\"a.py\": {\"filePath\": \"a.py\", \"contentHash\": \"8a9512a12c9f19b691224d1db996382129cb25098437520dd7261ba2c0bb4a21\", \"functions\": [{\"name\": \"foo\", \"params\": [\"a\", \"b\"], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"foo\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"b.py\": {\"filePath\": \"b.py\", \"contentHash\": \"4fade50a8bde42f21d5590123974dc80ba7ea45e62b3fca054e40e3be9b5c9fc\", \"functions\": [{\"name\": \"bar\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"bar\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}}}",
       ".understand-anything/meta.json": "{\"gitCommitHash\": \"b4cdd0f9c6f513b2e75bb5c465a4ec5778bf3de5\", \"version\": \"1.0.0\", \"analyzedFiles\": 2}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"t\"}, \"nodes\": [{\"id\": \"file:a.py\", \"type\": \"file\", \"filePath\": \"a.py\"}], \"edges\": [], \"layers\": []}"
@@ -193,7 +193,7 @@
       "b.py": "def bar():\n    return 1\n",
       "a.py": "def foo(a, b):\n    return a + b\n",
       "ignored/x.py": "def x():\n    return 1\n",
-      ".understand-anything/.understandignore": "ignored/\n",
+      ".understand-anything/.uaignore": "ignored/\n",
       ".understand-anything/fingerprints.json": "{\"version\": \"1.0.0\", \"gitCommitHash\": \"b4cdd0f9c6f513b2e75bb5c465a4ec5778bf3de5\", \"generatedAt\": \"<TIME>\", \"files\": {\"a.py\": {\"filePath\": \"a.py\", \"contentHash\": \"8a9512a12c9f19b691224d1db996382129cb25098437520dd7261ba2c0bb4a21\", \"functions\": [{\"name\": \"foo\", \"params\": [\"a\", \"b\"], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"foo\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}, \"b.py\": {\"filePath\": \"b.py\", \"contentHash\": \"4fade50a8bde42f21d5590123974dc80ba7ea45e62b3fca054e40e3be9b5c9fc\", \"functions\": [{\"name\": \"bar\", \"params\": [], \"returnType\": null, \"exported\": true, \"lineCount\": 2}], \"classes\": [], \"imports\": [], \"exports\": [\"bar\"], \"totalLines\": 3, \"hasStructuralAnalysis\": true}}}",
       ".understand-anything/meta.json": "{\"gitCommitHash\": \"b4cdd0f9c6f513b2e75bb5c465a4ec5778bf3de5\", \"version\": \"1.0.0\", \"analyzedFiles\": 2}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"t\"}, \"nodes\": [{\"id\": \"file:a.py\", \"type\": \"file\", \"filePath\": \"a.py\"}], \"edges\": [], \"layers\": []}"
@@ -680,12 +680,12 @@
       "changed": null
     },
     "before": {
-      ".understand-anything/.understandignore": "src/\n",
+      ".understand-anything/.uaignore": "src/\n",
       ".understand-anything/meta.json": "{\"gitCommitHash\": \"old\"}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}"
     },
     "after": {
-      ".understand-anything/.understandignore": "src/\n",
+      ".understand-anything/.uaignore": "src/\n",
       ".understand-anything/meta.json": "{\"gitCommitHash\": \"old\"}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}"
     },
@@ -709,12 +709,12 @@
       "changed": null
     },
     "before": {
-      ".understand-anything/.understandignore": "src/\n",
+      ".understand-anything/.uaignore": "src/\n",
       ".understand-anything/meta.json": "{\"gitCommitHash\": \"old\"}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}"
     },
     "after": {
-      ".understand-anything/.understandignore": "src/\n",
+      ".understand-anything/.uaignore": "src/\n",
       ".understand-anything/meta.json": "{\"gitCommitHash\": \"old\"}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}"
     },
@@ -738,12 +738,12 @@
       "changed": []
     },
     "before": {
-      ".understand-anything/.understandignore": "src/\n",
+      ".understand-anything/.uaignore": "src/\n",
       ".understand-anything/meta.json": "{\"gitCommitHash\": \"old\"}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}"
     },
     "after": {
-      ".understand-anything/.understandignore": "src/\n",
+      ".understand-anything/.uaignore": "src/\n",
       ".understand-anything/meta.json": "{\"gitCommitHash\": \"new\", \"lastAnalyzedAt\": \"<TIME>\", \"version\": \"1.0.0\"}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}"
     },
@@ -767,12 +767,12 @@
       "changed": []
     },
     "before": {
-      ".understand-anything/.understandignore": "src/\n",
+      ".understand-anything/.uaignore": "src/\n",
       ".understand-anything/meta.json": "{\"gitCommitHash\": \"old\"}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}"
     },
     "after": {
-      ".understand-anything/.understandignore": "src/\n",
+      ".understand-anything/.uaignore": "src/\n",
       ".understand-anything/meta.json": "{\"gitCommitHash\": \"old\", \"lastAnalyzedAt\": \"<TIME>\", \"version\": \"1.0.0\"}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}"
     },
@@ -798,12 +798,12 @@
       ]
     },
     "before": {
-      ".understand-anything/.understandignore": "src/\n",
+      ".understand-anything/.uaignore": "src/\n",
       ".understand-anything/meta.json": "{\"gitCommitHash\": \"old\"}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}"
     },
     "after": {
-      ".understand-anything/.understandignore": "src/\n",
+      ".understand-anything/.uaignore": "src/\n",
       ".understand-anything/meta.json": "{\"gitCommitHash\": \"old\"}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}"
     },
@@ -831,12 +831,12 @@
       ]
     },
     "before": {
-      ".understand-anything/.understandignore": "src/\n",
+      ".understand-anything/.uaignore": "src/\n",
       ".understand-anything/meta.json": "{\"gitCommitHash\": \"old\"}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}"
     },
     "after": {
-      ".understand-anything/.understandignore": "src/\n",
+      ".understand-anything/.uaignore": "src/\n",
       ".understand-anything/meta.json": "{\"gitCommitHash\": \"new\", \"lastAnalyzedAt\": \"<TIME>\", \"version\": \"1.0.0\"}",
       ".understand-anything/knowledge-graph.json": "{\"version\": \"1.0.0\", \"project\": {\"name\": \"demo\", \"languages\": [], \"frameworks\": [], \"description\": \"\", \"analyzedAt\": \"<TIME>\", \"gitCommitHash\": \"old\"}, \"nodes\": [{\"id\": \"file:src/a.py\", \"type\": \"file\", \"name\": \"a.py\", \"summary\": \"Useful\", \"tags\": [], \"complexity\": \"simple\", \"filePath\": \"src/a.py\"}], \"edges\": [], \"layers\": []}"
     },

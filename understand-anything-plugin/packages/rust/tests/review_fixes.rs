@@ -38,7 +38,7 @@ fn init(root: &Path) {
     git(root, &["config", "user.name", "Fixture"]);
     fs::write(
         root.join(".gitignore"),
-        ".understand-anything/*\n!.understand-anything/.understandignore\n",
+        ".understand-anything/*\n!.understand-anything/.uaignore\n",
     )
     .unwrap();
 }
@@ -135,8 +135,8 @@ fn committed_rename_refreshes_both_parts_and_legacy_prunes_old_path() {
 #[test]
 fn ignore_only_commits_refresh_selected_parts_including_empty_and_restore_files() {
     for location in [
-        ".understandignore",
-        ".understand-anything/.understandignore",
+        ".uaignore",
+        ".understand-anything/.uaignore",
     ] {
         let tmp = tempfile::tempdir().unwrap();
         let root = tmp.path();
@@ -191,7 +191,7 @@ fn legacy_ignore_updates_prune_and_restore_before_advancing_baseline() {
     )
     .unwrap();
     ua::updates::write_meta(root, &before, None).unwrap();
-    fs::write(root.join(".understandignore"), "a/\n").unwrap();
+    fs::write(root.join(".uaignore"), "a/\n").unwrap();
     let ignored = commit(root);
     let state = ua::updates::preflight(root, false).unwrap();
     assert_eq!(state["action"], "PROCEED");
@@ -218,7 +218,7 @@ fn legacy_ignore_updates_prune_and_restore_before_advancing_baseline() {
         ignored
     );
     // Restoration must be classified as new even if an older fingerprint remains.
-    fs::write(root.join(".understandignore"), "").unwrap();
+    fs::write(root.join(".uaignore"), "").unwrap();
     commit(root);
     let state = ua::updates::preflight(root, false).unwrap();
     write_json(&inter.join("auto-update-state.json"), &state).unwrap();

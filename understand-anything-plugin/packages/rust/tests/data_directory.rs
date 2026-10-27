@@ -36,9 +36,9 @@ fn scanner_excludes_both_artifact_directories_and_reads_selected_ignore() {
     let root = tmp.path();
     fs::create_dir(root.join(".ua")).unwrap();
     fs::create_dir(root.join(".understand-anything")).unwrap();
-    fs::write(root.join(".ua/.understandignore"), "current.txt\n").unwrap();
+    fs::write(root.join(".ua/.uaignore"), "current.txt\n").unwrap();
     fs::write(
-        root.join(".understand-anything/.understandignore"),
+        root.join(".understand-anything/.uaignore"),
         "legacy.txt\n",
     )
     .unwrap();

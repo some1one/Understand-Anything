@@ -117,7 +117,7 @@ For temporary extra exclusions, show `/understand --exclude='docs/,e2e/,!e2e/kee
 These gitignore patterns have highest priority. Changing or omitting them on the
 next explicit analysis refreshes all included parts, even without new commits.
 Auto-update retains the last published scope; permanent rules belong in
-`.understandignore`. Negation can restore an enumerated file, but cannot make
+`.uaignore`. Negation can restore an enumerated file, but cannot make
 Git-ignored untracked files appear in the inventory.
 
 Recommend `/understand /absolute/path/to/project --full` after plugin or dictionary

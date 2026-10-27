@@ -1,7 +1,7 @@
 //! Starter ignore-file suggestions. Existing files are never overwritten by the CLI.
 use std::{fs, path::Path};
 pub fn generate_starter_ignore_file(root: &Path) -> String {
-    let header = "# .understandignore — patterns for files/dirs to exclude from analysis\n# Syntax: same as .gitignore (globs, # comments, ! negation, trailing / for dirs)\n# Lines below are suggestions — uncomment to activate.\n# Use ! prefix to force-include something excluded by defaults.\n#\n# Built-in defaults (always excluded unless negated):\n#   node_modules/, .git/, dist/, build/, obj/, *.lock, *.min.js, etc.\n#\n";
+    let header = "# .uaignore — patterns for files/dirs to exclude from analysis\n# Syntax: same as .gitignore (globs, # comments, ! negation, trailing / for dirs)\n# Lines below are suggestions — uncomment to activate.\n# Use ! prefix to force-include something excluded by defaults.\n#\n# Built-in defaults (always excluded unless negated):\n#   node_modules/, .git/, dist/, build/, obj/, *.lock, *.min.js, etc.\n#\n";
     let mut out = vec![header.to_owned()];
     let defaults = crate::scan::default_patterns();
     let gitignore = fs::read_to_string(root.join(".gitignore")).unwrap_or_default();

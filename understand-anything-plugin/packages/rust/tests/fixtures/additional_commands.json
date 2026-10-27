@@ -8,14 +8,14 @@
     "env": {},
     "before": {
       "project/README.md": "# 文\n",
-      "project/.understandignore": "excluded/\n",
+      "project/.uaignore": "excluded/\n",
       "project/excluded/b.py": "skip",
       "project/src/a.py": "def a():\n    return 1\n"
     },
     "after": {
-      "scan.json": "{\n  \"scriptCompleted\": true,\n  \"files\": [\n    {\n      \"path\": \".understandignore\",\n      \"language\": \"unknown\",\n      \"sizeLines\": 1,\n      \"fileCategory\": \"code\"\n    },\n    {\n      \"path\": \"README.md\",\n      \"language\": \"markdown\",\n      \"sizeLines\": 1,\n      \"fileCategory\": \"docs\"\n    },\n    {\n      \"path\": \"src/a.py\",\n      \"language\": \"python\",\n      \"sizeLines\": 2,\n      \"fileCategory\": \"code\"\n    }\n  ],\n  \"totalFiles\": 3,\n  \"filteredByIgnore\": 1,\n  \"estimatedComplexity\": \"small\",\n  \"stats\": {\n    \"filesScanned\": 3,\n    \"byCategory\": {\n      \"code\": 2,\n      \"docs\": 1\n    },\n    \"byLanguage\": {\n      \"unknown\": 1,\n      \"markdown\": 1,\n      \"python\": 1\n    }\n  }\n}",
+      "scan.json": "{\n  \"scriptCompleted\": true,\n  \"files\": [\n    {\n      \"path\": \".uaignore\",\n      \"language\": \"unknown\",\n      \"sizeLines\": 1,\n      \"fileCategory\": \"code\"\n    },\n    {\n      \"path\": \"README.md\",\n      \"language\": \"markdown\",\n      \"sizeLines\": 1,\n      \"fileCategory\": \"docs\"\n    },\n    {\n      \"path\": \"src/a.py\",\n      \"language\": \"python\",\n      \"sizeLines\": 2,\n      \"fileCategory\": \"code\"\n    }\n  ],\n  \"totalFiles\": 3,\n  \"filteredByIgnore\": 1,\n  \"estimatedComplexity\": \"small\",\n  \"stats\": {\n    \"filesScanned\": 3,\n    \"byCategory\": {\n      \"code\": 2,\n      \"docs\": 1\n    },\n    \"byLanguage\": {\n      \"unknown\": 1,\n      \"markdown\": 1,\n      \"python\": 1\n    }\n  }\n}",
       "project/README.md": "# 文\n",
-      "project/.understandignore": "excluded/\n",
+      "project/.uaignore": "excluded/\n",
       "project/excluded/b.py": "skip",
       "project/src/a.py": "def a():\n    return 1\n"
     },
@@ -34,12 +34,12 @@
       "project/src/a.py": "pass"
     },
     "after": {
-      "project/.ua/.understandignore": "# .understandignore — patterns for files/dirs to exclude from analysis\n# Syntax: same as .gitignore (globs, # comments, ! negation, trailing / for dirs)\n# Lines below are suggestions — uncomment to activate.\n# Use ! prefix to force-include something excluded by defaults.\n#\n# Built-in defaults (always excluded unless negated):\n#   node_modules/, .git/, dist/, build/, obj/, *.lock, *.min.js, etc.\n#\n\n# --- Test file patterns (uncomment to exclude) ---\n\n# JS / TS\n# *.test.*\n# *.spec.*\n# *.snap\n# C# / .NET\n# **/*Tests.cs\n# **/*Test.cs\n# **/*Fixture.cs\n# **/*.Tests.csproj\n# Java / Kotlin\n# **/src/test/**\n# **/*Test.java\n# **/*IT.java\n# **/*Spec.kt\n# Go\n# **/*_test.go\n# C++\n# **/*_test.cc\n# **/*_test.cpp\n# **/*_test.cxx\n# **/*Test.cc\n# **/*Test.cpp\n# **/*_unittest.cc\n# **/*_unittest.cpp\n# **/*_browsertest.cc\n# **/*_benchmark.cc\n# **/*Benchmark.cpp\n# Python\n# **/test_*.py\n# **/*_test.py\n# **/tests.py\n# **/conftest.py\n# Rust\n# **/tests.rs\n# **/test_*.rs\n# **/*_test.rs\n# **/bench_*.rs\n# **/*_bench.rs\n# Ruby\n# **/*_spec.rb\n# **/*_test.rb\n# **/test_*.rb\n# **/spec_helper.rb\n# **/test_helper.rb\n# **/rails_helper.rb\n# Swift\n# **/Tests/**/*.swift\n# **/Specs/**/*.swift\n",
+      "project/.ua/.uaignore": "# .uaignore — patterns for files/dirs to exclude from analysis\n# Syntax: same as .gitignore (globs, # comments, ! negation, trailing / for dirs)\n# Lines below are suggestions — uncomment to activate.\n# Use ! prefix to force-include something excluded by defaults.\n#\n# Built-in defaults (always excluded unless negated):\n#   node_modules/, .git/, dist/, build/, obj/, *.lock, *.min.js, etc.\n#\n\n# --- Test file patterns (uncomment to exclude) ---\n\n# JS / TS\n# *.test.*\n# *.spec.*\n# *.snap\n# C# / .NET\n# **/*Tests.cs\n# **/*Test.cs\n# **/*Fixture.cs\n# **/*.Tests.csproj\n# Java / Kotlin\n# **/src/test/**\n# **/*Test.java\n# **/*IT.java\n# **/*Spec.kt\n# Go\n# **/*_test.go\n# C++\n# **/*_test.cc\n# **/*_test.cpp\n# **/*_test.cxx\n# **/*Test.cc\n# **/*Test.cpp\n# **/*_unittest.cc\n# **/*_unittest.cpp\n# **/*_browsertest.cc\n# **/*_benchmark.cc\n# **/*Benchmark.cpp\n# Python\n# **/test_*.py\n# **/*_test.py\n# **/tests.py\n# **/conftest.py\n# Rust\n# **/tests.rs\n# **/test_*.rs\n# **/*_test.rs\n# **/bench_*.rs\n# **/*_bench.rs\n# Ruby\n# **/*_spec.rb\n# **/*_test.rb\n# **/test_*.rb\n# **/spec_helper.rb\n# **/test_helper.rb\n# **/rails_helper.rb\n# Swift\n# **/Tests/**/*.swift\n# **/Specs/**/*.swift\n",
       "project/node_modules/a.js": "skip",
       "project/src/a.py": "pass"
     },
     "stdout": "",
-    "stderr": "generate-ignore: wrote <ROOT>/project/.ua/.understandignore\n",
+    "stderr": "generate-ignore: wrote <ROOT>/project/.ua/.uaignore\n",
     "status": 0
   },
   {
@@ -49,13 +49,13 @@
     ],
     "env": {},
     "before": {
-      "project/.understand-anything/.understandignore": "keep\n"
+      "project/.understand-anything/.uaignore": "keep\n"
     },
     "after": {
-      "project/.understand-anything/.understandignore": "keep\n"
+      "project/.understand-anything/.uaignore": "keep\n"
     },
     "stdout": "",
-    "stderr": "generate-ignore: <ROOT>/project/.understand-anything/.understandignore already exists — skipping\n",
+    "stderr": "generate-ignore: <ROOT>/project/.understand-anything/.uaignore already exists — skipping\n",
     "status": 0
   },
   {

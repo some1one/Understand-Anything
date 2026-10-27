@@ -34,3 +34,7 @@ understand-anything-plugin/packages/rust/tests/fixtures/dictionaries/
 # Project artifacts downloaded or generated locally (current data directory)
 /.ua/query-dictionaries/
 /.ua/dictionaries/
+
+# Local analysis data and installed agent plugins
+/.ua/
+/.agents/
