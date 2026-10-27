@@ -536,7 +536,13 @@ pub fn analyze(language: &str, source: &str) -> Option<Value> {
         "makefile" => {
             let pat = re(r"^([a-zA-Z_.][a-zA-Z0-9_.-]*)(?:\s+.*)?:");
             for (i, l) in lines.iter().enumerate() {
-                if l.contains(":=") || l.contains("?=") {
+                // An assignment value can contain a colon (URLs, PATH entries,
+                // or substitution references) without defining a Make target.
+                let is_assignment = l
+                    .find('=')
+                    .zip(l.find(':'))
+                    .is_some_and(|(equals, colon)| equals < colon);
+                if is_assignment || l.contains(":=") || l.contains("?=") {
                     continue;
                 }
                 if let Some(m) = pat.captures(l) {
