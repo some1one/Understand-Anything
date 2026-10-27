@@ -182,10 +182,10 @@ preview: ## Preview a production dashboard build
 
 ## ---- package / distribution ---------------------------------------------
 update-dictionaries: ## Detect system dictionaries and refresh only missing local components
-	$(PYTHON) understand-anything-plugin/scripts/configure_dictionaries.py --plugin-root understand-anything-plugin
+	@$(PYTHON) understand-anything-plugin/scripts/configure_dictionaries.py --plugin-root understand-anything-plugin
 
-configure-dictionaries: ## Detect installed dictionaries and configure local fallbacks offline
-	$(PYTHON) understand-anything-plugin/scripts/configure_dictionaries.py --plugin-root understand-anything-plugin --offline
+configure-dictionaries: ## Discover dictionary sources and save paths offline (no downloads)
+	@$(PYTHON) understand-anything-plugin/scripts/configure_dictionaries.py --plugin-root understand-anything-plugin --offline
 
 # Bundles omit dictionaries by default and never download them.
 package: $(STAMPDIR)/package ## Build native engine, dashboard, and plugin archives into dist/

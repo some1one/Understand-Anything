@@ -399,3 +399,164 @@ def test_unattended_choice_preserves_saved_manual_location(tmp_path, monkeypatch
     path.write_text(json.dumps(value))
     assert config.main(args) == 0
     assert json.loads(path.read_text())['snapshot'] == str(tmp_path / 'manual')
+
+
+@pytest.fixture
+def download_network(monkeypatch):
+    monkeypatch.setenv('UA_DICTIONARY_DOWNLOAD_TIMEOUT', '45')
+    monkeypatch.setenv('UA_DICTIONARY_DOWNLOAD_ATTEMPTS', '3')
+    sleeps = []
+    monkeypatch.setattr(updater.time, 'sleep', sleeps.append)
+    return sleeps
+
+
+def test_download_retries_ssl_timeout_and_reports_request(monkeypatch, capsys, download_network):
+    import urllib.error
+    url = 'https://raw.githubusercontent.com/fixture/data.txt'
+    calls = []
+    class Response:
+        url = 'https://raw.githubusercontent.com/fixture/data.txt'
+        def __enter__(self): return self
+        def __exit__(self, *args): pass
+        def read(self, size): return b'words\n'
+    def open_request(request, timeout):
+        calls.append((request.full_url, timeout))
+        if len(calls) < 3:
+            raise urllib.error.URLError(TimeoutError('_ssl: handshake operation timed out'))
+        return Response()
+    monkeypatch.setattr(updater.urllib.request, 'urlopen', open_request)
+    assert updater.fetch(url) == b'words\n'
+    assert calls == [(url, 45)] * 3
+    assert download_network == [.5, 1]
+    errors = capsys.readouterr().err
+    assert errors.count('Retrying dictionary download') == 2
+    assert url in errors
+
+
+def test_failed_download_reports_url_and_preserves_snapshot(tmp_path, monkeypatch, capsys, download_network):
+    import urllib.error
+    snapshot(tmp_path)
+    before = (tmp_path / 'current.json').read_bytes()
+    calls = []
+    def fail(request, timeout):
+        calls.append(request.full_url)
+        raise urllib.error.URLError(TimeoutError('handshake operation timed out'))
+    monkeypatch.setattr(updater.urllib.request, 'urlopen', fail)
+    assert updater.main(['--output', str(tmp_path)]) == 1
+    assert len(calls) == 3
+    assert (tmp_path / 'current.json').read_bytes() == before
+    error = capsys.readouterr().err
+    assert calls[0] in error
+    assert 'after 3 attempt(s)' in error and 'socket timeout 45s' in error
+    assert 'previous generation retained' in error
+
+
+@pytest.mark.parametrize('status,retries', [(404, False), (429, True), (503, True)])
+def test_download_retries_only_transient_http_errors(monkeypatch, download_network, status, retries):
+    import urllib.error
+    calls = []
+    def fail(request, timeout):
+        calls.append(request.full_url)
+        raise urllib.error.HTTPError(request.full_url, status, 'fixture', {}, None)
+    monkeypatch.setattr(updater.urllib.request, 'urlopen', fail)
+    with pytest.raises(OSError, match='https://example.com/data'):
+        updater.fetch('https://example.com/data')
+    assert len(calls) == (3 if retries else 1)
+
+
+@pytest.mark.parametrize('wrapped', [False, True])
+def test_download_certificate_error_is_not_retried(monkeypatch, download_network, wrapped):
+    import ssl
+    import urllib.error
+    calls = []
+    def fail(request, timeout):
+        calls.append(request.full_url)
+        error = ssl.SSLCertVerificationError('certificate verify failed')
+        raise urllib.error.URLError(error) if wrapped else error
+    monkeypatch.setattr(updater.urllib.request, 'urlopen', fail)
+    with pytest.raises(OSError, match='certificate verify failed'):
+        updater.fetch('https://example.com/data')
+    assert len(calls) == 1 and download_network == []
+
+
+def test_download_timeout_is_configurable_and_invalid_settings_stop_before_network(monkeypatch, download_network):
+    monkeypatch.setenv('UA_DICTIONARY_DOWNLOAD_TIMEOUT', '90')
+    monkeypatch.setenv('UA_DICTIONARY_DOWNLOAD_ATTEMPTS', '1')
+    calls = []
+    def fail(request, timeout):
+        calls.append(timeout)
+        raise TimeoutError('fixture')
+    monkeypatch.setattr(updater.urllib.request, 'urlopen', fail)
+    with pytest.raises(OSError, match='socket timeout 90s'):
+        updater.fetch('https://example.com/data')
+    assert calls == [90]
+    for variable, value in [('UA_DICTIONARY_DOWNLOAD_TIMEOUT', 'nan'),
+                            ('UA_DICTIONARY_DOWNLOAD_TIMEOUT', '0'),
+                            ('UA_DICTIONARY_DOWNLOAD_TIMEOUT', '301'),
+                            ('UA_DICTIONARY_DOWNLOAD_ATTEMPTS', '6')]:
+        with monkeypatch.context() as context:
+            context.setenv(variable, value)
+            with pytest.raises(ValueError, match='UA_DICTIONARY_DOWNLOAD_'):
+                updater.fetch('https://example.com/data')
+    assert calls == [90]
+
+
+def test_offline_configuration_explains_missing_fallback(tmp_path, monkeypatch, capsys):
+    config = configurator(monkeypatch)
+    missing_system(config, monkeypatch)
+    path, local = tmp_path / 'config.json', tmp_path / 'missing-data'
+    assert config.main(['--config', str(path), '--local-dir', str(local), '--offline']) == 0
+    assert not local.exists()
+    output = capsys.readouterr()
+    assert output.err == ''
+    assert output.out.splitlines() == [
+        'Dictionary configuration saved.', f'Data: {local}',
+        'Run make update-dictionaries to download the dictionary data.',
+    ]
+
+
+def test_downloaded_dictionaries_are_a_quiet_success(tmp_path, monkeypatch, capsys):
+    config = configurator(monkeypatch)
+    missing_system(config, monkeypatch)
+    monkeypatch.setattr(updater, 'NAMES', list(updater.NAMES))
+    monkeypatch.setattr(updater, 'download_cspell', lambda: (
+        {name: ['word'] for name in config.NAMES}, {}, {}))
+    monkeypatch.setattr(updater, 'download_lemminflect', lambda: (
+        {'ran': {'VERB': ['run']}}, b'MIT', {}))
+    local = tmp_path / 'data'
+    assert config.main(['--config', str(tmp_path / 'config.json'), '--local-dir', str(local)]) == 0
+    output = capsys.readouterr()
+    assert output.err == ''
+    assert output.out.splitlines() == [
+        'Updating dictionaries...',
+        f'Dictionaries ready: {len(config.NAMES)} CSpell dictionaries, 1 lemma entry.',
+        f'Data: {local}',
+        'Rebuild existing indexes with /understand --full.',
+    ]
+    updater.validate(local)
+
+
+def test_offline_system_sources_are_a_quiet_success(tmp_path, monkeypatch, capsys):
+    config = configurator(monkeypatch)
+    monkeypatch.setattr(config, 'discover', lambda: {
+        'version': 1, 'lemminflect': {'lookup': '/system/lookup', 'overrides': '/system/overrides'},
+        'cspell': {name: ['/system/' + name] for name in config.NAMES},
+    })
+    assert config.main(['--config', str(tmp_path / 'config.json'), '--offline']) == 0
+    output = capsys.readouterr()
+    assert output.err == ''
+    assert output.out == 'Dictionary configuration saved.\n'
+
+
+def test_configuration_cli_preserves_real_error_exit_code(tmp_path):
+    import os
+    import sys
+    path = tmp_path / 'config.json'
+    original = json.dumps({'version': 1, 'preferLocal': True, 'snapshot': str(tmp_path / 'data')})
+    path.write_text(original)
+    result = subprocess.run([sys.executable, str(PLUGIN / 'scripts/configure_dictionaries.py'),
+                             '--config', str(path)], capture_output=True, text=True,
+                            env={**os.environ, 'UA_DICTIONARY_DOWNLOAD_TIMEOUT': '0'})
+    assert result.returncode == 1
+    assert 'configuration/update failed' in result.stderr
+    assert path.read_text() == original

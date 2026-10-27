@@ -12,10 +12,15 @@ import gzip
 import hashlib
 import io
 import json
+import math
 import os
 from pathlib import Path
 import re
+import ssl
+import sys
 import tempfile
+import time
+import urllib.error
 import urllib.request
 import zipfile
 
@@ -33,14 +38,38 @@ def sha(data):
 def fetch(url):
     if not url.startswith('https://'):
         raise ValueError('Dictionary downloads require HTTPS')
+    try:
+        timeout = float(os.environ.get('UA_DICTIONARY_DOWNLOAD_TIMEOUT', '45'))
+        attempts = int(os.environ.get('UA_DICTIONARY_DOWNLOAD_ATTEMPTS', '3'))
+    except ValueError as error:
+        raise ValueError('UA_DICTIONARY_DOWNLOAD_TIMEOUT must be a positive number and '
+                         'UA_DICTIONARY_DOWNLOAD_ATTEMPTS an integer from 1 to 5') from error
+    if not math.isfinite(timeout) or not 0 < timeout <= 300 or not 1 <= attempts <= 5:
+        raise ValueError('UA_DICTIONARY_DOWNLOAD_TIMEOUT must be between 0 and 300 seconds '
+                         '(exclusive of 0); UA_DICTIONARY_DOWNLOAD_ATTEMPTS must be from 1 to 5')
     request = urllib.request.Request(url, headers={'User-Agent': 'Understand-Anything-dictionary-updater'})
-    with urllib.request.urlopen(request, timeout=45) as response:
-        if not response.url.startswith('https://'):
-            raise ValueError('Insecure dictionary redirect')
-        data = response.read(MAX_DOWNLOAD + 1)
-    if len(data) > MAX_DOWNLOAD:
-        raise ValueError('Dictionary download exceeds size limit')
-    return data
+    for attempt in range(1, attempts + 1):
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                if not response.url.startswith('https://'):
+                    raise ValueError('Insecure dictionary redirect')
+                data = response.read(MAX_DOWNLOAD + 1)
+            if len(data) > MAX_DOWNLOAD:
+                raise ValueError('Dictionary download exceeds size limit')
+            return data
+        except (urllib.error.URLError, TimeoutError, ConnectionError, ssl.SSLError) as error:
+            reason = getattr(error, 'reason', error)
+            retry = not (isinstance(error, ssl.SSLCertVerificationError)
+                         or isinstance(reason, ssl.SSLCertVerificationError))
+            if isinstance(error, urllib.error.HTTPError):
+                retry = error.code in (408, 429) or 500 <= error.code < 600
+                error.close()
+            if not retry or attempt == attempts:
+                raise OSError(f'Dictionary download failed for {url} after {attempt} attempt(s) '
+                              f'(socket timeout {timeout:g}s): {error}') from error
+            print(f'Retrying dictionary download {url} (attempt {attempt + 1}/{attempts}): {error}',
+                  file=sys.stderr)
+            time.sleep(min(0.5 * 2 ** (attempt - 1), 4))
 
 
 def json_bytes(value):
@@ -203,7 +232,7 @@ def main(argv=None):
         print(json.dumps({'directory': str(args.output.resolve()), **pointer}))
         return 0
     except (OSError, ValueError, KeyError, StopIteration, zipfile.BadZipFile) as error:
-        print(f'Dictionary update failed; previous generation retained: {error}', file=__import__('sys').stderr)
+        print(f'Dictionary update failed; previous generation retained: {error}', file=sys.stderr)
         return 1
 
 

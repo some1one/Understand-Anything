@@ -33,6 +33,30 @@ uses the same discovery-first flow. Missing components are downloaded as data
 only: latest CSpell sources pinned to a revision and latest stable LemmInflect
 wheel verified against its PyPI SHA-256. No downloaded code is executed.
 
+Offline configuration saves paths; it does not install missing data. If no local
+snapshot exists, it directs you to `make update-dictionaries`. Successful commands
+exit with status 0 and print a short summary to stdout. Downloaded dictionaries
+are normal sources: packages absent from system discovery are not reported as
+errors or listed individually. Use `--inspect` for detailed source paths and
+dictionary names. Actual update failures retain a nonzero exit status.
+
+Explicit downloads retry transient connection/TLS timeouts, HTTP 408/429, and
+server errors up to three attempts per URL, with a short backoff. Terminal errors
+identify the failed URL and configured socket timeout. Certificate verification
+failures and permanent HTTP errors are not retried; HTTPS verification and the
+existing size/checksum checks remain enabled. Failed downloads preserve the
+previous configuration and published snapshot. For a slower connection:
+
+```sh
+UA_DICTIONARY_DOWNLOAD_TIMEOUT=90 UA_DICTIONARY_DOWNLOAD_ATTEMPTS=3 make update-dictionaries
+```
+
+The timeout defaults to 45 seconds and must be greater than 0 and at most 300. It
+is a socket timeout, not a deadline for the entire update. Attempts default to 3
+and must be between 1 and 5. These environment settings also apply when invoking
+`update_dictionaries.py` directly. Routine progress goes to stdout; retries and
+actual warnings or errors go to stderr.
+
 Rust reads system files directly. Indexing always includes CSpell's general
 `software-terms` package, plus only the project's detected development-language
 dictionaries. Unknown/unsupported languages get shared terms only, never all

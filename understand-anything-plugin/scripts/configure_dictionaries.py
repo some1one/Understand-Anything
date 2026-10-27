@@ -195,7 +195,7 @@ def check_versions(config, offline=False):
     for result in results:
         if result['status'] == 'outdated':
             print(f"Update system dictionary {result['name']} before indexing: installed {result['installed']}, latest {result['latest']}. Use its Python/npm/system package manager; no system package was changed.", file=sys.stderr)
-        elif result['status'] != 'current-or-newer':
+        elif result['status'] not in {'current-or-newer', 'not-checked-offline'}:
             print(f"System dictionary version not verified: {result['name']} ({result['status']}).", file=sys.stderr)
     return results
 
@@ -264,7 +264,9 @@ def main(argv=None):
     else:
         config.setdefault('snapshot', None)
     config['systemPackages'] = check_versions(config, offline=args.offline)
+    downloaded = []
     if config['missing'] and not args.offline:
+        print('Updating dictionaries...', flush=True)
         if config['storage'] == 'repo':
             local.mkdir(parents=True, exist_ok=True)
             ignore = local / '.gitignore'
@@ -276,10 +278,12 @@ def main(argv=None):
         words, licenses, provenance = {}, {}, {}
         if updater.NAMES:
             words, licenses, provenance['cspell'] = updater.download_cspell()
+            downloaded.append(f'{len(words)} CSpell ' + ('dictionary' if len(words) == 1 else 'dictionaries'))
         lemmas = {}
         if not config['lemminflect']:
             lemmas, license_data, provenance['lemminflect'] = updater.download_lemminflect()
             licenses['lemminflect.LICENSE'] = license_data
+            downloaded.append(f'{len(lemmas):,} lemma ' + ('entry' if len(lemmas) == 1 else 'entries'))
         updater.publish(local, words, lemmas, licenses, provenance)
     args.config.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile('w', dir=args.config.parent, delete=False) as out:
@@ -287,15 +291,18 @@ def main(argv=None):
         out.write('\n')
         temporary = Path(out.name)
     temporary.replace(args.config)
-    print(f'Dictionary configuration: {args.config}')
-    if config.get('snapshot'):
-        print(f"Dictionary download directory (editable snapshot field): {config['snapshot']}")
-    print(f'System LemmInflect: {bool(config["lemminflect"])}; CSpell dictionaries: {len(config["cspell"])}')
-    if config['missing']:
-        print('Unavailable dictionary data: ' + ', '.join(config['missing']), file=sys.stderr)
-        print(('Offline: local fallback configured without downloads.' if args.offline else
-               'Missing components use the managed local snapshot: ' + str(local)), file=sys.stderr)
-    print('After updating Understand Anything or dictionary libraries, rebuild the index from scratch with /understand --full before relying on it.')
+    if args.offline:
+        print('Dictionary configuration saved.')
+        if config['missing']:
+            print(f'Data: {local}')
+            if not (local / 'current.json').is_file():
+                print('Run make update-dictionaries to download the dictionary data.')
+    else:
+        print('Dictionaries ready: ' + ', '.join(downloaded) + '.' if downloaded
+              else 'Dictionaries ready (system sources).')
+        if downloaded:
+            print(f'Data: {local}')
+        print('Rebuild existing indexes with /understand --full.')
     return 0
 
 
