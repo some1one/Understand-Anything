@@ -4,6 +4,7 @@
   "version": "2.8.1",
   "author": { "name": "Understand Anything contributors" },
   "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
   "extensions": {
     "com.openai": {
       "onboardingSkill": "./skills/understand-setup/SKILL.md"

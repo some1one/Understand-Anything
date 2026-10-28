@@ -1,185 +1,124 @@
-"""Startup checks use local remotes without updating checkout or Git refs."""
+"""Dependency-free version notices never run Git, setup or project maintenance."""
 import json
 import os
 from pathlib import Path
+import shutil
+import shlex
 import subprocess
-import sys
+import time
 
 import pytest
 
-PLUGIN = Path(__file__).resolve().parents[2] / "understand-anything-plugin"
-HOOK = PLUGIN / "hooks/auto_update.py"
+PLUGIN = Path(__file__).resolve().parents[2] / 'understand-anything-plugin'
+HOOK = PLUGIN / 'hooks/check_version.mjs'
+NODE = shutil.which('node')
+pytestmark = pytest.mark.skipif(NODE is None, reason='Node is required for startup hooks')
 
 
-def git(root, *args):
-    return subprocess.check_output(["git", "-C", str(root), *args], text=True).strip()
-
-
-def identity(root):
-    git(root, "config", "user.name", "Fixture")
-    git(root, "config", "user.email", "fixture@example.invalid")
-
-
-def commit(root):
-    git(root, "add", ".")
-    git(root, "commit", "-qm", "fixture")
-    return git(root, "rev-parse", "HEAD")
+def test_version_cache_and_event_contracts():
+    subprocess.run([NODE, '--test', str(Path(__file__).with_name('startup_version.test.mjs'))],
+                   check=True, capture_output=True, text=True)
 
 
 @pytest.fixture
-def repositories(tmp_path):
-    remote = tmp_path / "remote.git"
-    subprocess.run(["git", "init", "--bare", "-q", "-b", "main", str(remote)], check=True)
-    seed = tmp_path / "seed"
-    subprocess.run(["git", "clone", "-q", str(remote), str(seed)], check=True)
-    identity(seed)
-    for rel, value in {
-        "understand-anything-plugin/.claude-plugin/plugin.json": {"name": "understand-anything"},
-        "understand-anything-plugin/.claude-plugin/marketplace.json": {"name": "understand-anything", "plugins": []},
-    }.items():
-        path = seed / rel
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(value))
-    (seed / "source.txt").write_text("original\n")
-    baseline = commit(seed)
-    git(seed, "push", "-qu", "origin", "main")
-    plugin = tmp_path / "plugin repo with spaces"
-    subprocess.run(["git", "clone", "-q", str(remote), str(plugin)], check=True)
-    identity(plugin)
-    project = tmp_path / "analyzed project"
-    subprocess.run(["git", "clone", "-q", str(remote), str(project)], check=True)
-    (seed / "source.txt").write_text("remote update\n")
-    latest = commit(seed)
-    git(seed, "push", "-q")
-    return plugin, project, baseline, latest
+def hook_env(tmp_path):
+    cache = tmp_path / 'user cache' / 'understand-anything'
+    cache.mkdir(parents=True)
+    (cache / 'published-version.json').write_text(json.dumps({
+        'checkedAt': int(time.time() * 1000), 'version': '999.0.0',
+    }))
+    # No Git, Python, npm or other executables are available to the hook.
+    env = {**os.environ, 'PATH': '', 'XDG_CACHE_HOME': str(cache.parent)}
+    env.pop('UA_SKIP_UPDATE_CHECK', None)
+    env.pop('NODE_OPTIONS', None)
+    return env
 
 
-def hook(plugin, project, event="SessionStart"):
-    result = subprocess.run(
-        [sys.executable, str(HOOK)],
-        input=json.dumps({"hook_event_name": event, "tool_name": "Bash", "cwd": str(project)}),
-        text=True, capture_output=True, check=True,
-        env={**os.environ, "UA_PLUGIN_REPO": str(plugin), "UA_SKIP_RUNTIME_SETUP": "1"},
-    )
-    return json.loads(result.stdout) if result.stdout else None
-
-
-def test_session_start_reports_available_update_without_changing_either_repository(repositories):
-    plugin, project, baseline, latest = repositories
-    refs_before = git(plugin, "show-ref")
-    status_before = git(plugin, "status", "--porcelain")
-    result = hook(plugin, project)
-    context = result["hookSpecificOutput"]["additionalContext"]
-    assert "update may be available" in context
-    assert latest[:12] in context
-    assert "confirm" in context and "pull --ff-only" in context
-    assert "Do not start" in context
-    assert git(plugin, "rev-parse", "HEAD") == baseline
-    assert git(plugin, "show-ref") == refs_before
-    assert git(plugin, "status", "--porcelain") == status_before
-    assert git(project, "rev-parse", "HEAD") == baseline
-    assert (project / "source.txt").read_text() == "original\n"
-    assert hook(plugin, project)  # Repeated checks do not apply the update.
-
-
-@pytest.mark.parametrize("dirty", ["untracked", "staged", "unstaged"])
-def test_dirty_plugin_is_not_pulled_or_stashed(repositories, dirty):
-    plugin, project, baseline, _ = repositories
-    path = plugin / ("new.txt" if dirty == "untracked" else "source.txt")
-    path.write_text("local work\n")
-    if dirty == "staged":
-        git(plugin, "add", "source.txt")
-    before = git(plugin, "status", "--porcelain")
-    result = hook(plugin, project)
-    assert "update may be available" in result["hookSpecificOutput"]["additionalContext"]
-    assert git(plugin, "rev-parse", "HEAD") == baseline
-    assert git(plugin, "status", "--porcelain") == before
-    assert path.read_text() == "local work\n"
-    assert not git(plugin, "stash", "list")
-
-
-def test_diverged_plugin_fails_without_rebase_or_merge(repositories):
-    plugin, project, _, _ = repositories
-    (plugin / "local.txt").write_text("local commit\n")
-    local = commit(plugin)
-    git(plugin, "config", "pull.rebase", "true")
-    git(plugin, "config", "pull.ff", "false")
-    result = hook(plugin, project)
-    assert "update may be available" in result["hookSpecificOutput"]["additionalContext"]
-    assert git(plugin, "rev-parse", "HEAD") == local
-    assert not (plugin / ".git/MERGE_HEAD").exists()
-    assert not (plugin / ".git/rebase-merge").exists()
-
-
-@pytest.mark.parametrize("state", ["detached", "no-upstream"])
-def test_plugin_needs_attached_tracking_branch(repositories, state):
-    plugin, project, baseline, _ = repositories
-    if state == "detached":
-        git(plugin, "checkout", "--detach", "-q")
+@pytest.mark.parametrize('host', ['claude', 'codex'])
+def test_packaged_hook_uses_its_own_version_and_never_touches_project(tmp_path, hook_env, host):
+    packaged = tmp_path / 'packaged plugin with spaces'
+    (packaged / 'hooks').mkdir(parents=True)
+    (packaged / '.claude-plugin').mkdir()
+    shutil.copy2(HOOK, packaged / 'hooks/check_version.mjs')
+    shutil.copy2(PLUGIN / 'hooks/hooks.json', packaged / 'hooks/hooks.json')
+    (packaged / '.claude-plugin/plugin.json').write_text(json.dumps({'version': '2.8.1'}))
+    if host == 'codex':
+        manifest = json.loads((PLUGIN / '.codex-plugin/plugin.json').read_text())
+        assert manifest['hooks'] == './hooks/hooks.json'
+        hooks_file = packaged / manifest['hooks']
+        hook_env['PLUGIN_ROOT'] = str(packaged)
     else:
-        git(plugin, "branch", "--unset-upstream")
-    result = hook(plugin, project)
-    assert ("attached branch" if state == "detached" else "configured upstream") in result["hookSpecificOutput"]["additionalContext"]
-    assert git(plugin, "rev-parse", "HEAD") == baseline
+        hooks_file = packaged / 'hooks/hooks.json'  # Claude's discovery convention.
+    # Codex supplies this compatibility variable as well as PLUGIN_ROOT.
+    hook_env['CLAUDE_PLUGIN_ROOT'] = str(packaged)
+    handler = json.loads(hooks_file.read_text())['hooks']['SessionStart'][0]['hooks'][0]
+    command = handler['command'].replace('node ', shlex.quote(NODE) + ' ', 1)
+    project = tmp_path / 'project'
+    project.mkdir()
+    (project / 'source.txt').write_text('existing work')
+    result = subprocess.run(['/bin/sh', '-c', command],
+                            input=json.dumps({'hook_event_name': 'SessionStart', 'cwd': str(project)}),
+                            cwd=project, env=hook_env, capture_output=True, text=True, check=True)
+    output = json.loads(result.stdout)
+    assert '999.0.0' in output['systemMessage'] and '2.8.1' in output['systemMessage']
+    assert output['hookSpecificOutput']['hookEventName'] == 'SessionStart'
+    assert not result.stderr
+    assert list(project.iterdir()) == [project / 'source.txt']
+    assert (project / 'source.txt').read_text() == 'existing work'
 
 
-def test_shell_hooks_and_packaged_copies_do_not_pull(repositories):
-    plugin, project, baseline, _ = repositories
-    assert hook(plugin, project, "PostToolUse") is None
-    assert git(plugin, "rev-parse", "HEAD") == baseline
-    cached = project / ".agents/understand-anything-plugin"
-    cached.mkdir(parents=True)
-    assert hook(cached, project) is None
-    assert git(project, "rev-parse", "HEAD") == baseline
+@pytest.mark.parametrize('payload', ['invalid', '[]', '{}', '{"hook_event_name":"PostToolUse"}'])
+def test_invalid_and_unrelated_events_are_silent(payload, hook_env):
+    result = subprocess.run([NODE, str(HOOK)], input=payload, env=hook_env,
+                            text=True, capture_output=True, check=True)
+    assert not result.stdout and not result.stderr
 
 
-def test_timeout_kills_git_children(monkeypatch, tmp_path):
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("update_plugin", PLUGIN / "hooks/update_plugin.py")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    fake_git = tmp_path / "git"
-    fake_git.write_text("#!/bin/sh\nsleep 20 &\nwait\n")
-    fake_git.chmod(0o755)
-    monkeypatch.setenv("PATH", str(tmp_path) + os.pathsep + os.environ["PATH"])
-    with pytest.raises(subprocess.TimeoutExpired):
-        module.git(tmp_path, "pull", timeout=0.1)
+def test_handler_exits_if_host_never_closes_stdin(hook_env):
+    started = time.monotonic()
+    process = subprocess.Popen([NODE, str(HOOK)], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE, env=hook_env)
+    try:
+        assert process.wait(timeout=3) == 0
+        assert time.monotonic() - started < 2.5
+        assert not process.stdout.read() and not process.stderr.read()
+    finally:
+        if process.poll() is None:
+            process.kill()
+            process.wait()
+        process.stdin.close()
+        process.stdout.close()
+        process.stderr.close()
 
 
-def test_plugin_update_has_one_shared_timeout_budget(monkeypatch, repositories):
-    import importlib.util
-    plugin, _, _, _ = repositories
-    spec = importlib.util.spec_from_file_location("bounded_update_plugin", PLUGIN / "hooks/update_plugin.py")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    monkeypatch.setenv('UA_PLUGIN_REPO', str(plugin))
-    elapsed = [0]
-    calls = []
-    monkeypatch.setattr(module.time, 'monotonic', lambda: elapsed[0])
-    def fake_git(root, *args, timeout):
-        calls.append(timeout)
-        elapsed[0] += 3
-        output = str(plugin) if args[0] == 'rev-parse' else 'origin\0refs/heads/main' if args[0] == 'for-each-ref' else 'refs/heads/main'
-        return subprocess.CompletedProcess(args, 0, output, '')
-    monkeypatch.setattr(module, 'git', fake_git)
-    assert 'timed out' in module.check_plugin_update()
-    assert len(calls) == 3
-    assert all(timeout <= 2 for timeout in calls)
+def test_network_timeout_and_stalled_dns_are_bounded(tmp_path, hook_env):
+    # Replace HTTPS with a stalled request. Even an OS lookup that does not finish
+    # after destroy() cannot outlive the CLI's hard deadline. No live network.
+    preload = tmp_path / 'stalled-network.mjs'
+    preload.write_text('''import https from 'node:https';
+import { EventEmitter } from 'node:events';
+import { syncBuiltinESMExports } from 'node:module';
+https.get = () => {
+  const request = new EventEmitter();
+  request.destroy = () => {};
+  setInterval(() => {}, 10000);
+  return request;
+};
+syncBuiltinESMExports();
+''')
+    hook_env['XDG_CACHE_HOME'] = str(tmp_path / 'empty cache')
+    started = time.monotonic()
+    result = subprocess.run([NODE, '--import', str(preload), str(HOOK)],
+                            input='{"hook_event_name":"SessionStart"}', env=hook_env,
+                            text=True, capture_output=True, check=True, timeout=3)
+    assert 1 <= time.monotonic() - started < 2.5
+    assert not result.stdout and not result.stderr
 
 
-def test_current_or_locally_ahead_plugin_has_no_update_notice(repositories):
-    plugin, project, _, latest = repositories
-    git(plugin, "pull", "--ff-only")  # Explicit fixture update; never done by hook.
-    assert git(plugin, "rev-parse", "HEAD") == latest
-    assert hook(plugin, project) is None
-    (plugin / "ahead.txt").write_text("local commit\n")
-    commit(plugin)
-    before = git(plugin, "rev-parse", "HEAD")
-    assert hook(plugin, project) is None
-    assert git(plugin, "rev-parse", "HEAD") == before
-
-
-def test_only_session_start_is_registered():
+def test_only_background_session_start_is_registered():
     hooks = json.loads((PLUGIN / 'hooks/hooks.json').read_text())['hooks']
     assert set(hooks) == {'SessionStart'}
-    assert hooks['SessionStart'][0]['hooks'][0]['timeout'] <= 20
+    [handler] = hooks['SessionStart'][0]['hooks']
+    assert handler['command'] == 'node "${CLAUDE_PLUGIN_ROOT}/hooks/check_version.mjs"'
+    assert handler['async'] is True
+    assert handler['timeout'] == 3

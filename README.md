@@ -299,6 +299,27 @@ measures deterministic Rust stages with isolated artifacts and versioned reports
 Use `make help` for the explicit target; normal builds and tests do not run scale
 benchmarks.
 
+To summarize an existing analysis without running the engine:
+
+```sh
+make benchmark-static UA_DIR=/path/to/repo/.ua TOTAL_SECONDS=600 TIME_SCOPE=full
+```
+
+This prints saved file/line counts, language breakdowns, graph statistics,
+relationship hubs, consistency checks, and overall throughput. `TOTAL_SECONDS`
+is optional and uses elapsed wall-clock seconds from the original analysis.
+Set `TIME_SCOPE=full` only when that duration covers exactly the saved scan;
+the default `unknown` and `incremental` scopes suppress throughput. Use
+`FORMAT=json` for machine-readable output. See the
+[saved-analysis report guide](docs/benchmarks/static-analysis.md) for details.
+
+For a fresh full plugin rebuild and analysis with Valgrind, use the
+[full benchmark setup](scripts/benchmark/README.md). It times dependency
+installation, Rust compilation, language updates, dashboard compilation,
+packaging, native analysis and a full Codex graph analysis separately. Separate
+Callgrind, Massif and Memcheck passes profile the Rust pipeline. Start with
+`make benchmark-setup`; `make help` lists the benchmark commands.
+
 ## License
 
 This fork uses the [MIT License](LICENSE), matching

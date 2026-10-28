@@ -5,8 +5,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/auto_update.py\"",
-            "timeout": 20
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/check_version.mjs\"",
+            "async": true,
+            "timeout": 3
           }
         ]
       }

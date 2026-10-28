@@ -1,0 +1,22 @@
+{
+  "concurrency": 4,
+  "buildJobs": 4,
+  "phaseTimeoutSeconds": 7200,
+  "workerTimeoutSeconds": 300,
+  "sampleIntervalSeconds": 0.1,
+  "parserLanguages": [],
+  "analysisCommand": [
+    "python3",
+    "{workspace}/scripts/benchmark/codex_analysis.py",
+    "{subject}",
+    "{plugin}",
+    "{run_dir}"
+  ],
+  "valgrindTools": [
+    "callgrind",
+    "massif",
+    "memcheck"
+  ],
+  "valgrindConcurrency": 1,
+  "valgrindWorkerTimeoutSeconds": 3600
+}

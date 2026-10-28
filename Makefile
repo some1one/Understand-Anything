@@ -74,7 +74,8 @@ UNINSTALL_TARGETS := $(addprefix uninstall-,$(INSTALL_PLATFORMS))
         build build-core build-dashboard test test-core test-dashboard \
         lint lint-dashboard dev dev-dashboard preview package deb update-dictionaries configure-dictionaries \
         install install-local uninstall-local test-integration engine-help setup-runtime \
-        clean clean-local clean-cache clean-build clean-stamps benchmark-large-repo
+        clean clean-local clean-cache clean-build clean-stamps benchmark-large-repo benchmark-static \
+        benchmark-full benchmark-setup
 
 help:
 	@grep -E '^[a-zA-Z0-9_-]+:.*?##' $(MAKEFILE_LIST) | \
@@ -91,6 +92,13 @@ help:
 		'    BENCHMARK_PARSER_CACHE=/tmp/ua-benchmark-parsers' \
 		'  Keep output outside the subject repository.' \
 		'  Parser preparation: docs/benchmarks/large-monorepo.md'
+	@printf '%s\n' '' 'Saved analysis statistics (no analysis rerun):' \
+		'  make benchmark-static UA_DIR=/path/to/repo/.ua TOTAL_SECONDS=600 TIME_SCOPE=full' \
+		'  Optional: FORMAT=json; TIME_SCOPE=incremental suppresses snapshot throughput.'
+	@printf '%s\n' '' 'Full benchmark with Valgrind profiles:' \
+		'  make benchmark-setup                     # prepare local Valgrind; no sudo' \
+		'  make benchmark-full BENCHMARK_SUBJECT=/path/to/repo BENCHMARK_RUN_DIR=/tmp/ua-run-1' \
+		'  Guide: scripts/benchmark/README.md'
 
 ## ---- install the plugin --------------------------------------------------
 # Prefers a target's native CLI (e.g. `claude plugin install`, `codex plugin add`)
@@ -178,6 +186,29 @@ override BENCHMARK_PARSER_CACHE := $(value BENCHMARK_PARSER_CACHE)
 export BENCHMARK_SUBJECT BENCHMARK_OUTPUT BENCHMARK_PARSER_CACHE
 benchmark-large-repo: ## Benchmark native stages (BENCHMARK_SUBJECT, BENCHMARK_OUTPUT, BENCHMARK_PARSER_CACHE required)
 	@$(PYTHON) scripts/benchmark_large_repo.py "$$BENCHMARK_SUBJECT" --output "$$BENCHMARK_OUTPUT" --parser-cache-dir "$$BENCHMARK_PARSER_CACHE"
+
+UA_DIR ?= .ua
+TOTAL_SECONDS ?=
+TIME_SCOPE ?= unknown
+FORMAT ?= markdown
+override UA_DIR := $(value UA_DIR)
+override TOTAL_SECONDS := $(value TOTAL_SECONDS)
+override TIME_SCOPE := $(value TIME_SCOPE)
+override FORMAT := $(value FORMAT)
+export UA_DIR TOTAL_SECONDS TIME_SCOPE FORMAT
+benchmark-static: ## Summarize saved UA_DIR (optional TOTAL_SECONDS, TIME_SCOPE=full, FORMAT=json)
+	@$(PYTHON) scripts/benchmark_static.py "$$UA_DIR" --total-seconds "$$TOTAL_SECONDS" --time-scope "$$TIME_SCOPE" --format "$$FORMAT"
+
+BENCHMARK_CONFIG ?= scripts/benchmark/full-run.json
+BENCHMARK_RUN_DIR ?=
+override BENCHMARK_CONFIG := $(value BENCHMARK_CONFIG)
+override BENCHMARK_RUN_DIR := $(value BENCHMARK_RUN_DIR)
+export BENCHMARK_CONFIG BENCHMARK_RUN_DIR
+benchmark-full: ## Fresh Linux rebuild + analysis (BENCHMARK_SUBJECT, BENCHMARK_RUN_DIR; optional BENCHMARK_CONFIG)
+	@$(PYTHON) scripts/benchmark/full_run.py "$$BENCHMARK_SUBJECT" --output-dir "$$BENCHMARK_RUN_DIR" --config "$$BENCHMARK_CONFIG"
+
+benchmark-setup: ## Prepare repository-local Valgrind on Debian/Ubuntu (no sudo)
+	@bash scripts/benchmark/setup.sh
 
 ## ---- lint ----------------------------------------------------------------
 lint: lint-dashboard ## Lint the dashboard

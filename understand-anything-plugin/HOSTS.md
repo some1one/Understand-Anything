@@ -150,25 +150,33 @@ session running and do not promise persistence after the host exits.
 
 ## Hooks
 
-Native plugin installations discover `hooks/hooks.json`. Both hosts send event
+Claude discovers `hooks/hooks.json` by convention; `.codex-plugin/plugin.json`
+explicitly points Codex to that same shared file. Both hosts send event
 JSON on stdin; the bundled hook returns `hookSpecificOutput.additionalContext`.
 Codex supplies `CLAUDE_PLUGIN_ROOT` as a compatibility variable for the shared
 hook command. Codex hooks must be reviewed and trusted through the host before
 they run. Installation alone does not establish trust.
 
-Only `SessionStart` is registered; there is no tool-call hook. Startup checks
-update availability in the plugin's own checkout with `git ls-remote`, using one
-eight-second budget for all Git probes and the remote query. It never fetches,
-pulls, changes refs, or starts setup. The checkout comes from the plugin location
-or `UA_PLUGIN_REPO` for cached/packaged installs, never the analyzed project's cwd.
-An attached branch with a configured upstream is required. Missing/non-Git
-payloads are skipped; failed checks produce a notice without failing the session.
+Only `SessionStart` is registered; there is no tool-call hook. Its JavaScript
+handler runs with `node` and uses built-in modules only (no npm install, Python,
+Git commands, or runtime setup). Both hosts support command hooks; the hook is
+asynchronous so the session can continue while it checks. Node must be on PATH.
 
-When the upstream differs, give the user the fast-forward-only pull instructions
-from the notice or ask for confirmation before applying the update. Do not start
-updates, compilation, downloads, or graph analysis merely because a check found
-changes. After an authorized plugin update, run installation/setup as needed and
-reload/reinstall the plugin so the host picks up changed cached skills and hooks.
+The hook compares the installed plugin manifest version with the published
+manifest on `some1one/Understand-Anything`'s `main` branch. Only a higher stable
+`major.minor.patch` version produces a notice; arbitrary upstream commits do not.
+Cached and packaged installations work without a source checkout. The HTTPS
+request has a one-second deadline and the handler exits within 1.5 seconds,
+including stalled input/DNS. The host timeout is three seconds.
+
+Results (including failed attempts) are cached for 24 hours in
+`understand-anything/published-version.json` under `XDG_CACHE_HOME`, `LOCALAPPDATA`,
+or `~/.cache`. Offline, invalid, and unavailable responses are silent; cache
+write failures do not fail the session. Set `UA_SKIP_UPDATE_CHECK=1` to disable
+the check. Notices tell the user to update/reinstall through their installation
+method and reload the plugin; they never authorize automatic updates or setup.
+Reload/reinstall existing cached plugins to pick up this hook change, and review
+and trust the changed hook in Codex.
 
 Runtime preparation belongs to installation or explicit `understand-setup`,
 never session startup. Setup has a 25-minute deadline, readiness fingerprint and
@@ -185,11 +193,9 @@ project as the default storage target. Existing dictionary paths remain in effec
 cache path for later engine invocations. CLI `--parser-cache-dir` has priority.
 Session startup does not run runtime setup, so `UA_SKIP_RUNTIME_SETUP` is no longer needed.
 
-Session-start graph maintenance reminders remain separately gated
-by `config.json` containing `"autoUpdate": true` and a saved graph commit that
-differs from the analyzed project's HEAD. Hooks do not commit, stage, or write
-graphs themselves. A reminder is not authorization to start analysis: ask for
-confirmation or provide the command unless the user already requested the update.
+Graph maintenance runs through the explicit analysis workflow. Startup no longer
+reads project graphs or emits graph maintenance prompts. Saved `autoUpdate`
+configuration is preserved, but does not schedule session-start analysis.
 Runtime preparation can build/download dependencies; graph
 updates and queries remain offline. Installation, runtime setup and explicit plugin maintenance
 ([understand-update](skills/understand-update/SKILL.md)) discover system dictionaries

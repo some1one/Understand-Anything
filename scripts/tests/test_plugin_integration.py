@@ -40,46 +40,6 @@ def project(tmp_path):
     return root
 
 
-def run_hook(event):
-    return subprocess.run(
-        [sys.executable, str(PLUGIN / "hooks/auto_update.py")],
-        input=json.dumps(event), text=True, capture_output=True, check=True,
-        env={**os.environ, "UA_PLUGIN_REPO": "/nonexistent/ua-hook-test-source", "UA_SKIP_RUNTIME_SETUP": "1"},
-    ).stdout
-
-
-@pytest.mark.parametrize("event_name", ["SessionStart"])
-def test_host_hook_context_and_no_writes(project, event_name):
-    before = {p: p.read_bytes() for p in (project / ".understand-anything").iterdir()}
-    nested = project / "src"
-    nested.mkdir()
-    output = json.loads(run_hook({"hook_event_name": event_name, "tool_name": "Bash", "cwd": str(nested), "tool_input": {"command": "git commit -m example"}}))
-    context = output["hookSpecificOutput"]
-    assert context["hookEventName"] == event_name
-    assert str(project) in context["additionalContext"]
-    assert str(PLUGIN / "hooks/auto-update-prompt.md") in context["additionalContext"]
-    assert {p: p.read_bytes() for p in before} == before
-
-
-@pytest.mark.parametrize("value", [False, "true", 1, None])
-def test_hook_requires_boolean_opt_in(project, value):
-    write_json(project / ".understand-anything/config.json", {"autoUpdate": value})
-    assert not run_hook({"hook_event_name": "SessionStart", "cwd": str(project)})
-
-
-def test_hook_current_missing_malformed_and_unrelated(project):
-    event = {"hook_event_name": "SessionStart", "cwd": str(project)}
-    write_json(project / ".understand-anything/meta.json", {"gitCommitHash": "a" * 40})
-    assert not run_hook(event)
-    (project / ".understand-anything/config.json").write_text("invalid json")
-    assert not run_hook(event)
-    assert not run_hook([])
-    assert not run_hook({"hook_event_name": []})
-    assert not run_hook({"hook_event_name": "PostToolUse", "tool_name": {}})
-    assert not run_hook({"hook_event_name": "PostToolUse", "tool_name": "Read", "cwd": str(project)})
-    assert not run_hook({"hook_event_name": "SessionStart", "cwd": "/nonexistent"})
-
-
 def test_config_toggle_preserves_partition_selection(project):
     for flag, expected in [("--no-auto-update", False), ("--auto-update", True)]:
         subprocess.run(["bash", str(SCRIPTS / "prepare_workspace.sh"), str(project), flag], check=True)
@@ -122,7 +82,7 @@ def test_archived_catalogs_and_hooks_stay_inside_plugin(tmp_path, monkeypatch):
     with tarfile.open(archive) as bundle:
         names = set(bundle.getnames())
         assert all(name == "understand-anything-plugin" or name.startswith("understand-anything-plugin/") for name in names)
-        for relative in [".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json", "hooks/hooks.json", "hooks/update_plugin.py", "LICENSE"]:
+        for relative in [".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json", "hooks/hooks.json", "hooks/check_version.mjs", "LICENSE"]:
             assert f"understand-anything-plugin/{relative}" in names
 
 
@@ -248,7 +208,7 @@ def test_distribution_contains_native_engine_and_shared_references(tmp_path):
     builder.assemble_payload(payload, binary)
     for relative in [".claude-plugin/plugin.json", ".codex-plugin/plugin.json",
                      ".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json",
-                     "HOSTS.md", "LICENSE", "hooks/auto_update.py", "hooks/update_plugin.py",
+                     "HOSTS.md", "LICENSE", "hooks/check_version.mjs",
                      "packages/rust/run.sh", "packages/rust/bin/understand-anything-rs",
                      "packages/rust/schemas/knowledge-graph.schema.json",
                      "packages/dashboard/freshness-server.mjs"]:

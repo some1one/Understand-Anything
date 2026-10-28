@@ -73,8 +73,12 @@ def combined_metrics(metrics, elapsed):
                 counts={}, error=next((m['error'] for m in metrics if m['error']), None))
 
 
-def run(report, subject, directory, binary, cache, stop, timeout=300):
+def run(report, subject, directory, binary, cache, stop, timeout=300, command_prefix=None):
     command = [str(binary), '--offline-parsers', '--parser-cache-dir', str(cache)]
+    # The profiling workflow can instrument only the native worker executable.
+    # Ordinary benchmark invocations retain their original command and metrics.
+    def worker_command(name):
+        return [arg.replace('{worker}', name) for arg in (command_prefix or [])] + command
     coverage = {key: 0 for key in ('files', 'structureSucceeded', 'structureUnsupported', 'parseFailed',
                                  'unreadable', 'invalidOutputs', 'callGraphSupported', 'callGraphUnsupported')}
     report['coverage'] = coverage
@@ -82,7 +86,7 @@ def run(report, subject, directory, binary, cache, stop, timeout=300):
 
     def invoke(stage, arguments, output, name=None):
         try:
-            metric = worker(command + list(map(str, arguments)), directory, name or stage, stop, timeout)
+            metric = worker(worker_command(name or stage) + list(map(str, arguments)), directory, name or stage, stop, timeout)
         except StageError as error:
             if error.metric:
                 report['stages'][stage] = error.metric
@@ -155,7 +159,7 @@ def run(report, subject, directory, binary, cache, stop, timeout=300):
         def structure_job(job):
             name, input_path, output, expected = job
             try:
-                metric = worker(command + ['extract_structure', str(input_path), str(output)], directory, name, stop, timeout)
+                metric = worker(worker_command(name) + ['extract_structure', str(input_path), str(output)], directory, name, stop, timeout)
             except StageError as error:
                 # Continue accounting for completed workers without exposing raw logs.
                 metric = error.metric

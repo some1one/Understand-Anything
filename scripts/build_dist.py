@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import platform as _platform
 import shutil
 import subprocess
@@ -209,7 +210,16 @@ def main() -> int:
     ap.add_argument("--skip-dashboard", action="store_true")
     ap.add_argument("--deb", action="store_true", help="also build the Debian package")
     ap.add_argument("--clean", action="store_true")
+    ap.add_argument("--prebuilt-rust", type=Path, help="package this already-built native executable without compiling")
+    ap.add_argument("--prebuilt-dashboard", action="store_true", help="package the existing dashboard dist without installing/building")
     args = ap.parse_args()
+
+    if args.prebuilt_dashboard and args.skip_dashboard:
+        ap.error("--prebuilt-dashboard and --skip-dashboard are mutually exclusive")
+    if args.prebuilt_rust and (not args.prebuilt_rust.is_file() or not os.access(args.prebuilt_rust, os.X_OK)):
+        ap.error("--prebuilt-rust must name an existing executable")
+    if args.prebuilt_dashboard and not (PKGS / "dashboard/dist/index.html").is_file():
+        ap.error("--prebuilt-dashboard requires dashboard/dist/index.html")
 
     version = read_version()
     if args.clean:
@@ -218,8 +228,8 @@ def main() -> int:
     BUILD.mkdir(parents=True, exist_ok=True)
     DIST.mkdir(parents=True, exist_ok=True)
 
-    binary = build_rust()
-    if not args.skip_dashboard:
+    binary = args.prebuilt_rust.resolve() if args.prebuilt_rust else build_rust()
+    if not args.skip_dashboard and not args.prebuilt_dashboard:
         build_dashboard()
 
     payload = BUILD / "payload"

@@ -1,0 +1,13 @@
+# Used explicitly by the full-run harness, not by ordinary project builds.
+[net]
+retry = 3
+
+[term]
+color = "never"
+
+# Keep the production release profile. --timings emits stable Cargo HTML reports.
+# No target-cpu=native, nightly flags, profiling instrumentation, or sccache:
+# comparisons should use the same production binary and explicit build jobs.
+
+# Profiling overrides are passed only to the separate target-valgrind build:
+# profile.release.debug=2, profile.release.strip="none", DWARF version 4.

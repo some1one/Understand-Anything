@@ -188,15 +188,15 @@ full-graph-by-default recipe or omit its context-reuse and freshness guidance.
   `--prefer-local --local-dir` to download data into a shared user cache or an
   explicitly chosen, ignored installation-local directory. Use the
   maintenance workflow; do not silently download while answering a graph query.
-- **Plugin updates:** the sole hook, `SessionStart`, checks upstream with bounded
-  `git ls-remote` and reports instructions. It never pulls, compiles, downloads, or
-  starts updates. Get user confirmation before applying a plugin update. For
-  cached/packaged installs, set `UA_PLUGIN_REPO` to the source checkout. Failed
-  checks do not fail startup. Reload/reinstall after updating cached plugins.
-- **Graph auto-update missing:** graph reminders need an enabled boolean `autoUpdate` and,
-  in Codex, reviewed/trusted hooks. Skills-only installs use explicit analysis
-  runs. Enable with `understand --auto-update`; disable with `--no-auto-update`.
-  Hooks suggest graph maintenance; they do not update plugin dependencies.
+- **Plugin updates:** the sole hook, `SessionStart`, uses Node built-ins to check
+  the published manifest version asynchronously. Requests time out after one
+  second, and results/failures are cached for 24 hours. No npm packages, Python,
+  Git probes, or setup are involved. Set `UA_SKIP_UPDATE_CHECK=1` to disable it.
+  Update/reinstall and reload existing cached plugins to pick up hook changes;
+  review and trust the changed hook in Codex. Updates require user authorization.
+- **Graph maintenance:** run `understand` explicitly to refresh the graph. Startup
+  no longer checks project graphs or emits maintenance reminders. Existing
+  `autoUpdate` configuration remains saved for the analysis workflow.
 - **Dashboard unavailable:** use its launcher workflow and reported log. Open the
   complete loopback URL including its access token; do not expose that token in
   shared documentation.

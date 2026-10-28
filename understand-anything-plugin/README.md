@@ -167,19 +167,19 @@ Static demos omit these checks unless `VITE_STALENESS_URL` supplies a report.
 
 ## Optional auto-update
 
-The only registered hook is `SessionStart`. It checks the plugin repository's
-upstream revision with `git ls-remote`, with an eight-second total Git budget.
-It never pulls, fetches, changes refs, compiles, downloads, or starts graph work.
-Available updates produce instructions or a request for user confirmation. Apply
-the fast-forward-only pull only after authorization, then run setup as needed
-and reload/reinstall the plugin. For cached/packaged copies, set `UA_PLUGIN_REPO`
-to the original repository root. Failed checks do not fail the agent session.
+The only registered hook is `SessionStart`. A small JavaScript handler uses Node
+built-ins to compare the installed version with the published plugin manifest
+on `some1one/Understand-Anything`'s `main` branch. It runs asynchronously, limits
+the request to one second (1.5 seconds for the entire handler), and caches results
+and failed attempts for 24 hours in the user's cache directory. Only a higher
+stable version prints a notice. Set `UA_SKIP_UPDATE_CHECK=1` to disable it.
+There are no dependency installs, Git probes, or graph checks during startup.
+Node must be on PATH; no npm packages are required.
 
-Graph auto-update is separate: enable it with the analysis skill's `--auto-update`
-flag. Hooks compare the stored graph commit with the project's HEAD at session
-start, then supply instructions for an explicitly requested refresh. A reminder
-does not authorize analysis. There is no tool-call hook.
-In Codex, review and trust the hook definition before expecting it to run.
+Update/reinstall through your installation method and reload the plugin to load
+changed cached hooks. In Codex, review and trust the changed hook definition.
+Graph maintenance uses the explicit analysis workflow; the saved `--auto-update`
+setting no longer triggers session-start graph reminders.
 
 Part-based graphs refresh affected partitions and merge them again. Legacy
 graphs use the fingerprint workflow in `hooks/auto-update-prompt.md`.
