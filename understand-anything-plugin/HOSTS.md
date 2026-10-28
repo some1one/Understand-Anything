@@ -24,6 +24,28 @@ plugin root is two levels above that directory. Keep it distinct from the
 absolute `PROJECT_ROOT` being analyzed. Pass those roots explicitly to agents;
 shell assignments do not necessarily persist between tool calls.
 
+## Junie and JetBrains AI Assistant
+
+The `junie` installer target links skills into `~/.junie/skills` for user scope,
+or `<project>/.junie/skills` with `--local`. The local installation also links
+the universal `<project>/.agents/skills` directory to the same copied payload.
+Junie supports slash skill commands and `$<skill-name>` references. Resolve
+plugin paths through the actual skill location, following symlinks as above.
+
+The separate `jetbrains` target requires `--local` and uses
+`<project>/.agents/skills`, the documented AI Assistant project skill location.
+It previously used Junie's layout; select `junie` to retain that behavior.
+IDE-wide AI Assistant storage depends on the IDE product/version and is managed
+through the IDE. Its current Skills documentation lists Claude Agent and Codex
+as supported agents; do not infer that every IDE chat mode loads skills.
+Both targets install shared skills without native plugin hooks or named agents.
+Project rules under `.aiassistant/rules` are a separate IDE feature and are not
+modified by these skill installers.
+
+Sources: [Junie skills](https://junie.jetbrains.com/docs/agent-skills.html),
+[AI Assistant skills](https://www.jetbrains.com/help/ai-assistant/agent-skills.html).
+Verified October 28, 2026.
+
 ## Project data directory
 
 Resolve `UA_DIR` with `python3 "$PLUGIN_ROOT/scripts/data_directory.py"

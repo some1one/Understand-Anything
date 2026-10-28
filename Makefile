@@ -64,7 +64,7 @@ DEB_SRC := $(shell find packaging -type f 2>/dev/null) \
 
 # Targets the plugin can be installed for. Per-platform `install-<name>` /
 # `uninstall-<name>` targets so `make install-<TAB>` completes the platform.
-INSTALL_PLATFORMS := claude codex opencode agents vscode jetbrains kilo kiro cursor
+INSTALL_PLATFORMS := claude codex opencode agents vscode junie jetbrains kilo kiro cursor
 INSTALL_TARGETS   := $(addprefix install-,$(INSTALL_PLATFORMS))
 UNINSTALL_TARGETS := $(addprefix uninstall-,$(INSTALL_PLATFORMS))
 
@@ -81,6 +81,15 @@ help:
 	@printf '  \033[36m%-18s\033[0m %s\n' "install-<platform>"   "Install one or more targets (make install-kilo install-vscode)"
 	@printf '  \033[36m%-18s\033[0m %s\n' "uninstall-<platform>" "Uninstall one or more targets (make uninstall-kilo uninstall-vscode)"
 	@printf '  \033[36m%-18s\033[0m %s\n' "  platforms" "$(INSTALL_PLATFORMS)"
+	@printf '%s\n' '  Junie: make install-junie [LOCAL=/absolute/path/to/project]' \
+		'  JetBrains AI Assistant: make install-jetbrains LOCAL=/absolute/path/to/project'
+	@printf '%s\n' '' 'Benchmark example (with a prepared parser cache):' \
+		'  make benchmark-large-repo \' \
+		'    BENCHMARK_SUBJECT=/absolute/path/to/subject \' \
+		'    BENCHMARK_OUTPUT=/tmp/benchmark-results/subject-run-1.benchmark.json \' \
+		'    BENCHMARK_PARSER_CACHE=/tmp/ua-benchmark-parsers' \
+		'  Keep output outside the subject repository.' \
+		'  Parser preparation: docs/benchmarks/large-monorepo.md'
 
 ## ---- install the plugin --------------------------------------------------
 # Prefers a target's native CLI (e.g. `claude plugin install`, `codex plugin add`)

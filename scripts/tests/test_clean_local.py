@@ -75,6 +75,10 @@ def test_cleanup_does_not_follow_directory_symlinks(tmp_path):
     ("install-local", ["codex", "--local"]),
     ("install-codex", ["codex", "--local"]),
     ("uninstall-codex", ["--uninstall", "codex", "--local"]),
+    ("install-junie", ["junie", "--local"]),
+    ("install-jetbrains", ["jetbrains", "--local"]),
+    ("uninstall-junie", ["--uninstall", "junie", "--local"]),
+    ("uninstall-jetbrains", ["--uninstall", "jetbrains", "--local"]),
 ])
 def test_make_install_paths_are_literal_and_keep_spaces(tmp_path, target, expected):
     repo = tmp_path / "checkout"

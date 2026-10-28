@@ -20,6 +20,27 @@ with `UA_DIR`). If native installation is unavailable or fails, it installs
 standalone skills and reports that hooks are unavailable. Set `UA_NO_NATIVE=1`
 to choose skills-only installation explicitly.
 
+Junie and JetBrains AI Assistant have separate skills-only targets:
+
+```bash
+make install-junie                       # User skills: ~/.junie/skills
+make install-junie LOCAL=/absolute/path/to/project  # Project .junie/skills
+make install-jetbrains LOCAL=/absolute/path/to/project  # Project .agents/skills
+```
+
+The `jetbrains` target requires `LOCAL` because IDE-wide storage depends on the
+IDE product and version. It previously targeted Junie's directory; use `junie`
+for that layout now. The same targets work with `./install.sh <target> --local
+<project>` or the Debian `understand-anything <target> --local <project>` command.
+These install shared skills without native plugin hooks or named plugin agents.
+The corresponding `make uninstall-junie` and `make uninstall-jetbrains` targets
+accept the same `LOCAL` selection.
+
+See [Junie's skill locations](https://junie.jetbrains.com/docs/agent-skills.html)
+and [JetBrains AI Assistant skill installation](https://www.jetbrains.com/help/ai-assistant/agent-skills.html).
+AI Assistant currently documents skills for Claude Agent and Codex; select a
+supported agent and check the IDE's Skills page after installation.
+
 For a project-local skills installation:
 
 ```bash

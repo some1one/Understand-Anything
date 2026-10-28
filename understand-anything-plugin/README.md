@@ -11,6 +11,13 @@ The installer generates the correct marketplace format for each host. Native
 installation loads plugin skills and hooks; standalone skill fallback does not
 load hooks. Start a new session after installing or updating.
 
+For Junie, use `./install.sh junie` (user scope) or
+`./install.sh junie --local /absolute/path/to/project` (`.junie/skills`).
+For JetBrains AI Assistant, use
+`./install.sh jetbrains --local /absolute/path/to/project` (`.agents/skills`);
+this target requires project scope. AI Assistant's supported skill agents and
+IDE-wide storage differ from Junie's; see [host integration](HOSTS.md#junie-and-jetbrains-ai-assistant).
+
 For Claude development without installing, launch from the codebase you want
 to analyze:
 

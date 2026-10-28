@@ -12,11 +12,11 @@
 #   ./install.sh --update                      Update (git checkout) / re-assemble
 #   ./install.sh --help
 #
-# Platforms:  claude codex opencode agents vscode jetbrains kilo kiro cursor
+# Platforms:  claude codex opencode agents vscode junie jetbrains kilo kiro cursor
 #   * claude / codex prefer their native plugin CLI (marketplace install); the
 #     rest are filesystem skill-drops. opencode's `plugin` command installs npm
 #     modules (not skills), so it uses the scripted path like `agents`.
-#   * cursor is project-only  → requires --local <PATH>
+#   * cursor / jetbrains are project-only → require --local <PATH>
 #   * every other platform installs globally by default; --local <PATH> is optional
 #
 # Distribution:
@@ -61,7 +61,8 @@ codex|$HOME/.agents/skills|per-skill|.agents/skills|optional|codex
 opencode|$HOME/.agents/skills|per-skill|.agents/skills|optional|-
 agents|$HOME/.agents/skills|per-skill|.agents/skills|optional|-
 vscode|$HOME/.copilot/skills|per-skill|.github/skills|optional|-
-jetbrains|$HOME/.junie/skills|per-skill|.junie/skills|optional|-
+junie|$HOME/.junie/skills|per-skill|.junie/skills|optional|-
+jetbrains||per-skill|.agents/skills|required|-
 kilo|$HOME/.kilo/skills|per-skill|.kilo/skills|optional|-
 kiro|$HOME/.kiro/skills|per-skill|.kiro/skills|optional|-
 cursor||per-skill|.cursor/skills|required|-
