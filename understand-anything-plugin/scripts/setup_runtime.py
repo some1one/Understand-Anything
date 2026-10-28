@@ -78,7 +78,7 @@ def read_object(path):
 def fingerprint(plugin, parsers, config):
     rust = plugin / 'packages/rust'
     paths = [rust / name for name in ['Cargo.toml', 'Cargo.lock', 'run.sh', 'parser-cache-dir', 'bin/understand-anything-rs', 'target/release/understand-anything-rs']]
-    paths += list((rust / 'src').rglob('*.rs')) + list((rust / 'schemas').rglob('*.json'))
+    paths += list((rust / 'src').rglob('*.rs')) + list((rust / 'schemas').rglob('*.json')) + list((rust / 'reference').glob('*.json'))
     paths += [plugin / 'scripts' / name for name in ['setup_runtime.py', 'configure_dictionaries.py', 'update_dictionaries.py']]
     paths += [config] + [p for p in parsers.rglob('*') if p.is_file()]
     settings = read_object(config)

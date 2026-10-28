@@ -213,3 +213,30 @@ fn freshness_filters_committed_staged_unstaged_deleted_and_untracked_paths() {
     assert_eq!(stale["status"], "stale");
     assert_eq!(stale["changedFiles"], json!(["excluded/keep.rs"]));
 }
+
+#[test]
+fn freshness_excludes_binary_changes_but_keeps_scripts_and_user_overrides() {
+    let tmp = setup();
+    let root = tmp.path();
+    fs::create_dir(root.join("assets")).unwrap();
+    for name in ["photo.PNG", "plugin.DLL", "library.so.3"] {
+        fs::write(root.join("assets").join(name), [0, 255, 0]).unwrap();
+    }
+    let base = commit(root);
+    fs::write(root.join("assets/photo.PNG"), [1, 255, 0]).unwrap();
+    commit(root);
+    fs::write(root.join("assets/plugin.DLL"), [1, 255, 0]).unwrap();
+    git(root, &["add", "assets/plugin.DLL"]);
+    fs::write(root.join("assets/library.so.3"), [1, 255, 0]).unwrap();
+    fs::write(root.join("assets/new.OTF"), [1, 255, 0]).unwrap();
+    let clean = check(root, &base);
+    assert_eq!(clean["status"], "fresh", "{clean}");
+    assert_eq!(clean["changedFileCount"], 0);
+    fs::write(root.join("run.sh"), "#!/bin/sh\necho source\n").unwrap();
+    assert_eq!(check(root, &base)["changedFiles"], json!(["run.sh"]));
+    fs::create_dir(root.join(".ua")).unwrap();
+    fs::write(root.join(".ua/.uaignore"), "!assets/photo.PNG\n").unwrap();
+    let included = check(root, &base);
+    assert_eq!(included["status"], "stale");
+    assert_eq!(included["changedFiles"], json!(["assets/photo.PNG", "run.sh"]));
+}

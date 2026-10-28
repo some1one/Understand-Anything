@@ -248,6 +248,16 @@ the scanner's built-in defaults and `.uaignore` rules (selected data directory
 first, project root second, including negation). Each Git command has a five-second
 limit and a four-MiB output limit.
 
+Built-in ignores cover common image formats, compiled executables/libraries and
+objects, archives/compressed packages, audio/video, fonts, and binary office
+documents. Their extension patterns match uppercase and mixed-case filenames,
+including versioned shared libraries such as `libexample.so.2`. Script and source
+extensions are not part of these binary defaults; ambiguous extensions such as
+`.ts`, `.mts` and `.mod` remain eligible. The canonical patterns are in
+[`reference/tables.json`](reference/tables.json). Add a negation such as
+`!assets/example.PNG` to `.uaignore` to include a specific asset. These defaults
+also apply to incremental change selection and graph freshness reports.
+
 `scan_project` accepts `--exclude=pattern,...` or `--exclude pattern,...`, including
 repeated options. Patterns use gitignore syntax and are applied in argument order
 after defaults and both `.uaignore` files; `!` negates an earlier rule.

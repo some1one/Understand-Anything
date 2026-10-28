@@ -26,6 +26,7 @@ def runtime(tmp_path):
     write(rust / 'Cargo.toml', 'fixture')
     write(rust / 'Cargo.lock', 'fixture')
     write(rust / 'src/lib.rs', 'fixture')
+    write(rust / 'reference/tables.json', '{}')
     (rust / 'schemas').mkdir()
     scripts = plugin / 'scripts'
     scripts.mkdir()
@@ -52,6 +53,7 @@ import json, os, pathlib, shutil, sys
 with open(os.environ['UA_FIXTURE_CALLS'],'a') as out: out.write(json.dumps(['cargo',*sys.argv[1:]])+'\\n')
 p=pathlib.Path('target/release/understand-anything-rs'); p.parent.mkdir(parents=True,exist_ok=True)
 shutil.copy2(os.environ['UA_FIXTURE_ENGINE'],p)
+os.utime(p,None)
 ''')
     cargo.chmod(0o755)
     configure = write(scripts / 'configure_dictionaries.py', '''import argparse, json, os
@@ -91,6 +93,16 @@ def test_setup_builds_once_and_reuses_ready_assets(runtime):
     assert not json.loads(setup(runtime).stdout)['prepared']
     assert calls.read_bytes() == before
     assert list(project.iterdir()) == []
+
+
+def test_embedded_reference_change_rebuilds_the_engine(runtime):
+    plugin, calls, _, _, _ = runtime
+    setup(runtime)
+    before = sum(json.loads(row)[0] == 'cargo' for row in calls.read_text().splitlines())
+    (plugin / 'packages/rust/reference/tables.json').write_text('{"updatedDefaults":true}')
+    assert json.loads(setup(runtime).stdout)['prepared']
+    after = sum(json.loads(row)[0] == 'cargo' for row in calls.read_text().splitlines())
+    assert after == before + 1
 
 
 def test_cached_local_marketplace_uses_source_repository_for_languages(runtime, tmp_path):

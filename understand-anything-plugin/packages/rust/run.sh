@@ -17,7 +17,7 @@ if [ -x "$PACKAGED_BINARY" ]; then
   exec "$PACKAGED_BINARY" "${PARSER_ARGS[@]}" "$@"
 fi
 
-if [ -x "$SOURCE_BINARY" ] && [ -z "$(find "$RUST_DIR/src" "$RUST_DIR/schemas" "$RUST_DIR/Cargo.toml" "$RUST_DIR/Cargo.lock" -type f -newer "$SOURCE_BINARY" -print -quit 2>/dev/null)" ]; then
+if [ -x "$SOURCE_BINARY" ] && [ -z "$(find "$RUST_DIR/src" "$RUST_DIR/schemas" "$RUST_DIR/reference" "$RUST_DIR/Cargo.toml" "$RUST_DIR/Cargo.lock" -type f -newer "$SOURCE_BINARY" -print -quit 2>/dev/null)" ]; then
   exec "$SOURCE_BINARY" "${PARSER_ARGS[@]}" "$@"
 fi
 
