@@ -4,6 +4,15 @@ Distribution archives and Debian payloads contain no dictionary data. Packaging
 never downloads dictionaries. Installers and explicit plugin updates run
 `scripts/configure_dictionaries.py --plugin-root <plugin-root>` first.
 
+Marketplace setup uses `scripts/setup_runtime.py` to build the native engine,
+fetch supported parser libraries and configure missing dictionary data together.
+For a local marketplace, downloaded dictionaries default to the registered source
+plugin's `packages/rust/dictionaries`, while parser libraries use
+`packages/rust/parsers`. The analyzed project's cwd is never the default target.
+Saved snapshot choices and explicit environment configuration still take priority.
+Use the `understand-setup` onboarding skill or the first trusted session-start hook
+for this setup; packaging itself never builds or downloads language data.
+
 Discovery checks LemmInflect metadata in the installer's Python environment,
 global npm/NODE_PATH CSpell packages (including nested CSpell dependencies), and
 compatible exported data under standard system/user share directories and
@@ -18,7 +27,10 @@ missing components. It is written to `packages/rust/dictionary-config.json` when
 the installation is writable; read-only installations use
 `$XDG_CONFIG_HOME/understand-anything/dictionaries.json` (default `~/.config`).
 When system components are missing and no location has been configured, setup
-prompts for shared OS storage (recommended) or local repo storage. The absolute
+prompts for shared OS storage (recommended) or local repo storage when using the
+standalone dictionary configurator. Marketplace runtime setup supplies a default
+local download directory in the plugin source repository, so it does not prompt.
+The absolute
 `snapshot` path and `storage` choice are saved in this configuration. Edit
 `snapshot` manually to relocate downloads; later runs preserve the edited path.
 Existing installation-local configurations continue using their saved paths.

@@ -10,6 +10,8 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from data_directory import data_dir
 from update_plugin import update_plugin
+from setup_runtime import prepare
+import os
 
 def read_object(path):
     value = json.loads(path.read_text(encoding="utf-8"))
@@ -59,8 +61,8 @@ def context_for(event):
                 f"Read {json.dumps(str(prompt))} and follow its update workflow "
                 "for this project within the current task's permissions. "
                 "If analysis is already running, let that run finish first. "
-                "Graph maintenance stays offline. Dictionary downloads run only "
-                "during explicit plugin maintenance via /understand-update."
+                "Graph maintenance stays offline. Dictionary downloads belong to "
+                "marketplace setup or explicit plugin maintenance via /understand-update."
             ),
         }
     }
@@ -72,10 +74,21 @@ def main():
     except (OSError, ValueError):
         return
     plugin_message = None
+    setup_failed = False
     if isinstance(event, dict) and event.get("hook_event_name") == "SessionStart":
         plugin_message = update_plugin()
+        if os.environ.get("UA_SKIP_RUNTIME_SETUP") != "1":
+            try:
+                ready = prepare()
+                if ready["prepared"]:
+                    notice = f"[understand-anything] Runtime ready. Language assets: {ready['assetRoot']}/packages/rust"
+                    plugin_message = notice if not plugin_message else plugin_message + "\n" + notice
+            except (OSError, ValueError, subprocess.SubprocessError) as error:
+                setup_failed = True
+                notice = f"[understand-anything] Runtime setup failed: {error}. Run understand-setup to retry."
+                plugin_message = notice if not plugin_message else plugin_message + "\n" + notice
     try:
-        result = context_for(event)
+        result = None if setup_failed else context_for(event)
     except (OSError, ValueError, subprocess.SubprocessError):
         # Missing config, unborn/non-Git repositories, or malformed input should
         # never block a session or turn a successful tool call into a failure.

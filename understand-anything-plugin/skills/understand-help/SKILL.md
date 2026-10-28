@@ -65,6 +65,15 @@ exists inside an installed plugin. A Debian installation uses the installed
 installer setup, so skill visibility alone does not prove dictionaries are ready.
 Start a new host session after installing/updating to refresh skill discovery.
 
+For a marketplace installation, use [understand-setup](../understand-setup/SKILL.md)
+when the user requests setup or the install onboarding flow selects it. It builds
+the engine and prepares parser/dictionary data, defaulting language downloads to
+the registered local plugin repository. The trusted session-start hook also
+initializes an unprepared runtime. Saved storage preferences remain authoritative.
+A help request alone still does not run setup or download data. The storage-choice
+workflow below applies to standalone dictionary maintenance without a saved/default
+location, rather than overriding marketplace defaults.
+
 When dictionary setup is needed, inspect without changing anything:
 
 ```bash
@@ -141,6 +150,7 @@ handling settings. The dashboard is launched separately after a graph exists.
 | Load selected graph context | [load-graph](../load-graph/SKILL.md) |
 | Include an additional folder part | [understand-add-part](../understand-add-part/SKILL.md) |
 | Recombine saved graphs without analysis | [understand-merge](../understand-merge/SKILL.md) |
+| Prepare engine and language libraries after marketplace installation | [understand-setup](../understand-setup/SKILL.md) |
 | Configure, update or repair dictionary dependencies | [understand-update](../understand-update/SKILL.md) |
 
 `understand-language` and `understand-framework` supply analysis references; they

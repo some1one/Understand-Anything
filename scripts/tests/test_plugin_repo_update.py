@@ -59,7 +59,7 @@ def hook(plugin, project, event="SessionStart"):
         [sys.executable, str(HOOK)],
         input=json.dumps({"hook_event_name": event, "tool_name": "Bash", "cwd": str(project)}),
         text=True, capture_output=True, check=True,
-        env={**os.environ, "UA_PLUGIN_REPO": str(plugin)},
+        env={**os.environ, "UA_PLUGIN_REPO": str(plugin), "UA_SKIP_RUNTIME_SETUP": "1"},
     )
     return json.loads(result.stdout) if result.stdout else None
 

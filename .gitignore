@@ -38,3 +38,8 @@ understand-anything-plugin/packages/rust/tests/fixtures/dictionaries/
 # Local analysis data and installed agent plugins
 /.ua/
 /.agents/
+
+# Marketplace runtime setup and downloaded parser libraries
+**/understand-anything-plugin/packages/rust/parsers/
+**/understand-anything-plugin/packages/rust/parser-cache-dir
+**/understand-anything-plugin/packages/rust/.runtime-*

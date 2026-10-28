@@ -394,7 +394,7 @@ copy_payload_to() {
   else
     local src; src="$(resolve_plugin_home)"
     ( cd "$src" && tar --exclude='./packages/rust/target' --exclude='./packages/*/node_modules' \
-        --exclude='./packages/rust/dictionary-config.json' --exclude='./packages/rust/dictionaries' \
+        --exclude='./packages/rust/parsers' --exclude='./packages/rust/parser-cache-dir' --exclude='./packages/rust/.runtime-*' --exclude='./packages/rust/dictionary-config.json' --exclude='./packages/rust/dictionaries' \
         --exclude='*/__pycache__' --exclude='*/.pytest_cache' -cf - . ) | tar -xf - -C "$dest"
   fi
   touch "$dest/.ua-assembled"
@@ -447,16 +447,17 @@ cmd_install() {
   local dictionary_plugin resolved_plugin_home=""
   dictionary_plugin="$(resolve_plugin_home)" || return 1
   resolved_plugin_home="$dictionary_plugin"
-  if [ -z "$project" ]; then
+  local use_native=0
+  if native_available "$native" "$project"; then
+    use_native=1
+    python3 "$dictionary_plugin/scripts/setup_runtime.py" --plugin-root "$dictionary_plugin" || return 1
+  elif [ -z "$project" ]; then
     python3 "$dictionary_plugin/scripts/configure_dictionaries.py" --plugin-root "$dictionary_plugin" --project-root "${project:-$PWD}" || return 1
   fi
 
-  # 1) Prefer the target's native CLI.
-  if native_available "$native" "$project"; then
+  # 1) Prepare the runtime before the native marketplace install.
+  if [ "$use_native" = 1 ]; then
     if native_install "$native" "$project"; then
-      if [ -n "$project" ]; then
-        python3 "$dictionary_plugin/scripts/configure_dictionaries.py" --plugin-root "$dictionary_plugin" --project-root "${project:-$PWD}" || return 1
-      fi
       printf '\n✓ Installed Understand-Anything for %s (native CLI).\n' "$id"
       printf '  Start a new session to pick up the plugin. Review and trust its hooks in Codex before enabling auto-update.\n'
       return 0

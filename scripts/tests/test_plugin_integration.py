@@ -44,7 +44,7 @@ def run_hook(event):
     return subprocess.run(
         [sys.executable, str(PLUGIN / "hooks/auto_update.py")],
         input=json.dumps(event), text=True, capture_output=True, check=True,
-        env={**os.environ, "UA_PLUGIN_REPO": "/nonexistent/ua-hook-test-source"},
+        env={**os.environ, "UA_PLUGIN_REPO": "/nonexistent/ua-hook-test-source", "UA_SKIP_RUNTIME_SETUP": "1"},
     ).stdout
 
 
@@ -367,7 +367,7 @@ assemble_into() {
 check_prereqs() { :; }
 python3() {
   case "$1" in
-    */configure_dictionaries.py) printf 'configured' > "$3/state" ;;
+    */configure_dictionaries.py|*/setup_runtime.py) printf 'configured' > "$3/state" ;;
   esac
 }
 native_available() { [ "$mode" != unavailable ]; }

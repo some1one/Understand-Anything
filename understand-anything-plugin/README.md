@@ -29,6 +29,16 @@ For JetBrains AI Assistant, use
 this target requires project scope. AI Assistant's supported skill agents and
 IDE-wide storage differ from Junie's; see [host integration](HOSTS.md#junie-and-jetbrains-ai-assistant).
 
+Marketplace setup is available through `understand-setup` (declared as the Codex
+onboarding skill). The first trusted session-start hook also runs the same
+idempotent `scripts/setup_runtime.py` helper. It compiles missing/stale Rust engine
+code and dependencies, fetches all supported parsers, and configures dictionaries.
+Local marketplace language data defaults to the source plugin's
+`packages/rust/parsers` and `packages/rust/dictionaries`, including when the host
+runs a cached copy. Saved storage choices and explicit overrides are preserved.
+Source builds need stable Rust/Cargo; initial setup can use the network. Graph
+queries and analysis do not perform dictionary downloads. See [host setup](HOSTS.md#hooks).
+
 For Claude development without installing, launch from the codebase you want
 to analyze:
 
@@ -52,6 +62,7 @@ first-run setup, requirements, commands, and troubleshooting (native Claude:
 | `understand-help` | Explain installation, first-run setup, usage, and troubleshooting |
 | `understand-agent-instructions` | Print efficient exploration guidance or integrate it into AGENTS.md |
 | `understand-update` | Configure, update, or repair dictionary dependencies |
+| `understand-setup` | Build the native engine and prepare parser libraries and dictionaries after marketplace installation |
 | `understand` | Analyze the project, selected folder parts, or changed parts |
 | `load-graph` | Load selected part graphs or the full merged graph |
 | `understand-add-part` | Add an excluded or newly discovered folder part |

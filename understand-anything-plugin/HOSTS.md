@@ -167,11 +167,29 @@ fetch children have time limits. A payload without a Git checkout is skipped;
 use package upgrades or identify the source repo explicitly. Reload the host
 following an update to use changed cached skills/hooks.
 
+After the session-start pull, the hook invokes `scripts/setup_runtime.py` to
+prepare the engine, supported parser libraries and dictionaries. Setup has a
+25-minute deadline and the session hook allows 30 minutes for first compilation
+and downloads. A readiness fingerprint and lock reuse completed setup and
+serialize concurrent sessions. Failure is reported and suppresses automatic graph
+maintenance for that event. `PostToolUse` never initializes runtime dependencies.
+
+Codex declares `extensions.com.openai.onboardingSkill` in its compatibility
+manifest so users can run `understand-setup` after direct marketplace installation.
+The source installer invokes the same helper before its native install command.
+For local marketplaces, setup discovers the registered source folder (or uses
+`UA_PLUGIN_REPO`) and defaults parser/dictionary downloads to that plugin's
+`packages/rust/parsers` and `packages/rust/dictionaries`. It never uses the analyzed
+project as the default storage target. Existing dictionary paths remain in effect.
+`UA_PARSER_CACHE_DIR` overrides parser storage, and `run.sh` reads the recorded
+cache path for later engine invocations. CLI `--parser-cache-dir` has priority.
+`UA_SKIP_RUNTIME_SETUP=1` opts out of the session-start setup routine.
+
 `PostToolUse` never pulls. Graph maintenance reminders remain separately gated
 by `config.json` containing `"autoUpdate": true` and a saved graph commit that
-differs from the analyzed project's HEAD. Hooks do not commit, stage, install
-dependencies, or write graphs themselves. Graph updates remain offline;
-installation and explicit plugin maintenance
+differs from the analyzed project's HEAD. Hooks do not commit, stage, or write
+graphs themselves. Runtime preparation can build/download dependencies; graph
+updates and queries remain offline. Installation, runtime setup and explicit plugin maintenance
 ([understand-update](skills/understand-update/SKILL.md)) discover system dictionaries
 and download only missing local fallbacks. Packaging excludes dictionary data. A skills-only installation
 does not register hooks; run the analysis skill explicitly to update its graph.

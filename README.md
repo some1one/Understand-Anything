@@ -71,6 +71,40 @@ on the plugin's own clean checkout. Cached or packaged copies can identify the
 source checkout with `UA_PLUGIN_REPO=/absolute/path/to/Understand-Anything`.
 They never pull the project being analyzed. See [hook behavior](understand-anything-plugin/HOSTS.md#hooks).
 
+## Marketplace runtime setup
+
+The source installer prepares the runtime before its native marketplace install.
+For a direct marketplace install, Codex exposes `understand-setup` as its setup
+workflow; the first trusted session-start hook also prepares a missing or stale
+runtime. Native marketplaces do not share a general post-install shell event,
+so downloading a plugin alone does not guarantee compilation has already run.
+
+Setup compiles the Rust engine and its Cargo dependencies when no current binary
+is available, fetches all 15 supported parser libraries, and configures missing
+dictionaries. For a local marketplace it defaults to the plugin source directory:
+
+- Parser libraries: `understand-anything-plugin/packages/rust/parsers/`
+- Dictionary data: `understand-anything-plugin/packages/rust/dictionaries/`
+
+Cached Codex/Claude installs resolve the registered local marketplace source so
+these downloads stay with that source repository, not the analyzed project or
+an unrelated working directory. Saved dictionary choices and environment overrides
+remain authoritative. Engine calls reuse the recorded parser cache; an explicit
+`--parser-cache-dir` still overrides it.
+
+To run or retry setup explicitly:
+
+```bash
+make setup-runtime
+# Or, from another directory:
+python3 /path/to/understand-anything-plugin/scripts/setup_runtime.py --plugin-root /path/to/understand-anything-plugin
+```
+
+A successful setup is reused until its inputs or assets change. Source builds
+need stable Rust/Cargo and network access for missing crates and language data.
+Hooks need the host's normal trust/permissions; `UA_SKIP_RUNTIME_SETUP=1` disables
+session-start preparation when managing runtime dependencies explicitly.
+
 Junie and JetBrains AI Assistant have separate skills-only targets:
 
 ```bash
@@ -233,8 +267,9 @@ selects another repository for `clean-local`.
 
 Distribution bundles exclude dictionary data and never download it. Installation
 and plugin updates discover compatible system dictionaries, record their paths,
-and maintain downloaded data for missing components. First-time setup asks for
-shared OS storage (recommended) or repo-local storage, then saves the choice.
+and maintain downloaded data for missing components. Marketplace setup defaults
+to the plugin source directory as described above. Other first-time dictionary
+maintenance can choose shared OS storage or repo storage and saves that choice.
 Unattended installers can set `UA_DICTIONARY_STORAGE=shared` or `repo`; existing
 configurations reuse their saved path.
 Use `make update-dictionaries` to repeat that process or `make configure-dictionaries`

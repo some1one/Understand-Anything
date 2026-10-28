@@ -73,7 +73,7 @@ UNINSTALL_TARGETS := $(addprefix uninstall-,$(INSTALL_PLATFORMS))
         $(INSTALL_TARGETS) $(UNINSTALL_TARGETS) \
         build build-core build-dashboard test test-core test-dashboard \
         lint lint-dashboard dev dev-dashboard preview package deb update-dictionaries configure-dictionaries \
-        install install-local uninstall-local test-integration engine-help \
+        install install-local uninstall-local test-integration engine-help setup-runtime \
         clean clean-local clean-cache clean-build clean-stamps benchmark-large-repo
 
 help:
@@ -163,6 +163,9 @@ test-integration: ## Run installer and plugin integration regression checks
 
 engine-help: ## List deterministic engine commands (builds engine on first use)
 	@$(RUST)/run.sh --help
+
+setup-runtime: ## Build engine and prepare parser libraries and dictionaries in the plugin repo
+	@$(PYTHON) understand-anything-plugin/scripts/setup_runtime.py --plugin-root understand-anything-plugin
 
 # Opt-in only; independent of test, build, package, and the default goal.
 # Paths travel through the environment, preserving spaces and shell metacharacters.
