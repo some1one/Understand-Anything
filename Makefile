@@ -57,7 +57,8 @@ PKG_ASSETS := $(shell find understand-anything-plugin \
                 -not -path '*/dist/*' \
                 -not -path '*/__pycache__/*' -not -name '*.pyc' -type f 2>/dev/null)
 DEB_SRC := $(shell find packaging -type f 2>/dev/null) \
-           $(wildcard .claude-plugin/marketplace.json)
+           $(wildcard understand-anything-plugin/.claude-plugin/marketplace.json \
+                      understand-anything-plugin/.agents/plugins/marketplace.json)
 
 # The default goal builds the native plugin and dashboard artifacts into dist/.
 .DEFAULT_GOAL := package

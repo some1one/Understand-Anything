@@ -44,6 +44,7 @@ def run_hook(event):
     return subprocess.run(
         [sys.executable, str(PLUGIN / "hooks/auto_update.py")],
         input=json.dumps(event), text=True, capture_output=True, check=True,
+        env={**os.environ, "UA_PLUGIN_REPO": "/nonexistent/ua-hook-test-source"},
     ).stdout
 
 
@@ -96,21 +97,57 @@ def test_cleanup_preserves_summary_and_scan(project):
     assert list((project / ".understand-anything").glob(".trash-*/batch-1.json"))
 
 
-def test_marketplace_contracts_and_existing_directory(tmp_path):
-    module = load_module(PLUGIN / "scripts/create_marketplace.py")
-    root = module.create_marketplace(tmp_path / "catalog", PLUGIN)
-    assert module.create_marketplace(root, PLUGIN) == root
+def test_repo_marketplace_catalogs_point_to_source_plugin():
     for catalog in [".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json"]:
-        entry = json.loads((root / catalog).read_text())["plugins"][0]
+        assert not (REPO / catalog).exists()
+        value = json.loads((PLUGIN / catalog).read_text())
+        entry = value["plugins"][0]
+        assert value["name"] == entry["name"] == "understand-anything"
         source = entry["source"]
         relative = source if isinstance(source, str) else source["path"]
-        assert (root / relative).resolve() == PLUGIN
-    unrelated = tmp_path / "unrelated"
-    unrelated.mkdir()
-    (unrelated / "keep.txt").write_text("keep")
-    with pytest.raises(ValueError, match="unowned"):
-        module.create_marketplace(unrelated, PLUGIN)
-    assert (unrelated / "keep.txt").read_text() == "keep"
+        assert (PLUGIN / relative).resolve() == PLUGIN
+
+
+def test_archived_catalogs_and_hooks_stay_inside_plugin(tmp_path, monkeypatch):
+    import tarfile
+    builder = load_module(REPO / "scripts/build_dist.py")
+    binary = PLUGIN / "packages/rust/target/release/understand-anything-rs"
+    if not binary.exists():
+        pytest.skip("Rust release binary has not been built")
+    payload = tmp_path / "payload"
+    builder.assemble_payload(payload, binary)
+    monkeypatch.setattr(builder, "DIST", tmp_path / "dist")
+    builder.DIST.mkdir()
+    [archive] = builder.make_archives(payload, "fixture", False)
+    with tarfile.open(archive) as bundle:
+        names = set(bundle.getnames())
+        assert all(name == "understand-anything-plugin" or name.startswith("understand-anything-plugin/") for name in names)
+        for relative in [".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json", "hooks/hooks.json", "hooks/update_plugin.py", "LICENSE"]:
+            assert f"understand-anything-plugin/{relative}" in names
+
+
+@pytest.mark.parametrize("installer", ["install.sh", "packaging/deb/understand-anything"])
+@pytest.mark.parametrize("catalogs_present", [True, False])
+def test_installer_uses_existing_repo_catalog_without_generating_marketplace(tmp_path, installer, catalogs_present):
+    plugin = tmp_path / "understand-anything-plugin"
+    plugin.mkdir()
+    if catalogs_present:
+        for relative in [".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json"]:
+            write_json(plugin / relative, {"plugins": []})
+    script = r'''source "$1" --help >/dev/null
+PLUGIN="$2/understand-anything-plugin"
+resolve_plugin_home() { printf '%s\n' "$PLUGIN"; }
+marketplace_source
+'''
+    before = sorted(str(p.relative_to(tmp_path)) for p in tmp_path.rglob("*"))
+    result = subprocess.run(["bash", "-c", script, "test", str(REPO / installer), str(tmp_path)],
+                            capture_output=True, text=True)
+    assert (result.returncode == 0) == catalogs_present
+    if catalogs_present:
+        assert result.stdout.strip() == str(plugin)
+    else:
+        assert not result.stdout
+    assert sorted(str(p.relative_to(tmp_path)) for p in tmp_path.rglob("*")) == before
 
 
 def test_dashboard_resolution_with_spaces_and_stale_host_root(tmp_path):
@@ -210,12 +247,14 @@ def test_distribution_contains_native_engine_and_shared_references(tmp_path):
     payload = tmp_path / "payload"
     builder.assemble_payload(payload, binary)
     for relative in [".claude-plugin/plugin.json", ".codex-plugin/plugin.json",
-                     "HOSTS.md", "hooks/auto_update.py", "scripts/create_marketplace.py",
+                     ".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json",
+                     "HOSTS.md", "LICENSE", "hooks/auto_update.py", "hooks/update_plugin.py",
                      "packages/rust/run.sh", "packages/rust/bin/understand-anything-rs",
                      "packages/rust/schemas/knowledge-graph.schema.json",
                      "packages/dashboard/freshness-server.mjs"]:
         assert (payload / relative).is_file(), relative
     assert (payload / "AGENTS.md").read_text() == (PLUGIN / "AGENTS.md").read_text()
+    assert (payload / "LICENSE").read_bytes() == (REPO / "LICENSE").read_bytes() == (PLUGIN / "LICENSE").read_bytes()
     assert {p.parent.name for p in (payload / "skills").glob("*/SKILL.md")} == {
         p.parent.name for p in (PLUGIN / "skills").glob("*/SKILL.md")
     }
@@ -320,13 +359,15 @@ assemble_into() {
   mkdir -p "$plugin/scripts"
   printf 'assembly\n' >> "$UA_HOME/assemblies"
   printf 'unconfigured' > "$plugin/state"
+  mkdir -p "$plugin/.claude-plugin" "$plugin/.agents/plugins"
+  printf '{}' > "$plugin/.claude-plugin/marketplace.json"
+  printf '{}' > "$plugin/.agents/plugins/marketplace.json"
   printf '%s\n' "$plugin"
 }
 check_prereqs() { :; }
 python3() {
   case "$1" in
     */configure_dictionaries.py) printf 'configured' > "$3/state" ;;
-    */create_marketplace.py) printf '%s\n' "$3" ;;
   esac
 }
 native_available() { [ "$mode" != unavailable ]; }

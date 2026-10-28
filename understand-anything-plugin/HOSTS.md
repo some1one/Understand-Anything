@@ -156,9 +156,21 @@ Codex supplies `CLAUDE_PLUGIN_ROOT` as a compatibility variable for the shared
 hook command. Codex hooks must be reviewed and trusted through the host before
 they run. Installation alone does not establish trust.
 
-Hooks only suggest an update when `config.json` contains `"autoUpdate": true`
-and the stored commit differs from the current repository's HEAD. They never
-commit, stage, or install dependencies themselves. Graph updates remain offline;
+On `SessionStart`, the hook runs a bounded fast-forward-only pull of the plugin's
+own source repository. It resolves the checkout from the plugin location, or
+`UA_PLUGIN_REPO` for a cached/packaged install, and validates that it is an
+Understand Anything checkout. It never derives a pull target from the event's
+project/cwd. Only a clean, attached branch with an upstream can be pulled. It
+uses `--ff-only --no-rebase --no-autostash --no-recurse-submodules`, reports failed
+or skipped updates, and never resets or stashes local work. Git subprocesses and
+fetch children have time limits. A payload without a Git checkout is skipped;
+use package upgrades or identify the source repo explicitly. Reload the host
+following an update to use changed cached skills/hooks.
+
+`PostToolUse` never pulls. Graph maintenance reminders remain separately gated
+by `config.json` containing `"autoUpdate": true` and a saved graph commit that
+differs from the analyzed project's HEAD. Hooks do not commit, stage, install
+dependencies, or write graphs themselves. Graph updates remain offline;
 installation and explicit plugin maintenance
 ([understand-update](skills/understand-update/SKILL.md)) discover system dictionaries
 and download only missing local fallbacks. Packaging excludes dictionary data. A skills-only installation

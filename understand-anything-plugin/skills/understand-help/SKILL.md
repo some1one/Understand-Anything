@@ -177,7 +177,11 @@ full-graph-by-default recipe or omit its context-reuse and freshness guidance.
   `--prefer-local --local-dir` to download data into a shared user cache or an
   explicitly chosen, ignored installation-local directory. Use the
   maintenance workflow; do not silently download while answering a graph query.
-- **Auto-update missing:** native hooks need an enabled boolean `autoUpdate` and,
+- **Plugin updates:** trusted native session-start hooks pull the plugin source
+  checkout with fast-forward-only Git semantics. For cached or packaged installs,
+  set `UA_PLUGIN_REPO` to that source checkout. Dirty checkouts and failed pulls
+  are reported for explicit maintenance; analyzed projects are never pulled.
+- **Graph auto-update missing:** graph reminders need an enabled boolean `autoUpdate` and,
   in Codex, reviewed/trusted hooks. Skills-only installs use explicit analysis
   runs. Enable with `understand --auto-update`; disable with `--no-auto-update`.
   Hooks suggest graph maintenance; they do not update plugin dependencies.

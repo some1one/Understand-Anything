@@ -139,11 +139,15 @@ resolve_plugin_home() {
   printf '%s\n' "$repo/understand-anything-plugin"
 }
 
-# Generate host-specific catalogs around the resolved source or assembled payload.
+# Register the plugin directory, which contains the tracked marketplace catalogs.
 marketplace_source() {
-  local plugin
-  plugin="$(resolve_plugin_home)" || return 1
-  python3 "$plugin/scripts/create_marketplace.py" "$UA_HOME/marketplace" "$plugin"
+  local root
+  root="$(resolve_plugin_home)" || return 1
+  if [ ! -f "$root/.claude-plugin/marketplace.json" ] || [ ! -f "$root/.agents/plugins/marketplace.json" ]; then
+    warn "Repository marketplace catalogs missing at $root; using standalone skills." >&2
+    return 1
+  fi
+  printf '%s\n' "$root"
 }
 
 # --- prerequisites ----------------------------------------------------------

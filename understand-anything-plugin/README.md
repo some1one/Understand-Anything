@@ -1,5 +1,11 @@
 # Understand Anything plugin
 
+Licensed under the [MIT License](LICENSE), matching
+[upstream](https://github.com/Egonex-AI/Understand-Anything/blob/main/LICENSE),
+with its copyright notices for Yuxiang Lin and Infinite Universe, Inc. preserved.
+Third-party dependencies and dictionary datasets retain their own licenses;
+see [dictionary provenance](scripts/dictionaries.md).
+
 Build a codebase knowledge graph with Claude Code or Codex, then query, explain,
 compare, or visualize it. Both hosts use the same `skills/`, Rust engine,
 and graph files.
@@ -7,9 +13,14 @@ and graph files.
 ## Installation
 
 Use `./install.sh claude` or `./install.sh codex` from the repository root.
-The installer generates the correct marketplace format for each host. Native
-installation loads plugin skills and hooks; standalone skill fallback does not
-load hooks. Start a new session after installing or updating.
+The installer registers this plugin directory as the marketplace, using its
+tracked `.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json`.
+Both catalogs point to `./`; the repository root has no marketplace catalogs.
+The Claude catalog also supports Junie CLI's compatible marketplace format.
+Archives and Debian packages carry the same catalogs inside the plugin payload;
+installation does not generate a separate marketplace directory.
+Native installation loads plugin skills and hooks; standalone skill fallback does
+not load hooks. Start a new session after installing or updating.
 
 For Junie, use `./install.sh junie` (user scope) or
 `./install.sh junie --local /absolute/path/to/project` (`.junie/skills`).
@@ -124,9 +135,18 @@ Static demos omit these checks unless `VITE_STALENESS_URL` supplies a report.
 
 ## Optional auto-update
 
-Enable with the analysis skill's `--auto-update` flag. Native hooks compare the
-stored commit with HEAD at session start and after shell tools. The hook reads
-local state and supplies a workflow reminder; the host performs the update.
+Native session-start hooks first update the plugin's own Git repository with a
+bounded `git pull --ff-only --no-rebase --no-autostash --no-recurse-submodules`.
+They require a clean checkout on a branch with a configured upstream. Dirty,
+detached, diverged, or unavailable checkouts and branches without an upstream are reported and
+left for explicit maintenance. The analyzed project's repository is never pulled.
+For cached or packaged plugins, set `UA_PLUGIN_REPO` to the original source
+repository root; a non-Git payload has nothing to pull. Restart/reload after a
+plugin update so the host picks up changed skills and hooks.
+
+Graph auto-update is separate: enable it with the analysis skill's `--auto-update`
+flag. Hooks compare the stored graph commit with the project's HEAD at session
+start and after shell tools, then supply a workflow reminder for the host.
 In Codex, review and trust the hook definition before expecting it to run.
 
 Part-based graphs refresh affected partitions and merge them again. Legacy

@@ -5,7 +5,7 @@
 #   * Depends: python3 for installer and workflow helper scripts.
 #   * postinst — assembled the payload into /usr/share/understand-anything,
 #     including the native Rust executable.
-# This linker generates per-user Claude and Codex marketplace catalogs.
+# This linker registers the catalogs bundled inside the plugin directory.
 # This command only wires the system payload into the *current user's* agent
 # skill directories, preferring a target's native CLI (e.g. `claude plugin
 # install`) before the scripted symlink fallback. For assembly/prereqs from source or tarballs, use the standalone install.sh instead.
@@ -49,7 +49,13 @@ field()        { cut -d'|' -f"$2" <<<"$1"; }
 list_skills()  { local d; for d in "$1"/skills/*/; do [ -d "$d" ] && basename "$d"; done; }
 
 marketplace_source() {
-  python3 "$PLUGIN/scripts/create_marketplace.py" "${UA_DIR:-$HOME/.understand-anything}/marketplace" "$PLUGIN"
+  local root
+  root="$PLUGIN"
+  if [ ! -f "$root/.claude-plugin/marketplace.json" ] || [ ! -f "$root/.agents/plugins/marketplace.json" ]; then
+    warn "Repository marketplace catalogs missing at $root; using standalone skills." >&2
+    return 1
+  fi
+  printf '%s\n' "$root"
 }
 
 native_available() {

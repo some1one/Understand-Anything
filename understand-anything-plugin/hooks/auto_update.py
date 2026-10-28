@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""Emit non-blocking context using the Claude Code and Codex hook protocol.
-
-The hook only reads local state. The host follows the referenced workflow when
-autoUpdate is enabled; no model, dependency installation, or graph writes run here.
-"""
+"""Pull plugin source on session start and suggest opt-in project graph upkeep."""
 
 import json
 from pathlib import Path
@@ -13,6 +9,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from data_directory import data_dir
+from update_plugin import update_plugin
 
 def read_object(path):
     value = json.loads(path.read_text(encoding="utf-8"))
@@ -71,11 +68,24 @@ def context_for(event):
 
 def main():
     try:
-        result = context_for(json.load(sys.stdin))
+        event = json.load(sys.stdin)
+    except (OSError, ValueError):
+        return
+    plugin_message = None
+    if isinstance(event, dict) and event.get("hook_event_name") == "SessionStart":
+        plugin_message = update_plugin()
+    try:
+        result = context_for(event)
     except (OSError, ValueError, subprocess.SubprocessError):
         # Missing config, unborn/non-Git repositories, or malformed input should
         # never block a session or turn a successful tool call into a failure.
-        return
+        result = None
+    if plugin_message:
+        if result:
+            result["hookSpecificOutput"]["additionalContext"] = plugin_message + "\n" + result["hookSpecificOutput"]["additionalContext"]
+        else:
+            result = {"hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": plugin_message}}
+        result["systemMessage"] = plugin_message
     if result:
         print(json.dumps(result))
 

@@ -47,11 +47,29 @@ From this checkout on Linux or macOS:
 ./install.sh codex
 ```
 
-The installer prefers the host's native plugin CLI. It creates an installer-owned
-local marketplace under `~/.understand-anything/marketplace` (override the parent
-with `UA_DIR`). If native installation is unavailable or fails, it installs
+The installer prefers the host's native plugin CLI and registers
+`understand-anything-plugin/` as the marketplace. Both catalogs live inside that
+folder: `.claude-plugin/marketplace.json` for Claude and Junie CLI, and
+`.agents/plugins/marketplace.json` for Codex. Each points to `./`, so the marketplace
+and plugin share that directory. No separate installed marketplace is generated.
+If native installation is unavailable or fails, the installer links
 standalone skills and reports that hooks are unavailable. Set `UA_NO_NATIVE=1`
 to choose skills-only installation explicitly.
+
+To register the marketplace directly after cloning this repo, target the plugin
+subdirectory, not the repository root:
+
+```bash
+claude plugin marketplace add /absolute/path/to/Understand-Anything/understand-anything-plugin
+codex plugin marketplace add /absolute/path/to/Understand-Anything/understand-anything-plugin
+```
+
+In Junie CLI, use `/extensions marketplace add` with that same directory.
+Archives and Debian packages include these same catalogs inside the plugin
+payload. Native session-start hooks run a bounded, fast-forward-only `git pull`
+on the plugin's own clean checkout. Cached or packaged copies can identify the
+source checkout with `UA_PLUGIN_REPO=/absolute/path/to/Understand-Anything`.
+They never pull the project being analyzed. See [hook behavior](understand-anything-plugin/HOSTS.md#hooks).
 
 Junie and JetBrains AI Assistant have separate skills-only targets:
 
@@ -133,6 +151,10 @@ a local install. Start a new host session after installing.
 ## Development
 
 There is no root Python or Node project. Each package owns its dependencies.
+
+The Rust engine GitHub Actions workflow is currently disabled; its definition is
+preserved in [rust-engine.yml.disabled](.github/workflows/rust-engine.yml.disabled).
+The local test and build targets below remain available.
 
 ```bash
 make help
@@ -237,3 +259,14 @@ The optional [large-repository benchmark](docs/benchmarks/large-monorepo.md)
 measures deterministic Rust stages with isolated artifacts and versioned reports.
 Use `make help` for the explicit target; normal builds and tests do not run scale
 benchmarks.
+
+## License
+
+This fork uses the [MIT License](LICENSE), matching
+[upstream](https://github.com/Egonex-AI/Understand-Anything/blob/main/LICENSE).
+The license preserves the upstream copyright notices for Yuxiang Lin and
+Infinite Universe, Inc. The plugin includes the same license so marketplace
+installs and distribution packages carry it with the code.
+
+Third-party dependencies and dictionary datasets retain their own licenses;
+see [dictionary provenance and licensing](understand-anything-plugin/scripts/dictionaries.md).

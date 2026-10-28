@@ -1,5 +1,8 @@
 # Auto-update knowledge graph
 
+The session-start hook separately pulls the plugin source checkout. This workflow
+maintains the analyzed graph; do not run `git pull` in the analyzed project.
+
 Follow this workflow when a native hook reports a stale graph and the project's
 `config.json` explicitly enables `autoUpdate`. Read [host integration](../HOSTS.md)
 for dispatch and host conventions. Use the absolute project root in the hook

@@ -1,0 +1,15 @@
+{
+  "name": "understand-anything",
+  "owner": {
+    "name": "Understand Anything contributors"
+  },
+  "metadata": {
+    "description": "Rust-first Understand Anything fork: codebase graphs and agent workflows."
+  },
+  "plugins": [
+    {
+      "name": "understand-anything",
+      "source": "./"
+    }
+  ]
+}

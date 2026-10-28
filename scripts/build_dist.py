@@ -82,9 +82,9 @@ def assemble_payload(payload: Path, binary: Path) -> None:
     if payload.exists():
         shutil.rmtree(payload)
     payload.mkdir(parents=True)
-    for d in (".claude-plugin", ".codex-plugin", "agents", "hooks", "skills", "tools", "scripts"):
+    for d in (".claude-plugin", ".codex-plugin", ".agents", "agents", "hooks", "skills", "tools", "scripts"):
         shutil.copytree(PLUGIN / d, payload / d, ignore=IGNORE)
-    for name in ("README.md", "HOSTS.md", "AGENTS.md"):
+    for name in ("README.md", "HOSTS.md", "AGENTS.md", "LICENSE"):
         shutil.copy2(PLUGIN / name, payload / name)
     pkgs = payload / "packages"
     rust = pkgs / "rust"
@@ -146,8 +146,11 @@ def build_deb(version: str, archives: list[Path]) -> Path:
         shutil.copy2(a, share / a.name)
     shutil.copy2(DEB_SRC / "understand-anything", stage / "usr/bin/understand-anything")
     (stage / "usr/bin/understand-anything").chmod(0o755)
+    documentation = stage / "usr/share/doc/understand-anything"
+    documentation.mkdir(parents=True)
+    shutil.copy2(PLUGIN / "LICENSE", documentation / "copyright")
 
-    # The per-user linker generates host-specific local catalogs at install time.
+    # Native installers register the catalogs bundled inside the plugin payload.
 
     (debian / "control").write_text(
         f"""Package: understand-anything
