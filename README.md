@@ -1,8 +1,41 @@
-# Understand Anything
+# Understand Anything — Rust-first fork
+
+This repository is a substantially diverged fork of
+[Egonex-AI/Understand-Anything](https://github.com/Egonex-AI/Understand-Anything).
+It retains the codebase knowledge-graph concept and plugin identity, with major
+changes to the analysis engine, installation, graph handling, and agent workflows.
+Use this fork's documentation and build commands when working with this checkout;
+upstream instructions and patches may need adaptation.
 
 Analyze a codebase into a local knowledge graph, ask questions about its components,
 and explore its architecture in an interactive dashboard. The plugin supports
 Claude Code and Codex through shared skills and host-specific manifests.
+
+## What differs in this fork
+
+- **Native Rust engine:** scanning, import and structure extraction, batching,
+  incremental updates, graph queries, and other deterministic pipeline steps run
+  through `understand-anything-plugin/packages/rust/run.sh`. The host model still
+  supplies the analysis narrative. See the [engine reference](understand-anything-plugin/packages/rust/README.md).
+- **Installation and packaging:** source builds, platform binaries, a prebuilt
+  dashboard, Debian packaging, and native-plugin or standalone-skill installation
+  are coordinated by Make and the installers. Packages own their dependencies;
+  Python remains in installation and workflow helpers, and Node powers the dashboard.
+- **Project data and exclusions:** new graphs and partitions live under `.ua/`,
+  with `.uaignore` analysis rules and compatibility for existing
+  `.understand-anything/` projects. Freshness checks respect analysis exclusions
+  and distinguish saved snapshots from current source.
+- **Focused agent exploration:** shared skills support bounded graph queries,
+  component explanations, selected-part loading, and context reuse. The
+  `understand-agent-instructions` skill prints this guidance or integrates it
+  into a project's `AGENTS.md`.
+- **Dictionary-backed queries and native benchmarks:** query normalization uses
+  configured local dictionaries, with setup separated from offline graph work.
+  The opt-in [benchmark harness](docs/benchmarks/large-monorepo.md) measures native
+  pipeline stages with isolated artifacts and its own report contract.
+
+Upstream changes are integrated selectively and adapted to this implementation.
+The shared plugin name and version do not establish feature or runtime parity.
 
 ## Install and use
 
@@ -76,7 +109,7 @@ helps navigation; current source remains the evidence for behavior.
   Python 3.
 - Git for commit-based incremental updates.
 - Node.js 22 or newer for the dashboard. Source dashboard development also uses
-  pnpm 10.6.2, pinned in its `package.json`; prebuilt dashboards need only Node.
+  the pnpm version pinned in its `package.json`; prebuilt dashboards need only Node.
 
 The analysis model is provided by the host. Graph artifacts are saved under the
 analyzed project's `.ua/` directory. Source content and summaries
