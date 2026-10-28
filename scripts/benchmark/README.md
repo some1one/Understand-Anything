@@ -3,6 +3,9 @@
 This folder contains full-run configuration, Cargo configuration and native
 profiling tools. Run the benchmark directly on Linux; no virtual machine is used.
 
+For other workflows, see [saved `.ua` statistics](../../docs/benchmarks/static-analysis.md)
+or [native stage timing without AI](../../docs/benchmarks/large-monorepo.md).
+
 ## Run
 
 ```sh
@@ -16,10 +19,12 @@ directory on Debian/Ubuntu, using APT package downloads and extraction without
 sudo or system package changes. It reuses an installed Valgrind when available
 and fetches matching libc debug symbols if missing. The harness discovers the
 local tool automatically. GNU time must already be installed. The setup does not
-install Rust, Node, pnpm or Codex; use your existing development setup. The full run requires
-stable Rust/Cargo, Python 3.11+, Git, Node 22+, Corepack, and an authenticated
-Codex CLI supporting the configured model. Run `codex login` if needed. Corepack
-selects the exact pnpm version from the dashboard's `package.json`.
+install Rust, Node, pnpm or Codex; use your existing development setup. Every full
+run requires stable Rust/Cargo, Python 3.11+, Git, Node 22+, Corepack and GNU time.
+The default AI phase additionally requires an authenticated Codex CLI supporting
+the configured model. Run `codex login` if needed. Setting `analysisCommand` to
+`null` removes the Codex requirement. Corepack selects the exact pnpm version
+from the dashboard's `package.json`.
 
 The output directory must be new and outside both subject and tool checkout.
 Each run builds in a fresh source copy and retains all outputs. Model analysis
@@ -32,6 +37,18 @@ To inspect the plan without running tools or creating files:
 python3 scripts/benchmark/full_run.py /path/to/repo \
   --output-dir /tmp/ua-full-plan --plan
 ```
+
+The default config is [`full-run.json`](full-run.json). It runs the native
+baseline, then separate Callgrind, Massif and Memcheck passes, then **one Codex
+analysis phase**. The profiler passes run Rust directly; they do not start agents
+or send their results to Codex. During its own phase, Codex invokes the same
+Rust engine normally and consumes those command outputs. A single Codex phase
+can still use the skill's normal workers, retries and repeated context reads;
+profiling does not multiply that workflow by the number of selected tools.
+
+The profilers cover the four native stages, not the complete set of Rust helper
+invocations performed during the AI workflow. Valgrind timing is reported
+separately from ordinary native execution and the Codex phase.
 
 ## Separate timings
 
@@ -75,6 +92,30 @@ Parser libraries may lack debug symbols even when the Rust executable has them.
 Edit `full-run.json`, or use `BENCHMARK_CONFIG=/path/to/config.json` with Make.
 Partial config files inherit the checked-in defaults.
 
+Save any of these partial JSON objects to a file outside the subject repository:
+
+| Goal | Partial config |
+| --- | --- |
+| Build and profile without any AI phase | `{"analysisCommand": null}` |
+| Use Callgrind only; retain the one default AI phase | `{"valgrindTools": ["callgrind"]}` |
+| Full graph analysis without Valgrind or its extra Rust build | `{"valgrindTools": []}` |
+| Builds and ordinary native timing only | `{"analysisCommand": null, "valgrindTools": []}` |
+
+For example, save `{"analysisCommand": null, "valgrindTools": ["callgrind"]}` to
+`/tmp/ua-native-profile.json`, then run:
+
+```sh
+make benchmark-full BENCHMARK_SUBJECT=/path/to/repo \
+  BENCHMARK_RUN_DIR=/tmp/ua-native-profile-1 \
+  BENCHMARK_CONFIG=/tmp/ua-native-profile.json
+```
+
+This still performs the full dependency, language, Rust, dashboard and package
+setup. It selects one profiling tool and omits Codex. Selecting fewer tools
+reduces local profiling work; the number of AI phases remains zero or one,
+controlled independently by `analysisCommand`. Without an override, all three
+tools run sequentially with one profiled Rust worker at a time.
+
 - `buildJobs`, `concurrency`: production compile and native analysis parallelism.
 - `parserLanguages`: empty means fetch all advertised parser languages.
 - `phaseTimeoutSeconds`, `workerTimeoutSeconds`: ordinary phase/worker timeouts.
@@ -109,7 +150,8 @@ Read `BENCHMARK_RUN_DIR/report.md` or `report.json` for the phase table.
 - `valgrind/TOOL/summary.json` / `.md`: explicitly instrumented native results
   and aggregate profile summaries. Callgrind sums event counts; Massif reports
   the largest individual process peak; Memcheck reports error kinds, occurrences
-  and lost bytes. Invalid/missing profiles fail the profiling phase.
+  and lost bytes. Input/output digests are compared with the ordinary baseline;
+  mismatches and invalid/missing profiles fail the profiling phase.
 - `valgrind/TOOL/profiles/`: worker profiles and Valgrind diagnostics. Inspect
   a `.callgrind` file with `callgrind_annotate --auto=no FILE` or KCachegrind;
   inspect a `.massif` file with `ms_print FILE`. Memcheck diagnostics are XML.

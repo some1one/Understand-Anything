@@ -1,5 +1,10 @@
 # Native stage contracts
 
+These contracts describe `benchmark-large-repo` and the four-stage native
+workload replayed by the [full benchmark](../../scripts/benchmark/README.md).
+The latter adds Valgrind worker prefixes for its profiling passes; its separate
+Codex phase may invoke additional Rust helpers outside these four stages.
+
 The benchmark resolves a source-built binary once, before measuring anything.
 Each invocation is a fresh process, using these production dispatcher contracts:
 

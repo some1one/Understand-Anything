@@ -1,5 +1,10 @@
 # Native large-repository benchmark
 
+This guide covers `make benchmark-large-repo`: native stage timing without AI.
+For an existing graph, use [saved analysis statistics](static-analysis.md).
+For separately timed setup/builds, Valgrind profiles and one Codex graph analysis,
+use the [full-run benchmark](../../scripts/benchmark/README.md).
+
 The opt-in harness measures the fork's production Rust scanner, import extractor,
 batch planner, and structural extractor. Python 3.11+ provides orchestration and
 POSIX process accounting; it does not implement analysis. Git and a stable Rust

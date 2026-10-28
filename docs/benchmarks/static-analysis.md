@@ -1,5 +1,10 @@
 # Statistics from an existing analysis
 
+This guide covers `make benchmark-static`. For measured native execution, use
+the [native stage benchmark](large-monorepo.md). For setup/build timings,
+Valgrind and a new Codex graph analysis, use the
+[full-run benchmark](../../scripts/benchmark/README.md).
+
 `benchmark-static` reads an existing artifact directory and prints a report.
 It does not run analysis, build the engine, load parsers, inspect source files,
 access the network, or write into the artifact directory. Python 3 is sufficient.

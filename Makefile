@@ -79,25 +79,38 @@ UNINSTALL_TARGETS := $(addprefix uninstall-,$(INSTALL_PLATFORMS))
 
 help:
 	@grep -E '^[a-zA-Z0-9_-]+:.*?##' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
-	@printf '  \033[36m%-18s\033[0m %s\n' "install-<platform>"   "Install one or more targets (make install-kilo install-vscode)"
-	@printf '  \033[36m%-18s\033[0m %s\n' "uninstall-<platform>" "Uninstall one or more targets (make uninstall-kilo uninstall-vscode)"
-	@printf '  \033[36m%-18s\033[0m %s\n' "  platforms" "$(INSTALL_PLATFORMS)"
+		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-26s\033[0m %s\n", $$1, $$2}'
+	@printf '  \033[36m%-26s\033[0m %s\n' "install-<platform>"   "Install one or more targets (make install-kilo install-vscode)"
+	@printf '  \033[36m%-26s\033[0m %s\n' "uninstall-<platform>" "Uninstall one or more targets (make uninstall-kilo uninstall-vscode)"
+	@printf '  \033[36m%-26s\033[0m %s\n' "  platforms" "$(INSTALL_PLATFORMS)"
 	@printf '%s\n' '  Junie: make install-junie [LOCAL=/absolute/path/to/project]' \
 		'  JetBrains AI Assistant: make install-jetbrains LOCAL=/absolute/path/to/project'
-	@printf '%s\n' '' 'Benchmark example (with a prepared parser cache):' \
+	@printf '%s\n' '' 'Benchmark workflows (run from this tool checkout):' \
+		'  BENCHMARK_SUBJECT is the repository being analyzed; UA_DIR is its saved artifact folder.' \
+		'' '1. Saved statistics: no engine or AI; prints Markdown (FORMAT=json for JSON).' \
+		'  make benchmark-static UA_DIR=/path/to/repo/.ua' \
+		'  Add TOTAL_SECONDS=600 TIME_SCOPE=full for throughput from a matching full scan.' \
+		'  TIME_SCOPE defaults to unknown; incremental/unknown scopes suppress throughput.' \
+		'  Guide: docs/benchmarks/static-analysis.md'
+	@printf '%s\n' '' '2. Native stage timing: Rust only, no AI; requires a prepared parser cache.' \
 		'  make benchmark-large-repo \' \
 		'    BENCHMARK_SUBJECT=/absolute/path/to/subject \' \
 		'    BENCHMARK_OUTPUT=/tmp/benchmark-results/subject-run-1.benchmark.json \' \
 		'    BENCHMARK_PARSER_CACHE=/tmp/ua-benchmark-parsers' \
-		'  Keep output outside the subject repository.' \
-		'  Parser preparation: docs/benchmarks/large-monorepo.md'
-	@printf '%s\n' '' 'Saved analysis statistics (no analysis rerun):' \
-		'  make benchmark-static UA_DIR=/path/to/repo/.ua TOTAL_SECONDS=600 TIME_SCOPE=full' \
-		'  Optional: FORMAT=json; TIME_SCOPE=incremental suppresses snapshot throughput.'
-	@printf '%s\n' '' 'Full benchmark with Valgrind profiles:' \
+		'  Writes a JSON/Markdown report pair outside the subject repository.' \
+		'  Setup and guide: docs/benchmarks/large-monorepo.md'
+	@printf '%s\n' '' '3. Full Linux run: separate dependency/language/build/package timings, Rust profiles, then one Codex analysis.' \
 		'  make benchmark-setup                     # prepare local Valgrind; no sudo' \
-		'  make benchmark-full BENCHMARK_SUBJECT=/path/to/repo BENCHMARK_RUN_DIR=/tmp/ua-run-1' \
+		'  make benchmark-full \' \
+		'    BENCHMARK_SUBJECT=/path/to/repo \' \
+		'    BENCHMARK_RUN_DIR=/tmp/ua-run-1' \
+		'  BENCHMARK_RUN_DIR must be new and outside both the subject and tool checkout.' \
+		'  Requires Rust, Node/Corepack, GNU time and Codex login for the default AI phase.' \
+		'  Defaults: Callgrind + Massif + Memcheck Rust passes; gpt-6.1-sol / medium / standard.' \
+		'  Profiling passes do not invoke AI; Codex normally invokes Rust during its own phase.' \
+		'  Optional: BENCHMARK_CONFIG=/path/to/partial-config.json' \
+		'    {"analysisCommand":null} disables AI; {"valgrindTools":[]} disables profiling.' \
+		'  Reports: report.md and report.json inside BENCHMARK_RUN_DIR; profiles: valgrind/.' \
 		'  Guide: scripts/benchmark/README.md'
 
 ## ---- install the plugin --------------------------------------------------
@@ -184,7 +197,7 @@ override BENCHMARK_SUBJECT := $(value BENCHMARK_SUBJECT)
 override BENCHMARK_OUTPUT := $(value BENCHMARK_OUTPUT)
 override BENCHMARK_PARSER_CACHE := $(value BENCHMARK_PARSER_CACHE)
 export BENCHMARK_SUBJECT BENCHMARK_OUTPUT BENCHMARK_PARSER_CACHE
-benchmark-large-repo: ## Benchmark native stages (BENCHMARK_SUBJECT, BENCHMARK_OUTPUT, BENCHMARK_PARSER_CACHE required)
+benchmark-large-repo: ## Time native Rust stages without AI (BENCHMARK_SUBJECT, BENCHMARK_OUTPUT, BENCHMARK_PARSER_CACHE)
 	@$(PYTHON) scripts/benchmark_large_repo.py "$$BENCHMARK_SUBJECT" --output "$$BENCHMARK_OUTPUT" --parser-cache-dir "$$BENCHMARK_PARSER_CACHE"
 
 UA_DIR ?= .ua
@@ -196,7 +209,7 @@ override TOTAL_SECONDS := $(value TOTAL_SECONDS)
 override TIME_SCOPE := $(value TIME_SCOPE)
 override FORMAT := $(value FORMAT)
 export UA_DIR TOTAL_SECONDS TIME_SCOPE FORMAT
-benchmark-static: ## Summarize saved UA_DIR (optional TOTAL_SECONDS, TIME_SCOPE=full, FORMAT=json)
+benchmark-static: ## Report saved .ua statistics without analysis (UA_DIR=.ua; optional TOTAL_SECONDS, TIME_SCOPE, FORMAT)
 	@$(PYTHON) scripts/benchmark_static.py "$$UA_DIR" --total-seconds "$$TOTAL_SECONDS" --time-scope "$$TIME_SCOPE" --format "$$FORMAT"
 
 BENCHMARK_CONFIG ?= scripts/benchmark/full-run.json
@@ -204,7 +217,7 @@ BENCHMARK_RUN_DIR ?=
 override BENCHMARK_CONFIG := $(value BENCHMARK_CONFIG)
 override BENCHMARK_RUN_DIR := $(value BENCHMARK_RUN_DIR)
 export BENCHMARK_CONFIG BENCHMARK_RUN_DIR
-benchmark-full: ## Fresh Linux rebuild + analysis (BENCHMARK_SUBJECT, BENCHMARK_RUN_DIR; optional BENCHMARK_CONFIG)
+benchmark-full: ## Rebuild, profile Rust, then run Codex once (BENCHMARK_SUBJECT, BENCHMARK_RUN_DIR; optional BENCHMARK_CONFIG)
 	@$(PYTHON) scripts/benchmark/full_run.py "$$BENCHMARK_SUBJECT" --output-dir "$$BENCHMARK_RUN_DIR" --config "$$BENCHMARK_CONFIG"
 
 benchmark-setup: ## Prepare repository-local Valgrind on Debian/Ubuntu (no sudo)

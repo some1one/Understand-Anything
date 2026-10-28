@@ -32,10 +32,13 @@ Claude Code and Codex through shared skills and host-specific manifests.
   component explanations, selected-part loading, and context reuse. The
   `understand-agent-instructions` skill prints this guidance or integrates it
   into a project's `AGENTS.md`.
-- **Dictionary-backed queries and native benchmarks:** query normalization uses
+- **Dictionary-backed queries and benchmarking:** query normalization uses
   configured local dictionaries, with setup separated from offline graph work.
   The opt-in [benchmark harness](docs/benchmarks/large-monorepo.md) measures native
-  pipeline stages with isolated artifacts and its own report contract.
+  pipeline stages with isolated artifacts and its own report contract. A
+  [full benchmark](scripts/benchmark/README.md) separately times builds and setup,
+  profiles Rust with Valgrind, and runs one Codex analysis. Saved graphs can also
+  produce [static statistics](docs/benchmarks/static-analysis.md) without analysis.
 
 Upstream changes are integrated selectively and adapted to this implementation.
 The shared plugin name and version do not establish feature or runtime parity.
@@ -292,33 +295,53 @@ whole legacy directory to `.ua`, and update any custom dictionary paths in your
 configuration. Project-specific data and caches stay inside the selected directory;
 shared dictionaries and the plugin installation home keep their existing locations.
 
-## Native stage benchmarks
+## Benchmarking
 
-The optional [large-repository benchmark](docs/benchmarks/large-monorepo.md)
-measures deterministic Rust stages with isolated artifacts and versioned reports.
-Use `make help` for the explicit target; normal builds and tests do not run scale
-benchmarks.
+Run these targets from the Understand Anything checkout. The **subject** is the
+repository being analyzed; its Makefile does not need benchmark targets.
 
-To summarize an existing analysis without running the engine:
+| Target | Purpose | AI work |
+| --- | --- | --- |
+| `benchmark-static` | Statistics from an existing `.ua` folder; optional supplied elapsed time | None |
+| `benchmark-large-repo` | Measure Rust scan/import/batching/structure stages with a prepared parser cache | None |
+| `benchmark-setup` | Prepare Valgrind locally on Debian/Ubuntu without sudo | None |
+| `benchmark-full` | Fresh dependency/language setup, Rust/dashboard/package builds, native timing, Valgrind passes and full graph analysis | One Codex analysis phase by default |
+
+For saved analysis statistics:
 
 ```sh
 make benchmark-static UA_DIR=/path/to/repo/.ua TOTAL_SECONDS=600 TIME_SCOPE=full
 ```
 
-This prints saved file/line counts, language breakdowns, graph statistics,
-relationship hubs, consistency checks, and overall throughput. `TOTAL_SECONDS`
-is optional and uses elapsed wall-clock seconds from the original analysis.
-Set `TIME_SCOPE=full` only when that duration covers exactly the saved scan;
-the default `unknown` and `incremental` scopes suppress throughput. Use
-`FORMAT=json` for machine-readable output. See the
-[saved-analysis report guide](docs/benchmarks/static-analysis.md) for details.
+Time is optional; add `FORMAT=json` for JSON output. Use `TIME_SCOPE=full` only
+when the supplied seconds cover exactly the saved scan. The default `unknown`
+and `incremental` scopes suppress throughput. See the
+[saved statistics guide](docs/benchmarks/static-analysis.md).
 
-For a fresh full plugin rebuild and analysis with Valgrind, use the
-[full benchmark setup](scripts/benchmark/README.md). It times dependency
-installation, Rust compilation, language updates, dashboard compilation,
-packaging, native analysis and a full Codex graph analysis separately. Separate
-Callgrind, Massif and Memcheck passes profile the Rust pipeline. Start with
-`make benchmark-setup`; `make help` lists the benchmark commands.
+For a complete build and analysis benchmark on Linux:
+
+```sh
+make benchmark-setup
+make benchmark-full BENCHMARK_SUBJECT=/path/to/repo \
+  BENCHMARK_RUN_DIR=/tmp/ua-full-run-1
+```
+
+The run directory must be new and outside both the subject and tool checkout.
+Read its `report.md` for phase timings, `valgrind/` for profiles and
+`analysis-statistics.json` for the resulting graph statistics. The default
+Codex settings are **gpt-6.1-sol**, **medium**, **standard** service.
+
+Callgrind, Massif and Memcheck each replay the four native Rust stages. Those
+passes do not invoke AI or feed their outputs to Codex. Codex runs afterward,
+invokes Rust as part of its normal workflow, and reads those outputs normally.
+The profiles describe the separate native workload, not every Rust helper used
+during graph generation. See the [full-run guide](scripts/benchmark/README.md)
+for prerequisites, partial config examples and report details.
+
+For native timing alone, follow the
+[native stage guide](docs/benchmarks/large-monorepo.md). `make help` summarizes
+all modes. Benchmarks run only through explicit targets; normal builds and tests
+do not execute full-repository benchmarks or model analysis.
 
 ## License
 
