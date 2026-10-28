@@ -136,6 +136,7 @@ pub fn parts_to_process(root: &Path, full: bool, changed: &[String]) -> Result<V
     let config = persistence::load_config(root);
     let included = crate::strings(&config["includedParts"]);
     if full
+        || crate::partition_layout::changed(root)?
         || changed.is_empty()
         || changed
             .iter()
@@ -143,13 +144,16 @@ pub fn parts_to_process(root: &Path, full: bool, changed: &[String]) -> Result<V
     {
         return Ok(included);
     }
-    let mut parts: BTreeSet<_> = affected_parts(
+    let mut parts: BTreeSet<_> = crate::partition_layout::assign(
+        root,
         changed,
         &crate::strings(&config["sourceFolders"]),
         config["splitDepth"].as_u64().map(|d| d as usize),
-        &included,
     )?
     .into_iter()
+    .filter(|(_, files)| !files.is_empty())
+    .map(|(name, _)| name)
+    .filter(|p| included.is_empty() || included.contains(p))
     .collect();
     let data = crate::persistence::data_dir(root);
     let has_inventory = data.join("intermediate/scan-result.json").exists();

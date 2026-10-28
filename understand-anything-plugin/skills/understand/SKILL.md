@@ -24,7 +24,7 @@ Analyze the current codebase and write `$UA_DIR/knowledge-graph.json`, which pow
 
 ## Options
 
-Analysis is **part-based by default**: the repo is split into folder-parts, and
+Analysis is **part-based by default**: the repo is split into folder-parts or saved custom groups, and
 on first run you choose which parts to analyze (remembered for later updates).
 Each part is analyzed independently into `partitions/<part>.knowledge-graph.json`
 and merged into the full `knowledge-graph.json`.
@@ -41,8 +41,13 @@ and merged into the full `knowledge-graph.json`.
 - A directory path — analyze that directory instead of the cwd
 
 Partition config (`sourceFolders`, `splitDepth`, `includedParts`) is persisted in
-`$UA_DIR/config.json`. At least one of source / depth is always set.
+`$UA_DIR/config.json`. Folder partitioning requires source / depth; custom mode does not.
 On an update run the saved config is reused silently (no prompts).
+
+User-owned grouping rules live in `$UA_DIR/partition-layout.json`, separately
+from generated inventories and graphs. Use [understand-partitions](../understand-partitions/SKILL.md)
+to manage named include/exclude groups through discussion. Normal updates,
+`--all`, and `--full` reuse these rules; they never reset the layout to folders.
 
 Read [host integration](../../HOSTS.md) before running the workflow. It explains Claude/Codex invocation, argument handling, and how to load the bundled agent instructions. Give concise updates during long runs and report failures when they occur.
 
@@ -89,13 +94,17 @@ Decide full analysis vs. incremental update.
 
 5. If `$UA_DIR/knowledge-graph.json` exists, read it.
 6. If `$UA_DIR/meta.json` exists, read it for `gitCommitHash`.
-7. **Resolve exclusion scope before deciding whether to stop:** parse all `--exclude` values into an ordered list `$EXCLUDE_PATTERNS` (split on commas, trim whitespace, drop empty entries; default `[]`). Compare this list with `meta.json.excludePatterns` (missing means `[]`). If they differ, set `$SCOPE_CHANGED=true`: continue through SCAN and refresh every included part, even if HEAD or the changed-file list is unchanged. Do not change `includedParts` or write ignore files. Review-only requests stay read-only; disclose that exclusion changes require an analysis run.
+7. **Resolve scope before deciding whether to stop:** run
+   `"$PLUGIN_ROOT/packages/rust/run.sh" partition_layout_status "$PROJECT_ROOT"`.
+   If `changed` is true, set `$SCOPE_CHANGED=true`, even at unchanged HEAD.
+   A malformed layout is a hard failure; do not bypass it by removing the file.
+   Parse all `--exclude` values into an ordered list `$EXCLUDE_PATTERNS` (split on commas, trim whitespace, drop empty entries; default `[]`). Compare this list with `meta.json.excludePatterns` (missing means `[]`). If they differ, also set `$SCOPE_CHANGED=true`: continue through SCAN and refresh every included part, even if HEAD or the changed-file list is unchanged. Do not change `includedParts` or write ignore files. Review-only requests stay read-only; disclose that scope changes require an analysis run.
 
    **Decision:**
 
    | Condition | Action |
    |---|---|
-   | `--full`, exclusion scope changed (unless review-only), or no existing graph/meta | Full analysis (all phases) |
+   | `--full`, scope changed (unless review-only), or no existing graph/meta | Full analysis (all phases) using the saved layout |
    | `--review` + existing graph + unchanged hash | Skip to Phase 5 (review-only) |
    | Existing graph + unchanged hash | Ask: "(a) full rebuild, (b) LLM reviewer, (c) nothing?" — follow choice; (c) STOP |
    | Existing graph + changed files | Incremental (re-analyze only the **affected parts** — see Phase 1.6/2) |
@@ -106,7 +115,7 @@ Decide full analysis vs. incremental update.
    ```bash
    python3 "$SKILL_DIR/scripts/write_changed_files.py" "$PROJECT_ROOT" "<lastCommitHash>"
    ```
-   If `changed-files.json` contains an empty array (`[]`) and exclusion scope is unchanged, skip analysis. With `--review`, follow the
+   If `changed-files.json` contains an empty array (`[]`) and `$SCOPE_CHANGED` is false, skip analysis. With `--review`, follow the
    review-only path above even when the commit hash changed (for example, a
    sibling monorepo project changed). Otherwise report "Graph is up to date"
    and STOP. Do not advance the saved baseline for a review-only run.
@@ -153,9 +162,17 @@ If `filteredByIgnore > 0`, note it for the final report.
 
 ## Phase 1.6 — PARTITION
 
-Split the scanned repo into folder-parts and decide which to analyze. Load `$UA_DIR/config.json` first.
+Assign the scanned files to parts and decide which to analyze. Load
+`$UA_DIR/config.json` and the optional `$UA_DIR/partition-layout.json` first.
+The engine applies the saved layout automatically. In `custom` mode, skip folder
+detection and the source/depth prompt; show the named groups and counts instead.
+In `hybrid` mode, patterns assign named groups and folder rules handle unmatched
+files. Legacy `groupingOverrides`, `pathPrefixParts`, and saved layout depth are
+also honored. See [layout format](../understand-partitions/SKILL.md#saved-format).
+Do not hand-edit generated `part-files/` or `partitions.json` to customize scope.
 
-**Resolve source / depth** (at least one required; flags override config, config overrides detection):
+**Resolve source / depth for folder/hybrid mode** (saved layout values take precedence over flags, then config, then detection; explicit named patterns always remain in effect):
+- Use any source/depth stored in `partition-layout.json` first. Change those saved fields through `understand-partitions` when the user requests a different folder fallback.
 - `--source=` / `--split=` given → use them.
 - else `config.sourceFolders` / `config.splitDepth` present → use them (update run).
 - else run layout detection for a recommended default:
@@ -165,7 +182,7 @@ Split the scanned repo into folder-parts and decide which to analyze. Load `$UA_
   It prints `{detectedRoots, recommendation:{sourceFolders, splitDepth}}` (single `src/` → `{[src],1}`; monorepo → `{null,2}`; flat → `{null,1}`).
 
 **First run** (no `config.includedParts`) **and not `--all`:**
-1. Show the detected roots + recommended source/depth; ask the user to accept or adjust (at least one of source/depth must be set). Wait for confirmation.
+1. For folder/hybrid mode, show the detected roots + recommended source/depth; ask the user to accept or adjust (at least one must be set). For custom mode, use the saved definitions. Do not ask again about grouping already authorized by the user.
 2. Partition (writes `intermediate/partitions.json` + per-part file lists under `intermediate/part-files/`):
    ```bash
    "$PLUGIN_ROOT/packages/rust/run.sh" partition_files "$PROJECT_ROOT" [--source=a,b] [--depth=N]
@@ -175,10 +192,11 @@ Split the scanned repo into folder-parts and decide which to analyze. Load `$UA_
    ```bash
    "$PLUGIN_ROOT/packages/rust/run.sh" write_config "$PROJECT_ROOT" --source=<...> --depth=<N> --parts=<comma-separated included>
    ```
+   In custom mode omit `--source` and `--depth`; only `--parts` is required.
 
 **`--all`:** partition with the resolved source/depth, then persist `includedParts` = **every** part from `partitions.json` (no inclusion prompt).
 
-**Update run** (config present, no first-run prompt needed): re-partition with the saved source/depth to refresh `partitions.json` + `part-files/`; keep the saved `includedParts`. Included parts with no remaining files retain an empty file list; process them to replace their saved graph with an empty graph.
+**Update run** (config present, no first-run prompt needed): run `partition_files "$PROJECT_ROOT"` to refresh inventories from the saved layout/config; keep the saved `includedParts`. Included parts with no remaining files retain an empty file list; process them to replace their saved graph with an empty graph. If the helper detects an unregistered hand-authored graph or modified inventory, migrate its scope to saved layout rules before retrying; do not delete the graph or silently use an empty assignment.
 
 **Determine `$PARTS_TO_PROCESS`** (prints part names, one per line):
 ```bash
@@ -223,10 +241,17 @@ For **each** part in `$PARTS_TO_PROCESS`, run steps 1–4. Parts are independent
    ```
    An empty batch plan reuses the prepared baseline without dispatching analyzers; an empty assigned part produces an empty graph. It creates scan-backed boundary stubs for references outside the prepared part before normalization, combines nodes/edges, normalizes IDs and complexity values, rewrites edge refs, dedupes, drops dangling edges, and canonicalizes `tested_by` edges (all resulting edges run `production → test`; sourced production nodes get a `"tested"` tag). Add its warnings to `$PHASE_WARNINGS`. Read `$UA_DIR/intermediate/batch-merge-report.txt` if stderr was truncated; investigate any loaded batch that contributed no nodes or edges before publishing.
 
-4. **Persist the part graph** (adds boundary stubs for cross-part edges, tags it with the part name, writes `partitions/<part>.knowledge-graph.json`, and clears this part's `batch-*.json` + `assembled-graph.json` scratch):
+4. **Persist the part graph** (adds boundary stubs for cross-part edges, tags it with the part name, archives the complete previous graph, atomically writes `partitions/<part>.knowledge-graph.json`, and clears this part's `batch-*.json` + `assembled-graph.json` scratch):
    ```bash
    "$PLUGIN_ROOT/packages/rust/run.sh" assemble_part_graph "$PROJECT_ROOT" "<part>" "<commit hash>"
    ```
+
+   On replacement, retain and report `previousGraphPath` from the JSON summary.
+   This points to the exact original graph bytes under `$UA_DIR/history/partitions/`,
+   outside scratch cleanup, with recovery instructions and publication-time config
+   snapshots alongside it. Archive failure stops publication. Scratch recovery
+   directories and batch plans alone are not full graph backups. Native merged
+   graph publication similarly archives the previous `knowledge-graph.json`.
 
 Before publication, `assemble_part_graph` verifies that the saved graph, scan,
 assigned inventory, and source bytes still match preparation. Source drift is a

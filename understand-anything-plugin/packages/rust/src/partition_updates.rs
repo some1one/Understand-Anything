@@ -24,6 +24,8 @@ fn git_paths(root: &Path, args: &[&str]) -> Result<BTreeSet<String>> {
 /// Compare against this part's saved revision, never the merged metadata's newer
 /// revision. This function does not write scratch files or modify saved graphs.
 pub fn plan(root: &Path, part: &str, full: bool) -> Result<Value> {
+    crate::partition_layout::validate_name(part)?;
+    crate::partition_layout::verify_inventory(root)?;
     let data = data_dir(root);
     let inter = data.join("intermediate");
     let scan = read_json(&inter.join("scan-result.json"))?;
@@ -205,7 +207,7 @@ pub fn prepare(root: &Path, part: &str, full: bool) -> Result<Value> {
         .collect();
     let batches = crate::batching::compute_batches(root, &scan, Some(&selected));
     let hashes = source_hashes(root, &crate::strings(&plan["assignedFiles"]))?;
-    let record = json!({"version":1,"part":part,"plan":plan,"previousGraph":previous,"scan":scan,"sourceHashes":hashes});
+    let record = json!({"version":1,"part":part,"plan":plan,"previousGraph":previous,"scan":scan,"sourceHashes":hashes,"partitionLayout":crate::partition_layout::load(root)?});
     let stamp = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map_err(|e| Error::Invalid(e.to_string()))?
@@ -273,12 +275,18 @@ pub fn prepare(root: &Path, part: &str, full: bool) -> Result<Value> {
 /// Verify the snapshot before publishing a prepared part; legacy full analysis
 /// without a preparation record still uses the ordinary symbol gate.
 pub fn verify_preparation(root: &Path, part: &str, previous: &Value) -> Result<Option<Value>> {
+    crate::partition_layout::verify_inventory(root)?;
     let inter = data_dir(root).join("intermediate");
     let path = inter.join("part-update.json");
     if !path.exists() {
         return Ok(None);
     }
     let record = read_json(&path)?;
+    if record["partitionLayout"] != crate::partition_layout::load(root)? {
+        return Err(Error::Invalid(
+            "Partition layout changed during analysis; repartition and prepare again".into(),
+        ));
+    }
     if record["version"] != 1 || record["part"] != part || record["previousGraph"] != *previous {
         return Err(Error::Invalid(
             "Partition preparation no longer matches the saved graph; prepare this part again"

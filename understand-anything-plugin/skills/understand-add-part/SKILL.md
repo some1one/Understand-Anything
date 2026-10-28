@@ -24,10 +24,14 @@ folder/module appears, or to bring a previously-excluded part into the selection
 without re-analyzing the whole repo.
 
 Requires a prior `/understand` run (a `$UA_DIR/config.json` with
-`sourceFolders` / `splitDepth`). If missing, tell the user to run `/understand`
+folder settings or a saved custom layout). If missing, tell the user to run `/understand`
 first.
 
 `$ARGUMENTS` is the folder to add (relative to the project root), e.g. `src/payments`.
+For named groups or non-folder membership, use
+[understand-partitions](../understand-partitions/SKILL.md). In custom mode, define
+the requested group's include/exclude rules there before adding it; preserve
+the saved layout rather than inventing folder parts outside its rules.
 
 Read [host integration](../../HOSTS.md) for invocation, argument handling, and agent dispatch.
 
@@ -38,13 +42,13 @@ Read [host integration](../../HOSTS.md) for invocation, argument handling, and a
    PLUGIN_ROOT="$("$SKILL_DIR/../understand/scripts/ensure_rust_engine.sh")"
    UNDERSTAND_DIR="$SKILL_DIR/../understand"
    ```
-   Confirm `$UA_DIR/config.json` exists with `sourceFolders`/`splitDepth`; if not, stop and instruct the user to run `/understand`.
+   Confirm `$UA_DIR/config.json` exists with folder settings or a saved custom layout; if not, stop and instruct the user to run `/understand`.
 
 2. **Refresh the scan** so the new folder's files are known — run **`/understand` Phase 1 (SCAN)**: dispatch the `project-scanner` agent exactly as that phase describes, refreshing `intermediate/scan-result.json`. (Use the resolved project root and `git -C "$PROJECT_ROOT" rev-parse HEAD`.)
 
-3. **Partition and select the new part.** Re-partition with the saved source/depth (no flags → `partition_files` reads none, so pass the saved values from `config.json`):
+3. **Partition and select the new part.** Re-partition using the saved layout and config:
    ```bash
-   "$PLUGIN_ROOT/packages/rust/run.sh" partition_files "$PWD" [--source=<saved>] [--depth=<saved>]
+   "$PLUGIN_ROOT/packages/rust/run.sh" partition_files "$PROJECT_ROOT"
    ```
    From `intermediate/partitions.json`, take the part key(s) equal to `$ARGUMENTS` or starting with `$ARGUMENTS/`. Add them to the selection (existing `includedParts` + new):
    ```bash

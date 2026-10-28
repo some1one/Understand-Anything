@@ -307,7 +307,7 @@ pub fn save_knowledge_graph(root: &Path) -> Result<Value> {
     let dir = crate::persistence::data_dir(&root);
     let graph = read_json(&dir.join("intermediate/assembled-graph.json"))?;
     let path = dir.join("knowledge-graph.json");
-    write_json(&path, &graph)?;
+    let archive = crate::persistence::publish_graph(root, "knowledge-graph.json", &graph)?;
     let nodes: Vec<_> = array(&graph, "nodes")
         .iter()
         .filter(|n| n.is_object())
@@ -334,7 +334,8 @@ pub fn save_knowledge_graph(root: &Path) -> Result<Value> {
         .filter(|l| l.is_object())
         .map(|l| json!({"id":l["id"],"name":l["name"],"nodeCount":array(l,"nodeIds").len()}))
         .collect();
-    let summary = json!({"outputPath":path,"project":graph.get("project").cloned().unwrap_or(json!({})),"analyzedFiles":paths.len(),"totalNodes":nodes.len(),"nodesByType":counts(&nodes),"totalEdges":edges.len(),"edgesByType":counts(&edges),"layers":layers});
+    let mut summary = json!({"outputPath":path,"project":graph.get("project").cloned().unwrap_or(json!({})),"analyzedFiles":paths.len(),"totalNodes":nodes.len(),"nodesByType":counts(&nodes),"totalEdges":edges.len(),"edgesByType":counts(&edges),"layers":layers});
+    if let Some(archive) = archive { summary["previousGraphPath"] = json!(archive); }
     write_json(&dir.join("intermediate/save-summary.json"), &summary)?;
     Ok(summary)
 }

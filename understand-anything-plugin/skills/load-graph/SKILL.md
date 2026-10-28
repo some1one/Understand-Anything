@@ -51,7 +51,7 @@ rebuild or modify the graph.
    ```bash
    python3 "$SKILL_DIR/scripts/load_graph.py" "$PWD" "$ARGUMENTS"
    ```
-   Part names match the folder-parts shown by `/understand` (e.g. `src`, `src/api`, `packages/web`).
+   Part names match those shown by `/understand`: folder parts (e.g. `src`, `src/api`, `packages/web`) or logical groups (e.g. `authentication`, `operations`) defined with [understand-partitions](../understand-partitions/SKILL.md). Do not infer membership from a group name; use its saved rules and generated inventory.
 
 3. Use the printed graph as context for the user's questions:
    - Reference specific files, functions, and relationships from the loaded scope.

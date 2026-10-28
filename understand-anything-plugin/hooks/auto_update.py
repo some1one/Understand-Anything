@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pull plugin source on session start and suggest opt-in project graph upkeep."""
+"""Check plugin updates on session start; never install or start graph work."""
 
 import json
 from pathlib import Path
@@ -9,9 +9,10 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from data_directory import data_dir
-from update_plugin import update_plugin
-from setup_runtime import prepare
-import os
+
+def check_plugin_update():
+    from update_plugin import check_plugin_update as check
+    return check()
 
 def read_object(path):
     value = json.loads(path.read_text(encoding="utf-8"))
@@ -22,12 +23,8 @@ def context_for(event):
     if not isinstance(event, dict):
         return None
     name = event.get("hook_event_name")
-    if not isinstance(name, str) or name not in {"SessionStart", "PostToolUse"}:
+    if name != "SessionStart":
         return None
-    if name == "PostToolUse":
-        tool_name = event.get("tool_name")
-        if not isinstance(tool_name, str) or tool_name not in {"Bash", "exec_command", "shell", "shell_command"}:
-            return None
     cwd = event.get("cwd")
     if not isinstance(cwd, str) or not cwd:
         return None
@@ -58,8 +55,8 @@ def context_for(event):
             "additionalContext": (
                 "[understand-anything] Auto-update is enabled and the graph's "
                 f"commit differs from HEAD. Project root: {json.dumps(str(root))}. "
-                f"Read {json.dumps(str(prompt))} and follow its update workflow "
-                "for this project within the current task's permissions. "
+                f"To refresh it, use understand for this project (workflow: {json.dumps(str(prompt))}). "
+                "Ask for confirmation before starting graph maintenance unless the user already requested that update. "
                 "If analysis is already running, let that run finish first. "
                 "Graph maintenance stays offline. Dictionary downloads belong to "
                 "marketplace setup or explicit plugin maintenance via /understand-update."
@@ -73,25 +70,17 @@ def main():
         event = json.load(sys.stdin)
     except (OSError, ValueError):
         return
-    plugin_message = None
-    setup_failed = False
-    if isinstance(event, dict) and event.get("hook_event_name") == "SessionStart":
-        plugin_message = update_plugin()
-        if os.environ.get("UA_SKIP_RUNTIME_SETUP") != "1":
-            try:
-                ready = prepare()
-                if ready["prepared"]:
-                    notice = f"[understand-anything] Runtime ready. Language assets: {ready['assetRoot']}/packages/rust"
-                    plugin_message = notice if not plugin_message else plugin_message + "\n" + notice
-            except (OSError, ValueError, subprocess.SubprocessError) as error:
-                setup_failed = True
-                notice = f"[understand-anything] Runtime setup failed: {error}. Run understand-setup to retry."
-                plugin_message = notice if not plugin_message else plugin_message + "\n" + notice
+    if not isinstance(event, dict) or event.get("hook_event_name") != "SessionStart":
+        return
     try:
-        result = None if setup_failed else context_for(event)
-    except (OSError, ValueError, subprocess.SubprocessError):
-        # Missing config, unborn/non-Git repositories, or malformed input should
-        # never block a session or turn a successful tool call into a failure.
+        plugin_message = check_plugin_update()
+    except Exception as error:
+        # Optional maintenance must never abort an agent session.
+        plugin_message = f"[understand-anything] Plugin update check skipped: {type(error).__name__}: {error}"
+    try:
+        result = context_for(event)
+    except Exception:
+        # Unborn/non-Git projects, missing files and malformed config are harmless.
         result = None
     if plugin_message:
         if result:

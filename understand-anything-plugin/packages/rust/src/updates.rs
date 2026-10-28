@@ -366,7 +366,7 @@ pub fn fingerprint_check(root: &Path) -> Result<Value> {
         verify_prepared_revision(root)?;
         let mut graph = required(&ua(root, "knowledge-graph.json"))?;
         refresh_project_metadata(&mut graph, &scan, s(&state,"currentCommit"))?;
-        write(&ua(root,"knowledge-graph.json"), &graph)?;
+        crate::persistence::publish_graph(root, "knowledge-graph.json", &graph)?;
         write_meta(root, s(&state, "currentCommit"), None)?;
         analysis["metadataUpdated"] = json!(true);
     }
@@ -794,7 +794,7 @@ pub fn finalize(root: &Path) -> Result<Value> {
     merged["layers"] = json!(reconcile_layers(array(&merged, "nodes"), array(&merged, "edges"), layers));
     clean_graph(&mut merged);
     refresh_project_metadata(&mut merged, &scan, current)?;
-    write(&ua(root, "knowledge-graph.json"), &merged)?;
+    crate::persistence::publish_graph(root, "knowledge-graph.json", &merged)?;
     crate::query_dictionary::refresh(&ua(root, "knowledge-graph.json"))?;
     let changed: Vec<_> = strings(&analysis["filesToReanalyze"])
         .into_iter()

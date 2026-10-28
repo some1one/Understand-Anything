@@ -34,6 +34,13 @@ def main(argv: list[str] | None = None) -> int:
         "version": "1.0.0",
         "analyzedFiles": analyzed_files,
     }
+    layout_path = data_dir(project_root) / "partition-layout.json"
+    if layout_path.exists():
+        try:
+            payload["partitionLayout"] = json.loads(layout_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as err:
+            sys.stderr.write(f"Cannot read partition layout: {err}\n")
+            return 1
     scan_path = data_dir(project_root) / "intermediate" / "scan-result.json"
     if scan_path.exists():
         try:

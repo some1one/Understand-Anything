@@ -25,6 +25,9 @@ Claude Code and Codex through shared skills and host-specific manifests.
   with `.uaignore` analysis rules and compatibility for existing
   `.understand-anything/` projects. Freshness checks respect analysis exclusions
   and distinguish saved snapshots from current source.
+- **Persistent custom partitions:** discuss named include/exclude groups spanning
+  folders with [understand-partitions](understand-anything-plugin/skills/understand-partitions/SKILL.md).
+  Saved rules survive normal updates and full rebuilds.
 - **Focused agent exploration:** shared skills support bounded graph queries,
   component explanations, selected-part loading, and context reuse. The
   `understand-agent-instructions` skill prints this guidance or integrates it
@@ -66,17 +69,18 @@ codex plugin marketplace add /absolute/path/to/Understand-Anything/understand-an
 
 In Junie CLI, use `/extensions marketplace add` with that same directory.
 Archives and Debian packages include these same catalogs inside the plugin
-payload. Native session-start hooks run a bounded, fast-forward-only `git pull`
-on the plugin's own clean checkout. Cached or packaged copies can identify the
+payload. Native session-start hooks check the plugin's upstream revision with
+bounded `git ls-remote`; they do not fetch or pull. They report available updates
+with instructions and require user confirmation before applying them. Cached or packaged copies can identify the
 source checkout with `UA_PLUGIN_REPO=/absolute/path/to/Understand-Anything`.
-They never pull the project being analyzed. See [hook behavior](understand-anything-plugin/HOSTS.md#hooks).
+They never update the project being analyzed. See [hook behavior](understand-anything-plugin/HOSTS.md#hooks).
 
 ## Marketplace runtime setup
 
 The source installer prepares the runtime before its native marketplace install.
 For a direct marketplace install, Codex exposes `understand-setup` as its setup
-workflow; the first trusted session-start hook also prepares a missing or stale
-runtime. Native marketplaces do not share a general post-install shell event,
+workflow. Compilation and language preparation run only during installation or
+explicit setup, never during session startup. Native marketplaces do not share a general post-install shell event,
 so downloading a plugin alone does not guarantee compilation has already run.
 
 Setup compiles the Rust engine and its Cargo dependencies when no current binary
@@ -102,8 +106,8 @@ python3 /path/to/understand-anything-plugin/scripts/setup_runtime.py --plugin-ro
 
 A successful setup is reused until its inputs or assets change. Source builds
 need stable Rust/Cargo and network access for missing crates and language data.
-Hooks need the host's normal trust/permissions; `UA_SKIP_RUNTIME_SETUP=1` disables
-session-start preparation when managing runtime dependencies explicitly.
+The only registered hook is `SessionStart`; it checks updates and supplies
+instructions. It never starts installation, builds, downloads, or graph updates.
 
 Junie and JetBrains AI Assistant have separate skills-only targets:
 

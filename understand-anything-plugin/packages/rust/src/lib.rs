@@ -16,6 +16,7 @@ pub enum Error {
     Http(#[from] reqwest::Error),
 }
 pub mod partition;
+pub mod partition_layout;
 pub mod persistence;
 pub mod search;
 pub mod validation;

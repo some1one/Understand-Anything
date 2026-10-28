@@ -31,6 +31,11 @@ to find parts rather than dumping graph JSON. A part `src/api` is stored as
 all configured parts, which may be more context than needed. External/stub nodes
 refer to unloaded parts: expand only the parts needed to follow the relationship.
 
+Parts can be logical groups spanning folders. Read `partition-layout.json` for
+their include/exclude rules rather than assuming a name is a directory. Use
+`understand-partitions` to discuss and save grouping changes; generated inventories
+are disposable. Normal and full analysis preserve saved grouping definitions.
+
 Check the exact snapshot before relying on graph claims:
 
 ```bash

@@ -1,10 +1,11 @@
 # Auto-update knowledge graph
 
-The session-start hook separately pulls the plugin source checkout. This workflow
+The session-start hook only checks plugin update availability. This workflow
 maintains the analyzed graph; do not run `git pull` in the analyzed project.
 
-Follow this workflow when a native hook reports a stale graph and the project's
-`config.json` explicitly enables `autoUpdate`. Read [host integration](../HOSTS.md)
+Follow this workflow only after the user requests or confirms graph maintenance.
+A native hook may report a stale graph when `config.json` enables `autoUpdate`;
+that reminder does not authorize analysis. Read [host integration](../HOSTS.md)
 for dispatch and host conventions. Use the absolute project root in the hook
 message; resolve the plugin root from this file's parent directory.
 
@@ -16,8 +17,8 @@ UA_DIR=$(python3 "$PLUGIN_ROOT/scripts/data_directory.py" "$PROJECT_ROOT")
 
 Use that directory for the entire update, including worker inputs and outputs.
 
-An enabled hook authorizes this graph-maintenance workflow within the current
-task's permissions. Honor instructions to stop and wait for an existing analysis
+An explicit update request authorizes this graph-maintenance workflow within the
+current task's permissions. Honor instructions to stop and wait for an existing analysis
 run to finish before starting another. Do not stage, commit, or modify source files.
 
 Dictionary dependencies are discovered during installation and the explicit
@@ -29,8 +30,8 @@ rebuilds project caches from configured system data and local fallback snapshots
 
 Read `$UA_DIR/config.json`. If it contains
 `includedParts`, read `$PLUGIN_ROOT/skills/understand/SKILL.md` and run its
-incremental path for the supplied project root. Reuse the saved source/depth and
-part selection. Refresh the scan, analyze affected or pending parts, merge, and
+incremental path for the supplied project root. Reuse the saved partition layout,
+source/depth, and part selection. Refresh the scan, analyze affected or pending parts, merge, and
 validate before publishing the new baseline.
 
 Do not run the legacy file-only flow below on a part-based graph: it would leave

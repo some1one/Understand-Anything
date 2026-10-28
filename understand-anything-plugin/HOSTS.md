@@ -156,23 +156,23 @@ Codex supplies `CLAUDE_PLUGIN_ROOT` as a compatibility variable for the shared
 hook command. Codex hooks must be reviewed and trusted through the host before
 they run. Installation alone does not establish trust.
 
-On `SessionStart`, the hook runs a bounded fast-forward-only pull of the plugin's
-own source repository. It resolves the checkout from the plugin location, or
-`UA_PLUGIN_REPO` for a cached/packaged install, and validates that it is an
-Understand Anything checkout. It never derives a pull target from the event's
-project/cwd. Only a clean, attached branch with an upstream can be pulled. It
-uses `--ff-only --no-rebase --no-autostash --no-recurse-submodules`, reports failed
-or skipped updates, and never resets or stashes local work. Git subprocesses and
-fetch children have time limits. A payload without a Git checkout is skipped;
-use package upgrades or identify the source repo explicitly. Reload the host
-following an update to use changed cached skills/hooks.
+Only `SessionStart` is registered; there is no tool-call hook. Startup checks
+update availability in the plugin's own checkout with `git ls-remote`, using one
+eight-second budget for all Git probes and the remote query. It never fetches,
+pulls, changes refs, or starts setup. The checkout comes from the plugin location
+or `UA_PLUGIN_REPO` for cached/packaged installs, never the analyzed project's cwd.
+An attached branch with a configured upstream is required. Missing/non-Git
+payloads are skipped; failed checks produce a notice without failing the session.
 
-After the session-start pull, the hook invokes `scripts/setup_runtime.py` to
-prepare the engine, supported parser libraries and dictionaries. Setup has a
-25-minute deadline and the session hook allows 30 minutes for first compilation
-and downloads. A readiness fingerprint and lock reuse completed setup and
-serialize concurrent sessions. Failure is reported and suppresses automatic graph
-maintenance for that event. `PostToolUse` never initializes runtime dependencies.
+When the upstream differs, give the user the fast-forward-only pull instructions
+from the notice or ask for confirmation before applying the update. Do not start
+updates, compilation, downloads, or graph analysis merely because a check found
+changes. After an authorized plugin update, run installation/setup as needed and
+reload/reinstall the plugin so the host picks up changed cached skills and hooks.
+
+Runtime preparation belongs to installation or explicit `understand-setup`,
+never session startup. Setup has a 25-minute deadline, readiness fingerprint and
+lock to reuse completed preparation and serialize concurrent setup commands.
 
 Codex declares `extensions.com.openai.onboardingSkill` in its compatibility
 manifest so users can run `understand-setup` after direct marketplace installation.
@@ -183,12 +183,14 @@ For local marketplaces, setup discovers the registered source folder (or uses
 project as the default storage target. Existing dictionary paths remain in effect.
 `UA_PARSER_CACHE_DIR` overrides parser storage, and `run.sh` reads the recorded
 cache path for later engine invocations. CLI `--parser-cache-dir` has priority.
-`UA_SKIP_RUNTIME_SETUP=1` opts out of the session-start setup routine.
+Session startup does not run runtime setup, so `UA_SKIP_RUNTIME_SETUP` is no longer needed.
 
-`PostToolUse` never pulls. Graph maintenance reminders remain separately gated
+Session-start graph maintenance reminders remain separately gated
 by `config.json` containing `"autoUpdate": true` and a saved graph commit that
 differs from the analyzed project's HEAD. Hooks do not commit, stage, or write
-graphs themselves. Runtime preparation can build/download dependencies; graph
+graphs themselves. A reminder is not authorization to start analysis: ask for
+confirmation or provide the command unless the user already requested the update.
+Runtime preparation can build/download dependencies; graph
 updates and queries remain offline. Installation, runtime setup and explicit plugin maintenance
 ([understand-update](skills/understand-update/SKILL.md)) discover system dictionaries
 and download only missing local fallbacks. Packaging excludes dictionary data. A skills-only installation

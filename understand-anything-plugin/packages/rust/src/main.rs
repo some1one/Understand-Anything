@@ -54,6 +54,8 @@ const IMPLEMENTED: &[&str] = &[
     "scan_project",
     "detect_layout",
     "partition_files",
+    "write_partition_layout",
+    "partition_layout_status",
     "affected_parts",
     "parts_to_process",
     "write_config",
@@ -75,6 +77,47 @@ fn require<'a>(
     } else {
         Ok(args)
     }
+}
+fn partition_name_guard(
+    root: &Path,
+    name: &str,
+    parts: &std::collections::BTreeMap<String, Vec<String>>,
+    scanned: &[String],
+    folder_only: bool,
+) -> Result<()> {
+    ua::partition_layout::validate_name(name)?;
+    if !folder_only {
+        return Ok(());
+    }
+    let inter = ua::persistence::data_dir(root).join("intermediate");
+    let list = inter
+        .join("part-files")
+        .join(format!("{}.json", name.replace('/', "~")));
+    let previous = inter.join("partitions.json");
+    if list.exists() && previous.exists() {
+        let old = read_json(&previous)?;
+        if old["parts"].get(name).is_some() && read_json(&list)? != old["parts"][name] {
+            return Err(Error::Invalid(format!(
+                "Manual inventory for {name} would be overwritten; register its include/exclude rules in partition-layout.json first"
+            )));
+        }
+    }
+    if !parts.contains_key(name) {
+        let graph = ua::persistence::data_dir(root)
+            .join("partitions")
+            .join(partition::part_to_filename(name));
+        if graph.exists()
+            && ua::array(&read_json(&graph)?, "nodes").iter().any(|n| {
+                n["stub"] != true
+                    && ua::updates::node_file_path(n).is_some_and(|p| scanned.contains(&p))
+            })
+        {
+            return Err(Error::Invalid(format!(
+                "Saved custom part {name} has no definition; register its include/exclude rules in partition-layout.json before regenerating"
+            )));
+        }
+    }
+    Ok(())
 }
 fn scan_paths(root: &Path) -> Result<Vec<String>> {
     let scan = read_json(&ua::persistence::data_dir(&root).join("intermediate/scan-result.json"))?;
@@ -692,6 +735,17 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
                 )?)?))?
             );
         }
+        "write_partition_layout" => {
+            require(&args, 2, command, "<project-root> <layout.json>")?;
+            ua::partition_layout::save(&absolute(&args[0])?, &read_json(Path::new(&args[1]))?)?;
+        }
+        "partition_layout_status" => {
+            require(&args, 1, command, "<project-root>")?;
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&ua::partition_layout::status(&absolute(&args[0])?)?)?
+            );
+        }
         "partition_files" => {
             require(
                 &args,
@@ -700,8 +754,9 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
                 "<project-root> [--source=a,b] [--depth=N]",
             )?;
             let root = absolute(&args[0])?;
-            let mut sources = vec![];
-            let mut depth = None;
+            let config = ua::persistence::load_config(&root);
+            let mut sources = ua::strings(&config["sourceFolders"]);
+            let mut depth = config["splitDepth"].as_u64().map(|d| d as usize);
             for arg in &args[1..] {
                 if let Some(raw) = arg.strip_prefix("--source=") {
                     sources = raw
@@ -717,10 +772,12 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
                 }
             }
             let paths = scan_paths(&root)?;
-            let mut parts = partition::partition_files(&paths, &sources, depth)?;
+            let layout = ua::partition_layout::load(&root)?;
+            let mut parts = ua::partition_layout::assign_with_layout(&layout, &paths, &sources, depth)?;
             // Retain included parts as empty work items so deletion updates can
             // replace their saved graphs through the normal assembly pipeline.
             for part in ua::strings(&ua::persistence::load_config(&root)["includedParts"]) {
+                partition_name_guard(&root, &part, &parts, &paths, layout.is_null())?;
                 parts.entry(part).or_default();
             }
             let counts: serde_json::Map<_, _> = parts
@@ -729,10 +786,11 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
                 .collect();
             let inter = ua::persistence::data_dir(&root).join("intermediate");
             fs::create_dir_all(&inter)?;
-            write_json(
-                &inter.join("partitions.json"),
-                &json!({"parts":parts,"counts":counts}),
-            )?;
+            let mut inventory = json!({"parts":parts,"counts":counts});
+            if !layout.is_null() {
+                inventory["partitionLayout"] = layout;
+            }
+            write_json(&inter.join("partitions.json"), &inventory)?;
             let lists = inter.join("part-files");
             fs::create_dir_all(&lists)?;
             for entry in fs::read_dir(&lists)? {
@@ -760,12 +818,19 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
             require(&args, 2, command, "<project-root> <changed-files.json>")?;
             let root = absolute(&args[0])?;
             let config = ua::persistence::load_config(&root);
-            for name in partition::affected_parts(
+            for name in ua::partition_layout::assign(
+                &root,
                 &changed(Path::new(&args[1]))?,
                 &ua::strings(&config["sourceFolders"]),
                 config["splitDepth"].as_u64().map(|n| n as usize),
-                &ua::strings(&config["includedParts"]),
-            )? {
+            )?
+            .into_iter()
+            .filter(|(_, files)| !files.is_empty())
+            .map(|(name, _)| name)
+            .filter(|p| {
+                let included = ua::strings(&config["includedParts"]);
+                included.is_empty() || included.contains(p)
+            }) {
                 println!("{name}");
             }
         }
@@ -802,8 +867,12 @@ fn execute(mut args: Vec<String>) -> Result<i32> {
             let root = absolute(&args[0])?;
             let config =
                 partition::apply_updates(&ua::persistence::load_config(&root), &args[1..])?;
+            let layout = ua::partition_layout::load(&root)?;
             if ua::strings(&config["sourceFolders"]).is_empty()
                 && config["splitDepth"].as_i64().is_none_or(|n| n < 1)
+                && layout["mode"] != "custom"
+                && ua::strings(&layout["sourceFolders"]).is_empty()
+                && layout["splitDepth"].as_u64().is_none_or(|n| n < 1)
             {
                 return Err(Error::Invalid(
                     "Error: at least one of sourceFolders / splitDepth must be set.".into(),

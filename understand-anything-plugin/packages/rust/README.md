@@ -40,6 +40,32 @@ their existing output locations under `.ua` (or the existing legacy `.understand
 output argument is supplied. Schema export defaults to `./schemas` and copies
 embedded schemas; it does not regenerate the checked-in schema files.
 
+## Custom partitions
+
+The engine reads the project's `partition-layout.json` automatically when
+partitioning files or selecting affected parts. Named include/exclude groups can
+span directories; `custom` mode needs no folder depth. `hybrid` mode assigns
+unmatched files through folder rules. Definitions persist separately from generated
+inventories and are checked again during part preparation/publication.
+
+```sh
+./target/release/understand-anything-rs write_partition_layout /path/to/project /tmp/layout.json
+./target/release/understand-anything-rs partition_layout_status /path/to/project
+# After a complete, current scan has been written to the project data directory:
+./target/release/understand-anything-rs partition_files /path/to/project
+./target/release/understand-anything-rs write_config /path/to/project --parts=authentication,operations
+```
+
+See the [partition skill](../../skills/understand-partitions/SKILL.md) for the saved
+format and conversational management workflow. Regular and full regeneration both
+reuse saved rules; generated part inventories are not configuration.
+
+Native graph publication archives the complete prior file under the project data
+directory's `history/` before atomically replacing it. Part assembly and merged
+SAVE report `previousGraphPath`. Backup failure stops publication; scratch cleanup
+preserves history. Each archive includes recovery instructions and the config/layout
+present at publication. These backups are retained until explicitly removed.
+
 ## Parsers
 
 ```sh

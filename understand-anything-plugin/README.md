@@ -10,6 +10,22 @@ Build a codebase knowledge graph with Claude Code or Codex, then query, explain,
 compare, or visualize it. Both hosts use the same `skills/`, Rust engine,
 and graph files.
 
+## Custom analysis partitions
+
+Describe the groups you want to `understand-partitions`, for example:
+“Group login, API authentication, and security config as authentication, excluding
+tests; keep deployment files in operations.” The agent saves named include/exclude
+rules in `.ua/partition-layout.json`. Groups can span folders and overlap.
+Use `custom` mode for only the named groups, or `hybrid` for named groups plus
+folder-based parts for unmatched files. The selected groups remain in
+`.ua/config.json` as `includedParts`.
+
+Normal updates and `understand --full` regenerate inventories from these saved
+rules. Cleanup preserves the definitions, and layout edits trigger a refresh even
+when Git HEAD is unchanged. Hand-editing generated inventories alone is temporary;
+migrate existing custom file lists into saved rules before regenerating.
+See the [partition skill and format](skills/understand-partitions/SKILL.md).
+
 ## Installation
 
 Use `./install.sh claude` or `./install.sh codex` from the repository root.
@@ -30,8 +46,8 @@ this target requires project scope. AI Assistant's supported skill agents and
 IDE-wide storage differ from Junie's; see [host integration](HOSTS.md#junie-and-jetbrains-ai-assistant).
 
 Marketplace setup is available through `understand-setup` (declared as the Codex
-onboarding skill). The first trusted session-start hook also runs the same
-idempotent `scripts/setup_runtime.py` helper. It compiles missing/stale Rust engine
+onboarding skill). Installation or explicit setup runs the idempotent
+`scripts/setup_runtime.py` helper; session startup never invokes it. It compiles missing/stale Rust engine
 code and dependencies, fetches all supported parsers, and configures dictionaries.
 Local marketplace language data defaults to the source plugin's
 `packages/rust/parsers` and `packages/rust/dictionaries`, including when the host
@@ -66,6 +82,7 @@ first-run setup, requirements, commands, and troubleshooting (native Claude:
 | `understand` | Analyze the project, selected folder parts, or changed parts |
 | `load-graph` | Load selected part graphs or the full merged graph |
 | `understand-add-part` | Add an excluded or newly discovered folder part |
+| `understand-partitions` | Discuss and save named include/exclude groups spanning folders |
 | `understand-merge` | Recombine saved partitions without reanalysis |
 | `understand-chat` | Answer questions using graph context and current source |
 | `understand-explain` | Explain a file, function, or module |
@@ -122,6 +139,10 @@ Artifacts belong to the requested project or worktree:
 - `domain-graph.json`: optional business-domain view.
 - `fingerprints.json` and `meta.json`: incremental-analysis baseline.
 - `intermediate/`: scan, validation reports, and working outputs.
+- `history/`: complete previous graphs archived before native part/merged graph
+  replacement, with recovery instructions and publication-time config snapshots.
+  Successful saves report `previousGraphPath` when replacing an existing graph.
+  These archives survive intermediate cleanup; no automatic pruning is performed.
 
 A graph is a snapshot. Check source when answering questions about current
 behavior. A failed required analysis step keeps intermediate evidence and should
@@ -146,18 +167,18 @@ Static demos omit these checks unless `VITE_STALENESS_URL` supplies a report.
 
 ## Optional auto-update
 
-Native session-start hooks first update the plugin's own Git repository with a
-bounded `git pull --ff-only --no-rebase --no-autostash --no-recurse-submodules`.
-They require a clean checkout on a branch with a configured upstream. Dirty,
-detached, diverged, or unavailable checkouts and branches without an upstream are reported and
-left for explicit maintenance. The analyzed project's repository is never pulled.
-For cached or packaged plugins, set `UA_PLUGIN_REPO` to the original source
-repository root; a non-Git payload has nothing to pull. Restart/reload after a
-plugin update so the host picks up changed skills and hooks.
+The only registered hook is `SessionStart`. It checks the plugin repository's
+upstream revision with `git ls-remote`, with an eight-second total Git budget.
+It never pulls, fetches, changes refs, compiles, downloads, or starts graph work.
+Available updates produce instructions or a request for user confirmation. Apply
+the fast-forward-only pull only after authorization, then run setup as needed
+and reload/reinstall the plugin. For cached/packaged copies, set `UA_PLUGIN_REPO`
+to the original repository root. Failed checks do not fail the agent session.
 
 Graph auto-update is separate: enable it with the analysis skill's `--auto-update`
 flag. Hooks compare the stored graph commit with the project's HEAD at session
-start and after shell tools, then supply a workflow reminder for the host.
+start, then supply instructions for an explicitly requested refresh. A reminder
+does not authorize analysis. There is no tool-call hook.
 In Codex, review and trust the hook definition before expecting it to run.
 
 Part-based graphs refresh affected partitions and merge them again. Legacy

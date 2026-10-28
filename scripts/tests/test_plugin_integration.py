@@ -48,7 +48,7 @@ def run_hook(event):
     ).stdout
 
 
-@pytest.mark.parametrize("event_name", ["SessionStart", "PostToolUse"])
+@pytest.mark.parametrize("event_name", ["SessionStart"])
 def test_host_hook_context_and_no_writes(project, event_name):
     before = {p: p.read_bytes() for p in (project / ".understand-anything").iterdir()}
     nested = project / "src"
@@ -404,3 +404,29 @@ def test_published_metadata_retains_analysis_exclusion_scope(tmp_path):
     write_json(scan, {"files": []})
     assert writer.main([str(root), "other", "0"]) == 0
     assert "excludePatterns" not in json.loads(meta.read_text())
+
+
+def test_published_metadata_retains_partition_layout_across_inventory_cleanup(tmp_path):
+    root = tmp_path / "custom-layout"
+    layout = {"version": 1, "mode": "custom", "partitions": {
+        "authentication": {"include": ["/api/**", "/src/auth/**"], "exclude": ["**/*.test.*"]}
+    }}
+    layout_path = root / ".ua/partition-layout.json"
+    write_json(layout_path, layout)
+    writer = load_module(SCRIPTS / "write_meta.py")
+    assert writer.main([str(root), "same-head", "2"]) == 0
+    meta_path = root / ".ua/meta.json"
+    assert json.loads(meta_path.read_text())["partitionLayout"] == layout
+    write_json(root / ".ua/intermediate/partitions.json", {"parts": {"authentication": []}})
+    history_path = root / ".ua/history/partitions/authentication/snapshot/graph.json"
+    write_json(history_path, {"nodes": [{"id": "original"}], "edges": []})
+    history_bytes = history_path.read_bytes()
+    subprocess.run(["bash", str(SCRIPTS / "cleanup_intermediate.sh"), str(root)], check=True)
+    assert json.loads(layout_path.read_text()) == layout
+    assert json.loads(meta_path.read_text())["partitionLayout"] == layout
+    assert not (root / ".ua/intermediate/partitions.json").exists()
+    assert history_path.read_bytes() == history_bytes
+    previous = meta_path.read_bytes()
+    layout_path.write_text("{invalid")
+    assert writer.main([str(root), "same-head", "2"]) == 1
+    assert meta_path.read_bytes() == previous

@@ -185,7 +185,7 @@ def test_explicit_parser_argument_overrides_recorded_default(runtime, tmp_path):
 
 
 @pytest.mark.parametrize('event', ['SessionStart', 'PostToolUse'])
-def test_hook_initializes_runtime_only_on_session_start(monkeypatch, capsys, event):
+def test_hook_only_checks_updates_on_startup_and_never_imports_setup(monkeypatch, capsys, event):
     import importlib.util
     import io
     monkeypatch.syspath_prepend(str(PLUGIN / 'hooks'))
@@ -193,16 +193,29 @@ def test_hook_initializes_runtime_only_on_session_start(monkeypatch, capsys, eve
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     calls = []
-    monkeypatch.delenv('UA_SKIP_RUNTIME_SETUP', raising=False)
-    monkeypatch.setattr(module, 'update_plugin', lambda: calls.append('pull'))
-    monkeypatch.setattr(module, 'prepare', lambda: (calls.append('prepare') or {'prepared':True,'assetRoot':'/plugin-source'}))
+    monkeypatch.setattr(module, 'check_plugin_update', lambda: calls.append('check-update'))
     monkeypatch.setattr(module, 'context_for', lambda event: None)
     monkeypatch.setattr(sys, 'stdin', io.StringIO(json.dumps({'hook_event_name':event})))
     module.main()
-    output = capsys.readouterr().out
-    if event == 'SessionStart':
-        assert calls == ['pull','prepare']
-        assert 'Runtime ready' in json.loads(output)['systemMessage']
-    else:
-        assert calls == []
-        assert not output
+    assert calls == (['check-update'] if event == 'SessionStart' else [])
+    assert not capsys.readouterr().out
+    assert not hasattr(module, 'prepare')
+    assert not hasattr(module, 'runtime_status')
+
+
+def test_startup_check_failure_produces_context_and_does_not_fail_session(monkeypatch, capsys):
+    import importlib.util
+    import io
+    monkeypatch.syspath_prepend(str(PLUGIN / 'hooks'))
+    spec = importlib.util.spec_from_file_location('runtime_hook_failure', PLUGIN / 'hooks/auto_update.py')
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    def broken():
+        raise RuntimeError('fixture check failure')
+    monkeypatch.setattr(module, 'check_plugin_update', broken)
+    monkeypatch.setattr(module, 'context_for', lambda event: None)
+    monkeypatch.setattr(sys, 'stdin', io.StringIO('{"hook_event_name":"SessionStart"}'))
+    module.main()
+    output = json.loads(capsys.readouterr().out)
+    assert output['hookSpecificOutput']['hookEventName'] == 'SessionStart'
+    assert 'check skipped' in output['systemMessage']

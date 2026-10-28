@@ -176,8 +176,10 @@ pub fn run(command: &str, args: &[String]) -> Result<i32> {
         "assemble_part_graph" => {
             let root = root(&args[0])?;
             let part = &args[1];
+            ua::partition_layout::validate_name(part)?;
             let commit = args.get(2).map(String::as_str).unwrap_or("");
             let inter = ua::persistence::data_dir(&root).join("intermediate");
+            let _lock = ua::batch_files::lock(&inter)?;
             let scan = read_json(&inter.join("scan-result.json"))?;
             let assembled = read_json(&inter.join("assembled-graph.json"))?;
             let known = ua::array(&scan, "files")
@@ -214,7 +216,7 @@ pub fn run(command: &str, args: &[String]) -> Result<i32> {
                 graph = ua::updates::refresh_graph_imports(&graph,&preparation["scan"]["importMap"],&ua::strings(&preparation["plan"]["assignedFiles"]))?;
                 ua::updates::validate_analyzed_file_coverage(ua::array(&graph,"nodes"),&ua::strings(&preparation["plan"]["assignedFiles"]))?;
             }
-            write_json(&path, &graph)?;
+            let archive = ua::persistence::publish_graph(&root, &format!("partitions/{}", ua::partition::part_to_filename(part)), &graph)?;
             for entry in fs::read_dir(&inter)? {
                 let entry = entry?;
                 let name = entry.file_name().to_string_lossy().into_owned();
@@ -225,7 +227,8 @@ pub fn run(command: &str, args: &[String]) -> Result<i32> {
                     fs::remove_file(entry.path())?;
                 }
             }
-            let summary = serde_json::json!({"outputPath":path,"part":part,"nodes":ua::array(&graph,"nodes").len(),"edges":ua::array(&graph,"edges").len(),"boundaryStubs":ua::array(&graph,"nodes").iter().filter(|n|n["stub"]==true).count()});
+            let mut summary = serde_json::json!({"outputPath":path,"part":part,"nodes":ua::array(&graph,"nodes").len(),"edges":ua::array(&graph,"edges").len(),"boundaryStubs":ua::array(&graph,"nodes").iter().filter(|n|n["stub"]==true).count()});
+            if let Some(archive) = archive { summary["previousGraphPath"] = serde_json::json!(archive); }
             println!("{}", serde_json::to_string_pretty(&summary)?);
         }
         _ => {

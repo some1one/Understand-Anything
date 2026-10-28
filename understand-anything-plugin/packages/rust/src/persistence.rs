@@ -26,6 +26,40 @@ pub fn write_json(path: &Path, value: &Value) -> Result<()> {
     fs::write(path, serde_json::to_string_pretty(value)?)?;
     Ok(())
 }
+/// Archive the complete previous bytes before atomically publishing a graph.
+/// History lives outside scratch, so analysis cleanup cannot discard recovery.
+pub fn publish_graph(root: &Path, name: &str, value: &Value) -> Result<Option<PathBuf>> {
+    if Path::new(name).components().any(|c| !matches!(c, std::path::Component::Normal(_))) {
+        return Err(Error::Invalid("Graph destination must be a relative artifact path".into()));
+    }
+    let data = data_dir(root);
+    let path = data.join(name);
+    let parent = path.parent().ok_or_else(|| Error::Invalid("Missing graph parent".into()))?;
+    fs::create_dir_all(parent)?;
+    let staged = tempfile::NamedTempFile::new_in(parent)?;
+    write_json(staged.path(), value)?;
+    staged.as_file().sync_all()?;
+    let archived = if path.exists() {
+        let bytes = fs::read(&path)?;
+        let history = data.join("history").join(name.strip_suffix(".json").unwrap_or(name));
+        fs::create_dir_all(&history)?;
+        let prefix = format!("{}-", chrono::Utc::now().format("%Y%m%dT%H%M%S%.9fZ"));
+        let directory = tempfile::Builder::new().prefix(&prefix).tempdir_in(&history)?.keep();
+        let backup = directory.join(path.file_name().ok_or_else(|| Error::Invalid("Missing graph filename".into()))?);
+        fs::write(&backup, bytes)?;
+        fs::OpenOptions::new().write(true).open(&backup)?.sync_all()?;
+        write_json(&directory.join("recovery.json"), &json!({
+            "originalArtifact":name, "archivedAt":crate::now_iso(),
+            "instructions":"Stop analysis, copy the archived graph back to originalArtifact under the project data directory, and refresh the selected-part merge and query caches as needed."
+        }))?;
+        for input in ["config.json", "partition-layout.json"] {
+            if data.join(input).is_file() { fs::copy(data.join(input), directory.join(input))?; }
+        }
+        Some(backup)
+    } else { None };
+    staged.persist(&path).map_err(|e| e.error)?;
+    Ok(archived)
+}
 pub fn load_optional(root: &Path, name: &str) -> Result<Option<Value>> {
     let path = data_dir(root).join(name);
     if !path.exists() {
@@ -116,7 +150,7 @@ pub fn sanitize_file_paths(graph: &Value, root: &Path) -> Value {
     out
 }
 pub fn save_graph(root: &Path, graph: &Value) -> Result<()> {
-    save_artifact(
+    publish_graph(
         root,
         "knowledge-graph.json",
         &sanitize_file_paths(graph, root),
@@ -127,7 +161,8 @@ pub fn save_graph(root: &Path, graph: &Value) -> Result<()> {
     Ok(())
 }
 pub fn save_domain_graph(root: &Path, graph: &Value) -> Result<()> {
-    save_artifact(root, "domain-graph.json", &sanitize_file_paths(graph, root))
+    publish_graph(root, "domain-graph.json", &sanitize_file_paths(graph, root))?;
+    Ok(())
 }
 pub fn load_graph(root: &Path, validate: bool) -> Result<Option<Value>> {
     load_graph_named(root, "knowledge-graph.json", validate)

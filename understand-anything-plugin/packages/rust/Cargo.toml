@@ -34,7 +34,6 @@ flate2 = "1"
 unicode-casefold = "0.2"
 unicode-normalization = "0.1"
 
-[dev-dependencies]
 tempfile = "3"
 
 [profile.release]

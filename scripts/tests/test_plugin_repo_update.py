@@ -1,4 +1,4 @@
-"""Session hooks pull only an explicit plugin checkout, using local Git remotes."""
+"""Startup checks use local remotes without updating checkout or Git refs."""
 import json
 import os
 from pathlib import Path
@@ -64,15 +64,22 @@ def hook(plugin, project, event="SessionStart"):
     return json.loads(result.stdout) if result.stdout else None
 
 
-def test_session_start_pulls_plugin_without_touching_analyzed_repository(repositories):
+def test_session_start_reports_available_update_without_changing_either_repository(repositories):
     plugin, project, baseline, latest = repositories
+    refs_before = git(plugin, "show-ref")
+    status_before = git(plugin, "status", "--porcelain")
     result = hook(plugin, project)
-    assert "updated" in result["hookSpecificOutput"]["additionalContext"]
-    assert "updated" in result["systemMessage"]
-    assert git(plugin, "rev-parse", "HEAD") == latest
+    context = result["hookSpecificOutput"]["additionalContext"]
+    assert "update may be available" in context
+    assert latest[:12] in context
+    assert "confirm" in context and "pull --ff-only" in context
+    assert "Do not start" in context
+    assert git(plugin, "rev-parse", "HEAD") == baseline
+    assert git(plugin, "show-ref") == refs_before
+    assert git(plugin, "status", "--porcelain") == status_before
     assert git(project, "rev-parse", "HEAD") == baseline
     assert (project / "source.txt").read_text() == "original\n"
-    assert hook(plugin, project) is None  # Up-to-date pulls need no extra context.
+    assert hook(plugin, project)  # Repeated checks do not apply the update.
 
 
 @pytest.mark.parametrize("dirty", ["untracked", "staged", "unstaged"])
@@ -84,7 +91,7 @@ def test_dirty_plugin_is_not_pulled_or_stashed(repositories, dirty):
         git(plugin, "add", "source.txt")
     before = git(plugin, "status", "--porcelain")
     result = hook(plugin, project)
-    assert "local changes" in result["hookSpecificOutput"]["additionalContext"]
+    assert "update may be available" in result["hookSpecificOutput"]["additionalContext"]
     assert git(plugin, "rev-parse", "HEAD") == baseline
     assert git(plugin, "status", "--porcelain") == before
     assert path.read_text() == "local work\n"
@@ -98,7 +105,7 @@ def test_diverged_plugin_fails_without_rebase_or_merge(repositories):
     git(plugin, "config", "pull.rebase", "true")
     git(plugin, "config", "pull.ff", "false")
     result = hook(plugin, project)
-    assert "pull failed" in result["hookSpecificOutput"]["additionalContext"]
+    assert "update may be available" in result["hookSpecificOutput"]["additionalContext"]
     assert git(plugin, "rev-parse", "HEAD") == local
     assert not (plugin / ".git/MERGE_HEAD").exists()
     assert not (plugin / ".git/rebase-merge").exists()
@@ -112,7 +119,7 @@ def test_plugin_needs_attached_tracking_branch(repositories, state):
     else:
         git(plugin, "branch", "--unset-upstream")
     result = hook(plugin, project)
-    assert "configured upstream" in result["hookSpecificOutput"]["additionalContext"]
+    assert ("attached branch" if state == "detached" else "configured upstream") in result["hookSpecificOutput"]["additionalContext"]
     assert git(plugin, "rev-parse", "HEAD") == baseline
 
 
@@ -137,3 +144,42 @@ def test_timeout_kills_git_children(monkeypatch, tmp_path):
     monkeypatch.setenv("PATH", str(tmp_path) + os.pathsep + os.environ["PATH"])
     with pytest.raises(subprocess.TimeoutExpired):
         module.git(tmp_path, "pull", timeout=0.1)
+
+
+def test_plugin_update_has_one_shared_timeout_budget(monkeypatch, repositories):
+    import importlib.util
+    plugin, _, _, _ = repositories
+    spec = importlib.util.spec_from_file_location("bounded_update_plugin", PLUGIN / "hooks/update_plugin.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    monkeypatch.setenv('UA_PLUGIN_REPO', str(plugin))
+    elapsed = [0]
+    calls = []
+    monkeypatch.setattr(module.time, 'monotonic', lambda: elapsed[0])
+    def fake_git(root, *args, timeout):
+        calls.append(timeout)
+        elapsed[0] += 3
+        output = str(plugin) if args[0] == 'rev-parse' else 'origin\0refs/heads/main' if args[0] == 'for-each-ref' else 'refs/heads/main'
+        return subprocess.CompletedProcess(args, 0, output, '')
+    monkeypatch.setattr(module, 'git', fake_git)
+    assert 'timed out' in module.check_plugin_update()
+    assert len(calls) == 3
+    assert all(timeout <= 2 for timeout in calls)
+
+
+def test_current_or_locally_ahead_plugin_has_no_update_notice(repositories):
+    plugin, project, _, latest = repositories
+    git(plugin, "pull", "--ff-only")  # Explicit fixture update; never done by hook.
+    assert git(plugin, "rev-parse", "HEAD") == latest
+    assert hook(plugin, project) is None
+    (plugin / "ahead.txt").write_text("local commit\n")
+    commit(plugin)
+    before = git(plugin, "rev-parse", "HEAD")
+    assert hook(plugin, project) is None
+    assert git(plugin, "rev-parse", "HEAD") == before
+
+
+def test_only_session_start_is_registered():
+    hooks = json.loads((PLUGIN / 'hooks/hooks.json').read_text())['hooks']
+    assert set(hooks) == {'SessionStart'}
+    assert hooks['SessionStart'][0]['hooks'][0]['timeout'] <= 20

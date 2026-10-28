@@ -68,8 +68,8 @@ Start a new host session after installing/updating to refresh skill discovery.
 For a marketplace installation, use [understand-setup](../understand-setup/SKILL.md)
 when the user requests setup or the install onboarding flow selects it. It builds
 the engine and prepares parser/dictionary data, defaulting language downloads to
-the registered local plugin repository. The trusted session-start hook also
-initializes an unprepared runtime. Saved storage preferences remain authoritative.
+the registered local plugin repository. Session startup never initializes the
+runtime; use installation or explicit setup. Saved storage preferences remain authoritative.
 A help request alone still does not run setup or download data. The storage-choice
 workflow below applies to standalone dictionary maintenance without a saved/default
 location, rather than overriding marketplace defaults.
@@ -149,6 +149,7 @@ handling settings. The dashboard is launched separately after a graph exists.
 | Open the graph dashboard | [understand-dashboard](../understand-dashboard/SKILL.md) |
 | Load selected graph context | [load-graph](../load-graph/SKILL.md) |
 | Include an additional folder part | [understand-add-part](../understand-add-part/SKILL.md) |
+| Discuss or change persistent named groups across folders | [understand-partitions](../understand-partitions/SKILL.md) |
 | Recombine saved graphs without analysis | [understand-merge](../understand-merge/SKILL.md) |
 | Prepare engine and language libraries after marketplace installation | [understand-setup](../understand-setup/SKILL.md) |
 | Configure, update or repair dictionary dependencies | [understand-update](../understand-update/SKILL.md) |
@@ -187,10 +188,11 @@ full-graph-by-default recipe or omit its context-reuse and freshness guidance.
   `--prefer-local --local-dir` to download data into a shared user cache or an
   explicitly chosen, ignored installation-local directory. Use the
   maintenance workflow; do not silently download while answering a graph query.
-- **Plugin updates:** trusted native session-start hooks pull the plugin source
-  checkout with fast-forward-only Git semantics. For cached or packaged installs,
-  set `UA_PLUGIN_REPO` to that source checkout. Dirty checkouts and failed pulls
-  are reported for explicit maintenance; analyzed projects are never pulled.
+- **Plugin updates:** the sole hook, `SessionStart`, checks upstream with bounded
+  `git ls-remote` and reports instructions. It never pulls, compiles, downloads, or
+  starts updates. Get user confirmation before applying a plugin update. For
+  cached/packaged installs, set `UA_PLUGIN_REPO` to the source checkout. Failed
+  checks do not fail startup. Reload/reinstall after updating cached plugins.
 - **Graph auto-update missing:** graph reminders need an enabled boolean `autoUpdate` and,
   in Codex, reviewed/trusted hooks. Skills-only installs use explicit analysis
   runs. Enable with `understand --auto-update`; disable with `--no-auto-update`.
