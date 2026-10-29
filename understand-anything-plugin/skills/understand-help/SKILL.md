@@ -188,10 +188,11 @@ full-graph-by-default recipe or omit its context-reuse and freshness guidance.
   `--prefer-local --local-dir` to download data into a shared user cache or an
   explicitly chosen, ignored installation-local directory. Use the
   maintenance workflow; do not silently download while answering a graph query.
-- **Plugin updates:** the sole hook, `SessionStart`, uses Node built-ins to check
-  the published manifest version asynchronously. Requests time out after one
-  second, and results/failures are cached for 24 hours. No npm packages, Python,
-  Git probes, or setup are involved. Set `UA_SKIP_UPDATE_CHECK=1` to disable it.
+- **Plugin updates:** the sole hook, `SessionStart`, uses POSIX `sh` and optional
+  `curl` to check the published manifest version asynchronously. It never reads
+  host stdin. Requests time out after one
+  second, and results/failures are cached for 24 hours. No Node, Python,
+  Git probes, or setup are involved; missing `curl` skips the request. Set `UA_SKIP_UPDATE_CHECK=1` to disable it.
   Update/reinstall and reload existing cached plugins to pick up hook changes;
   review and trust the changed hook in Codex. Updates require user authorization.
 - **Graph maintenance:** run `understand` explicitly to refresh the graph. Startup

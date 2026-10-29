@@ -82,7 +82,7 @@ def test_archived_catalogs_and_hooks_stay_inside_plugin(tmp_path, monkeypatch):
     with tarfile.open(archive) as bundle:
         names = set(bundle.getnames())
         assert all(name == "understand-anything-plugin" or name.startswith("understand-anything-plugin/") for name in names)
-        for relative in [".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json", "hooks/hooks.json", "hooks/check_version.mjs", "LICENSE"]:
+        for relative in [".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json", "hooks/hooks.json", "hooks/check_version.sh", "LICENSE"]:
             assert f"understand-anything-plugin/{relative}" in names
 
 
@@ -208,7 +208,7 @@ def test_distribution_contains_native_engine_and_shared_references(tmp_path):
     builder.assemble_payload(payload, binary)
     for relative in [".claude-plugin/plugin.json", ".codex-plugin/plugin.json",
                      ".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json",
-                     "HOSTS.md", "LICENSE", "hooks/check_version.mjs",
+                     "HOSTS.md", "LICENSE", "hooks/check_version.sh",
                      "packages/rust/run.sh", "packages/rust/bin/understand-anything-rs",
                      "packages/rust/schemas/knowledge-graph.schema.json",
                      "packages/dashboard/freshness-server.mjs"]:

@@ -167,14 +167,14 @@ Static demos omit these checks unless `VITE_STALENESS_URL` supplies a report.
 
 ## Optional auto-update
 
-The only registered hook is `SessionStart`. A small JavaScript handler uses Node
-built-ins to compare the installed version with the published plugin manifest
-on `some1one/Understand-Anything`'s `main` branch. It runs asynchronously, limits
-the request to one second (1.5 seconds for the entire handler), and caches results
-and failed attempts for 24 hours in the user's cache directory. Only a higher
+The only registered hook is `SessionStart`. A POSIX `sh` script uses standard
+shell utilities and optional `curl` to compare the installed version with the
+published plugin manifest on `some1one/Understand-Anything`'s `main` branch. It
+runs asynchronously, limits the request to one second, never reads host stdin,
+and caches results and failed attempts for 24 hours in the user's cache directory. Only a higher
 stable version prints a notice. Set `UA_SKIP_UPDATE_CHECK=1` to disable it.
 There are no dependency installs, Git probes, or graph checks during startup.
-Node must be on PATH; no npm packages are required.
+No Node or Python runtime is required; missing `curl` skips the network check.
 
 Update/reinstall through your installation method and reload the plugin to load
 changed cached hooks. In Codex, review and trust the changed hook definition.

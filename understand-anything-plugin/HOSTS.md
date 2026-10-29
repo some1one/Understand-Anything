@@ -157,17 +157,18 @@ Codex supplies `CLAUDE_PLUGIN_ROOT` as a compatibility variable for the shared
 hook command. Codex hooks must be reviewed and trusted through the host before
 they run. Installation alone does not establish trust.
 
-Only `SessionStart` is registered; there is no tool-call hook. Its JavaScript
-handler runs with `node` and uses built-in modules only (no npm install, Python,
+Only `SessionStart` is registered; there is no tool-call hook. Its POSIX `sh`
+handler uses standard shell utilities and optional `curl` (no Node, Python,
 Git commands, or runtime setup). Both hosts support command hooks; the hook is
-asynchronous so the session can continue while it checks. Node must be on PATH.
+asynchronous so the session can continue while it checks. It never reads host
+stdin, so an open input pipe cannot hold startup. Missing `curl` skips the request.
 
 The hook compares the installed plugin manifest version with the published
 manifest on `some1one/Understand-Anything`'s `main` branch. Only a higher stable
 `major.minor.patch` version produces a notice; arbitrary upstream commits do not.
 Cached and packaged installations work without a source checkout. The HTTPS
-request has a one-second deadline and the handler exits within 1.5 seconds,
-including stalled input/DNS. The host timeout is three seconds.
+request has a one-second total deadline, including DNS and connection time,
+and ignores user curl configuration. The host timeout is three seconds.
 
 Results (including failed attempts) are cached for 24 hours in
 `understand-anything/published-version.json` under `XDG_CACHE_HOME`, `LOCALAPPDATA`,
